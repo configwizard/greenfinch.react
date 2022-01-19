@@ -1,0 +1,21 @@
+{
+  "name": "GasPump",
+  "assetdir": "frontend/build",
+  "frontend:build": "npm run build",
+  "frontend:install": "npm install",
+  "frontend:dev": "",
+  "wailsjsdir": "./frontend",
+  "version": "2",
+  "Path": "",
+  "BuildDir": "",
+  "outputfilename": "GasPump",
+  "OutputType": "",
+  "Platform": "",
+  "Author": {
+    "name": "Alex Walker",
+    "email": "amlwwalker@gmail.com"
+  },
+  "debounceMS": 100,
+  "devserverurl": "http://localhost:34115",
+  "appargs": ""
+}
