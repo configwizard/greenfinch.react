@@ -50,7 +50,7 @@ func (m *Manager) CreateContainer(name string) (string, error) {
 	attr := container.Attribute{}
 	attr.SetKey("name")
 	attr.SetValue(name)
-	attributes := []*container.Attribute{}
+	var attributes []*container.Attribute
 	attributes = append(attributes, &attr)
 	id, err := container2.Create(m.ctx, m.cli, m.key, attributes)
 	if err != nil {

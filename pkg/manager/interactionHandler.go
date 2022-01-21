@@ -8,6 +8,8 @@ import (
 	"os"
 )
 
+//Upload will put an object in NeoFS. You can access publically available files at
+//https://http.testnet.fs.neo.org/<containerID>/<objectID>
 func (m *Manager) Upload(containerID string, attributes map[string]string) (string, error) {
 	homeDir, err := os.UserHomeDir()
 	filepath, err := runtime.OpenFileDialog(m.ctx, runtime.OpenDialogOptions{
@@ -22,14 +24,7 @@ func (m *Manager) Upload(containerID string, attributes map[string]string) (stri
 	if err != nil {
 		return "", err
 	}
-	//var objectAttributes map[string]string
-	//objectAttributes = make(map[string]string)
-	//objectAttributes["name"] = "james bond"
-	////elaborate due to passing pointer so we still own the reader this end
-	//
 	objectID, err := m.UploadObject(containerID, filepath, attributes)
-	fmt.Printf("containerID %s, objectID %s\r\n", containerID, objectID)
-	fmt.Printf("https://http.testnet.fs.neo.org/%s/%s\r\n", containerID, objectID)
 	return objectID, err
 }
 
