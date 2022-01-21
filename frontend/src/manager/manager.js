@@ -5,3 +5,7 @@ const getNeoFSBalance = async () => {
     })
     return b
 }
+
+export {
+    getNeoFSBalance
+}

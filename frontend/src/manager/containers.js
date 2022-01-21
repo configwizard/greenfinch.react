@@ -16,6 +16,7 @@ const getContainer = async (containerID) => {
 const createContainer = async (name) => {
     try {
         let containerId = await window.go.manager.Manager.CreateContainer(name)
+        console.log("created container", containerId)
         return containerId
     } catch(e) {
        console.log("error creating containers", e)

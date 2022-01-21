@@ -47,6 +47,7 @@ func (m *Manager) DeleteContainer(id string) error {
 	return err
 }
 func (m *Manager) CreateContainer(name string) (string, error) {
+	log.Println("creating cxontainer with name", name)
 	attr := container.Attribute{}
 	attr.SetKey("name")
 	attr.SetValue(name)
