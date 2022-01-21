@@ -55,6 +55,7 @@ func (m Manager) Client() *neofscli.Client {
 	return m.cli
 }
 type Balance struct{
+	Address string
 	Balance   int64
 	Precision uint32
 }
@@ -70,6 +71,7 @@ func (m *Manager) GetNeoFSBalance() (Balance, error) {
 		return Balance{}, err
 	}
 	var b = Balance{
+"TBD",
 		(*result.Amount()).Value(),
 		(*result.Amount()).Precision(),
 	}

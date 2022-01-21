@@ -2,6 +2,35 @@
 
 This application uses Wails 2.0 to create a desktop app to interact with the gaspump application.
 
+## To do
+
+* pipe the upload and response with notifications on upload/download status
+
+## Troubleshooting:
+
+1. Node version 17
+
+```shell
+Error: error:0308010C:digital envelope routines::unsupported
+    at new Hash (node:internal/crypto/hash:67:19)
+    at Object.createHash (node:crypto:130:10)
+    at module.exports (/Users/user/Programming Documents/WebServer/untitled/node_modules/webpack/lib/util/createHash.js:135:53)
+    at NormalModule._initBuildHash (/Users/user/Programming Documents/WebServer/untitled/node_modules/webpack/lib/NormalModule.js:417:16)
+    at handleParseError (/Users/user/Programming Documents/WebServer/untitled/node_modules/webpack/lib/NormalModule.js:471:10)
+    at /Users/user/Programming Documents/WebServer/untitled/node_modules/webpack/lib/NormalModule.js:503:5
+    at /Users/user/Programming Documents/WebServer/untitled/node_modules/webpack/lib/NormalModule.js:358:12
+    at /Users/user/Programming Documents/WebServer/untitled/node_modules/loader-runner/lib/LoaderRunner.js:373:3
+    at iterateNormalLoaders (/Users/user/Programming Documents/WebServer/untitled/node_modules/loader-runner/lib/LoaderRunner.js:214:10)
+    at iterateNormalLoaders (/Users/user/Programming Documents/WebServer/untitled/node_modules/loader-runner/lib/LoaderRunner.js:221:10)
+/Users/user/Programming Documents/WebServer/untitled/node_modules/react-scripts/scripts/start.js:19
+  throw err;
+  ^
+```
+
+This is due to
+> This is caused by the latest node.js V17 compatible issues with OpenSSL, see this and this issue on GitHub.
+
+> The easiest thing is just downgrade from node.js V17 to node.js V16. See this post on how to downgrade node.js.
 ## Setup
 
 Before really getting started you will need a wallet, and probably some Gas from the testnet for your wallet.

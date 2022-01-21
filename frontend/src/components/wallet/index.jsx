@@ -4,22 +4,21 @@ import {retrieveFullFileSystem} from "../../manager/interactions";
 
 
 
-class FileSystem extends React.Component {
+class Wallet extends React.Component {
     constructor(props) {
         super(props);
 
     }
 
-
     render() {
         return (
             <div>
-                <div className="result" id="result">FileSystem 👇
-                    <JSONView id="json-pretty" src={this.props.resp || []}></JSONView>
+                <div className="result" id="result">Balance 👇
+                    <JSONView id="json-pretty" src={this.props.resp}></JSONView>
                 </div>
             </div>
         );
     }
 }
 
-export default FileSystem;
+export default Wallet;
