@@ -10,6 +10,12 @@ import (
 	obj "github.com/nspcc-dev/neofs-sdk-go/object"
 	"io"
 	"os"
+	"path"
+	"time"
+)
+
+const (
+	TIMESTAMP_FORMAT string = "2006.01.02 15:04:05"
 )
 
 func getObjectAddress(objectID, containerID string) *obj.Address {
@@ -41,6 +47,16 @@ func (m *Manager) UploadObject(containerID, filepath string, attributes map[stri
 		tmp.SetValue(v)
 		attr = append(attr, &tmp)
 	}
+
+	//set special attributes last so they don't get overwritten
+	timeStampAttr := new(obj.Attribute)
+	timeStampAttr.SetKey(obj.AttributeTimestamp)
+	timeStampAttr.SetValue(time.Now().Format(TIMESTAMP_FORMAT))
+
+	fileNameAttr := new(obj.Attribute)
+	fileNameAttr.SetKey(obj.AttributeFileName)
+	timeStampAttr.SetValue(path.Base(filepath))
+	attr = append(attr, []*obj.Attribute{timeStampAttr, fileNameAttr}...)
 
 	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, m.key)
 	if err != nil {
