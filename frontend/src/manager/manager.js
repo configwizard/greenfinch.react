@@ -1,5 +1,5 @@
-const getNeoFSBalance = async () => {
-    let b = await window.go.manager.Manager.GetNeoFSBalance().then((balance, error) => {
+const getAccountInformation = async () => {
+    let b = await window.go.manager.Manager.GetAccountInformation().then((balance, error) => {
         console.log(balance, error)
         return balance
     })
@@ -7,5 +7,5 @@ const getNeoFSBalance = async () => {
 }
 
 export {
-    getNeoFSBalance
+    getAccountInformation
 }

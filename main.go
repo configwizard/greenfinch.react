@@ -23,7 +23,7 @@ var assets embed.FS
 //go:embed build/appicon.png
 var icon []byte
 
-const usage = `NeoFS Balance requests
+const usage = `NeoFS Account requests
 Creating a new wallet. Note defaults to searching for ./wallets/wallet.json
 $ ./build/bin/GasPump.app/Contents/MacOS/GasPump -wallet=./wallets/wallet.json new
 `
@@ -33,6 +33,7 @@ var (
 	walletName = flag.String("name", "", "set name for new wallet")
 	walletPath = flag.String("wallet", "", "path to JSON wallet file")
 	walletAddr = flag.String("address", "", "wallet address [optional]")
+	createContainerOnStart = flag.Bool("container", false, "should create a container on start")
 )
 
 func main() {
@@ -65,13 +66,13 @@ func main() {
 		}
 		log.Println("starting gaspump. Using wallet at", *walletPath)
 	}
-
-
+//https://http.testnet.fs.neo.org/CONTAINER_ID/OBJECT_ID
+	//createContainerOnStart
 	manager, err := manager.NewFileSystemManager(*walletPath, *walletAddr, *walletPassword)
 	if err != nil {
 		log.Fatal("can't create a manager", err)
 	}
-	balance, err := manager.GetNeoFSBalance()
+	balance, err := manager.GetAccountInformation()
 	if err != nil {
 		fmt.Println("error retrieving neo fs balance", err)
 	} else {

@@ -37,19 +37,19 @@ const go = {
         return window.go.manager.Manager.DeleteObject(arg1, arg2);
       },
       /**
+       * GetAccountInformation
+       * @returns {Promise<Account|Error>}  - Go Type: manager.Account
+       */
+      "GetAccountInformation": () => {
+        return window.go.manager.Manager.GetAccountInformation();
+      },
+      /**
        * GetContainer
        * @param {string} arg1 - Go Type: string
        * @returns {Promise<Container|Error>}  - Go Type: *container.Container
        */
       "GetContainer": (arg1) => {
         return window.go.manager.Manager.GetContainer(arg1);
-      },
-      /**
-       * GetNeoFSBalance
-       * @returns {Promise<Balance|Error>}  - Go Type: manager.Balance
-       */
-      "GetNeoFSBalance": () => {
-        return window.go.manager.Manager.GetNeoFSBalance();
       },
       /**
        * GetObject
