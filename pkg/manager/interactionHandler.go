@@ -29,12 +29,12 @@ func (m *Manager) Upload(containerID string, attributes map[string]string) (stri
 }
 
 func (m Manager) RetrieveFileSystem() ([]filesystem.Element, error) {
-	return filesystem.GenerateFileSystem(m.ctx, m.cli, m.key)
+	return filesystem.GenerateFileSystem(m.ctx, m.fsCli, m.key)
 }
 func (m Manager) RetrieveContainerFileSystem(containerID string) (filesystem.Element, error) {
 	contID := cid.New()
 	contID.Parse(containerID)
-	fs := filesystem.GenerateFileSystemFromContainer(m.ctx, m.cli, m.key, contID)
+	fs := filesystem.GenerateFileSystemFromContainer(m.ctx, m.fsCli, m.key, contID)
 	fmt.Printf("fs %+v\r\n", fs)
 	return fs, nil
 }

@@ -10,8 +10,8 @@ import (
 
 type Manager struct {
 	walletPath, walletAddr string
-	cli *neofscli.Client
-	key *ecdsa.PrivateKey
+	fsCli                  *neofscli.Client
+	key                    *ecdsa.PrivateKey
 	ctx context.Context
 }
 
@@ -45,36 +45,57 @@ func NewFileSystemManager(walletPath, walletAddr, password string) (*Manager, er
 	return &Manager{
 		walletPath: walletPath,
 		walletAddr: walletAddr,
-		cli: cli,
-		key: key,
-		ctx: context.Background(),
+		fsCli:      cli,
+		key:        key, //this is holding the private key in memory - not good?
+		ctx:        context.Background(),
 	}, nil
 }
 
 func (m Manager) Client() *neofscli.Client {
-	return m.cli
+	return m.fsCli
 }
-type Balance struct{
-	Address string
-	Balance   int64
-	Precision uint32
-}
-func (m *Manager) GetNeoFSBalance() (Balance, error) {
+type Account struct{
+	Address string `json:"address"`
+	NeoFS struct{
+		Balance   int64 `json:"balance"`
+		Precision uint32 `json:"precision"`
+	} `json:"neofs"`
+	Nep17 map[string]wallet.Nep17Tokens `json:"nep17"'`
 
+}
+func (m *Manager) GetAccountInformation() (Account, error) {
+
+
+	w, err := wallet.RetrieveWallet(m.walletPath)
+	if err != nil {
+		return Account{}, err
+	}
+	balances, err := wallet.GetNep17Balances(w.Accounts[0].Address, wallet.RPC_TESTNET)
+	//Now the neo fs gas balance
 	id, err := wallet.OwnerIDFromPrivateKey(m.key)
 	if err != nil {
-		return Balance{}, err
+		return Account{}, err
 	}
 	ctx := context.Background()
-	result, err := m.cli.GetBalance(ctx, id)
+	result, err := m.fsCli.GetBalance(ctx, id)
 	if err != nil {
-		return Balance{}, err
+		return Account{}, err
 	}
-	var b = Balance{
-"TBD",
-		(*result.Amount()).Value(),
-		(*result.Amount()).Precision(),
+	//now create an account object
+	var b = Account{
+		Address: w.Accounts[0].Address,
+		NeoFS: struct {
+			Balance   int64  `json:"balance"`
+			Precision uint32 `json:"precision"`
+		}(struct {
+			Balance   int64
+			Precision uint32
+		}{
+			Balance: (*result.Amount()).Value(),
+			Precision: (*result.Amount()).Precision(),
+		}),
 	}
+	b.Nep17 = balances
 	return b, nil
 }
 

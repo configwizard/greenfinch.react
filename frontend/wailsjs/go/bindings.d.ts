@@ -5,8 +5,8 @@ interface go {
 		CreateContainer(arg1:string):Promise<string|Error>
 		DeleteContainer(arg1:string):Promise<Error>
 		DeleteObject(arg1:string,arg2:string):Promise<Error>
+		GetAccountInformation():Promise<Account|Error>
 		GetContainer(arg1:string):Promise<Container|Error>
-		GetNeoFSBalance():Promise<Balance|Error>
 		GetObject(arg1:string,arg2:string,arg3:Writer):Promise<Array<number>|Error>
 		GetObjectMetaData(arg1:string,arg2:string):Promise<ObjectHeadRes|Error>
 		ListContainerObjects(arg1:string):Promise<Array<string>|Error>

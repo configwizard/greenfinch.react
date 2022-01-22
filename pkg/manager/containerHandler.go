@@ -10,7 +10,7 @@ import (
 )
 
 func (m *Manager) listContainers() ([]*cid.ID, error) {
-	ids, err := container2.List(m.ctx, m.cli, m.key)
+	ids, err := container2.List(m.ctx, m.fsCli, m.key)
 	log.Printf("%v\r\n", ids)
 	return ids, err
 }
@@ -32,7 +32,7 @@ func (m *Manager) GetContainer(id string) (*container.Container, error) {
 		fmt.Println("error parsing id", err)
 		return nil, err
 	}
-	cont, err := container2.Get(m.ctx, m.cli, c)
+	cont, err := container2.Get(m.ctx, m.fsCli, c)
 	fmt.Println(cont, err)
 	return cont, err
 }
@@ -43,7 +43,7 @@ func (m *Manager) DeleteContainer(id string) error {
 		fmt.Println("error parsing id", err)
 		return err
 	}
-	_, err = container2.Delete(m.ctx, m.cli, c)
+	_, err = container2.Delete(m.ctx, m.fsCli, c)
 	return err
 }
 func (m *Manager) CreateContainer(name string) (string, error) {
@@ -53,7 +53,7 @@ func (m *Manager) CreateContainer(name string) (string, error) {
 	attr.SetValue(name)
 	var attributes []*container.Attribute
 	attributes = append(attributes, &attr)
-	id, err := container2.Create(m.ctx, m.cli, m.key, attributes)
+	id, err := container2.Create(m.ctx, m.fsCli, m.key, attributes)
 	if err != nil {
 		return id.String(), err
 	}
@@ -63,7 +63,7 @@ func (m *Manager) CreateContainer(name string) (string, error) {
 			log.Printf("Timeout, containers %s was not persisted in side chain\n", id)
 			return id.String(), err
 		}
-		_, err := container2.Get(m.ctx, m.cli, id)
+		_, err := container2.Get(m.ctx, m.fsCli, id)
 		if err == nil {
 			return id.String(), err
 		}

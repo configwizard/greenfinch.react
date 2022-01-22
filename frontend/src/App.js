@@ -8,7 +8,7 @@ import Objects from "./components/objects";
 import FileSystem from "./components/filesystem";
 import Wallet from "./components/wallet";
 
-import {getNeoFSBalance} from "./manager/manager.js"
+import {getAccountInformation} from "./manager/manager.js"
 import {createContainer, listContainers} from "./manager/containers.js"
 import {listObjects, uploadObject} from "./manager/objects.js"
 import {retrieveFullFileSystem} from "./manager/interactions";
@@ -16,7 +16,7 @@ import {retrieveFullFileSystem} from "./manager/interactions";
 class App extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { resp: [], containerList: [], objectList: [], wallet: {} };
+        this.state = { resp: [], containerList: [], objectList: [], account: {} };
     }
 
     async componentDidMount() {
@@ -29,8 +29,8 @@ class App extends React.Component {
             console.log("o", o)
             objectList = objectList.concat(o)
         }
-        const balance = await getNeoFSBalance()
-        await this.setState({containerList, objectList, wallet: balance})
+        const account = await getAccountInformation()
+        await this.setState({containerList, objectList, account})
         console.log("state: ", this.state)
     }
 
@@ -39,7 +39,7 @@ class App extends React.Component {
 
             <div>
                 <Row>
-                    <Wallet resp={this.state.wallet}></Wallet>
+                    <Wallet resp={this.state.account}></Wallet>
                     <Containers containers={this.state.containerList}></Containers>
                     <Objects objects={this.state.objectList} containerID={this.state.containerList[0]}></Objects>
                     <FileSystem resp={this.state.resp}></FileSystem>
