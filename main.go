@@ -3,10 +3,16 @@ package main
 import (
 	"changeme/pkg/manager"
 	"changeme/pkg/mocker"
+	"context"
 	"embed"
 	"flag"
 	"fmt"
+	"github.com/nspcc-dev/neo-go/pkg/core/native/nativenames"
+
+	//"github.com/amlwwalker/gaspump-api/pkg/client"
 	"github.com/amlwwalker/gaspump-api/pkg/wallet"
+	//wallet2 "github.com/nspcc-dev/neo-go/pkg/wallet"
+	client2 "github.com/nspcc-dev/neo-go/pkg/rpc/client"
 	"log"
 	"os"
 
@@ -33,7 +39,9 @@ var (
 	walletPassword = flag.String("password", "password", "set password for new wallet")
 	walletName = flag.String("name", "", "set name for new wallet")
 	walletPath = flag.String("wallet", "", "path to JSON wallet file")
-	walletAddr = flag.String("address", "", "wallet address [optional]")
+	walletAddr = flag.String("address", "", "wallet address")
+	transferAmount = flag.Int64("amount", 1_00_000_000, "amount to transfer (precision is 8) default 1 GAS")
+	//not used:
 	createContainerOnStart = flag.Bool("container", false, "should create a container on start")
 )
 
@@ -61,6 +69,48 @@ func main() {
 		}
 		log.Printf("created new wallet: %s\r\n %+v\r\n", newWallet.Accounts[0].Address, res)
 		os.Exit(0)
+	case "transfer":
+		if walletPath == nil || *walletPath == "" {
+			log.Fatal("no wallet path provided")
+		}
+		if transferAmount == nil || *transferAmount == 0 {
+			log.Fatal("amount must be greater than 0")
+		}
+
+		ctx := context.Background()
+		cli, err := client2.New(ctx, string(wallet.RPC_TESTNET), client2.Options{})
+		if err != nil {
+			log.Fatal(err)
+		}
+		err = cli.Init()
+		if err != nil {
+			log.Fatal(err)
+		}
+		unlockedWallet, err := wallet.UnlockWallet(*walletPath, "", "password")
+		if err != nil {
+			log.Fatal(err)
+		}
+		gasToken, err := cli.GetNativeContractHash(nativenames.Gas)
+		if err != nil {
+			log.Fatal(err)
+		}
+		transactionID, err := wallet.TransferToken(unlockedWallet, *transferAmount, *walletAddr, gasToken, wallet.RPC_TESTNET)
+		if err != nil {
+			log.Fatal(err)
+		}
+		start := uint64(0)
+		stop := uint64(1600094189000)
+		limit := int(10)
+		page := int(1)
+		uint160, err := wallet.StringToUint160(unlockedWallet.Address)
+		if err != nil {
+			return
+		}
+		transfers, err := cli.GetNEP17Transfers(uint160, &start, &stop, &limit, &page)
+		fmt.Printf("error %s\ntransfers %+v\n", err, transfers)
+		//stringTx := wallet.Uint160ToString(transactionID)
+		log.Println("transaction made txID ", transactionID)
+		os.Exit(0)
 	default:
 		if *walletPath == "" {
 			*walletPath = "./wallets/wallet.json"
@@ -77,7 +127,7 @@ func main() {
 	if err != nil {
 		fmt.Println("error retrieving neo fs balance", err)
 	} else {
-		fmt.Printf("balance: %d, precision %d\r\n", balance)
+		fmt.Printf("balance: %d, precision %d\r\n", balance.NeoFS.Balance, balance.NeoFS.Precision)
 	}
 	mocker := mocker.Mocker{} //mocker for frontend
 
@@ -112,12 +162,20 @@ func main() {
 			DisableWindowIcon:    false,
 		},
 		Mac: &mac.Options{
-			TitleBar:             mac.TitleBarHiddenInset(),
-			WebviewIsTransparent: true,
-			WindowIsTranslucent:  true,
+			TitleBar: &mac.TitleBar{
+				TitlebarAppearsTransparent: true,
+				HideTitle:                  false,
+				HideTitleBar:               false,
+				FullSizeContent:            false,
+				UseToolbar:                 false,
+				HideToolbarSeparator:       true,
+			},
+			//TitleBar:             mac.TitleBarHiddenInset(),
+			WebviewIsTransparent: false,
+			WindowIsTranslucent:  false,
 			About: &mac.AboutInfo{
-				Title:   "ReactJS Template",
-				Message: "Part of the Wails projects",
+				Title:   "Gas Pump",
+				Message: "Decentralised file storage. All yours.",
 				Icon:    icon,
 			},
 		},

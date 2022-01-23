@@ -4,6 +4,7 @@ go 1.17
 
 require (
 	github.com/amlwwalker/gaspump-api v0.1.3
+	github.com/nspcc-dev/neo-go v0.98.0
 	github.com/nspcc-dev/neofs-sdk-go v0.0.0-20220119080627-f83ff628fb19
 	github.com/wailsapp/wails/v2 v2.0.0-beta.28
 )
@@ -40,7 +41,6 @@ require (
 	github.com/mr-tron/base58 v1.2.0 // indirect
 	github.com/nspcc-dev/go-ordered-json v0.0.0-20210915112629-e1b6cce73d02 // indirect
 	github.com/nspcc-dev/hrw v1.0.9 // indirect
-	github.com/nspcc-dev/neo-go v0.98.0 // indirect
 	github.com/nspcc-dev/neofs-api-go/v2 v2.11.2-0.20220114101721-227a871a04ac // indirect
 	github.com/nspcc-dev/neofs-crypto v0.3.0 // indirect
 	github.com/nspcc-dev/rfc6979 v0.2.0 // indirect

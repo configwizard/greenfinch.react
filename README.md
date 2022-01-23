@@ -101,6 +101,25 @@ wails dev --browser
 ```
 To open a browser window. This can be handy for debugging.
 
+## Transferring Gas to NeoFS
+
+Once you have received Gas from the Neo test faucet, you need to transfer some to the NeoFS smart contract so that you can pay for storage
+
+```shell
+build/bin/GasPump.app/Contents/MacOS/GasPump -wallet=./wallets/wallet.json -address=NadZ8YfvkddivcFFkztZgfwxZyKf1acpRF -amount=100000000 transfer
+```
+Where
+* `NadZ8YfvkddivcFFkztZgfwxZyKf1acpRF` is the NeoFS *TESTNET* address
+* `100000000` is 1 Gas to a precision of 8 (accurate to 8dp)
+
+After that, run the app as normal and you will see your balance has increased
+
+## Tools
+
+* Blockchain explorer for looking up your TESTNET transactions [neo tracker (testnet)](https://testnet.neotracker.io/)
+* Neo TESTNET faucet for getting some Gas/Neo [testnet faucet](https://neowish.ngd.network/)
+* NeoFS documentation including endpoints (docs)[https://testcdn.fs.neo.org/doc/]
+
 ## Frontend Development
 
 However currently rebuilding the frontend on changes is not functional, and so rebuilding every time can be slow. To just develop the frontend, go inside the frontend directory and run `npm start`.
