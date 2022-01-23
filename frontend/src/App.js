@@ -32,7 +32,7 @@ class App extends React.Component {
     }
     onSelected = async (selected) => {
         console.dir(selected)
-        const objectList = await listObjects(selected.value) //list contents of first container
+        const objectList = await listObjects(selected.value) //list contents of a container
         await this.setState({objectList: objectList, selectedContainer: selected.value})
     }
 

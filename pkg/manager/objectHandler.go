@@ -13,6 +13,7 @@ import (
 	"io"
 	"os"
 	"path"
+	"strconv"
 	"time"
 )
 
@@ -53,7 +54,7 @@ func (m *Manager) UploadObject(containerID, filepath string, attributes map[stri
 	//set special attributes last so they don't get overwritten
 	timeStampAttr := new(obj.Attribute)
 	timeStampAttr.SetKey(obj.AttributeTimestamp)
-	timeStampAttr.SetValue(time.Now().Format(TIMESTAMP_FORMAT))
+	timeStampAttr.SetValue(strconv.FormatInt(time.Now().Unix(), 10))
 
 	fileNameAttr := new(obj.Attribute)
 	fileNameAttr.SetKey(obj.AttributeFileName)
