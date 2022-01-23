@@ -1,6 +1,6 @@
 const listObjects = async (containerID) => {
     try {
-        let objects = await window.go.manager.Manager.ListContainerPopulatedObjects(containerID)
+        let objects = require('../dbg_data_structures/listContainerPopulatedObjects.json');
         console.log("objects", objects)
         return objects
     } catch(e) {
@@ -9,7 +9,7 @@ const listObjects = async (containerID) => {
 }
 const getObjectMetaData = async (objId, containerID) => {
     try {
-        let metaData = await window.go.manager.Manager.GetObjectMetaData(objId, containerID)
+        let metaData = await window.go.mocker.Mocker.GetObjectMetaData(objId, containerID)
         return metaData
     } catch(e) {
         console.log("error retrieving metadata", e)
@@ -17,7 +17,7 @@ const getObjectMetaData = async (objId, containerID) => {
 }
 const deleteObject = async (objId, containerID) => {
     try {
-        await window.go.manager.Manager.DeleteObject(objId, containerID)
+        await window.go.mocker.Mocker.DeleteObject(objId, containerID)
     } catch(e) {
         console.log("error deleting object ", e)
     }
@@ -26,7 +26,7 @@ const deleteObject = async (objId, containerID) => {
 const uploadObject = async (containerID) => {
     try {
         let attributes = {james: "bond"}
-        let result = await window.go.manager.Manager.Upload(containerID, attributes)
+        let result = await window.go.mocker.Mocker.Upload(containerID, attributes)
         return result
     } catch(e) {
         console.log("error uploading content", e)

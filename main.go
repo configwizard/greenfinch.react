@@ -2,6 +2,7 @@ package main
 
 import (
 	"changeme/pkg/manager"
+	"changeme/pkg/mocker"
 	"embed"
 	"flag"
 	"fmt"
@@ -68,7 +69,7 @@ func main() {
 	}
 //https://http.testnet.fs.neo.org/CONTAINER_ID/OBJECT_ID
 	//createContainerOnStart
-	manager, err := manager.NewFileSystemManager(*walletPath, *walletAddr, *walletPassword)
+	manager, err := manager.NewFileSystemManager(*walletPath, *walletAddr, *walletPassword, true)
 	if err != nil {
 		log.Fatal("can't create a manager", err)
 	}
@@ -78,6 +79,8 @@ func main() {
 	} else {
 		fmt.Printf("balance: %d, precision %d\r\n", balance)
 	}
+	mocker := mocker.Mocker{} //mocker for frontend
+
 	// Create application with options
 	err = wails.Run(&options.App{
 		Title:  "Gas Pump",
@@ -100,6 +103,7 @@ func main() {
 		OnShutdown:        manager.Shutdown,
 		Bind: []interface{}{
 			manager,
+			&mocker,
 		},
 		// Windows platform specific options
 		Windows: &windows.Options{

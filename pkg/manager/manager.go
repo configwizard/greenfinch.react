@@ -13,6 +13,7 @@ type Manager struct {
 	fsCli                  *neofscli.Client
 	key                    *ecdsa.PrivateKey
 	ctx context.Context
+	DEBUG bool
 }
 
 // startup is called at application startup
@@ -31,7 +32,7 @@ func (m *Manager) Shutdown(ctx context.Context) {
 	// Perform your teardown here
 }
 
-func NewFileSystemManager(walletPath, walletAddr, password string) (*Manager, error) {
+func NewFileSystemManager(walletPath, walletAddr, password string, DEBUG bool) (*Manager, error) {
 	// First obtain client credentials: private key of request owner
 	key, err := wallet.GetCredentialsFromPath(walletPath, walletAddr, password)
 	if err != nil {
@@ -48,6 +49,7 @@ func NewFileSystemManager(walletPath, walletAddr, password string) (*Manager, er
 		fsCli:      cli,
 		key:        key, //this is holding the private key in memory - not good?
 		ctx:        context.Background(),
+		DEBUG: DEBUG,
 	}, nil
 }
 
@@ -96,6 +98,9 @@ func (m *Manager) GetAccountInformation() (Account, error) {
 		}),
 	}
 	b.Nep17 = balances
+	if m.DEBUG {
+		DebugSaveJson("GetAccountInformation.json", b)
+	}
 	return b, nil
 }
 

@@ -9,12 +9,22 @@ interface go {
 		GetContainer(arg1:string):Promise<Container|Error>
 		GetObject(arg1:string,arg2:string,arg3:Writer):Promise<Array<number>|Error>
 		GetObjectMetaData(arg1:string,arg2:string):Promise<ObjectHeadRes|Error>
-		ListContainerObjects(arg1:string):Promise<Array<string>|Error>
-		ListContainers():Promise<Array<string>|Error>
+		ListContainerIDs():Promise<Array<string>|Error>
+		ListContainerObjectIDs(arg1:string):Promise<Array<string>|Error>
+		ListContainerPopulatedObjects(arg1:string):Promise<Array<Element>|Error>
+		ListContainers():Promise<Array<Element>|Error>
 		RetrieveContainerFileSystem(arg1:string):Promise<Element|Error>
 		RetrieveFileSystem():Promise<Array<Element>|Error>
 		Upload(arg1:string,arg2:any):Promise<string|Error>
 		UploadObject(arg1:string,arg2:string,arg3:any):Promise<string|Error>
+    },
+  }
+
+  "mocker": {
+    "Mocker": {
+		GetAccountInformation():Promise<Account|Error>
+		ListContainerPopulatedObjects():Promise<Array<Element>|Error>
+		ListContainers():Promise<Array<Element>|Error>
     },
   }
 

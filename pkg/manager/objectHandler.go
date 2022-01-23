@@ -2,7 +2,9 @@ package manager
 
 import (
 	"bufio"
+	"fmt"
 	client2 "github.com/amlwwalker/gaspump-api/pkg/client"
+	"github.com/amlwwalker/gaspump-api/pkg/filesystem"
 	"github.com/amlwwalker/gaspump-api/pkg/object"
 	"github.com/amlwwalker/gaspump-api/pkg/wallet"
 	"github.com/nspcc-dev/neofs-sdk-go/client"
@@ -69,6 +71,9 @@ func (m *Manager) UploadObject(containerID, filepath string, attributes map[stri
 	cntId := new(cid.ID)
 	cntId.Parse(containerID)
 	id, err := object.UploadObject(m.ctx, m.fsCli, cntId, ownerID, attr, sessionToken, &ioReader)
+	if err != nil {
+		fmt.Println("error attempting to upload", err)
+	}
 	return id.String(), err
 }
 
@@ -79,6 +84,9 @@ func (m *Manager) GetObjectMetaData(objectID, containerID string) (*client.Objec
 	}
 	objAddress := getObjectAddress(objectID, containerID)
 	head, err := object.GetObjectMetaData(m.ctx, m.fsCli, objAddress, sessionToken)
+	if m.DEBUG {
+		DebugSaveJson("GetObjectMetaData.json", head)
+	}
 	return head, err
 }
 func (m *Manager) GetObject(objectID, containerID string, writer *io.Writer) ([]byte, error){
@@ -88,24 +96,48 @@ func (m *Manager) GetObject(objectID, containerID string, writer *io.Writer) ([]
 	}
 	objAddress := getObjectAddress(objectID, containerID)
 	o, err := object.GetObject(m.ctx, m.fsCli, objAddress, sessionToken, writer)
+	if m.DEBUG {
+		DebugSaveJson("GetObject.json", o)
+	}
 	return o, err
 }
 
-func (m *Manager) ListContainerObjects(containerID string) ([]string, error) {
-	var stringList []string
+func (m *Manager) ListContainerObjectIDs(containerID string) ([]string, error) {
+	var stringIds []string
 	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, m.key)
 	if err != nil {
-		return stringList, err
+		return stringIds, err
 	}
 	cntID := new(cid.ID)
 	cntID.Parse(containerID)
 	list, err := object.ListObjects(m.ctx, m.fsCli, cntID, sessionToken)
+	filesystem.GenerateObjectStruct(m.ctx, m.fsCli, sessionToken, list, cntID)
 	for _, v := range list {
-		stringList = append(stringList, v.String())
+		stringIds = append(stringIds, v.String())
 	}
-	return stringList, err
+	if m.DEBUG {
+		DebugSaveJson("ListContainerObjectIDs.json", stringIds)
+	}
+	return stringIds, err
 }
-
+type TmpObjectMeta struct {
+	Size uint64
+	Objects []filesystem.Element
+}
+func (m *Manager) ListContainerPopulatedObjects(containerID string) ([]filesystem.Element, error) {
+	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, m.key)
+	if err != nil {
+		return []filesystem.Element{}, err
+	}
+	cntID := new(cid.ID)
+	cntID.Parse(containerID)
+	list, err := object.ListObjects(m.ctx, m.fsCli, cntID, sessionToken)
+	_, objects := filesystem.GenerateObjectStruct(m.ctx, m.fsCli, sessionToken, list, cntID)
+	if m.DEBUG {
+		DebugSaveJson("ListContainerPopulatedObjects.json", objects)
+	}
+	return objects, nil
+}
 func (m *Manager) DeleteObject(objectID, containerID string) error {
 	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, m.key)
 	if err != nil {

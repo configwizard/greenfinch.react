@@ -1,8 +1,5 @@
 import React  from "react";
 import JSONView from 'react-json-view';
-import {retrieveFullFileSystem} from "../../manager/interactions";
-
-
 
 class Wallet extends React.Component {
     constructor(props) {

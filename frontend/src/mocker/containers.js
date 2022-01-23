@@ -1,6 +1,6 @@
 const listContainers = async () => {
     try {
-        let containers = await window.go.manager.Manager.ListContainers()
+        let containers = require('../dbg_data_structures/listPopulatedContainers.json');
         console.log("containers", containers)
         return containers
     }catch (e) {
@@ -9,7 +9,7 @@ const listContainers = async () => {
 }
 const getContainer = async (containerID) => {
     try {
-        let container = await window.go.manager.Manager.GetContainer(containerID)
+        let container = await window.go.mocker.Mocker.GetContainer(containerID)
         return container
     } catch(e) {
         console.log("error retrieving containers", e)
@@ -17,7 +17,7 @@ const getContainer = async (containerID) => {
 };
 const createContainer = async (name) => {
     try {
-        let containerId = await window.go.manager.Manager.CreateContainer(name)
+        let containerId = await window.go.mocker.Mocker.CreateContainer(name)
         console.log("created container", containerId)
         return containerId
     } catch(e) {
@@ -27,7 +27,7 @@ const createContainer = async (name) => {
 
 const deleteContainer = async (containerId) => {
     try {
-        await window.go.manager.Manager.DeleteContainer(containerId)
+        await window.go.mocker.Mocker.DeleteContainer(containerId)
     } catch (e) {
         console.log("error deleting containers", e)
     }
