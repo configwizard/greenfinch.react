@@ -5,6 +5,7 @@ interface go {
 		CreateContainer(arg1:string):Promise<string|Error>
 		DeleteContainer(arg1:string):Promise<Error>
 		DeleteObject(arg1:string,arg2:string):Promise<Error>
+		Download(arg1:string,arg2:string):Promise<Error>
 		GetAccountInformation():Promise<Account|Error>
 		GetContainer(arg1:string):Promise<Container|Error>
 		GetObject(arg1:string,arg2:string,arg3:Writer):Promise<Array<number>|Error>
@@ -16,7 +17,7 @@ interface go {
 		RetrieveContainerFileSystem(arg1:string):Promise<Element|Error>
 		RetrieveFileSystem():Promise<Array<Element>|Error>
 		Upload(arg1:string,arg2:any):Promise<string|Error>
-		UploadObject(arg1:string,arg2:string,arg3:any):Promise<string|Error>
+		UploadObject(arg1:string,arg2:string,arg3:any,arg4:Reader):Promise<string|Error>
     },
   }
 

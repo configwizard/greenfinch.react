@@ -7,6 +7,16 @@ const listObjects = async (containerID) => {
         console.log("error listing objects in containers", e)
     }
 }
+//contanierID Q9dpMA6t7drq8KJB5qa7jQ6JN6GMSGBH3qrxHN7v2TC
+//objectID BWMzu5CGatL4n9idE2K3PTojynfAmoykaiVtKdeDm7iD
+const getObject = async (objId, containerID) => {
+    try {
+        let metaData = await window.go.manager.Manager.Download(objId, containerID)
+        return metaData
+    } catch(e) {
+        console.log("error retrieving object", e)
+    }
+}
 const getObjectMetaData = async (objId, containerID) => {
     try {
         let metaData = await window.go.manager.Manager.GetObjectMetaData(objId, containerID)
@@ -34,6 +44,7 @@ const uploadObject = async (containerID) => {
 }
 export {
     listObjects,
+    getObject,
     getObjectMetaData,
     deleteObject,
     uploadObject
