@@ -8,15 +8,15 @@ import Objects from "./components/objects";
 import FileSystem from "./components/filesystem";
 import Wallet from "./components/wallet";
 
-// import {getAccountInformation} from "./manager/manager.js"
-// import {createContainer, listContainers} from "./manager/containers.js"
-// import {listObjects, uploadObject} from "./manager/objects.js"
-// import {retrieveFullFileSystem} from "./manager/interactions";
+import {getAccountInformation} from "./manager/manager.js"
+import {createContainer, listContainers} from "./manager/containers.js"
+import {listObjects, uploadObject} from "./manager/objects.js"
+import {retrieveFullFileSystem} from "./manager/interactions";
 
-import {getAccountInformation} from "./mocker/manager.js"
-import {createContainer, listContainers} from "./mocker/containers.js"
-import {listObjects, uploadObject} from "./mocker/objects.js"
-import {retrieveFullFileSystem} from "./mocker/interactions";
+// import {getAccountInformation} from "./mocker/manager.js"
+// import {createContainer, listContainers} from "./mocker/containers.js"
+// import {listObjects, uploadObject} from "./mocker/objects.js"
+// import {retrieveFullFileSystem} from "./mocker/interactions";
 
 class App extends React.Component {
     constructor(props) {

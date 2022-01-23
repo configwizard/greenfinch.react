@@ -4,7 +4,7 @@ const listObjects = async (containerID) => {
         console.log("objects", objects)
         return objects
     } catch(e) {
-        console.log("error listing objects in containers", )
+        console.log("error listing objects in containers", e)
     }
 }
 const getObjectMetaData = async (objId, containerID) => {
@@ -25,7 +25,7 @@ const deleteObject = async (objId, containerID) => {
 
 const uploadObject = async (containerID) => {
     try {
-        let attributes = {james: "bond"}
+        let attributes = {} //map - string:string only - will cause error
         let result = await window.go.manager.Manager.Upload(containerID, attributes)
         return result
     } catch(e) {

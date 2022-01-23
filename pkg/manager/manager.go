@@ -67,7 +67,6 @@ type Account struct{
 }
 func (m *Manager) GetAccountInformation() (Account, error) {
 
-
 	w, err := wallet.RetrieveWallet(m.walletPath)
 	if err != nil {
 		return Account{}, err

@@ -3,6 +3,7 @@ package manager
 import (
 	"bufio"
 	"fmt"
+	"errors"
 	client2 "github.com/amlwwalker/gaspump-api/pkg/client"
 	"github.com/amlwwalker/gaspump-api/pkg/filesystem"
 	"github.com/amlwwalker/gaspump-api/pkg/object"
@@ -47,6 +48,9 @@ func (m *Manager) UploadObject(containerID, filepath string, attributes map[stri
 	for k, v := range attributes {
 		tmp := obj.Attribute{}
 		tmp.SetKey(k)
+		if v == "" {
+			return "", errors.New("cannot have empty attribute values")
+		}
 		tmp.SetValue(v)
 		attr = append(attr, &tmp)
 	}
@@ -58,7 +62,8 @@ func (m *Manager) UploadObject(containerID, filepath string, attributes map[stri
 
 	fileNameAttr := new(obj.Attribute)
 	fileNameAttr.SetKey(obj.AttributeFileName)
-	timeStampAttr.SetValue(path.Base(filepath))
+	fileNameAttr.SetValue(path.Base(filepath))
+
 	attr = append(attr, []*obj.Attribute{timeStampAttr, fileNameAttr}...)
 
 	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, m.key)
