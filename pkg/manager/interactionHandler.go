@@ -1,7 +1,6 @@
 package manager
 
 import (
-	"fmt"
 	"github.com/amlwwalker/gaspump-api/pkg/filesystem"
 	cid "github.com/nspcc-dev/neofs-sdk-go/container/id"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
@@ -35,6 +34,8 @@ func (m Manager) RetrieveContainerFileSystem(containerID string) (filesystem.Ele
 	contID := cid.New()
 	contID.Parse(containerID)
 	fs := filesystem.GenerateFileSystemFromContainer(m.ctx, m.fsCli, m.key, contID)
-	fmt.Printf("fs %+v\r\n", fs)
+	if m.DEBUG {
+		DebugSaveJson("RetrieveContainerFileSystem.json", fs)
+	}
 	return fs, nil
 }

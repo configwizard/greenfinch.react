@@ -71,16 +71,31 @@ const go = {
         return window.go.manager.Manager.GetObjectMetaData(arg1, arg2);
       },
       /**
-       * ListContainerObjects
+       * ListContainerIDs
+       * @returns {Promise<Array<string>|Error>}  - Go Type: []string
+       */
+      "ListContainerIDs": () => {
+        return window.go.manager.Manager.ListContainerIDs();
+      },
+      /**
+       * ListContainerObjectIDs
        * @param {string} arg1 - Go Type: string
        * @returns {Promise<Array<string>|Error>}  - Go Type: []string
        */
-      "ListContainerObjects": (arg1) => {
-        return window.go.manager.Manager.ListContainerObjects(arg1);
+      "ListContainerObjectIDs": (arg1) => {
+        return window.go.manager.Manager.ListContainerObjectIDs(arg1);
+      },
+      /**
+       * ListContainerPopulatedObjects
+       * @param {string} arg1 - Go Type: string
+       * @returns {Promise<Array<Element>|Error>}  - Go Type: []filesystem.Element
+       */
+      "ListContainerPopulatedObjects": (arg1) => {
+        return window.go.manager.Manager.ListContainerPopulatedObjects(arg1);
       },
       /**
        * ListContainers
-       * @returns {Promise<Array<string>|Error>}  - Go Type: []string
+       * @returns {Promise<Array<Element>|Error>}  - Go Type: []filesystem.Element
        */
       "ListContainers": () => {
         return window.go.manager.Manager.ListContainers();
@@ -118,6 +133,32 @@ const go = {
        */
       "UploadObject": (arg1, arg2, arg3) => {
         return window.go.manager.Manager.UploadObject(arg1, arg2, arg3);
+      },
+    },
+  },
+
+  "mocker": {
+    "Mocker": {
+      /**
+       * GetAccountInformation
+       * @returns {Promise<Account|Error>}  - Go Type: manager.Account
+       */
+      "GetAccountInformation": () => {
+        return window.go.mocker.Mocker.GetAccountInformation();
+      },
+      /**
+       * ListContainerPopulatedObjects
+       * @returns {Promise<Array<Element>|Error>}  - Go Type: []filesystem.Element
+       */
+      "ListContainerPopulatedObjects": () => {
+        return window.go.mocker.Mocker.ListContainerPopulatedObjects();
+      },
+      /**
+       * ListContainers
+       * @returns {Promise<Array<Element>|Error>}  - Go Type: []filesystem.Element
+       */
+      "ListContainers": () => {
+        return window.go.mocker.Mocker.ListContainers();
       },
     },
   },

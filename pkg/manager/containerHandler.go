@@ -2,28 +2,65 @@ package manager
 
 import (
 	"fmt"
+	client2 "github.com/amlwwalker/gaspump-api/pkg/client"
 	container2 "github.com/amlwwalker/gaspump-api/pkg/container"
+	"github.com/amlwwalker/gaspump-api/pkg/filesystem"
+	"github.com/amlwwalker/gaspump-api/pkg/object"
 	"github.com/nspcc-dev/neofs-sdk-go/container"
 	cid "github.com/nspcc-dev/neofs-sdk-go/container/id"
 	"log"
 	"time"
 )
 
-func (m *Manager) listContainers() ([]*cid.ID, error) {
+type Container struct {
+	ID string
+	Size uint64
+}
+func (m *Manager) listContainerIDs() ([]*cid.ID, error) {
 	ids, err := container2.List(m.ctx, m.fsCli, m.key)
 	log.Printf("%v\r\n", ids)
 	return ids, err
 }
-func (m *Manager) ListContainers() ([]string, error) {
+func (m *Manager) ListContainerIDs() ([]string, error) {
 	var stringIds []string
-	ids, err := m.listContainers()
+	ids, err := m.listContainerIDs()
 	if err != nil {
 		return stringIds, err
 	}
 	for _, v := range ids {
 		stringIds = append(stringIds, v.String())
 	}
+	if m.DEBUG {
+		DebugSaveJson("ListContainerIDs.json", stringIds)
+	}
 	return stringIds, err
+}
+func (m *Manager) ListContainers() ([]filesystem.Element, error) {
+	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, m.key)
+	if err != nil {
+		return []filesystem.Element{}, err
+	}
+	ids, err := m.listContainerIDs()
+	if err != nil {
+		return []filesystem.Element{}, err
+	}
+	var containers []filesystem.Element
+	for _, v := range ids {
+		tmpContainer := filesystem.PopulateContainerList(m.ctx, m.fsCli, v)
+		list, err := object.ListObjects(m.ctx, m.fsCli, v, sessionToken)
+		if err != nil {
+			tmpContainer.Errors = append(tmpContainer.Errors, err)
+			continue
+		}
+		//is this inefficient? the expensive part is the request, but we are throwing away the whole object
+		size, _:= filesystem.GenerateObjectStruct(m.ctx, m.fsCli, sessionToken, list, v)
+		tmpContainer.Size = size
+		containers = append(containers, tmpContainer)
+	}
+	if m.DEBUG {
+		DebugSaveJson("ListContainers.json", containers)
+	}
+	return containers, nil
 }
 func (m *Manager) GetContainer(id string) (*container.Container, error) {
 	c := cid.New()
@@ -33,7 +70,9 @@ func (m *Manager) GetContainer(id string) (*container.Container, error) {
 		return nil, err
 	}
 	cont, err := container2.Get(m.ctx, m.fsCli, c)
-	fmt.Println(cont, err)
+	if m.DEBUG {
+		DebugSaveJson("GetContainer.json", cont)
+	}
 	return cont, err
 }
 func (m *Manager) DeleteContainer(id string) error {
