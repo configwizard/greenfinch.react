@@ -1,9 +1,8 @@
 package manager
 
 import (
-	"bufio"
-	"fmt"
 	"errors"
+	"fmt"
 	client2 "github.com/amlwwalker/gaspump-api/pkg/client"
 	"github.com/amlwwalker/gaspump-api/pkg/filesystem"
 	"github.com/amlwwalker/gaspump-api/pkg/object"
@@ -12,7 +11,6 @@ import (
 	cid "github.com/nspcc-dev/neofs-sdk-go/container/id"
 	obj "github.com/nspcc-dev/neofs-sdk-go/object"
 	"io"
-	"os"
 	"path"
 	"strconv"
 	"time"
@@ -33,16 +31,7 @@ func getObjectAddress(objectID, containerID string) *obj.Address {
 	return objAddress
 }
 
-func (m *Manager) UploadObject(containerID, filepath string, attributes map[string]string) (string, error) {
-	f, err := os.Open(filepath)
-	defer f.Close()
-	if err != nil {
-		return "", err
-	}
-
-	reader := bufio.NewReader(f)
-	var ioReader io.Reader
-	ioReader = reader
+func (m *Manager) UploadObject(containerID, filepath string, attributes map[string]string, ioReader *io.Reader) (string, error) {
 
 	var attr []*obj.Attribute
 	for k, v := range attributes {
@@ -76,7 +65,7 @@ func (m *Manager) UploadObject(containerID, filepath string, attributes map[stri
 	}
 	cntId := new(cid.ID)
 	cntId.Parse(containerID)
-	id, err := object.UploadObject(m.ctx, m.fsCli, cntId, ownerID, attr, sessionToken, &ioReader)
+	id, err := object.UploadObject(m.ctx, m.fsCli, cntId, ownerID, attr, sessionToken, ioReader)
 	if err != nil {
 		fmt.Println("error attempting to upload", err)
 	}

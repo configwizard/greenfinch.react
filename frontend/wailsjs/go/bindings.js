@@ -37,6 +37,15 @@ const go = {
         return window.go.manager.Manager.DeleteObject(arg1, arg2);
       },
       /**
+       * Download
+       * @param {string} arg1 - Go Type: string
+       * @param {string} arg2 - Go Type: string
+       * @returns {Promise<Error>}  - Go Type: error
+       */
+      "Download": (arg1, arg2) => {
+        return window.go.manager.Manager.Download(arg1, arg2);
+      },
+      /**
        * GetAccountInformation
        * @returns {Promise<Account|Error>}  - Go Type: manager.Account
        */
@@ -129,10 +138,11 @@ const go = {
        * @param {string} arg1 - Go Type: string
        * @param {string} arg2 - Go Type: string
        * @param {any} arg3 - Go Type: map[string]string
+       * @param {Reader} arg4 - Go Type: *io.Reader
        * @returns {Promise<string|Error>}  - Go Type: string
        */
-      "UploadObject": (arg1, arg2, arg3) => {
-        return window.go.manager.Manager.UploadObject(arg1, arg2, arg3);
+      "UploadObject": (arg1, arg2, arg3, arg4) => {
+        return window.go.manager.Manager.UploadObject(arg1, arg2, arg3, arg4);
       },
     },
   },
