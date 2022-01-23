@@ -228,6 +228,8 @@ github.com/leaanthony/winc v0.0.0-20220112092814-1608a1744133/go.mod h1:KEbMsKoz
 github.com/leaanthony/winicon v1.0.0/go.mod h1:en5xhijl92aphrJdmRPlh4NI1L6wq3gEm0LpXAPghjU=
 github.com/leodido/go-urn v1.2.0/go.mod h1:+8+nEpDfqqsY+g338gtMEUOtuK+4dEMhiQEgxpxOKII=
 github.com/logrusorgru/aurora v0.0.0-20181002194514-a7b3b318ed4e/go.mod h1:7rIyQOR62GCctdiQpZ/zOJlFyk6y+94wXzv6RNZgaR4=
+github.com/machinebox/progress v0.2.0 h1:7z8+w32Gy1v8S6VvDoOPPBah3nLqdKjr3GUly18P8Qo=
+github.com/machinebox/progress v0.2.0/go.mod h1:hl4FywxSjfmkmCrersGhmJH7KwuKl+Ueq9BXkOny+iE=
 github.com/matryer/is v1.4.0 h1:sosSmIWwkYITGrxZ25ULNDeKiMNzFSr4V/eqBQP0PeE=
 github.com/matryer/is v1.4.0/go.mod h1:8I/i5uYgLzgsgEloJE1U6xx5HkBQpAZvepWuujKwMRU=
 github.com/mattn/go-colorable v0.1.2/go.mod h1:U0ppj6V5qS13XJ6of8GYAs25YV2eR4EVcfRqFIhoBtE=
