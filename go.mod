@@ -3,7 +3,7 @@ module changeme
 go 1.17
 
 require (
-	github.com/amlwwalker/gaspump-api v0.1.3
+	github.com/amlwwalker/gaspump-api v0.2.1
 	github.com/machinebox/progress v0.2.0
 	github.com/nspcc-dev/neo-go v0.98.0
 	github.com/nspcc-dev/neofs-sdk-go v0.0.0-20220119080627-f83ff628fb19
@@ -78,4 +78,4 @@ require (
 
 // replace github.com/wailsapp/wails/v2 v2.0.0-beta.28 => /Users/alex.walker/go/pkg/mod/github.com/wailsapp/wails/v2@v2.0.0-beta.28
 
-replace github.com/amlwwalker/gaspump-api => /Users/alex.walker/go/src/github.com/amlwwalker/gaspump-api
+//replace github.com/amlwwalker/gaspump-api => /Users/alex.walker/go/src/github.com/amlwwalker/gaspump-api
