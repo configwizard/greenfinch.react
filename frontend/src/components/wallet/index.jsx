@@ -9,8 +9,9 @@ class Wallet extends React.Component {
 
     render() {
         return (
-            <div>
-                <div className="result" id="result">Balance 👇
+            <div className="result" id="result">
+                <h2 className="atmTitle">Balance</h2>
+                <div className="molBlockJSON">
                     <JSONView id="json-pretty" src={this.props.resp}></JSONView>
                 </div>
             </div>
