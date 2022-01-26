@@ -7,7 +7,7 @@ require (
 	github.com/machinebox/progress v0.2.0
 	github.com/nspcc-dev/neo-go v0.98.0
 	github.com/nspcc-dev/neofs-sdk-go v0.0.0-20220119080627-f83ff628fb19
-	github.com/wailsapp/wails/v2 v2.0.0-beta.28
+	github.com/wailsapp/wails/v2 v2.0.0-beta.29
 )
 
 require (
@@ -37,7 +37,7 @@ require (
 	github.com/leaanthony/gosod v1.0.3 // indirect
 	github.com/leaanthony/slicer v1.5.0 // indirect
 	github.com/leaanthony/typescriptify-golang-structs v0.1.7 // indirect
-	github.com/leaanthony/winc v0.0.0-20220112092814-1608a1744133 // indirect
+	github.com/leaanthony/winc v0.0.0-20220117090042-fdd739b32c58 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
 	github.com/mr-tron/base58 v1.2.0 // indirect
 	github.com/nspcc-dev/go-ordered-json v0.0.0-20210915112629-e1b6cce73d02 // indirect

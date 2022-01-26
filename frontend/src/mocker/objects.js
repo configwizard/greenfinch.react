@@ -7,6 +7,14 @@ const listObjects = async (containerID) => {
         console.log("error listing objects in containers", )
     }
 }
+const getObject = async (objId, containerID) => {
+    try {
+        let metaData = await window.go.manager.Manager.Download(objId, containerID)
+        return metaData
+    } catch(e) {
+        console.log("error retrieving object", e)
+    }
+}
 const getObjectMetaData = async (objId, containerID) => {
     try {
         let metaData = await window.go.mocker.Mocker.GetObjectMetaData(objId, containerID)
@@ -34,6 +42,7 @@ const uploadObject = async (containerID) => {
 }
 export {
     listObjects,
+    getObject,
     getObjectMetaData,
     deleteObject,
     uploadObject
