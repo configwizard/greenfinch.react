@@ -1,0 +1,121 @@
+// Layout stylesheet
+
+/* Variables: Margin & Padding
+- - - - - - - - - - - - - - - - - - */
+$baseSizing: 1rem; // To test this value. We think 16px;
+
+$paddingXSmall: $baseSizing/2;
+$paddingSmall: $baseSizing;
+$paddingMedium: $baseSizing *1.5;
+$paddingLarge: $baseSizing *2;
+
+$marginXSmall: $baseSizing /2;
+$marginSmall: $baseSizing;
+$marginMedium: $baseSizing *1.5;
+$marginLarge: $baseSizing *2;
+
+/* Reset
+- - - - - - - - - - - - - - - - - - */
+span {
+    display: inline-block;
+}
+
+.container, .container-fluid {
+    padding-left: $paddingLarge;
+    padding-right: $paddingLarge;
+}
+
+/* Styles: Utilites
+- - - - - - - - - - - - - - - - - - */
+.utOverflow {
+    overflow: scroll;
+}
+
+/* Elements: Buttons
+- - - - - - - - - - - - - - - - - - */
+.atmButtonSimple {
+    padding: 5px 12px;
+    //margin-right: $marginSmall; // can you NOT here, not right-justified ... temporary
+}
+
+.me-auto {
+    & .atmButtonSimple {
+        margin-right: $marginXSmall; //temporary
+    }
+}
+
+.ms-auto {
+    & .atmButtonSimple {
+        margin-left: $marginXSmall; //temporary
+    }
+}
+
+/* Element: Tabs
+- - - - - - - - - - - - - - - - - - */
+.orgTabsView {
+    & ul.nav-tabs {
+        width: 100%;
+        & li.nav-item {
+            text-align: center;
+            width: 50%;
+            & button.nav-link {
+                text-align: center;
+                padding: $paddingXSmall 0;
+                width: 100%;
+            }
+        }
+    }
+    & .atmTabTitle {
+        margin-left: $marginXSmall;
+    }
+}
+
+.orgViewJSON, .orgViewVisual {
+    padding: $paddingSmall;
+}
+
+@media (min-width:576px) {
+    .orgViewJSON, .orgViewVisual {
+        padding: $paddingMedium;
+    }
+}
+
+/* Styles: General
+- - - - - - - - - - - - - - - - - - */
+.orgHeaderStatus {
+    padding-left: $paddingSmall;
+    padding-right: $paddingSmall;
+    & .molHeaderContent { 
+        width: 100%;
+    }
+    & .atmStatus {
+        margin-right: $marginSmall;
+    }
+}
+
+.orgMainJSON {
+    padding-top: 20px;
+    & .molBlockJSON {
+        height: 70vh;
+        padding: $paddingSmall;
+        overflow-x: scroll;
+        margin-bottom: $marginSmall;
+    }
+}
+
+.orgFooterAction {
+    padding-left: $paddingSmall;
+    padding-right: $paddingSmall;
+}
+
+@media (min-width:1200px) {
+    .orgHeaderStatus {
+        height: 5vh;
+    }
+    .orgMainJSON {
+        height: 90vh;
+    }
+    .orgFooterAction {
+        height: 5vh;
+    }
+}

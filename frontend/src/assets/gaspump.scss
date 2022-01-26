@@ -1,0 +1,159 @@
+// Brand stylesheet
+
+/* Variables: Fonts
+- - - - - - - - - - - - - - - - - - */
+// Myfonts.com - use the 'Webfont Kit Download' configuration
+@import url("//hello.myfonts.net/count/3e7d84");
+
+@font-face {
+    font-family: 'AvertaStdPE-Regular';
+    src: url('fonts/AvertaStdPERegular/font.woff2') format('woff2'), url('fonts/AvertaStdPERegular/font.woff') format('woff');
+}
+@font-face {
+    font-family: 'AvertaStdPE-Semibold';
+    src: url('fonts/AvertaStdPESemibold/font.woff2') format('woff2'), url('fonts/AvertaStdPESemibold/font.woff') format('woff');
+}
+@font-face {
+    font-family: 'AvertaStdPE-Bold';
+    src: url('fonts/AvertaStdPEBold/font.woff2') format('woff2'), url('fonts/AvertaStdPEBold/font.woff') format('woff');
+}
+
+$brandFontReg: 'AvertaStdPE-Regular', Arial, Helvetica, sans-serif;
+$brandFontSemi: 'AvertaStdPE-Semibold', Arial, Helvetica, sans-serif;
+$brandFontBold: 'AvertaStdPE-Bold', Arial, Helvetica, sans-serif;
+
+
+/* Variables: Color
+- - - - - - - - - - - - - - - - - - */
+$brandColorPrimary: #00E599;
+$brandColorSecondary: #00AF92;
+$brandColorWhite: #fff;
+
+$toastColorSuccess: #00AF4B;
+$toastColorError: #E5004C;
+$toastColorWarning: #F47A00;
+$toastColorInfo: #0080F4;
+
+
+/* Variables: General
+- - - - - - - - - - - - - - - - - - */
+$brandLetterSpacing: 0.2rem;
+$brandBorderRadius: 5px;
+$brandTransitionSpeed: 0.3s;
+$brandDarkenValue: 12%;
+
+
+/* Mixins
+- - - - - - - - - - - - - - - - - - */
+@mixin titleStyle {
+    text-transform: uppercase; 
+    font-family: $brandFontBold;
+    letter-spacing: $brandLetterSpacing;
+}
+
+
+/* Styles: Base
+- - - - - - - - - - - - - - - - - - */
+body {
+    font-family: $brandFontReg;
+    background-color: rgba($brandColorPrimary, 0.5);
+}
+
+
+/* Elements: Buttons
+- - - - - - - - - - - - - - - - - - */
+button[class^="atmButton"] {
+    transition: $brandTransitionSpeed;
+    border:none;
+    font-weight: bold;
+}
+
+.atmButtonSimple {
+    font-size: 13px;
+    color: $brandColorWhite;
+    border-radius: $brandBorderRadius;
+    background-color: $brandColorSecondary;
+    &:hover {
+        background-color: darken($brandColorSecondary, 5%);
+    }
+}
+
+
+/* Element: Tabs
+- - - - - - - - - - - - - - - - - - */
+.orgTabsView {
+    & ul.nav-tabs {
+        border: unset;
+        & li.nav-item {
+            & button.nav-link {
+                transition: $brandTransitionSpeed;
+                color: $brandColorWhite; 
+                @include titleStyle;
+                font-size: 1.1rem;
+                border: unset;
+                border-radius: 0;
+                background-color: rgba(0,0,0,0.05);
+                &:hover {
+                    background-color: rgba(0,0,0,0.1);
+                }
+                &.active {
+                    color: $brandColorSecondary; 
+                    border-top-left-radius: 0;
+                    border-top-left-radius: 0;
+                    cursor: default;
+                    background-color: rgba(255,255,255,0.7);
+                }
+            }
+        }
+    }
+    & .orgViewJSON, .orgViewVisual {
+        background-color: rgba(255,255,255,0.7);
+    }
+}
+
+#uncontrolled-tab-example-tab-encrypt {
+    //color: $brandColorEncrypt !important;
+}
+
+#uncontrolled-tab-example-tab-decrypt {
+    //color: $brandColorDecrypt !important;
+}
+
+
+/* Styles: General
+- - - - - - - - - - - - - - - - - - */
+span.utUCSmall {
+    @include titleStyle;
+    font-size: 10px;
+}
+
+.orgHeaderStatus {
+    background-color: rgba(255,255,255,0.5);
+    & .atmStatus {
+        font-weight: bold;
+    }
+}
+
+.orgMainJSON {
+    & .molBlockJSON {
+        background-color: rgba(255,255,255,0.7);
+        font-size: 12px;
+    }
+}
+
+.orgFooterAction {
+    background-color: rgba(255,255,255,0.5);
+}
+
+/* Styles: Typography
+- - - - - - - - - - - - - - - - - - */
+h2 {
+    &.atmTitle {
+        @include titleStyle;
+        font-size: 13px;
+        border-bottom: 1px solid black; // variable
+        padding-bottom: 5px; // variable
+        margin-bottom: 10px; // variable
+    }
+}
+// if I wanted to use .utUC with this, should I extend?
