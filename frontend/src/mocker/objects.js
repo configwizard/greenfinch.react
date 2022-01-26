@@ -1,6 +1,6 @@
 const listObjects = async (containerID) => {
     try {
-        let objects = require('../dbg_data_structures/listContainerPopulatedObjects.json');
+        let objects = require('../dbg_data_structures/ListContainerPopulatedObjects.json');
         console.log("objects", objects)
         return objects
     } catch(e) {
