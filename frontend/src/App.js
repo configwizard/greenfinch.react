@@ -8,10 +8,11 @@ import './assets/gaspump.scss'; //brand css
 
 import { Tab, Tabs } from 'react-bootstrap';
 
+import Wallet from "./components/wallet";
 import Containers from "./components/containers";
 import Objects from "./components/objects";
-import FileSystem from "./components/filesystem";
-import Wallet from "./components/wallet";
+import Status from "./components/status";
+// import FileSystem from "./components/filesystem";
 
 //Actual
 // import {getAccountInformation} from "./manager/manager.js"
@@ -23,18 +24,18 @@ import Wallet from "./components/wallet";
 import {getAccountInformation} from "./mocker/manager.js"
 import {createContainer, listContainers} from "./mocker/containers.js"
 import {listObjects, uploadObject, getObject} from "./mocker/objects.js"
-import {retrieveFullFileSystem} from "./mocker/interactions";
+//import {retrieveFullFileSystem} from "./mocker/interactions";
 
 class App extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { resp: [], containerList: [], objectList: [], account: {}, selectedContainer: 0 };
+        this.state = {containerList: [], objectList: [], account: {}, selectedContainer: 0 };
     }
     async componentDidMount() {
-        const resp = await retrieveFullFileSystem()
+        //const resp = await retrieveFullFileSystem()
         const account = await getAccountInformation()
         const containerList = await listContainers()
-        await this.setState({resp, account, containerList})
+        await this.setState({account, containerList})
     }
     onSelected = async (selected) => {
         console.dir(selected)
@@ -43,10 +44,11 @@ class App extends React.Component {
     }
     //containerID Q9dpMA6t7drq8KJB5qa7jQ6JN6GMSGBH3qrxHN7v2TC
     //objectID BWMzu5CGatL4n9idE2K3PTojynfAmoykaiVtKdeDm7iD
+
     render() {
         return (
             <div className="container-fluid">
-                <section class="orgHeaderStatus d-flex align-items-center">
+                <section className="orgHeaderStatus d-flex align-items-center">
                     <div className="molHeaderContent">
                         <div className="d-flex">
                             <div className="atmStatus"><span className="utUCSmall d-block">Mode</span> Mocker</div>
@@ -60,13 +62,13 @@ class App extends React.Component {
                     </div>
                 </section>
 
-                <section class="orgMainJSON">
+                <section className="orgMainJSON">
                     {/* Tab system could be a short-term solution to two views */}
 
                     <div className="row">
                         <div className="col-12">
                             <section className="orgTabsView flex-grow-1">
-                                <Tabs defaultActiveKey="keyJSON" id="uncontrolled-tab-example">
+                                <Tabs defaultActiveKey="keyVisual" id="uncontrolled-tab-example">
                                     <Tab eventKey="keyJSON" className="tabViewJSON" title={(
                                         <>
                                             <i className="atmTabIcon fad fa-lg fa-lock-alt"/>
@@ -76,18 +78,20 @@ class App extends React.Component {
                                         {/* { this.state.selectedKey == 0 ? <TabPlaceHolder encrypted={true}></TabPlaceHolder> : <EncryptTab kId={this.state.selectedKey}></EncryptTab>} */}
                                         <section className="orgViewJSON">
                                             <div className="row">
-                                                <div className="col-12 col-sm-6 col-xl-3">
+                                                <div className="col-12 col-sm-12 col-xl-4">
                                                     <Wallet resp={this.state.account}></Wallet>
                                                 </div>
-                                                <div className="col-12 col-sm-6 col-xl-3">
+                                                <div className="col-12 col-sm-12 col-xl-4">
                                                     <Containers onSelected={this.onSelected} containers={this.state.containerList}></Containers>
                                                 </div>
-                                                <div className="col-12 col-sm-6 col-xl-3">
+                                                <div className="col-12 col-sm-12 col-xl-4">
                                                     <Objects objects={this.state.objectList} containerID={this.selectedContainer}></Objects>
                                                 </div>
-                                                <div className="col-12 col-sm-6 col-xl-3">
-                                                    <FileSystem resp={this.state.resp}></FileSystem>
-                                                </div>
+                                                {/*
+                                                    <div className="col-12 col-sm-6 col-xl-3">
+                                                        <FileSystem resp={this.state.resp}></FileSystem>
+                                                    </div>
+                                                */}
                                             </div>
                                         </section>
                                     </Tab>
@@ -99,7 +103,11 @@ class App extends React.Component {
                                     )}>
                                         {/* { this.state.selectedKey == 0 ? <TabPlaceHolder encrypted={false}></TabPlaceHolder> : <DecryptTab kId={this.state.selectedKey}></DecryptTab>} */}
                                         <section className="orgViewVisual">
-                                            <div>Design aesthetic here. Visual first once more developed.</div>
+                                            <div>
+                                                <h3>Design aesthetic here. Visual first once more developed.</h3>
+                                                <p>To pull basic values:</p>
+                                                <Status resp={this.state.account}></Status>
+                                            </div>
                                         </section>
                                     </Tab>
                                 </Tabs>
@@ -108,7 +116,7 @@ class App extends React.Component {
                     </div>
                 </section>
 
-                <section class="orgFooterAction">
+                <section className="orgFooterAction">
                     <div className="row">
                         <div className="col">
                            •••
