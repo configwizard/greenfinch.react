@@ -1,5 +1,5 @@
 const getAccountInformation = async () => {
-    let b = require('../dbg_data_structures/accountInformation.json');
+    let b = require('../dbg_data_structures/GetAccountInformation.json');
     return b
 }
 
