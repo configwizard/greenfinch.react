@@ -22,6 +22,9 @@ $brandFontReg: 'AvertaStdPE-Regular', Arial, Helvetica, sans-serif;
 $brandFontSemi: 'AvertaStdPE-Semibold', Arial, Helvetica, sans-serif;
 $brandFontBold: 'AvertaStdPE-Bold', Arial, Helvetica, sans-serif;
 
+/* Variables: Font Sizes
+- - - - - - - - - - - - - - - - - - */
+
 
 /* Variables: Color
 - - - - - - - - - - - - - - - - - - */
@@ -90,7 +93,7 @@ button[class^="atmButton"] {
                 color: $brandColorWhite; 
                 @include titleStyle;
                 font-size: 1.1rem;
-                border: unset;
+                border: none;
                 border-radius: 0;
                 background-color: rgba(0,0,0,0.05);
                 &:hover {
@@ -138,6 +141,19 @@ span.utUCSmall {
     & .molBlockJSON {
         background-color: rgba(255,255,255,0.7);
         font-size: 12px;
+    }
+    & .molBlockData {
+        background-color: rgba(0,0,0,0.1);
+        & .utUnit {
+            @include titleStyle;
+            font-size: 12px;
+            display: block;
+            margin-bottom: 5px;
+        }
+        & .utNum {
+            display: block;
+            font-size: 48px;
+        }
     }
 }
 

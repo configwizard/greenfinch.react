@@ -51,8 +51,8 @@ class App extends React.Component {
                 <section className="orgHeaderStatus d-flex align-items-center">
                     <div className="molHeaderContent">
                         <div className="d-flex">
-                            <div className="atmStatus"><span className="utUCSmall d-block">Mode</span> Mocker</div>
-                            <div className="atmStatus"><span className="utUCSmall d-block">Net Version</span> Testnet</div>
+                            <div className="atmStatus"><span className="utUCSmall d-block">Mode</span> Mocker</div>{/* make this a component */}
+                            <div className="atmStatus"><span className="utUCSmall d-block">Net Version</span> Testnet</div>{/* make this a component */}
                             <div className="ms-auto">
                                 <button className="atmButtonSimple" onClick={async () => uploadObject("Q9dpMA6t7drq8KJB5qa7jQ6JN6GMSGBH3qrxHN7v2TC")}>Upload a file (remember to set the container ID)</button>
                                 <button className="atmButtonSimple" onClick={async () => getObject("87Jr1zaivaL6G13SB1Vowjxp3d9JJLdFTek3fgqTps9y", "Q9dpMA6t7drq8KJB5qa7jQ6JN6GMSGBH3qrxHN7v2TC")}>Download file </button>
@@ -104,8 +104,7 @@ class App extends React.Component {
                                         {/* { this.state.selectedKey == 0 ? <TabPlaceHolder encrypted={false}></TabPlaceHolder> : <DecryptTab kId={this.state.selectedKey}></DecryptTab>} */}
                                         <section className="orgViewVisual">
                                             <div>
-                                                <h3>Design aesthetic here. Visual first once more developed.</h3>
-                                                <p>To pull basic values:</p>
+                                                {/* Design aesthetic (to swap with JSON) */}
                                                 <Status resp={this.state.account}></Status>
                                             </div>
                                         </section>
