@@ -90,7 +90,7 @@ button[class^="atmButton"] {
                 color: $brandColorWhite; 
                 @include titleStyle;
                 font-size: 1.1rem;
-                border: unset;
+                border: none;
                 border-radius: 0;
                 background-color: rgba(0,0,0,0.05);
                 &:hover {

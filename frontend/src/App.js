@@ -104,8 +104,7 @@ class App extends React.Component {
                                         {/* { this.state.selectedKey == 0 ? <TabPlaceHolder encrypted={false}></TabPlaceHolder> : <DecryptTab kId={this.state.selectedKey}></DecryptTab>} */}
                                         <section className="orgViewVisual">
                                             <div>
-                                                <h3>Design aesthetic here. Visual first once more developed.</h3>
-                                                <p>To pull basic values:</p>
+                                                <p><em>Design aesthetic (to swap with JSON)</em></p>
                                                 <Status resp={this.state.account}></Status>
                                             </div>
                                         </section>
