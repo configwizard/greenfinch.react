@@ -16,7 +16,7 @@ class Status extends React.Component {
             return(<div>Waiting...</div>)
         }
 
-        // Don't think you need Number()
+        //TODO: Don't think you need Number()
         var b = Number((this.props.resp.neofs.balance));
         var p = Number((this.props.resp.neofs.precision));
         var m = Math.pow(10,p);
@@ -25,7 +25,7 @@ class Status extends React.Component {
         var gs = Number((this.props.resp.nep17.GAS.amount));
         var dp = Number((this.props.resp.nep17.GAS.meta.decimals));
         var ms = Math.pow(10,dp);
-        var gb = Number(gs/ms).toFixed(2); // Check that this is 10 to the power... 
+        var gb = Number(gs/ms).toFixed(2); //TODO: Check that this is 10 to the power... 
 
         return (
             <>
