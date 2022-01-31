@@ -103,10 +103,29 @@ class App extends React.Component {
                                     )}>
                                         {/* { this.state.selectedKey == 0 ? <TabPlaceHolder encrypted={false}></TabPlaceHolder> : <DecryptTab kId={this.state.selectedKey}></DecryptTab>} */}
                                         <section className="orgViewVisual">
-                                            <div>
-                                                {/* Design aesthetic (to swap with JSON) */}
-                                                <Status resp={this.state.account}></Status>
+
+                                            <div className="row">
+                                                <div className="col-12">
+                                                    {/* Design aesthetic (to swap with JSON) */}
+                                                    <Status resp={this.state.account}></Status>
+                                                </div>
                                             </div>
+                                            <div className="row">
+                                                <div className="col-12">
+                                                    <div><p>bread</p>{/* Add breadcrumb horizontal */}</div>
+                                                </div>
+                                            </div>
+                                            <div className="row">
+                                                <div className="col-12 col-md-8 col-lg-9 order-2 order-md-1">
+                                                    <div><p>X</p>{/* Add container lists 2/3 */}</div>
+                                                </div>
+                                                <div className="col-12 col-md-4 col-lg-3 order-1 order-md-2">
+                                                    <div>
+                                                        <i className="fas fa-cloud-upload-alt"></i>
+                                                        <p><strong>Choose a file</strong> or drag it here</p>{/* Add dropzone vertical 1/3 */}</div>
+                                                </div>
+                                            </div>
+                                            
                                         </section>
                                     </Tab>
                                 </Tabs>

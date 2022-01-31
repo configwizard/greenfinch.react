@@ -4,12 +4,12 @@
 - - - - - - - - - - - - - - - - - - */
 $baseSizing: 1rem; // To test this value. We think 16px;
 
-$paddingXSmall: $baseSizing/2;
+$paddingXSmall: div($baseSizing/2);
 $paddingSmall: $baseSizing;
 $paddingMedium: $baseSizing *1.5;
 $paddingLarge: $baseSizing *2;
 
-$marginXSmall: $baseSizing /2;
+$marginXSmall: div($baseSizing/2);
 $marginSmall: $baseSizing;
 $marginMedium: $baseSizing *1.5;
 $marginLarge: $baseSizing *2;
