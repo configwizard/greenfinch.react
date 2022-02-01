@@ -4,12 +4,12 @@
 - - - - - - - - - - - - - - - - - - */
 $baseSizing: 1rem; // To test this value. We think 16px;
 
-$paddingXSmall: div($baseSizing/2);
+$paddingXSmall: $baseSizing*0.5;
 $paddingSmall: $baseSizing;
 $paddingMedium: $baseSizing *1.5;
 $paddingLarge: $baseSizing *2;
 
-$marginXSmall: div($baseSizing/2);
+$marginXSmall: $baseSizing*0.5;
 $marginSmall: $baseSizing;
 $marginMedium: $baseSizing *1.5;
 $marginLarge: $baseSizing *2;
@@ -103,6 +103,34 @@ span {
     }
     & .molBlockData {
         padding: $paddingSmall;
+    }
+    & .molBlockBread {
+        padding: $paddingXSmall;
+        margin: $marginSmall 0;
+    }
+    & .molBlockUpload {
+        width: 100%;
+        padding: $paddingSmall;
+        & .atmBlockUpload {
+            width: 100%;
+            height: 300px; //manual height
+            & i {
+                margin-bottom: 10px;
+            }
+        }
+    }
+    & .molBlockContainer {
+        padding: 10px;
+    }
+}
+
+@media (min-width:768px) {
+    .orgMainJSON {
+        & .molBlockUpload {
+            .atmBlockUpload {
+                height: 600px; //manual height
+            }
+        }
     }
 }
 
