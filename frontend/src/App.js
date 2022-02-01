@@ -12,6 +12,7 @@ import Wallet from "./components/wallet";
 import Containers from "./components/containers";
 import Objects from "./components/objects";
 import Status from "./components/status";
+import VisualContainer from "./components/visualcontainers";
 // import FileSystem from "./components/filesystem";
 
 //Actual
@@ -112,17 +113,41 @@ class App extends React.Component {
                                             </div>
                                             <div className="row">
                                                 <div className="col-12">
-                                                    <div><p>bread</p>{/* Add breadcrumb horizontal */}</div>
+                                                    <div className="molBlockBread">
+                                                        <p>breadcrumb</p>{/* Add breadcrumb horizontal */}
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div className="row">
-                                                <div className="col-12 col-md-8 col-lg-9 order-2 order-md-1">
-                                                    <div><p>X</p>{/* Add container lists 2/3 */}</div>
-                                                </div>
-                                                <div className="col-12 col-md-4 col-lg-3 order-1 order-md-2">
+                                                <div className="col-12 col-md-6 col-xl-9 order-2 order-md-1">
+                                                    {/* Add container lists 2/3 */}
                                                     <div>
-                                                        <i className="fas fa-cloud-upload-alt"></i>
-                                                        <p><strong>Choose a file</strong> or drag it here</p>{/* Add dropzone vertical 1/3 */}</div>
+                                                        <h2>Containers</h2>
+                                                        <div className="row">
+                                                        {/* JSON file: ListPopulatedContainers */}
+                                                        {this.state.containerList.map((item,i) => 
+                                                            <div className="col-3" key={i}>{item.name}</div>)}
+                                                            {/* {containers.map(el => {
+                                                                return (
+                                                                    <div key={el.id}>
+                                                                        <div>
+                                                                            {el.name}
+                                                                        </div>
+                                                                        <div>{el.size}</div>
+                                                                    </div>
+                                                                );
+                                                            })} */}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="col-12 col-md-6 col-xl-3 order-1 order-md-2">
+                                                    {/* Add dropzone vertical 1/3 */}
+                                                    <div className="molBlockUpload d-flex align-items-center justify-content-center">
+                                                        <div className="atmBlockUpload d-flex flex-column align-items-center justify-content-center">
+                                                            <i className="fas fa-4x fa-upload"></i>
+                                                            <p><strong>Choose a file</strong> or drag it here</p>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                             
