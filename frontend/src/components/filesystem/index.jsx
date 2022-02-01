@@ -5,7 +5,6 @@ import {retrieveFullFileSystem} from "../../manager/interactions";
 class FileSystem extends React.Component {
     constructor(props) {
         super(props);
-
     }
 
     render() {
