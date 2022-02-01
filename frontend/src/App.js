@@ -124,7 +124,6 @@ class App extends React.Component {
                                                     <div>
                                                         <h2>Containers</h2>
                                                         <div className="row">
-                                                        {/* JSON file: ListPopulatedContainers */}
                                                         {this.state.containerList.map((item,i) => 
                                                             <div className="col-3" key={i}>{item.name}</div>)}
                                                             {/* {containers.map(el => {
