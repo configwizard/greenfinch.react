@@ -72,7 +72,7 @@ class App extends React.Component {
                                 <Tabs defaultActiveKey="keyVisual" id="uncontrolled-tab-example">
                                     <Tab eventKey="keyJSON" className="tabViewJSON" title={(
                                         <>
-                                            <i className="atmTabIcon fad fa-lg fa-lock-alt"/>
+                                            <i className="atmTabIcon fas fa-lg fa-brackets-curly"/>
                                             <span className="atmTabTitle d-none d-sm-inline-block">JSON</span>
                                         </>
                                     )}>
@@ -98,7 +98,7 @@ class App extends React.Component {
                                     </Tab>
                                     <Tab eventKey="keyVisual" className="tabViewVisual" title={(
                                         <>
-                                            <i className="atmTabIcon fad fa-lg fa-lock-open-alt"/>
+                                            <i className="atmTabIcon fas fa-lg fa-palette"/>
                                             <span className="atmTabTitle d-none d-sm-inline-block">Visual</span>
                                         </>
                                     )}>
@@ -114,37 +114,37 @@ class App extends React.Component {
                                             <div className="row">
                                                 <div className="col-12">
                                                     <div className="molBlockBread">
-                                                        <p>breadcrumb</p>{/* Add breadcrumb horizontal */}
+                                                        <span>Containers&nbsp;&nbsp;<i className="fas fa-caret-right"/>&nbsp;&nbsp;...</span>{/* Add breadcrumb horizontal */}
                                                     </div>
                                                 </div>
                                             </div>
                                             <div className="row">
                                                 <div className="col-12 col-md-6 col-xl-9 order-2 order-md-1">
-                                                    {/* Add container lists 2/3 */}
-                                                    <div>
-                                                        <h2>Containers</h2>
+                                                    {/* 'Add container' lists 2/3 */}
+                                                    <div className="orgContainersGrid">
+                                                        <h2 className="atmContainerTitle">Containers</h2>
                                                         <div className="row">
-                                                        {this.state.containerList.map((item,i) => 
-                                                            <div className="col-3" key={i}>{item.name}</div>)}
-                                                            {/* {containers.map(el => {
-                                                                return (
-                                                                    <div key={el.id}>
-                                                                        <div>
-                                                                            {el.name}
+                                                            {this.state.containerList.map((item,i) => 
+                                                                <div className="col-6 col-lg-4 col-xl-2" key={i}>
+                                                                    <button className="molButtonContainer d-flex flex-column align-items-center justify-content-between">
+                                                                        <div className="atmButtonOptions">
+                                                                            <i className="far fa-ellipsis-h"/>
                                                                         </div>
-                                                                        <div>{el.size}</div>
-                                                                    </div>
-                                                                );
-                                                            })} */}
+                                                                        <i className="fas fa-3x fa-archive"/>
+                                                                        <span className="atmContainerName">{item.name}</span>
+                                                                    </button>
+                                                                </div>
+                                                            )}
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div className="col-12 col-md-6 col-xl-3 order-1 order-md-2">
-                                                    {/* Add dropzone vertical 1/3 */}
+                                                    {/* Dropzone vertical 1/3 */}
                                                     <div className="molBlockUpload d-flex align-items-center justify-content-center">
                                                         <div className="atmBlockUpload d-flex flex-column align-items-center justify-content-center">
-                                                            <i className="fas fa-4x fa-upload"></i>
-                                                            <p><strong>Choose a file</strong> or drag it here</p>
+                                                            <i className="fas fa-4x fa-upload"/>
+                                                            {/* Add input here for file upload */}
+                                                            <p><button title="Choose a file">Choose a file</button> or drag it here</p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -157,7 +157,7 @@ class App extends React.Component {
                         </div>
                     </div>
                 </section>
-
+                
                 <section className="orgFooterAction">
                     <div className="row">
                         <div className="col">
