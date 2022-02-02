@@ -93,7 +93,7 @@ span {
     }
 }
 
-.orgMainJSON {
+.orgMainJSON { //change this name
     padding-top: 20px;
     & .molBlockJSON {
         height: 70vh;
@@ -119,8 +119,25 @@ span {
             }
         }
     }
-    & .molBlockContainer {
-        padding: 10px;
+    .orgContainersGrid {
+        padding-top: $paddingMedium;
+        & .molButtonContainer {
+            position: relative;
+            width: 100%;
+            padding-top: 28px;
+            padding-bottom: 7px;
+            margin-bottom: 14px;
+            & .atmButtonOptions {
+                position: absolute;
+                top: 0;
+                right: 0;
+                padding: 0 5px;
+            }
+            & .atmContainerName {
+                margin-top: 2px;
+                margin-bottom: 2px;
+            }   
+        }
     }
 }
 
@@ -149,4 +166,10 @@ span {
     .orgFooterAction {
         height: 5vh;
     }
+}
+
+/* Styles: Typography
+- - - - - - - - - - - - - - - - - - */
+h2 {
+    margin-bottom: $marginSmall;
 }

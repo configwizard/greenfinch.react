@@ -30,6 +30,7 @@ $brandFontBold: 'AvertaStdPE-Bold', Arial, Helvetica, sans-serif;
 - - - - - - - - - - - - - - - - - - */
 $brandColorPrimary: #00E599;
 $brandColorSecondary: #00AF92;
+$brandColorSecondary-dark: darken($brandColorSecondary, 15%);
 $brandColorWhite: #fff;
 
 $toastColorSuccess: #00AF4B;
@@ -104,23 +105,23 @@ button[class^="atmButton"] {
                     border-top-left-radius: 0;
                     border-top-left-radius: 0;
                     cursor: default;
-                    background-color: rgba(255,255,255,0.7);
+                    background-color: rgba(255,255,255,0.8);
                 }
             }
         }
     }
     & .orgViewJSON, .orgViewVisual {
-        background-color: rgba(255,255,255,0.7);
+        background-color: rgba(255,255,255,0.8);
     }
 }
 
-#uncontrolled-tab-example-tab-encrypt {
-    //color: $brandColorEncrypt !important;
-}
+/* #uncontrolled-tab-example-tab-encrypt {
+    color: black!important;
+} */
 
-#uncontrolled-tab-example-tab-decrypt {
-    //color: $brandColorDecrypt !important;
-}
+/* #uncontrolled-tab-example-tab-decrypt {
+    color: black!important;
+} */
 
 
 /* Styles: General
@@ -137,9 +138,9 @@ span.utUCSmall {
     }
 }
 
-.orgMainJSON {
+.orgMainJSON { //change this name
     & .molBlockJSON {
-        background-color: rgba(255,255,255,0.7);
+        background-color: rgba(255,255,255,0.2);
         font-size: 12px;
     }
     & .molBlockData {
@@ -158,11 +159,14 @@ span.utUCSmall {
     & .molBlockBread {
         border-top: 2px solid $brandColorSecondary;
         border-bottom: 2px solid $brandColorSecondary;
+        font-size: 0.75rem;
+        font-family: $brandFontSemi;
     }
     & .molBlockUpload {
         background-color: rgba(0,0,0,0.03);
         & .atmBlockUpload {
-            border: 4px dashed $brandColorSecondary;
+            border: 4px dashed rgba($brandColorSecondary, 0.5);
+            border-radius: 10px;
             background: repeating-linear-gradient(
                 135deg,
                     rgba(0,0,0,0),
@@ -172,13 +176,35 @@ span.utUCSmall {
                 );
         }
     }
-    & .molBlockContainer {
-       background: red;
-       border: 1px solid black;
-    }
     & p {
         margin: 0;
     }
+    .orgContainersGrid {
+        & .molButtonContainer {
+            cursor: default;
+            transition: $brandTransitionSpeed*0.5;
+            border: none;
+            background-color: rgba($brandColorSecondary, 0.03);
+            text-align: center;
+            & .atmButtonOptions {
+                background-color: rgba($brandColorSecondary, 0.05);
+                &:hover {
+                    cursor: pointer;
+                    background-color: rgba($brandColorSecondary, 0.1);
+                }
+            }
+            & .atmContainerName {
+                color: $brandColorSecondary-dark;
+                font-size: 0.75rem;
+                font-family: $brandFontSemi;
+            }
+            & i {
+                color: $brandColorPrimary;
+            }
+           
+        }
+    }
+
 }
 
 .orgFooterAction {
@@ -194,6 +220,11 @@ h2 {
         border-bottom: 1px solid black; // variable
         padding-bottom: 5px; // variable
         margin-bottom: 10px; // variable
+    }
+    &.atmContainerTitle {
+        @include titleStyle;
+        font-size: 1.4rem;
+        color: $brandColorSecondary-dark;
     }
 }
 // if I wanted to use .utUC with this, should I extend?
