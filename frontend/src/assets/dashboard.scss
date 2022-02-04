@@ -31,21 +31,42 @@ span {
     overflow: scroll;
 }
 
+.utScroll-x {
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.utScroll-y {
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
 /* Elements: Buttons
 - - - - - - - - - - - - - - - - - - */
 .atmButtonSimple {
     padding: 5px 12px;
-    //margin-right: $marginSmall; // can you NOT here, not right-justified ... temporary
+    & i {
+        margin-right: 7px;
+    }
+}
+
+.atmButtonText {
+    padding: 0;
+    margin: 0;
+}
+
+.atmButtonIcon {
+    padding: 5px 8px;
 }
 
 .me-auto {
-    & .atmButtonSimple {
+    & .atmButtonSimple, .atmButtonIcon {
         margin-right: $marginXSmall; //temporary
     }
 }
 
 .ms-auto {
-    & .atmButtonSimple {
+    & .atmButtonSimple, .atmButtonIcon {
         margin-left: $marginXSmall; //temporary
     }
 }
@@ -95,19 +116,32 @@ span {
 
 .orgMainJSON { //change this name
     padding-top: 20px;
+    .orgBlockData {
+        height: 120px;
+    }   
     & .molBlockJSON {
         height: 70vh;
         padding: $paddingSmall;
         overflow-x: scroll;
         margin-bottom: $marginSmall;
     }
-    & .molBlockData {
-        padding: $paddingSmall;
-    }
     & .molBlockBread {
         padding: $paddingXSmall;
         margin: $marginSmall 0;
-    }
+        & span {
+            margin-right: 10px;
+            max-width: 130px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            & i.fa-wallet {
+                margin-right: 5px;
+            }
+            &.atmBreadWallet {
+                
+            }
+        }
+    }    
     & .molBlockUpload {
         width: 100%;
         padding: $paddingSmall;
@@ -121,7 +155,10 @@ span {
     }
     .orgContainersGrid {
         padding-top: $paddingMedium;
-        & .molButtonContainer {
+        & .molContainersHeader {
+            margin-bottom: $marginSmall;
+        }
+        & .molContainersButtonGrid {
             position: relative;
             width: 100%;
             padding-top: 28px;
@@ -137,6 +174,15 @@ span {
                 margin-top: 2px;
                 margin-bottom: 2px;
             }   
+        }
+        & .molContainersButtonRow {
+            position: relative;
+            width: 100%;
+            padding: $paddingXSmall $paddingMedium;
+            margin-bottom: 4px;
+            & i {
+                margin-right: $marginMedium;
+            }
         }
     }
 }
@@ -170,6 +216,6 @@ span {
 
 /* Styles: Typography
 - - - - - - - - - - - - - - - - - - */
-h2 {
+h2, h4 {
     margin-bottom: $marginSmall;
 }
