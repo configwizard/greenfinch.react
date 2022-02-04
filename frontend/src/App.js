@@ -12,7 +12,7 @@ import Wallet from "./components/wallet";
 import Containers from "./components/containers";
 import Objects from "./components/objects";
 import Status from "./components/status";
-import VisualContainer from "./components/visualcontainers";
+import VisualContainer from "./components/visualcontainers"; // Why??
 // import FileSystem from "./components/filesystem";
 
 //Actual
@@ -57,15 +57,12 @@ class App extends React.Component {
                             <div className="ms-auto">
                                 <button className="atmButtonSimple" onClick={async () => uploadObject("Q9dpMA6t7drq8KJB5qa7jQ6JN6GMSGBH3qrxHN7v2TC")}>Upload a file (remember to set the container ID)</button>
                                 <button className="atmButtonSimple" onClick={async () => getObject("87Jr1zaivaL6G13SB1Vowjxp3d9JJLdFTek3fgqTps9y", "Q9dpMA6t7drq8KJB5qa7jQ6JN6GMSGBH3qrxHN7v2TC")}>Download file </button>
-                                <button className="atmButtonSimple" onClick={async () => createContainer("my container")}>Create a container</button>
                             </div>
                         </div>
                     </div>
                 </section>
 
                 <section className="orgMainJSON">
-                    {/* Tab system could be a short-term solution to two views */}
-
                     <div className="row">
                         <div className="col-12">
                             <section className="orgTabsView flex-grow-1">
@@ -114,19 +111,34 @@ class App extends React.Component {
                                             <div className="row">
                                                 <div className="col-12">
                                                     <div className="molBlockBread">
-                                                        <span>Containers&nbsp;&nbsp;<i className="fas fa-caret-right"/>&nbsp;&nbsp;...</span>{/* Add breadcrumb horizontal */}
+                                                        {/* TODO: This is manually added for now*/}
+                                                        <span className="atmBreadWallet"><i className="fas fa-lg fa-wallet"/>NQtxsStXxadvtRyz2B1yJXTXCeEoxsUJBkxW</span><span>Containers&nbsp;&nbsp;<i className="fas fa-caret-right"/>&nbsp;&nbsp;_</span>{/* breadcrumb horizontal */}
                                                     </div>
                                                 </div>
                                             </div>
                                             <div className="row">
                                                 <div className="col-12 col-md-6 col-xl-9 order-2 order-md-1">
-                                                    {/* 'Add container' lists 2/3 */}
                                                     <div className="orgContainersGrid">
-                                                        <h2 className="atmContainerTitle">Containers</h2>
+
                                                         <div className="row">
+                                                            <div className="col-12">
+                                                                <div className="molContainersHeader d-flex">
+                                                                    <div>
+                                                                        <h2 className="atmContainerTitle">Containers</h2>
+                                                                    </div>
+                                                                    <div className="ms-auto">
+                                                                        <button className="atmButtonIcon active"><i class="fas fa-th-large" /></button>
+                                                                        <button className="atmButtonIcon"><i className="fas fa-list" /></button>
+                                                                        <button className="atmButtonSimple" onClick={async () => createContainer("my container")}><i className="fas fa-archive"/>New container</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="row">
+                                                            <h4 className="atmContainerTitle">Grid _</h4>
                                                             {this.state.containerList.map((item,i) => 
                                                                 <div className="col-6 col-lg-4 col-xl-2" key={i}>
-                                                                    <button className="molButtonContainer d-flex flex-column align-items-center justify-content-between">
+                                                                    <button className="molContainersButtonGrid d-flex flex-column align-items-center justify-content-between">
                                                                         <div className="atmButtonOptions">
                                                                             <i className="far fa-ellipsis-h"/>
                                                                         </div>
@@ -136,15 +148,28 @@ class App extends React.Component {
                                                                 </div>
                                                             )}
                                                         </div>
+                                                        <div className="row">
+                                                            <h4 className="atmContainerTitle">Rows _</h4>
+                                                            {this.state.containerList.map((item,i) => 
+                                                                <div className="col-12" key={i}>
+                                                                    <button className="molContainersButtonRow d-flex flex-row align-items-center">
+                                                                        <i className="fas fa-archive"/>
+                                                                        <span className="atmContainerName">{item.name}</span>
+                                                                    </button>
+                                                                </div>
+                                                            )}
+                                                        </div>
+
                                                     </div>
                                                 </div>
                                                 <div className="col-12 col-md-6 col-xl-3 order-1 order-md-2">
-                                                    {/* Dropzone vertical 1/3 */}
                                                     <div className="molBlockUpload d-flex align-items-center justify-content-center">
                                                         <div className="atmBlockUpload d-flex flex-column align-items-center justify-content-center">
                                                             <i className="fas fa-4x fa-upload"/>
                                                             {/* Add input here for file upload */}
-                                                            <p><button title="Choose a file">Choose a file</button> or drag it here</p>
+                                                            <p><button className="atmButtonText" title="Choose a file">Choose a file</button> or drag it here</p>
+                                                            {/* drag and drop upload componet (look for onEvent, onUpload... and console.log 'event' and can find a path) */}
+                                                            {/* https://stackoverflow.com/questions/58880171/get-file-path-from-drop-event/64616487#64616487 */}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -157,7 +182,7 @@ class App extends React.Component {
                         </div>
                     </div>
                 </section>
-                
+
                 <section className="orgFooterAction">
                     <div className="row">
                         <div className="col">

@@ -30,12 +30,22 @@ class Status extends React.Component {
         return (
             <>
                 <div className="d-flex">
-                    <div className="molBlockData">Wallet: {this.props.resp.address}</div>
+                    <div>Wallet: {this.props.resp.address}</div>
                 </div>
-                <div className="d-flex justify-content-between">
-                    <div className="molBlockData"><span className="utUnit">NeoFS</span><span className="utNum">{g}</span></div>
-                    <div className="molBlockData"><span className="utUnit">GAS</span><span className="utNum">{gb}</span></div>
-                    <div className="molBlockData"><span className="utUnit">NEO</span><span className="utNum">{this.props.resp.nep17.NEO.amount}</span></div>
+                <div className="orgBlockData d-flex">
+                    <div className="d-flex flex-column">
+                        <div className="molBlockData">
+                            <span className="utUnit">GAS</span><span className="utNum">{gb}</span>
+                        </div>
+                        <div className="molBlockData">
+                            <span className="utUnit">NEO</span><span className="utNum">{this.props.resp.nep17.NEO.amount}</span>
+                        </div>
+                    </div>
+                    <div className="d-flex flex-column">
+                        <div className="molBlockData align-self-stretch">
+                            <span className="utUnit">NeoFS</span><span className="utNum">{g}</span>
+                        </div>
+                    </div>
                 </div>
             </>
         );
