@@ -1,5 +1,5 @@
 import React  from "react";
-import JSONView from 'react-json-view';
+// import JSONView from 'react-json-view';
 
 function Objects({objects, containerID}) {
 
@@ -9,7 +9,9 @@ function Objects({objects, containerID}) {
         <div className="result">
             <h2 className="atmTitle">Objects for container {containerID}</h2>
             <div className="molBlockJSON">
+                {/* 
                 <JSONView id="json-pretty" src={objects}></JSONView>
+                */}
             </div>
             {/* 
                 <pre>
