@@ -14,12 +14,12 @@ class TabVisual extends React.Component {
         //const resp = await retrieveFullFileSystem()
         const account = await getAccountInformation()
         const containerList = await listContainers()
-        await this.setState({account, containerList})
+        this.setState({account, containerList})
     }
     onSelected = async (selected) => {
         console.dir(selected)
         const objectList = await listObjects(selected.value) //list contents of a container
-        await this.setState({objectList: objectList, selectedContainer: selected.value})
+        this.setState({objectList: objectList, selectedContainer: selected.value})
     }
    
     render() {
