@@ -2,13 +2,16 @@ import React from "react";
 
 //Mocker
 import {getAccountInformation} from "../../mocker/manager.js";
-import {createContainer,listContainers} from "../../mocker/containers.js";
+import {listContainers} from "../../mocker/containers.js";
 import {listObjects} from "../../mocker/objects.js";
+import ControlBar from "../controlbar/index";
+import ContainerView from "../containerview/index"
+import ObjectView from "../objectview/index"
 
 class TabVisual extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {containerList: [], objectList: [], account: {}, selectedContainer: 0 };
+        this.state = {containerList: [], objectList: [], account: {}, selectedContainer: null, viewMode: "grid"};
     }
     async componentDidMount() {
         //const resp = await retrieveFullFileSystem()
@@ -18,14 +21,38 @@ class TabVisual extends React.Component {
     }
     onSelected = async (selected) => {
         console.dir(selected)
-        const objectList = await listObjects(selected.value) //list contents of a container
-        this.setState({objectList: objectList, selectedContainer: selected.value})
+
     }
-   
+    onViewChange = async (viewMode) => {
+        let state = this.state
+        this.setState({...state, viewMode: viewMode})
+    }
+   onContainerSelection = async (containerID) => {
+       //we will need to call the function to get the objects for a speicifc container ID and update the objectList
+       const objectList = await listObjects(containerID) //list contents of a container
+        let state = this.state
+        this.setState({...state, selectedContainer: containerID, objectList})
+   }
+   onObjectSelection = async (objectID) => {
+    //we will need to call the function to get the objects for a speicifc container ID and update the objectList
+        alert("you selected object" + objectID)
+    }
+    retriveCorrectComponent() {
+        if (this.state.selectedContainer == null) {
+        return (
+            <ContainerView containerList={this.state.containerList} viewMode={this.state.viewMode} onContainerSelection={this.onContainerSelection}></ContainerView>
+        )
+        } else {
+            return (
+                <ObjectView objectList={this.state.objectList} viewMode={this.state.viewMode} onObjectSelection={this.onObjectSelection}></ObjectView>
+            )
+        }
+    }
     render() {
         return (
             <section className="orgViewVisual">
                 <div className="row">
+
                     <div className="col-12">
                         <div className="molBlockBread">
                             {/* TODO: This is manually added for now*/}
@@ -36,45 +63,8 @@ class TabVisual extends React.Component {
                 <div className="row">
                     <div className="col-12 col-md-6 col-xl-9 order-2 order-md-1">
                         <div className="orgContainersGrid">
-                            <div className="row">
-                                <div className="col-12">
-                                    <div className="molContainersHeader d-flex">
-                                        <div>
-                                            <h2 className="atmContainerTitle">Containers</h2>
-                                        </div>
-                                        <div className="ms-auto">
-                                            <button className="atmButtonIcon active"><i className="fas fa-th-large" /></button>
-                                            <button className="atmButtonIcon"><i className="fas fa-list" /></button>
-                                            <button className="atmButtonSimple" onClick={async () => createContainer("my container")}><i className="fas fa-archive"/>New container</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="row">
-                                <h4 className="atmContainerTitle">Grid</h4>
-                                {this.state.containerList.map((item,i) => 
-                                    <div className="col-6 col-lg-4 col-xl-2" key={i}>
-                                        <button className="molContainersButtonGrid d-flex flex-column align-items-center justify-content-between">
-                                            <div className="atmButtonOptions">
-                                                <i className="far fa-ellipsis-h"/>
-                                            </div>
-                                            <i className="fas fa-3x fa-archive"/>
-                                            <span className="atmContainerName">{item.name}</span>
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-                            <div className="row">
-                                <h4 className="atmContainerTitle">Rows</h4>
-                                {this.state.containerList.map((item,i) => 
-                                    <div className="col-12" key={i}>
-                                        <button className="molContainersButtonRow d-flex flex-row align-items-center">
-                                            <i className="fas fa-archive"/>
-                                            <span className="atmContainerName">{item.name}</span>
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
+                            <ControlBar changeView={this.onViewChange}></ControlBar>
+                            {this.retriveCorrectComponent(this.state)}
                         </div>
                     </div>
                     <div className="col-12 col-md-6 col-xl-3 order-1 order-md-2">
@@ -93,5 +83,6 @@ class TabVisual extends React.Component {
         );
     }
 }
+
 
 export default TabVisual;
