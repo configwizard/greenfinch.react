@@ -4,9 +4,9 @@ import React from "react";
 import {getAccountInformation} from "../../mocker/manager.js";
 import {listContainers} from "../../mocker/containers.js";
 import {listObjects} from "../../mocker/objects.js";
-import ControlBar from "../controlbar/index";
-import ContainerView from "../containerview/index"
-import ObjectView from "../objectview/index"
+import ControlBar from "../layoutControlBar/index";
+import ContainerView from "../viewContainer/index"
+import ObjectView from "../viewObject/index"
 
 class TabVisual extends React.Component {
     constructor(props) {
@@ -21,27 +21,26 @@ class TabVisual extends React.Component {
     }
     onSelected = async (selected) => {
         console.dir(selected)
-
     }
     onViewChange = async (viewMode) => {
         let state = this.state
         this.setState({...state, viewMode: viewMode})
     }
-   onContainerSelection = async (containerID) => {
-       //we will need to call the function to get the objects for a speicifc container ID and update the objectList
-       const objectList = await listObjects(containerID) //list contents of a container
-        let state = this.state
-        this.setState({...state, selectedContainer: containerID, objectList})
-   }
-   onObjectSelection = async (objectID) => {
-    //we will need to call the function to get the objects for a speicifc container ID and update the objectList
+    onContainerSelection = async (containerID) => {
+        //we will need to call the function to get the objects for a specific container ID and update the objectList
+        const objectList = await listObjects(containerID) //list contents of a container
+            let state = this.state
+            this.setState({...state, selectedContainer: containerID, objectList})
+    }
+    onObjectSelection = async (objectID) => {
+        //we will need to call the function to get the objects for a specific container ID and update the objectList
         alert("you selected object" + objectID)
     }
     retriveCorrectComponent() {
         if (this.state.selectedContainer == null) {
-        return (
-            <ContainerView containerList={this.state.containerList} viewMode={this.state.viewMode} onContainerSelection={this.onContainerSelection}></ContainerView>
-        )
+            return (
+                <ContainerView containerList={this.state.containerList} viewMode={this.state.viewMode} onContainerSelection={this.onContainerSelection}></ContainerView>
+            )
         } else {
             return (
                 <ObjectView objectList={this.state.objectList} viewMode={this.state.viewMode} onObjectSelection={this.onObjectSelection}></ObjectView>
@@ -72,7 +71,7 @@ class TabVisual extends React.Component {
                             <div className="atmBlockUpload d-flex flex-column align-items-center justify-content-center">
                                 <i className="fas fa-4x fa-upload"/>
                                 {/* Add input here for file upload */}
-                                <p><button className="atmButtonText" title="Choose a file">Choose a file</button> or drag it here</p>
+                                <p><button type="button" className="atmButtonText" title="Choose a file">Choose a file</button> or drag it here</p>
                                 {/* drag and drop upload componet (look for onEvent, onUpload... and console.log 'event' and can find a path) */}
                                 {/* https://stackoverflow.com/questions/58880171/get-file-path-from-drop-event/64616487#64616487 */}
                             </div>
@@ -83,6 +82,5 @@ class TabVisual extends React.Component {
         );
     }
 }
-
 
 export default TabVisual;

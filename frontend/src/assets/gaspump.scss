@@ -33,6 +33,7 @@ $brandColorSecondary: #00AF92;
 $brandColorSecondary-dark: darken($brandColorSecondary, 15%);
 $brandColorWhite: #fff;
 $brandColorBlack: #000; // Change to a very dark green
+$brandColorDark: #2b393f;
 
 $toastColorSuccess: #00AF4B;
 $toastColorError: #E5004C;
@@ -61,7 +62,7 @@ $brandDarkenValue: 12%;
 - - - - - - - - - - - - - - - - - - */
 body {
     font-family: $brandFontReg;
-    background-color: rgba($brandColorPrimary, 0.5);
+    background-color: rgba($brandColorPrimary, 0.2);
 }
 
 
@@ -153,9 +154,14 @@ span.utUCSmall {
 }
 
 .orgHeaderStatus {
-    background-color: rgba(255,255,255,0.5);
+    background-color: $brandColorDark;
+    color: $brandColorPrimary;
     & .atmStatus {
+        letter-spacing: 0.07em;
         font-weight: bold;
+    }
+    & .utUCSmall {
+        color: $brandColorSecondary;
     }
 }
 
@@ -205,11 +211,24 @@ span.utUCSmall {
         margin: 0;
     }
     .orgContainersGrid {
-        & .molContainersButtonGrid {
+        & button[class^="molContainersButton"] {
             cursor: default;
-            transition: $brandTransitionSpeed*0.5;
             border: none;
             background-color: rgba($brandColorSecondary, 0.03);
+            &:hover {
+                background-color: rgba($brandColorSecondary, 0.09);
+            }
+            & .atmContainerName {
+                color: $brandColorSecondary-dark;
+                font-size: 0.75rem;
+                font-family: $brandFontSemi;
+                cursor: pointer;
+            }
+            & i {
+                color: $brandColorPrimary;
+            }
+        }
+        & .molContainersButtonGrid {
             text-align: center;
             & .atmButtonOptions {
                 background-color: rgba($brandColorSecondary, 0.05);
@@ -218,24 +237,8 @@ span.utUCSmall {
                     background-color: rgba($brandColorSecondary, 0.1);
                 }
             }
-            & .atmContainerName {
-                color: $brandColorSecondary-dark;
-                font-size: 0.75rem;
-                font-family: $brandFontSemi;
-            }
-            & i {
-                color: $brandColorPrimary;
-            }
         }
         & .molContainersButtonRow {
-            transition: $brandTransitionSpeed*0.5;
-            border: none;
-            background-color: rgba($brandColorSecondary, 0.03);
-            & .atmContainerName {
-                color: $brandColorSecondary-dark;
-                font-size: 0.75rem;
-                font-family: $brandFontSemi;
-            }
             & i {
                 color: $brandColorPrimary;
             }
