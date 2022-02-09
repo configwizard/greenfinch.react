@@ -104,10 +104,8 @@ span {
 /* Styles: General
 - - - - - - - - - - - - - - - - - - */
 .orgHeaderStatus {
-    padding-left: $paddingSmall;
-    padding-right: $paddingSmall;
-    & .molHeaderContent { 
-        width: 100%;
+    & .molHeaderContent {
+        padding:10px;
     }
     & .atmStatus {
         margin-right: $marginSmall;

@@ -47,17 +47,9 @@ class App extends React.Component {
     render() {
         return (
             <div className="container-fluid">
-                <section className="orgHeaderStatus d-flex align-items-center">
+                <section className="orgHeaderStatus">
                     <div className="molHeaderContent">
-                        <div className="d-flex">
-                            <div className="atmStatus"><span className="utUCSmall d-block">Mode</span> Mocker</div>{/* make this a component */}
-                            <div className="atmStatus"><span className="utUCSmall d-block">Net Version</span> Testnet</div>{/* make this a component */}
-                            <div className="ms-auto">
-                                
-                            <Status resp={this.state.account}></Status>
-
-                            </div>
-                        </div>
+                        <Status resp={this.state.account}></Status>
                     </div>
                 </section>
 
@@ -66,6 +58,15 @@ class App extends React.Component {
                         <div className="col-12">
                             <section className="orgTabsView flex-grow-1">
                                 <Tabs defaultActiveKey="keyVisual" id="uncontrolled-tab-example">
+                                    <Tab eventKey="keyVisual" className="tabViewVisual" title={(
+                                        <>
+                                            <i className="atmTabIcon fas fa-lg fa-gas-pump"/>
+                                            <span className="atmTabTitle d-none d-sm-inline-block">GASPump</span>
+                                        </>
+                                    )}>
+                                        {/* { this.state.selectedKey == 0 ? <TabPlaceHolder encrypted={false}></TabPlaceHolder> : <DecryptTab kId={this.state.selectedKey}></DecryptTab>} */}
+                                        <TabVisual></TabVisual>
+                                    </Tab>
                                     <Tab eventKey="keyJSON" className="tabViewJSON" title={(
                                         <>
                                             <i className="atmTabIcon fas fa-lg fa-brackets-curly"/>
@@ -74,15 +75,6 @@ class App extends React.Component {
                                     )}>
                                         {/* { this.state.selectedKey == 0 ? <TabPlaceHolder encrypted={true}></TabPlaceHolder> : <EncryptTab kId={this.state.selectedKey}></EncryptTab>} */}
                                         <TabJSON></TabJSON>
-                                    </Tab>
-                                    <Tab eventKey="keyVisual" className="tabViewVisual" title={(
-                                        <>
-                                            <i className="atmTabIcon fas fa-lg fa-palette"/>
-                                            <span className="atmTabTitle d-none d-sm-inline-block">Visual</span>
-                                        </>
-                                    )}>
-                                        {/* { this.state.selectedKey == 0 ? <TabPlaceHolder encrypted={false}></TabPlaceHolder> : <DecryptTab kId={this.state.selectedKey}></DecryptTab>} */}
-                                        <TabVisual></TabVisual>
                                     </Tab>
                                 </Tabs>
                             </section>
