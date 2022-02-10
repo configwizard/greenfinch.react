@@ -14,7 +14,7 @@ function ObjectView({objectList, viewMode, onObjectSelection}) {
                             <div className="atmButtonOptions">
                                 <i className="far fa-ellipsis-h"/>
                             </div>
-                            <i className="fas fa-3x fa-archive"/>
+                            <i className="fas fa-3x fa-draw-square"/>
                             <span className="atmContainerName">{item.name}</span>
                         </button>
                     </div>
@@ -30,7 +30,7 @@ function ObjectView({objectList, viewMode, onObjectSelection}) {
                     {objectList.map((item,i) => 
                         <div className="col-12" key={i}>
                             <button className="molContainersButtonRow d-flex flex-row align-items-center" onClick={()=> onObjectSelection(item.id)}>
-                                <i className="fas fa-archive"/>
+                                <i className="fas fa-draw-square"/>
                                 <span className="atmContainerName">{item.name}</span>
                             </button>
                         </div>

@@ -34,7 +34,7 @@ class TabVisual extends React.Component {
     }
     onObjectSelection = async (objectID) => {
         //we will need to call the function to get the objects for a specific container ID and update the objectList
-        alert("you selected object" + objectID)
+        alert("You selected this object: " + objectID)
     }
     retriveCorrectComponent() {
         if (this.state.selectedContainer == null) {
