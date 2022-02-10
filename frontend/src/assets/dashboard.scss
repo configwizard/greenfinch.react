@@ -60,13 +60,13 @@ span {
 }
 
 .me-auto {
-    & .atmButtonSimple, .atmButtonIcon {
+    & .atmButtonSimple, .atmButtonIcon, .atmButtonIconClean {
         margin-right: $marginXSmall; //temporary
     }
 }
 
 .ms-auto {
-    & .atmButtonSimple, .atmButtonIcon {
+    & .atmButtonSimple, .atmButtonIcon, .atmButtonIconClean {
         margin-left: $marginXSmall; //temporary
     }
 }

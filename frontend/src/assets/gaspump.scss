@@ -108,6 +108,19 @@ button[class^="atmButton"] {
     }
 }
 
+.atmButtonIconClean {
+    font-size: 28px;
+    background-color: unset;
+    color: $brandColorSecondary;
+    &:hover {
+        background-color: unset;
+        color: $brandColorPrimary;
+    }
+    &.active {
+        cursor: default;
+    }
+}
+
 /* Element: Tabs
 - - - - - - - - - - - - - - - - - - */
 .orgTabsView {
@@ -121,7 +134,7 @@ button[class^="atmButton"] {
                 font-size: 1.1rem;
                 border: none;
                 border-radius: 0;
-                background-color: lighten($brandColorDark, 70%);
+                background-color: lighten($brandColorDark, 72%);
                 &:hover {
                     background-color: lighten($brandColorDark, 60%);
                 }
@@ -199,7 +212,7 @@ span.utUCSmall {
     }
     & .molBlockUpload {
         color: $brandColorDark;
-        background-color: rgba(0,0,0,0.03);
+        background-color: lighten($brandColorDark, 72%);
         & .atmBlockUpload {
             border: 1px solid $brandColorPrimary;
             border-radius: $brandBorderRadius;

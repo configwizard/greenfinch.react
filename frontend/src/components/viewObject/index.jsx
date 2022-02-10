@@ -25,7 +25,7 @@ function ObjectView({objectList, viewMode, onObjectSelection}) {
     } else {
         return (
             <>
-                <h4 className="atmContainerTitle">Objects</h4>
+                <h4 className="atmContainerTitle">Objectss - List view</h4>
                 <div className="row">
                     {objectList.map((item,i) => 
                         <div className="col-12" key={i}>

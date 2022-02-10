@@ -34,7 +34,7 @@ class Status extends React.Component {
                         <span className="utUCSmall d-block">Mode</span> Mocker
                     </div>
                     <div className="atmStatus">
-                        <span className="utUCSmall d-block">Net Version</span> Testnet
+                        <span className="utUCSmall d-block">Net</span> Testnet
                     </div>
                     <div className="atmStatus">
                         <span className="utUCSmall d-block">Wallet</span> {this.props.resp.address}
