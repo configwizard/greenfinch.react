@@ -8,7 +8,7 @@ function ControlBar({containers, onSelected, changeView, viewMode}) {
             <div className="col-12">
                 <div className="molContainersHeader d-flex">
                     <div>
-                        <h2 className="atmContainerTitle">Containers</h2>
+                        <h2 className="atmContainerTitle">...</h2>
                     </div>
                     <div className="ms-auto">
                         <button type="button" className={`atmButtonIcon ${viewMode ? "active" : "inactive"}`} onClick={()=>{changeView("grid")}}><i className="fas fa-th-large" /></button>

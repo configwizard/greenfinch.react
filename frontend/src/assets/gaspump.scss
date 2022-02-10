@@ -34,6 +34,7 @@ $brandColorSecondary-dark: darken($brandColorSecondary, 15%);
 $brandColorWhite: #fff;
 $brandColorBlack: #000; // Change to a very dark green
 $brandColorDark: #2b393f;
+$brandColorLight: #f0f5f6;
 
 $toastColorSuccess: #00AF4B;
 $toastColorError: #E5004C;
@@ -62,7 +63,7 @@ $brandDarkenValue: 12%;
 - - - - - - - - - - - - - - - - - - */
 body {
     font-family: $brandFontReg;
-    background-color: rgba($brandColorPrimary, 0.2);
+    background-color: $brandColorLight;
 }
 
 
@@ -78,14 +79,15 @@ button[class^="atmButton"] {
 .atmButtonSimple {
     font-size: 13px;
     color: $brandColorWhite;
-    background-color: $brandColorSecondary;
+    background-color: $brandColorDark;
     &:hover {
-        background-color: darken($brandColorSecondary, 5%);
+        color: $brandColorPrimary;
+        background-color: $brandColorDark;
     }
 }
 
 .atmButtonText {
-    color: $brandColorSecondary-dark;
+    color: $brandColorDark;
     background: none;
     &:hover {
         text-decoration: underline;
@@ -95,9 +97,10 @@ button[class^="atmButton"] {
 .atmButtonIcon {
     font-size: 13px;
     color: $brandColorWhite;
-    background-color: $brandColorSecondary;
+    background-color: $brandColorDark;
     &:hover {
-        background-color: darken($brandColorSecondary, 5%);
+        color: $brandColorPrimary;
+        background-color: $brandColorDark;
     }
     &.active {
         cursor: default;
@@ -118,12 +121,12 @@ button[class^="atmButton"] {
                 font-size: 1.1rem;
                 border: none;
                 border-radius: 0;
-                background-color: rgba(0,0,0,0.05);
+                background-color: lighten($brandColorDark, 70%);
                 &:hover {
-                    background-color: rgba(0,0,0,0.1);
+                    background-color: lighten($brandColorDark, 60%);
                 }
                 &.active {
-                    color: $brandColorSecondary; 
+                    color: $brandColorPrimary; 
                     border-top-left-radius: 0;
                     border-top-left-radius: 0;
                     cursor: default;
@@ -154,6 +157,7 @@ span.utUCSmall {
 }
 
 .orgHeaderStatus {
+    box-shadow: 0 0 15px rgba($brandColorDark, 0.6);
     background-color: $brandColorDark;
     color: $brandColorPrimary;
     & .atmStatus {
@@ -166,6 +170,7 @@ span.utUCSmall {
 }
 
 .orgMainJSON { //change this name
+    box-shadow: 0 0 15px rgba($brandColorDark, 0.3);
     & .molBlockJSON {
         background-color: rgba(255,255,255,0.2);
         font-size: 12px;
@@ -187,16 +192,16 @@ span.utUCSmall {
         }
     }
     & .molBlockBread {
-        border-bottom: 1px solid $brandColorSecondary-dark;
+        border-bottom: 1px solid $brandColorDark;
         font-size: 0.75rem;
         font-family: $brandFontSemi;
         color: $brandColorSecondary;
     }
     & .molBlockUpload {
-        color: $brandColorSecondary-dark;
+        color: $brandColorDark;
         background-color: rgba(0,0,0,0.03);
         & .atmBlockUpload {
-            border: 3px dashed rgba($brandColorSecondary, 0.5);
+            border: 1px solid $brandColorPrimary;
             border-radius: $brandBorderRadius;
             background: repeating-linear-gradient(
                 135deg,
@@ -214,9 +219,11 @@ span.utUCSmall {
         & button[class^="molContainersButton"] {
             cursor: default;
             border: none;
-            background-color: rgba($brandColorSecondary, 0.03);
+            background-color: rgba($brandColorSecondary, 0.02);
+            border: 1px solid $brandColorWhite;
             &:hover {
-                background-color: rgba($brandColorSecondary, 0.09);
+                background-color: rgba($brandColorSecondary, 0.04);
+                border: 1px solid $brandColorPrimary;
             }
             & .atmContainerName {
                 color: $brandColorSecondary-dark;

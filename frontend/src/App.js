@@ -60,8 +60,8 @@ class App extends React.Component {
                                 <Tabs defaultActiveKey="keyVisual" id="uncontrolled-tab-example">
                                     <Tab eventKey="keyVisual" className="tabViewVisual" title={(
                                         <>
-                                            <i className="atmTabIcon fas fa-lg fa-gas-pump"/>
-                                            <span className="atmTabTitle d-none d-sm-inline-block">GASPump</span>
+                                            <i className="atmTabIcon fas fa-lg fa-kiwi-bird"/>
+                                            <span className="atmTabTitle d-none d-sm-inline-block">Greenfinch</span>
                                         </>
                                     )}>
                                         {/* { this.state.selectedKey == 0 ? <TabPlaceHolder encrypted={false}></TabPlaceHolder> : <DecryptTab kId={this.state.selectedKey}></DecryptTab>} */}

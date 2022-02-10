@@ -81,7 +81,7 @@ span {
             width: 50%;
             & button.nav-link {
                 text-align: center;
-                padding: $paddingXSmall 0;
+                padding: $paddingSmall 0;
                 width: 100%;
             }
         }
@@ -113,7 +113,7 @@ span {
 }
 
 .orgMainJSON { //change this name
-    padding-top: 20px;
+    margin-top: 30px;
     .orgBlockData {
         height: 120px;
     }   
@@ -135,9 +135,7 @@ span {
             & i.fa-wallet {
                 margin-right: 5px;
             }
-            &.atmBreadWallet {
-                
-            }
+            &.atmBreadWallet {}
         }
     }    
     & .molBlockUpload {
@@ -159,8 +157,8 @@ span {
         & .molContainersButtonGrid {
             position: relative;
             width: 100%;
-            padding-top: 28px;
-            padding-bottom: 7px;
+            padding-top: 32px;
+            padding-bottom: 16px;
             margin-bottom: 14px;
             & .atmButtonOptions {
                 position: absolute;
@@ -189,7 +187,7 @@ span {
     .orgMainJSON {
         & .molBlockUpload {
             .atmBlockUpload {
-                height: 600px; //manual height
+                height: 500px; //manual height
             }
         }
     }
