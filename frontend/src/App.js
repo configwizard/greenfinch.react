@@ -2,15 +2,17 @@ import './App.css';
 import React from "react";
 
 import 'bootstrap/dist/css/bootstrap.min.css'; // Every page will use bootstrap
+import 'bootstrap/dist/js/bootstrap.min.js'; // TEMP - fine for V1
 import './assets/dashboard.scss'; //structural css
-import './assets/gaspump.scss'; //brand css
+import './assets/greenfinch.scss'; //brand css
 // import './assets/fontawesome.css';
 
 import { Tab, Tabs } from 'react-bootstrap';
 
 import TabVisual from "./components/tabVisual";
 import TabJSON from "./components/tabJSON";
-import Status from "./components/status";
+import Status from "./components/layoutStatus";
+import Footer from "./components/layoutFooter";
 
 // import Wallet from "./components/wallet";
 // import Containers from "./components/containers";
@@ -83,10 +85,8 @@ class App extends React.Component {
                 </section>
 
                 <section className="orgFooterAction">
-                    <div className="row">
-                        <div className="col">
-                           •••
-                        </div>        
+                    <div className="molFooterContent">
+                        <Footer></Footer>
                     </div>
                 </section>
             </div>        

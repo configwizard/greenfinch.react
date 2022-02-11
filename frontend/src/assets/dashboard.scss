@@ -59,7 +59,7 @@ span {
     padding: 5px 8px;
 }
 
-.me-auto {
+.d-flex, .me-auto {
     & .atmButtonSimple, .atmButtonIcon, .atmButtonIconClean {
         margin-right: $marginXSmall; //temporary
     }
@@ -101,6 +101,39 @@ span {
     }
 }
 
+/* Element: Toggle switch
+- - - - - - - - - - - - - - - - - - */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 70px;
+    height: 34px;
+    & input { 
+        width: 0;
+        height: 0;
+    }
+}
+
+.slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    &:before {
+        position: absolute;
+        content: "";
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+    }
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
 /* Styles: General
 - - - - - - - - - - - - - - - - - - */
 .orgHeaderStatus {
@@ -113,7 +146,8 @@ span {
 }
 
 .orgMainJSON { //change this name
-    margin-top: 30px;
+    margin-top: $marginLarge;
+    margin-bottom: $marginLarge;
     .orgBlockData {
         height: 120px;
     }   
@@ -183,6 +217,10 @@ span {
     }
 }
 
+.atmSwitchContent {
+    padding-right: 40px;
+}
+
 @media (min-width:768px) {
     .orgMainJSON {
         & .molBlockUpload {
@@ -194,8 +232,7 @@ span {
 }
 
 .orgFooterAction {
-    padding-left: $paddingSmall;
-    padding-right: $paddingSmall;
+    padding: $paddingSmall;
 }
 
 @media (min-width:1200px) {
@@ -203,10 +240,22 @@ span {
         height: 5vh;
     }
     .orgMainJSON {
-        height: 90vh;
+        height: 70vh;
     }
     .orgFooterAction {
         height: 5vh;
+    }
+}
+
+/* Styles: Offcanvas Right
+- - - - - - - - - - - - - - - - - - */
+#offcanvasRight {
+    .molBlockSwitch, .molBlockDropdown {
+        margin-bottom: $marginLarge;
+    }
+    & h4 {
+        margin-top: $marginSmall;
+        margin-bottom: $marginSmall;
     }
 }
 
@@ -215,3 +264,5 @@ span {
 h2, h4 {
     margin-bottom: $marginSmall;
 }
+
+
