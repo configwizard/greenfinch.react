@@ -111,7 +111,7 @@ button[class^="atmButton"] {
 .atmButtonIconClean {
     font-size: 28px;
     background-color: unset;
-    color: $brandColorSecondary;
+    color: $brandColorDark;
     &:hover {
         background-color: unset;
         color: $brandColorPrimary;
@@ -160,6 +160,38 @@ button[class^="atmButton"] {
 /* #uncontrolled-tab-example-tab-decrypt {
     color: black!important;
 } */
+
+
+/* Element: Toggle switch
+- - - - - - - - - - - - - - - - - - */
+.switch input { 
+    opacity: 0;
+}
+
+.slider {
+    cursor: pointer;
+    background-color: $brandColorDark;
+    transition: $brandTransitionSpeed;
+    &:before {
+        background-color: $brandColorWhite;
+        transition: $brandTransitionSpeed;
+    }
+    &.round {
+        border-radius: 34px;
+        &:before {
+            border-radius: 50%;
+        }
+    }
+}
+
+input:checked + .slider {
+    background-color: $brandColorPrimary;
+}
+
+/* input:focus + .slider {
+    box-shadow: 0 0 1px $brandColorDark;
+} */
+
 
 
 /* Styles: General
@@ -269,6 +301,27 @@ span.utUCSmall {
 .orgFooterAction {
     background-color: rgba(255,255,255,0.5);
 }
+
+/* Styles: Offcanvas Right
+- - - - - - - - - - - - - - - - - - */
+#offcanvasRight {
+    background-color: $brandColorLight;
+    .atmSwitchContent p {
+        font-family: $brandFontReg;
+        color: $brandColorDark;
+        font-size: 0.8rem;
+        line-height: 1.25;
+    }
+    & h4 {
+        @include titleStyle;
+        font-size: 0.9rem;
+        color: $brandColorSecondary-dark;
+    }
+    & .atmButtonIconClean i {
+        color: $brandColorSecondary-dark;
+    }
+}
+
 
 /* Styles: Typography
 - - - - - - - - - - - - - - - - - - */

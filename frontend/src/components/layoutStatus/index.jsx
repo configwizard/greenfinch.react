@@ -12,9 +12,9 @@ class Status extends React.Component {
             (this.props.resp.nep17.GAS === undefined) || 
             (this.props.resp.nep17.GAS.meta === undefined) || 
             (this.props.resp.nep17.NEO === undefined)) {
-            console.log("Waiting...");
-            return(<div>Waiting...</div>)
-        }
+                console.log("Waiting...");
+                return(<div>Waiting...</div>)
+            }
 
         //TODO: Don't think you need Number()
         var b = Number((this.props.resp.neofs.balance));
