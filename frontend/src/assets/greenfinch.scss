@@ -193,6 +193,64 @@ input:checked + .slider {
 } */
 
 
+/* Component: Toast
+- - - - - - - - - - - - - - - - - - */
+.molToastWrapper {
+    font-family: $brandFontSemi;
+    background: $brandColorWhite;
+    box-shadow: 0 3px 7px rgba(0, 0, 0, 0.2);
+    & .molToastInner {
+        & .molToastIcon {
+            & i {
+                font-size: 1.6rem;
+                color: rgba(255,255,255,0.7);
+            }
+        }
+        & .molToastContent {
+            background-color: $brandColorWhite;
+            & span.atmToastTitle {
+                letter-spacing: $brandLetterSpacing;
+                font-size: 0.8rem;
+                line-height: 1.2;
+                text-transform: uppercase;
+                font-family: $brandFontBold;
+            }
+            & span.atmToastMessage {
+                color: rgba($brandColorBlack,0.6);
+                font-size: 0.9rem;
+                line-height: 1.2;
+            }
+            & i.fa-times { // close button
+                color: rgba($brandColorBlack,0.6);
+                font-size: 1.1rem;
+            }
+        }
+    }
+    &.success {
+        background-color: $toastColorSuccess;
+        & span.atmToastTitle {
+            color: $toastColorSuccess;
+        }
+    }
+    &.error {
+        background-color: $toastColorError;
+        & span.atmToastTitle  {
+            color: $toastColorError;
+        }
+    }
+    &.warning {
+        background-color: $toastColorWarning;
+        & span.atmToastTitle  {
+            color: $toastColorWarning;
+        }
+    }
+    &.info {
+        background-color: $toastColorInfo;
+        & span.atmToastTitle  {
+            color: $toastColorInfo;
+        }
+    }
+}
 
 /* Styles: General
 - - - - - - - - - - - - - - - - - - */
