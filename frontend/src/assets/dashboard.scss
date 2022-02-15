@@ -43,7 +43,7 @@ span {
     padding: 5px 8px;
 }
 
-.d-flex, .me-auto {
+.me-auto {
     & .atmButtonSimple, .atmButtonIcon, .atmButtonIconClean {
         margin-right: $marginXSmall; //temporary
     }
@@ -118,6 +118,28 @@ input:checked + .slider:before {
     transform: translateX(26px);
 }
 
+/* Component: Modal
+- - - - - - - - - - - - - - - - - - */
+
+/* Component: Progress
+- - - - - - - - - - - - - - - - - - */
+.molProgress {
+    & .utTemp {
+        position: fixed;
+        z-index: 99;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+    }
+    & .molProgressContainer {
+        width: 600px;
+        padding: $paddingSmall;
+        & .molProgressFooter {
+            padding-top: $paddingSmall;
+        }
+    }   
+}
 
 /* Component: Toast
 - - - - - - - - - - - - - - - - - - */
@@ -168,6 +190,8 @@ input:checked + .slider:before {
 }
 
 
+
+
 /* Styles: Utilites
 - - - - - - - - - - - - - - - - - - */
 .utOverflow {
@@ -198,13 +222,16 @@ input:checked + .slider:before {
 .orgMainJSON { //change this name
     margin-top: $marginLarge;
     margin-bottom: $marginLarge;
+    & .molViewJSON {
+        height: 500px;
+        overflow-x: scroll;
+    }
     .orgBlockData {
         height: 120px;
     }   
     & .molBlockJSON {
         height: 70vh;
         padding: $paddingSmall;
-        overflow-x: scroll;
         margin-bottom: $marginSmall;
     }
     & .molBlockBread {

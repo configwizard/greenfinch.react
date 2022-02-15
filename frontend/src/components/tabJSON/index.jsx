@@ -47,13 +47,19 @@ class TabJSON extends React.Component {
             <section className="orgViewJSON">
                 <div className="row">
                     <div className="col-12 col-sm-12 col-xl-4">
-                        <Wallet resp={this.state.account}></Wallet>
+                        <div className="molViewJSON">
+                            <Wallet resp={this.state.account}></Wallet>
+                        </div>
                     </div>
                     <div className="col-12 col-sm-12 col-xl-4">
-                        <Containers onSelected={this.onSelected} containers={this.state.containerList}></Containers>
+                        <div className="molViewJSON">
+                            <Containers onSelected={this.onSelected} containers={this.state.containerList}></Containers>
+                        </div>
                     </div>
                     <div className="col-12 col-sm-12 col-xl-4">
-                        <Objects objects={this.state.objectList} containerID={this.selectedContainer}></Objects>
+                        <div className="molViewJSON">
+                            <Objects objects={this.state.objectList} containerID={this.selectedContainer}></Objects>
+                        </div>
                     </div>
                     {/*
                         <div className="col-12 col-sm-6 col-xl-3">
