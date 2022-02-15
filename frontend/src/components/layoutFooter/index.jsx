@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import Modal from "../compModal";
-import Progress from "../compProgress";
+import CompModal from "../compModal";
+import CompProgress from "../compProgress";
 
 
 export default function Footer() {
@@ -14,12 +14,12 @@ export default function Footer() {
                 <button type="button" className="atmButtonSimple" onClick="#"><i className="fas fa-hand-point-right"/>Click me for Toast (success)</button>
             </div>
             <div className="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <Modal title="Greenfinch Modal">
+                <CompModal title="Greenfinch Modal">
                     <p>Here is the content for the modal. I will need styling.</p>
-                </Modal>
+                </CompModal>
             </div>
             <div>
-                <Progress onClose={() => setShow(false)} show={show}></Progress>
+                <CompProgress onClose={() => setShow(false)} show={show}></CompProgress>
             </div>
         </>
     );

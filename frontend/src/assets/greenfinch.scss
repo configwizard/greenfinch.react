@@ -52,12 +52,12 @@ $brandDarkenValue: 12%;
 
 /* Mixins
 - - - - - - - - - - - - - - - - - - */
-@mixin titleStyle {
+@mixin titleStyle($titlesize) {
+    font-size: $titlesize;
     text-transform: uppercase; 
     font-family: $brandFontBold;
     letter-spacing: $brandLetterSpacing;
 }
-
 
 /* Styles: Base
 - - - - - - - - - - - - - - - - - - */
@@ -65,7 +65,6 @@ body {
     font-family: $brandFontReg;
     background-color: $brandColorLight;
 }
-
 
 /* Elements: Buttons
 - - - - - - - - - - - - - - - - - - */
@@ -128,10 +127,9 @@ button[class^="atmButton"] {
         border: unset;
         & li.nav-item {
             & button.nav-link {
+                @include titleStyle(1.1rem);
                 transition: $brandTransitionSpeed;
                 color: $brandColorWhite; 
-                @include titleStyle;
-                font-size: 1.1rem;
                 border: none;
                 border-radius: 0;
                 background-color: lighten($brandColorDark, 72%);
@@ -194,6 +192,10 @@ input:checked + .slider {
 
 /* Component: Modal
 - - - - - - - - - - - - - - - - - - */
+.modal-title {
+    @include titleStyle(1rem);
+    color: $brandColorDark;
+}
 
 /* Component: Progress
 - - - - - - - - - - - - - - - - - - */
@@ -205,6 +207,10 @@ input:checked + .slider {
         background-color: $brandColorWhite;
         box-shadow: 0 0 10px rgba(0,0,0,0.3);
     }
+}
+
+.react-sweet-progress-symbol {
+    font-family: $brandFontSemi;
 }
 
 /* Component: Toast
@@ -269,8 +275,7 @@ input:checked + .slider {
 /* Styles: General
 - - - - - - - - - - - - - - - - - - */
 span.utUCSmall {
-    @include titleStyle;
-    font-size: 10px;
+    @include titleStyle (0.8rem);
 }
 
 .orgHeaderStatus {
@@ -297,8 +302,7 @@ span.utUCSmall {
         & .molBlockData {
             background-color: $brandColorSecondary;
             & .utUnit {
-                @include titleStyle;
-                font-size: 12px;
+                @include titleStyle(0.9rem);
                 display: block;
                 margin-bottom: 5px;
             }
@@ -385,8 +389,7 @@ span.utUCSmall {
         line-height: 1.25;
     }
     & h4 {
-        @include titleStyle;
-        font-size: 0.9rem;
+        @include titleStyle(0.9rem);
         color: $brandColorSecondary-dark;
     }
     & .atmButtonIconClean i {
@@ -399,23 +402,20 @@ span.utUCSmall {
 - - - - - - - - - - - - - - - - - - */
 h2 {
     &.atmTitle {
-        @include titleStyle;
-        font-size: 13px;
+        @include titleStyle(0.9rem);
         border-bottom: 1px solid black; // variable
         padding-bottom: 5px; // variable
         margin-bottom: 10px; // variable
     }
     &.atmContainerTitle {
-        @include titleStyle;
-        font-size: 1.4rem;
+        @include titleStyle(1.4rem);
         color: $brandColorSecondary-dark;
     }
 }
 
 h4 {
     &.atmContainerTitle {
-        @include titleStyle;
-        font-size: 0.9rem;
+        @include titleStyle(0.9rem);
         color: $brandColorSecondary-dark;
     }
 }
