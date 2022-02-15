@@ -192,6 +192,20 @@ input:checked + .slider {
     box-shadow: 0 0 1px $brandColorDark;
 } */
 
+/* Component: Modal
+- - - - - - - - - - - - - - - - - - */
+
+/* Component: Progress
+- - - - - - - - - - - - - - - - - - */
+.molProgress {
+    & .utTemp {
+        background-color: rgba(0,0,0,0.5);
+    }
+    & .molProgressContainer {
+        background-color: $brandColorWhite;
+        box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+}
 
 /* Component: Toast
 - - - - - - - - - - - - - - - - - - */
