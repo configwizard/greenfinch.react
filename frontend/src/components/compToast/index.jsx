@@ -1,7 +1,8 @@
 import React from "react";
 
-const runtime = require('@wailsapp/runtime');
+// const runtime = require('@wailsapp/runtime');
 
+/*
 const iconSelector = (type) => {
     console.log("type selected ", type)
     switch (type) {
@@ -92,3 +93,4 @@ export default class CompToast extends React.Component {
         )
     }
 }
+*/
