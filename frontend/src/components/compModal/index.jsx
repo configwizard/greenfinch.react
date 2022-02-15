@@ -1,6 +1,6 @@
 import React from "react";
 
-const Modal = props => {
+const CompModal = props => {
     return (  
         <div className="modal-dialog">
             <div className="modal-content">
@@ -21,4 +21,4 @@ const Modal = props => {
     )
 }
 
-export default Modal;
+export default CompModal;
