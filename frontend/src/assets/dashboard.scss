@@ -208,6 +208,7 @@ input:checked + .slider:before {
 /* Styles: General
 - - - - - - - - - - - - - - - - - - */
 .orgHeaderStatus {
+    height: 60px;
     & .molHeaderContent {
         padding:10px;
         padding-left: 80px; //to accommodate the traffic light dots (wails app)
@@ -228,7 +229,6 @@ input:checked + .slider:before {
         height: 120px;
     }   
     & .molBlockJSON {
-        height: 70vh;
         padding: $paddingSmall;
         margin-bottom: $marginSmall;
     }
@@ -308,18 +308,6 @@ input:checked + .slider:before {
 
 .orgFooterAction {
     padding: $paddingSmall;
-}
-
-@media (min-width:1200px) {
-    .orgHeaderStatus {
-        height: 5vh;
-    }
-    .orgMainJSON {
-        height: 70vh;
-    }
-    .orgFooterAction {
-        height: 5vh;
-    }
 }
 
 /* Styles: Offcanvas Right

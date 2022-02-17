@@ -3,13 +3,14 @@ import {createContainer} from "../../mocker/containers.js";
 
 function ControlBar({containers, onSelected, changeView, viewMode}) {
     console.log("containerList", containers)
+
     return (
         <div className="row">
             <div className="col-12">
                 <div className="molContainersHeader d-flex">
                     <div>
                         <h2 className="atmContainerTitle">{/* if viewMode === 'x' show here. */}
-                           
+                            ...
                         </h2>
                     </div>
                     <div className="ms-auto">
