@@ -11,10 +11,13 @@ function ContainerView({containerList, viewMode, onContainerSelection}) {
                 {containerList.map((item,i) =>
                     <div className="col-6 col-lg-4 col-xl-2" key={i}>
                         <button type="button" className="molContainersButtonGrid d-flex flex-column align-items-center justify-content-between" onClick={() => onContainerSelection(item.id)}>
-                            <div className="atmButtonOptions">
-                                <i className="far fa-ellipsis-h"/>
-                            </div>
-                            <i className="fas fa-3x fa-archive"/>
+                            {/*
+                                <div className="atmButtonOptions">
+                                    <i className="far fa-ellipsis-h"/>
+                                </div>
+                                <i className="fas fa-3x fa-archive"/>
+                            */}
+                            <div class="neo folder-icon"></div>
                             <span className="atmContainerName">{item.name}</span>
                         </button>
                     </div>

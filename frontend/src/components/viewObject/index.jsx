@@ -11,10 +11,12 @@ function ObjectView({objectList, viewMode, onObjectSelection}) {
                 {objectList.map((item,i) => 
                     <div className="col-6 col-lg-4 col-xl-2" key={i}>
                         <button className="molContainersButtonGrid d-flex flex-column align-items-center justify-content-between" onClick={()=> onObjectSelection(item.id)}>
+                            {/* 
                             <div className="atmButtonOptions">
                                 <i className="far fa-ellipsis-h"/>
                             </div>
-                            <i className="fas fa-3x fa-draw-square"/>
+                            <i className="fas fa-3x fa-draw-square"/> */ }
+                            <div class="file-icon file-icon-lg" data-type="doc"></div>
                             <span className="atmContainerName">{item.name}</span>
                         </button>
                     </div>

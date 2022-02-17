@@ -189,6 +189,70 @@ input:checked + .slider:before {
     }
 }
 
+/* Styles: Folders
+- - - - - - - - - - - - - - - - - - */
+.folder-icon { //Update classes
+    width: 90px;
+    height: 70px;
+    display: inline-block;
+    margin: auto;
+    position: relative;
+    margin-bottom: 8px;
+    margin-top: 12px;
+    &:before {
+        width: 50%;
+        height: 0.7em;
+        position: absolute;
+        top: -0.7em;
+        left: 0px;
+    }
+}
+
+/* Styles: Fie icons
+- - - - - - - - - - - - - - - - - - */
+.file-icon {
+    display: inline-block;
+    width: 24px;
+    height: 32px;
+    position: relative;
+    &:before {
+        display: block;
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 0;
+        height: 0;
+    }
+    &:after {
+        display: block;
+        content: '.'attr(data-type);
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 2px;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+}
+
+.file-icon-lg {
+    width: 48px;
+    height: 64px;
+    &:after {
+        padding: 4px 6px;
+    }
+}
+
+.file-icon-xl {
+    width: 96px;
+    height: 128px;
+    &:after {
+        padding: 4px 10px;
+    }
+}
+
 /* Styles: Utilites
 - - - - - - - - - - - - - - - - - - */
 .utOverflow {
