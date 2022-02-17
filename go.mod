@@ -33,11 +33,11 @@ require (
 	github.com/klauspost/compress v1.12.2 // indirect
 	github.com/leaanthony/go-ansi-parser v1.0.1 // indirect
 	github.com/leaanthony/go-common-file-dialog v1.0.3 // indirect
-	github.com/leaanthony/go-webview2 v1.0.2 // indirect
+	github.com/leaanthony/go-webview2 v1.0.3-0.20220125181555-00f20a61c17d // indirect
 	github.com/leaanthony/gosod v1.0.3 // indirect
 	github.com/leaanthony/slicer v1.5.0 // indirect
 	github.com/leaanthony/typescriptify-golang-structs v0.1.7 // indirect
-	github.com/leaanthony/winc v0.0.0-20220117090042-fdd739b32c58 // indirect
+	github.com/leaanthony/winc v0.0.0-20220208061147-37b059b9dc3b // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
 	github.com/mr-tron/base58 v1.2.0 // indirect
 	github.com/nspcc-dev/go-ordered-json v0.0.0-20210915112629-e1b6cce73d02 // indirect
@@ -76,6 +76,6 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 
-// replace github.com/wailsapp/wails/v2 v2.0.0-beta.28 => /Users/alex.walker/go/pkg/mod/github.com/wailsapp/wails/v2@v2.0.0-beta.28
+//replace github.com/wailsapp/wails/v2 v2.0.0-beta.28 => /Users/alex.walker/go/src/github.com/wailsapp/wails/v2
 
 //replace github.com/amlwwalker/gaspump-api => /Users/alex.walker/go/src/github.com/amlwwalker/gaspump-api

@@ -1,8 +1,8 @@
 import React from "react";
 
-// const runtime = require('@wailsapp/runtime');
+const runtime = require('@wailsapp/runtime');
+const name = "freshtoast"
 
-/*
 const iconSelector = (type) => {
     console.log("type selected ", type)
     switch (type) {
@@ -31,34 +31,33 @@ export default class CompToast extends React.Component {
             list: []
         }
     }
-    componentDidMount() {
-        let toastStore = runtime.Store.New('toasts');
-        toastStore.subscribe(async t => {
-            t.startTime = Date.now()
-            console.log("received toast from Go ", t)
-            let list = this.state.list
-            console.log("pre list", list)
-            list.push(t)
-            console.log("push list", list)
-            await this.setState({list: list})
-        });
+    //todo: uncomment for demoing toasts
 
-        setInterval(() => {
-            if (this.props.autoDelete && this.state.list.length) {
-                if (((new Date) - this.state.list[0].startTime) > this.props.autoDeleteTime) {
-                    this.deleteToast(this.state.list[0].id);
-                }
-            }
-        }, this.props.autoDeleteTime)
+    // async componentDidMount () {
+    //     console.log("mounting")
+    //     window.runtime.EventsOn(name, async (message) => {
+    //         console.log(message)
+    //         await this.makeToast(message)
+    //     })
+    //     setInterval(() => {
+    //         if (this.props.autoDelete && this.state.list.length) {
+    //             if (((new Date) - this.state.list[0].startTime) > this.props.autoDeleteTime) {
+    //                 this.deleteToast(this.state.list[0].id);
+    //             }
+    //         }
+    //     }, this.props.autoDeleteTime)
+    // }
+    makeToast = async (message) => {
+        message.startTime = Date.now()
+        let list = this.state.list
+        list.push(message)
+        console.log("push list", list)
+        await this.setState({list: list})
     }
     deleteToast = id => {
         const index = this.state.list.findIndex(e => e.id === id);
         let list = this.state.list
         list.splice(index, 1); //how to set the state back to this
-        console.log("spliced list ", list)
-        // const toastListItem = toastList.findIndex(e => e.id === id);
-        // toastList.splice(toastListItem, 1);
-        // setList([...list]);
         this.setState({list: list})
     }
     render() {
@@ -68,20 +67,20 @@ export default class CompToast extends React.Component {
                 <div className="molToastContainer">
                     {
                         this.state.list.map((toast, i) => {
-                            const fontAwesomeIcon = iconSelector(toast.type)
+                            const fontAwesomeIcon = iconSelector(toast.Type)
                             console.log("toastType ", toast.type)
                             return (
                                 <div
                                     key={i}
-                                    className={`molToastWrapper ${toast.type}`}>
+                                    className={`molToastWrapper ${toast.Type}`}>
                                     <div className="molToastInner d-flex">
                                         <div className="molToastIcon d-flex align-items-center justify-content-center">
                                             <i className={`fad ${fontAwesomeIcon}`}/>
                                         </div>
                                         <div className="molToastContent d-flex flex-column justify-content-center">
                                             <i className="fa fa-fw fa-times" onClick={() => this.deleteToast(toast.id)}/>
-                                            <span className="atmToastTitle">{toast.title}</span>
-                                            <span className="atmToastMessage">{toast.description}</span>
+                                            <span className="atmToastTitle">{toast.Title}</span>
+                                            <span className="atmToastMessage">{toast.Description}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -93,4 +92,3 @@ export default class CompToast extends React.Component {
         )
     }
 }
-*/

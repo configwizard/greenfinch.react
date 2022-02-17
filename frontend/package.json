@@ -7,6 +7,7 @@
     "@testing-library/jest-dom": "^5.15.0",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
+    "@wailsapp/runtime": "^1.1.1",
     "bootstrap": "^5.1.3",
     "react": "^17.0.2",
     "react-bootstrap": "^2.1.1",
@@ -44,5 +45,8 @@
     ]
   },
   "keywords": [],
-  "author": "Alex Walker"
+  "author": "Alex Walker",
+  "devDependencies": {
+    "fade-props": "^2.1.1"
+  }
 }

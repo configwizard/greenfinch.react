@@ -110,6 +110,14 @@ const go = {
         return window.go.manager.Manager.ListContainers();
       },
       /**
+       * MakeToast
+       * @param {ToastMessage} arg1 - Go Type: manager.ToastMessage
+       * @returns {Promise<void>} 
+       */
+      "MakeToast": (arg1) => {
+        return window.go.manager.Manager.MakeToast(arg1);
+      },
+      /**
        * RetrieveContainerFileSystem
        * @param {string} arg1 - Go Type: string
        * @returns {Promise<Element|Error>}  - Go Type: filesystem.Element
@@ -123,6 +131,14 @@ const go = {
        */
       "RetrieveFileSystem": () => {
         return window.go.manager.Manager.RetrieveFileSystem();
+      },
+      /**
+       * SetProgressPercentage
+       * @param {ProgressMessage} arg1 - Go Type: manager.ProgressMessage
+       * @returns {Promise<void>} 
+       */
+      "SetProgressPercentage": (arg1) => {
+        return window.go.manager.Manager.SetProgressPercentage(arg1);
       },
       /**
        * Upload
