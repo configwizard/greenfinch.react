@@ -6,8 +6,24 @@ import (
 	"github.com/amlwwalker/gaspump-api/pkg/client"
 	"github.com/amlwwalker/gaspump-api/pkg/wallet"
 	neofscli "github.com/nspcc-dev/neofs-sdk-go/client"
+	"github.com/wailsapp/wails/v2/pkg/runtime"
+	"math/rand"
+	"time"
 )
 
+type ProgressMessage struct {
+	Id int
+	Title string
+	Progress int
+	Show     bool
+	Error    string
+}
+type ToastMessage struct {
+	Id int
+	Title string
+	Type string
+	Description string
+}
 type Manager struct {
 	walletPath, walletAddr string
 	fsCli                  *neofscli.Client
@@ -24,7 +40,37 @@ func (m *Manager) Startup(ctx context.Context) {
 
 // domReady is called after the front-end dom has been loaded
 func (m *Manager) DomReady(ctx context.Context) {
-	// Add your action here
+	go func() {
+		show := true
+		for i := 0; i <= 10; i++ {
+			if i == 10 {
+				show = false
+			}
+			newProgress := ProgressMessage{
+				Id:       rand.Intn(101 - 1) + 1,
+				Title:    "Loading progress",
+				Progress: i * 10,
+				Show:     show,
+			}
+			m.SetProgressPercentage(newProgress)
+			time.Sleep(1 * time.Second)
+		}
+		newToast := ToastMessage{
+			Id:          rand.Intn(101 - 1) + 1,
+			Title:       "Ready for action",
+			Type:        "success",
+			Description: "The application has successfully started",
+		}
+		m.MakeToast(newToast)
+	}()
+}
+
+func (m *Manager) MakeToast(message ToastMessage) {
+	runtime.EventsEmit(m.ctx, "freshtoast", message)
+}
+
+func (m *Manager) SetProgressPercentage(progressMessage ProgressMessage) {
+	runtime.EventsEmit(m.ctx, "percentageProgress", progressMessage)
 }
 
 // shutdown is called at application termination
@@ -52,6 +98,14 @@ func NewFileSystemManager(walletPath, walletAddr, password string, DEBUG bool) (
 		DEBUG: DEBUG,
 	}, nil
 }
+
+//func (m Manager) PopToast() {
+//
+//	go func() {
+//		time.Sleep(5 * time.Second)
+//		runtime.EventsEmit(m.ctx, "freshtoast", "hello world!")
+//	}()
+//}
 
 func (m Manager) Client() *neofscli.Client {
 	return m.fsCli

@@ -14,8 +14,10 @@ interface go {
 		ListContainerObjectIDs(arg1:string):Promise<Array<string>|Error>
 		ListContainerPopulatedObjects(arg1:string):Promise<Array<Element>|Error>
 		ListContainers():Promise<Array<Element>|Error>
+		MakeToast(arg1:ToastMessage):Promise<void>
 		RetrieveContainerFileSystem(arg1:string):Promise<Element|Error>
 		RetrieveFileSystem():Promise<Array<Element>|Error>
+		SetProgressPercentage(arg1:ProgressMessage):Promise<void>
 		Upload(arg1:string,arg2:any):Promise<string|Error>
 		UploadObject(arg1:string,arg2:string,arg3:any,arg4:Reader):Promise<string|Error>
     },

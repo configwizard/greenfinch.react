@@ -48,6 +48,10 @@ class App extends React.Component {
         const account = await getAccountInformation()
         this.setState({account})
     }
+    fireToast(message) {
+        console.log("making toast with ", message)
+         window.go.manager.Manager.MakeToast(message)
+    }
 
     render() {
         return (
@@ -86,10 +90,10 @@ class App extends React.Component {
                         </div>
                     </div>
                 </section>
-
+                <CompToast autoDelete={true} autoDeleteTime={3000}></CompToast>
                 <section className="orgFooterAction">
                     <div className="molFooterContent">
-                        <Footer></Footer>
+                        <Footer fireToast={this.fireToast}></Footer>
                     </div>
                 </section>
             </div>    

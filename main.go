@@ -8,7 +8,6 @@ import (
 	"flag"
 	"fmt"
 	"github.com/nspcc-dev/neo-go/pkg/core/native/nativenames"
-
 	//"github.com/amlwwalker/gaspump-api/pkg/client"
 	"github.com/amlwwalker/gaspump-api/pkg/wallet"
 	//wallet2 "github.com/nspcc-dev/neo-go/pkg/wallet"
@@ -131,6 +130,7 @@ func main() {
 	}
 	mocker := mocker.Mocker{} //mocker for frontend
 
+	//manager.PopToast()
 	// Create application with options
 	err = wails.Run(&options.App{
 		Title:  "Gas Pump",

@@ -187,7 +187,31 @@ export class Element {
 	}
 }
 
+export class ToastMessage {
 
 
+    static createFrom(source: any = {}) {
+        return new ToastMessage(source);
+    }
+
+    constructor(source: any = {}) {
+        if ('string' === typeof source) source = JSON.parse(source);
+
+    }
+}
+
+
+export class ProgressMessage {
+
+
+    static createFrom(source: any = {}) {
+        return new ProgressMessage(source);
+    }
+
+    constructor(source: any = {}) {
+        if ('string' === typeof source) source = JSON.parse(source);
+
+    }
+}
 
 

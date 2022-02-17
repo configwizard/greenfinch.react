@@ -1,5 +1,5 @@
 import React from "react";
-
+import FadeProps from 'fade-props';
 //Mocker
 import {getAccountInformation} from "../../mocker/manager.js";
 import {listContainers} from "../../mocker/containers.js";
@@ -39,18 +39,16 @@ class TabVisual extends React.Component {
         //we will need to call the function to get the objects for a specific container ID and update the objectList
         alert("You selected this object: " + objectID)
     }
-    retriveCorrectComponent() {
+    retrieveCorrectComponent() {
+        let displayContainer
         if (this.state.selectedContainer == null) {
-            return (
-                <ContainerView containerList={this.state.containerList} viewMode={this.state.viewMode} onContainerSelection={this.onContainerSelection}></ContainerView>
-            )
+                displayContainer = <ContainerView containerList={this.state.containerList} viewMode={this.state.viewMode} onContainerSelection={this.onContainerSelection}></ContainerView>
         } else {
-            return (
-                <ObjectView objectList={this.state.objectList} viewMode={this.state.viewMode} onObjectSelection={this.onObjectSelection}></ObjectView>
-            )
+                displayContainer = <ObjectView objectList={this.state.objectList} viewMode={this.state.viewMode} onObjectSelection={this.onObjectSelection}></ObjectView>
         }
+        return displayContainer
     }
-    retriveUploadFunction() {
+    retrieveUploadFunction() {
         if (this.state.selectedContainer == null) {
             return (
                 <div>Nope.</div>
@@ -84,11 +82,13 @@ class TabVisual extends React.Component {
                     <div className="col-12 col-md-6 col-xl-9 order-2 order-md-1">
                         <div className="orgContainersGrid">
                             <ControlBar changeView={this.onViewChange}></ControlBar>
-                            {this.retriveCorrectComponent(this.state)}
+                            <FadeProps animationLength={150}>
+                            {this.retrieveCorrectComponent(this.state)}
+                            </FadeProps>
                         </div>
                     </div>
                     <div className="col-12 col-md-6 col-xl-3 order-1 order-md-2">
-                        {this.retriveUploadFunction(this.state)}
+                        {this.retrieveUploadFunction(this.state)}
                     </div>
                 </div>
             </section>
