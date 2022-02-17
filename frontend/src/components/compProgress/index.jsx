@@ -15,7 +15,7 @@ export default class CompProgress extends React.Component {
         }
     }
 
-    async componentDidMount () {
+/*  async componentDidMount () {
         console.log("percentage ready")
         window.runtime.EventsOn(name, async (progressMessage) => {
             console.log("progressMessage", {progressMessage})
@@ -28,7 +28,8 @@ export default class CompProgress extends React.Component {
                 await this.props.setShow(true)
             }
         })
-    }
+    } */
+
     render() {
         if (!this.props.show) {
             return null
