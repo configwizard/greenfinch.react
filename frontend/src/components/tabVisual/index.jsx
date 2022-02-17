@@ -58,9 +58,9 @@ class TabVisual extends React.Component {
                 // TODO 01: Turn this into a component
                 <div className="molBlockUpload d-flex align-items-center justify-content-center">
                     <div className="atmBlockUpload d-flex flex-column align-items-center justify-content-center">
-                        <i className="fas fa-4x fa-upload"/>
+                        <i className="fas fa-2x fa-upload"/>
                         {/* Add input here for file upload */}
-                        <p><button type="button" className="atmButtonText" title="Choose a file">Choose a file</button> or drag it here</p>
+                        <p><button type="button" className="atmButtonText" title="Choose a file">Choose a file</button><br/> or drag it here</p>
                         {/* drag and drop upload componet (look for onEvent, onUpload... and console.log 'event' and can find a path) */}
                         {/* https://stackoverflow.com/questions/58880171/get-file-path-from-drop-event/64616487#64616487 */}
                     </div>
@@ -79,15 +79,15 @@ class TabVisual extends React.Component {
                     </div>
                 </div>
                 <div className="row">
-                    <div className="col-12 col-md-6 col-xl-9 order-2 order-md-1">
+                    <div className="col-12 col-md-9 order-2 order-md-1">
                         <div className="orgContainersGrid">
                             <ControlBar changeView={this.onViewChange}></ControlBar>
                             <FadeProps animationLength={150}>
-                            {this.retrieveCorrectComponent(this.state)}
+                                {this.retrieveCorrectComponent(this.state)}
                             </FadeProps>
                         </div>
                     </div>
-                    <div className="col-12 col-md-6 col-xl-3 order-1 order-md-2">
+                    <div className="col-12 col-md-3 col-xl-3 order-1 order-md-2">
                         {this.retrieveUploadFunction(this.state)}
                     </div>
                 </div>

@@ -210,6 +210,7 @@ input:checked + .slider:before {
 .orgHeaderStatus {
     & .molHeaderContent {
         padding:10px;
+        padding-left: 80px; //to accommodate the traffic light dots (wails app)
     }
     & .atmStatus {
         margin-right: $marginSmall;
@@ -217,8 +218,8 @@ input:checked + .slider:before {
 }
 
 .orgMainJSON { //change this name
-    margin-top: $marginLarge;
-    margin-bottom: $marginLarge;
+    margin-top: $marginSmall;
+    margin-bottom: $marginSmall;
     & .molViewJSON {
         height: 500px;
         overflow-x: scroll;
@@ -233,7 +234,7 @@ input:checked + .slider:before {
     }
     & .molBlockBread {
         padding: $paddingXSmall;
-        margin: $marginSmall 0;
+        margin: 0;
         & span {
             margin-right: 10px;
             max-width: 130px;

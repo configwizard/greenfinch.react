@@ -275,7 +275,7 @@ input:checked + .slider {
 /* Styles: General
 - - - - - - - - - - - - - - - - - - */
 span.utUCSmall {
-    @include titleStyle (0.8rem);
+    @include titleStyle (0.7rem);
 }
 
 .orgHeaderStatus {
@@ -283,6 +283,7 @@ span.utUCSmall {
     background-color: $brandColorDark;
     color: $brandColorPrimary;
     & .atmStatus {
+        font-size: 0.9rem;
         letter-spacing: 0.07em;
         font-weight: bold;
     }
@@ -320,7 +321,7 @@ span.utUCSmall {
     }
     & .molBlockUpload {
         color: $brandColorDark;
-        background-color: lighten($brandColorDark, 72%);
+        background-color: lighten($brandColorDark, 75%);
         & .atmBlockUpload {
             border: 1px solid $brandColorPrimary;
             border-radius: $brandBorderRadius;
@@ -331,6 +332,9 @@ span.utUCSmall {
                 rgba(0,0,0,0.03) 10px,
                 rgba(0,0,0,0.03) 20px
             );
+            & p, p .atmButtonText {
+                font-size: 0.8rem;
+            }
         }
     }
     & p {
