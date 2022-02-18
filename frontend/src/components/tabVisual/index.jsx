@@ -7,9 +7,9 @@ import {listObjects} from "../../mocker/objects.js";
 
 //Components
 import BreadCrumb from "../layoutBreadCrumb";
-import ControlBar from "../layoutControlBar";
-import ContainerView from "../viewContainer";
-import ObjectView from "../viewObject";
+import ControlBar from "../viewOptions";
+import ContainerView from "../viewContainers";
+import ObjectView from "../viewObjects";
 
 class TabVisual extends React.Component {
     constructor(props) {
@@ -97,7 +97,7 @@ class TabVisual extends React.Component {
                 </div>
                 <div className="row">
                     <div className="col-12">
-                        <ControlBar changeView={this.onViewChange}></ControlBar>
+                        <ControlBar changeView={this.onViewChange} viewMode={this.state.viewMode} selectedContainer={this.state.selectedContainer}></ControlBar>
                     </div>
                 </div>
                 <div className="row">

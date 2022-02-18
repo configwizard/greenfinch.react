@@ -68,6 +68,8 @@ body {
 
 /* Elements: Buttons
 - - - - - - - - - - - - - - - - - - */
+
+// cover off all, buttons for all states, active/inactive, activated/live/ready (better name needed)
 button[class^="atmButton"] {
     transition: $brandTransitionSpeed;
     border: none;
@@ -82,6 +84,14 @@ button[class^="atmButton"] {
     &:hover {
         color: $brandColorPrimary;
         background-color: $brandColorDark;
+    }
+    &.utInactive {
+        cursor: not-allowed!important;
+        opacity: 0.1;
+        &:hover {
+            background-color: $brandColorDark;
+            color: $brandColorWhite;
+        }
     }
 }
 
@@ -101,9 +111,22 @@ button[class^="atmButton"] {
         color: $brandColorPrimary;
         background-color: $brandColorDark;
     }
-    &.active {
-        cursor: default;
+    &.utLive {
+        cursor: default!important;
         background-color: $brandColorPrimary;
+        color: $brandColorWhite;
+        &:hover {
+            background-color: $brandColorPrimary;
+            color: $brandColorWhite;
+        }
+    }
+    &.utInactive {
+        cursor: not-allowed!important;
+        opacity: 0.1;
+        &:hover {
+            background-color: $brandColorDark;
+            color: $brandColorWhite;
+        }
     }
 }
 
@@ -285,7 +308,7 @@ input:checked + .slider {
 }
 
 .neo.folder-icon { //Update classes
-    background: linear-gradient(180deg, #00AF92 0%, #00E599 86%, #00AF92 100%);
+    background: linear-gradient(180deg, $brandColorSecondary 0%, $brandColorPrimary 76%, $brandColorSecondary 100%);
     border-top: 4px solid #00E599;
     &:before {
         background-color: #00E599;
@@ -295,7 +318,7 @@ input:checked + .slider {
 /* Styles: Fie icons
 - - - - - - - - - - - - - - - - - - */
 .file-icon {
-    background: linear-gradient(180deg, #00AF92 0%, #00E599 86%, #00AF92 100%);
+    background: linear-gradient(180deg, $brandColorSecondary 0%, $brandColorPrimary 76%, $brandColorSecondary 100%);
     border-radius: 2px;
     text-align: left;
     -webkit-font-smoothing: antialiased;
@@ -487,6 +510,13 @@ h2 {
 }
 
 h4 {
+    &.atmContainerTitle {
+        @include titleStyle(0.9rem);
+        color: $brandColorSecondary-dark;
+    }
+}
+
+span {
     &.atmContainerTitle {
         @include titleStyle(0.9rem);
         color: $brandColorSecondary-dark;
