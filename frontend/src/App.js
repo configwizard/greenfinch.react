@@ -11,7 +11,7 @@ import { Tab, Tabs } from 'react-bootstrap';
 
 import TabVisual from "./components/tabVisual";
 import TabJSON from "./components/tabJSON";
-import Status from "./components/layoutStatus";
+import Status from "./components/layoutHeader";
 import Footer from "./components/layoutFooter";
 
 import CompToast from "./components/compToast";

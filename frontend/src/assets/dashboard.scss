@@ -323,10 +323,6 @@ input:checked + .slider:before {
         }
     }
     .orgContainersGrid {
-        padding-top: $paddingMedium;
-        & .molContainersHeader {
-            margin-bottom: $marginSmall;
-        }
         & .molContainersButtonGrid {
             position: relative;
             width: 100%;
@@ -351,6 +347,22 @@ input:checked + .slider:before {
             margin-bottom: 4px;
             & i {
                 margin-right: $marginMedium;
+            }
+        }
+    }
+    .molContainersHeader {
+        padding: 20px 0;
+        margin-bottom: $marginMedium;
+        & .molButtonGroup {
+            margin-right: $marginMedium;
+            &:first-child {
+                margin-right: 0;
+            }
+            &:last-child {
+                margin-right: 0;
+                & button:last-child {
+                    margin-left: $marginXSmall;
+                }
             }
         }
     }
@@ -390,6 +402,13 @@ input:checked + .slider:before {
 - - - - - - - - - - - - - - - - - - */
 h2, h4 {
     margin-bottom: $marginSmall;
+}
+
+span {
+    &.atmContainerTitle {
+        margin: 0;
+        padding: 0;
+    }
 }
 
 
