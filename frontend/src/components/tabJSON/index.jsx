@@ -58,7 +58,7 @@ class TabJSON extends React.Component {
                     </div>
                     <div className="col-12 col-sm-12 col-xl-4">
                         <div className="molViewJSON">
-                            <Objects objects={this.state.objectList} containerID={this.selectedContainer}></Objects>
+                            <Objects objects={this.state.objectList} containerID={this.state.selectedContainer}></Objects>
                         </div>
                     </div>
                     {/*

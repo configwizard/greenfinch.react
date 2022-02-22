@@ -10,11 +10,12 @@ import BreadCrumb from "../layoutBreadCrumb";
 import ControlBar from "../viewOptions";
 import ContainerView from "../viewContainers";
 import ObjectView from "../viewObjects";
+import TutorialView from "../viewTutorial";
 
 class TabVisual extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {containerList: [], objectList: [], account: {}, selectedContainer: null, viewMode: "grid"};
+        this.state = {tutorial: false, containerList: [], objectList: [], account: {}, selectedContainer: null, viewMode: "grid"};
     }
     async componentDidMount() {
         //const resp = await retrieveFullFileSystem()
@@ -49,7 +50,17 @@ class TabVisual extends React.Component {
         return displayContainer
     }
     retrieveUploadFunction() {
-        if (this.state.selectedContainer == null) {
+        if (this.state.tutorial) {
+            return (
+                <div className="col-12">
+                    <div className="orgContainersGrid">
+                        <FadeProps animationLength={150}>
+                            <TutorialView></TutorialView>
+                        </FadeProps>
+                    </div>
+                </div>
+            )
+        } else if (this.state.selectedContainer == null) {
             return (
                 <div className="col-12">
                     <div className="orgContainersGrid">
