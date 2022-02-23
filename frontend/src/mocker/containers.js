@@ -3,10 +3,11 @@ const listContainers = async () => {
         let containers = require('../dbg_data_structures/ListPopulatedContainers.json');
         console.log("containers", containers)
         return containers
-    }catch (e) {
+    } catch(e) {
         console.log("error listing containers", e)
     }
 }
+
 const getContainer = async (containerID) => {
     try {
         let container = await window.go.mocker.Mocker.GetContainer(containerID)
@@ -14,14 +15,19 @@ const getContainer = async (containerID) => {
     } catch(e) {
         console.log("error retrieving containers", e)
     }
-};
+}
+
 const createContainer = async (name) => {
+    if (name === "") {
+        throw new Error("a container must have a name")
+    }
     try {
+        console.log("creating container with name", name)
         let containerId = await window.go.mocker.Mocker.CreateContainer(name)
         console.log("created container", containerId)
         return containerId
     } catch(e) {
-       console.log("error creating containers", e)
+        console.log("error creating containers", e)
     }
 }
 
