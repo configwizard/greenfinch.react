@@ -1,4 +1,4 @@
-import React  from "react";
+import React from "react";
 import JSONView from 'react-json-view';
 // import {retrieveFullFileSystem} from "../../manager/interactions";
 

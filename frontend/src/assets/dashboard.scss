@@ -27,6 +27,8 @@ span {
 
 /* Elements: Buttons
 - - - - - - - - - - - - - - - - - - */
+
+// can we make buttons a mixin, to add border radius...etc
 .atmButtonSimple {
     padding: 5px 12px;
     & i {
@@ -296,21 +298,7 @@ input:checked + .slider:before {
         padding: $paddingSmall;
         margin-bottom: $marginSmall;
     }
-    & .molBlockBread {
-        padding: $paddingXSmall;
-        margin: 0;
-        & span {
-            margin-right: 10px;
-            max-width: 130px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            & i.fa-wallet {
-                margin-right: 5px;
-            }
-            &.atmBreadWallet {}
-        }
-    }    
+    
     & .molBlockUpload {
         width: 100%;
         padding: $paddingSmall;
@@ -323,45 +311,45 @@ input:checked + .slider:before {
         }
     }
     .orgContainersGrid {
-        & .molContainersButtonGrid {
-            position: relative;
-            width: 100%;
-            padding-top: 32px;
-            padding-bottom: 16px;
+        & .molButtonGrid {
             margin-bottom: 14px;
+            & .atmButtonGridHeader, .atmButtonGridContent {
+                width: 100%;
+            }
+            & .atmButtonGridHeader {
+                padding: 0;
+                margin: 0;
+            }
+            & .atmButtonGridContent {
+                width: 100%;
+                padding-top: 32px;
+                padding-bottom: 16px;
+                & .atmButtonGridName {
+                    margin-top: 2px;
+                    margin-bottom: 2px;
+                }
+            }
             & .atmButtonOptions {
-                position: absolute;
-                top: 0;
-                right: 0;
+                border-radius: 0;
+                position: relative;
                 padding: 0 5px;
+                & .utOverlayMenuSmall {
+                    position: absolute;
+                    top: 30px;
+                    left: 0;
+                    min-width: 180px;
+                    min-height: 140px;
+                    z-index: 200;
+                    padding: $paddingXSmall;
+                }
             }
-            & .atmContainerName {
-                margin-top: 2px;
-                margin-bottom: 2px;
-            }   
-        }
-        & .molContainersButtonRow {
-            position: relative;
-            width: 100%;
-            padding: $paddingXSmall $paddingMedium;
-            margin-bottom: 4px;
-            & i {
-                margin-right: $marginMedium;
-            }
-        }
-    }
-    .molContainersHeader {
-        padding: 20px 0;
-        margin-bottom: $marginMedium;
-        & .molButtonGroup {
-            margin-right: $marginMedium;
-            &:first-child {
-                margin-right: 0;
-            }
-            &:last-child {
-                margin-right: 0;
-                & button:last-child {
-                    margin-left: $marginXSmall;
+            & .molContainersButtonRow { // to bring in line with atmButtonGridContent
+                position: relative;
+                width: 100%;
+                padding: $paddingXSmall $paddingMedium;
+                margin-bottom: 4px;
+                & i {
+                    margin-right: $marginMedium;
                 }
             }
         }
@@ -381,6 +369,70 @@ input:checked + .slider:before {
         }
     }
 }
+
+/* Layout: Breadcrumb
+- - - - - - - - - - - - - - - - - - */
+.molBlockBread {
+    padding: $paddingXSmall;
+    margin: 0;
+    & span {
+        margin-right: 10px;
+        max-width: 130px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        & i.fa-wallet {
+            margin-right: 5px;
+        }
+    }
+}    
+
+
+/* Component: Wallet
+- - - - - - - - - - - - - - - - - - */
+.utButtonWallet {
+    position: relative;
+}
+
+.utTest {
+    background-color: rgba(0,0,0,0.1);
+    width: 100%;
+    height: 100%;
+}
+
+.molWallet {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    z-index: 300;
+    min-width: 300px;
+    min-height: 400px;
+    padding: $paddingXSmall;
+}
+
+/* View: Options
+- - - - - - - - - - - - - - - - - - */
+.molContainersHeader {
+    padding: $paddingSmall 0;
+    margin-bottom: $marginMedium;
+    & .molButtonGroup {
+        margin-right: $marginSmall;
+        &:first-child {
+            margin-right: 0;
+        }
+        &:last-child {
+            margin-right: 0;
+            & button:last-child {
+                margin-left: $marginXSmall;
+            }
+        }
+    }
+}
+
+.molButtonGroup {
+    margin: 0 5px;
+}
+
 
 .orgFooterAction {
     padding: $paddingSmall;

@@ -85,8 +85,6 @@ class TabVisual extends React.Component {
             )
         }
     }
-    // TODO 02: anther function here to determine the title... if selected container... show component X, if not component y... and stuff that in the control bar. Like the above 'retrieve'
-    // TODO 03: Drawer
     render() {
         return (
             <section className="orgViewVisual">
@@ -102,17 +100,6 @@ class TabVisual extends React.Component {
                 </div>
                 <div className="row">
                     {this.retrieveUploadFunction(this.state)}
-                    {/* <div className="col-12 col-md-9 order-2 order-md-1">
-                        <div className="orgContainersGrid">
-                            <ControlBar changeView={this.onViewChange}></ControlBar>
-                            <FadeProps animationLength={150}>
-                                {this.retrieveCorrectComponent(this.state)}
-                            </FadeProps>
-                        </div>
-                    </div>
-                    <div className="col-12 col-md-3 col-xl-3 order-1 order-md-2">
-                        
-                    </div> */}
                 </div>
             </section>
         );
