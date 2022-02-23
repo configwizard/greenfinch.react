@@ -1,5 +1,7 @@
 import React from "react";
-import {createContainer} from "../../mocker/containers.js";
+import { createContainer } from "../../mocker/containers.js";
+import CompModal from "../compModal";
+import { Form } from "react-bootstrap";
 
 function ControlBar({containers, selectedContainer, onSelected, changeView, viewMode}) {
     console.log("containerList", containers)
@@ -14,7 +16,7 @@ function ControlBar({containers, selectedContainer, onSelected, changeView, view
                         </span>
                     </div>
                     <div className="ms-auto molButtonGroup">
-                        <button type="button" className={`atmButtonSimple ${selectedContainer ? "utInactive" : "utActive"}`} onClick={async () => createContainer("my container")}><i className="fas fa-plus-circle"/>New container</button>
+                        <button data-bs-toggle="modal" data-bs-target="#newContainerModal" type="button" className={`atmButtonSimple ${selectedContainer ? "utInactive" : "utActive"}`}><i className="fas fa-plus-circle"/>New container</button>
                     </div>
                     <div className="molButtonGroup">
                         <button type="button" className={`atmButtonIcon ${selectedContainer ? "utActive" : "utInactive"}`} onClick=""><i className="fas fa-arrow-alt-to-left" /></button>
@@ -24,6 +26,17 @@ function ControlBar({containers, selectedContainer, onSelected, changeView, view
                         <button type="button" className={`atmButtonIcon ${viewMode === 'grid' ? "utReady" : "utLive"}`} onClick={()=>{changeView("list")}}><i className="fas fa-list" /></button>
                     </div>
                 </div>
+            </div>
+            <div className="modal fade" id="newContainerModal" tabIndex="-1" aria-labelledby="exampleModalLabel"
+                 aria-hidden="true">
+                <CompModal title="Create a New Container" buttonText="OK" clicked={async () => createContainer(document.getElementById("containerName").value)}>
+                    <Form.Label>Container Name</Form.Label>
+                    <Form.Control id="containerName" type="text" placeholder="holiday photos" />
+                    <Form.Text className="text-muted">
+                        Choose a name for the container, note this cannot be changed
+                    </Form.Text>
+                    {/*<button onClick={async () => createContainer(document.getElementById("containerName"))}></button>*/}
+                </CompModal>
             </div>
         </div>
     );
