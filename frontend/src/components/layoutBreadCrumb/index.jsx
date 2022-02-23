@@ -1,6 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
+
+import CompWallet from "../compWallet";
 
 function BreadCrumb() {
+    const [show, setShow] = useState(false)
     return (
         <div className="molBlockBread d-flex align-items-center">
             {/* TODO: This is manually added for now*/}
@@ -8,7 +11,9 @@ function BreadCrumb() {
                 <span className="atmBreadWallet"><i className="fas fa-lg fa-wallet"/>NQtxsStXxadvtRyz2B1yJXTXCeEoxsUJBkxW</span><span>Containers&nbsp;&nbsp;<i className="fas fa-caret-right"/>&nbsp;&nbsp;_</span>{/* breadcrumb horizontal */}
             </div>
             <div className="ms-auto">
-                <button type="button" className="atmButtonIconClean" onClick={()=>{}}><i className="far fa-wallet" /></button>
+                <button type="button" className="atmButtonIconClean utButtonWallet" onClick={() => setShow(true)}><i className="far fa-wallet" />
+                    <CompWallet onClose={() => setShow(false)} show={show}></CompWallet>
+                </button>
                 <button type="button" className="atmButtonIconClean" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"><i className="far fa-cog" /></button>
 
                 {/* Offcanvas right: need to do classes and text */}

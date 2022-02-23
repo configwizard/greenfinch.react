@@ -50,7 +50,7 @@ class App extends React.Component {
     }
     fireToast(message) {
         console.log("making toast with ", message)
-         window.go.manager.Manager.MakeToast(message)
+        window.go.manager.Manager.MakeToast(message)
     }
 
     render() {

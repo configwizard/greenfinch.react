@@ -10,11 +10,12 @@ function ControlBar({containers, selectedContainer, onSelected, changeView, view
         <div className="row">
             <div className="col-12">
                 <div className="molContainersHeader d-flex align-items-center">
-                    <div className="molButtonGroup">
+                    <div className="molButtonGroup d-none d-md-block">
                         <span className="atmContainerTitle">
                             {selectedContainer ? "Objects - " : "Containers - "}{viewMode === 'grid' ? "Grid View" : "List View"}
                         </span>
                     </div>
+                    {/* Implement button disable attribute or :disabled */}
                     <div className="ms-auto molButtonGroup">
                         <button data-bs-toggle="modal" data-bs-target="#newContainerModal" type="button" className={`atmButtonSimple ${selectedContainer ? "utInactive" : "utActive"}`}><i className="fas fa-plus-circle"/>New container</button>
                     </div>
@@ -30,10 +31,10 @@ function ControlBar({containers, selectedContainer, onSelected, changeView, view
             <div className="modal fade" id="newContainerModal" tabIndex="-1" aria-labelledby="exampleModalLabel"
                  aria-hidden="true">
                 <CompModal title="Create a New Container" buttonText="OK" clicked={async () => createContainer(document.getElementById("containerName").value)}>
-                    <Form.Label>Container Name</Form.Label>
-                    <Form.Control id="containerName" type="text" placeholder="holiday photos" />
+                    <Form.Label>Name your container</Form.Label>
+                    <Form.Control id="containerName" type="text" placeholder="e.g. holiday photos" />
                     <Form.Text className="text-muted">
-                        Choose a name for the container, note this cannot be changed
+                        Choose a name for the container, note this cannot be changed.
                     </Form.Text>
                     {/*<button onClick={async () => createContainer(document.getElementById("containerName"))}></button>*/}
                 </CompModal>

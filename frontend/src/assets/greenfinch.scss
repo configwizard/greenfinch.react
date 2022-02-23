@@ -48,6 +48,7 @@ $brandLetterSpacing: 0.2rem;
 $brandBorderRadius: 5px;
 $brandTransitionSpeed: 0.3s;
 $brandDarkenValue: 12%;
+$brandBoxShadow: 0 0 10px rgba(0,0,0,0.3);
 
 
 /* Mixins
@@ -228,12 +229,20 @@ input:checked + .slider {
     }
     & .molProgressContainer {
         background-color: $brandColorWhite;
-        box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        box-shadow: $brandBoxShadow;
     }
 }
 
 .react-sweet-progress-symbol {
     font-family: $brandFontSemi;
+}
+
+
+/* Component: Wallet
+- - - - - - - - - - - - - - - - - - */
+.molWallet {
+    background-color: $brandColorWhite;
+    box-shadow: $brandBoxShadow;
 }
 
 /* Component: Toast
@@ -432,6 +441,56 @@ span.utUCSmall {
         margin: 0;
     }
     .orgContainersGrid {
+        & .molButtonGrid {
+            background-color: rgba($brandColorSecondary, 0.03);
+            border: 1px solid $brandColorWhite;
+            & .atmButtonGridHeader {
+                border-radius: 0;
+                background: none;
+                & .atmButtonOptions {
+                    background-color: rgba($brandColorSecondary, 0.04);
+                    &:hover {
+                        cursor: pointer;
+                        background-color: rgba($brandColorSecondary, 0.1);
+                    }
+                }
+                & .utOverlayMenuSmall {
+                    background-color: $brandColorWhite;
+                    box-shadow: $brandBoxShadow;
+                    font-size: 0.9rem;
+                    text-align: left;
+                    color: $brandColorDark;
+                } // add dots here
+                &:hover {
+                    cursor: default;
+                }
+            }
+            & .atmButtonGridContent {
+                border-radius: 0;
+                background: none;
+                & .atmButtonGridName {
+                    color: $brandColorSecondary-dark;
+                    font-size: 0.75rem;
+                    font-family: $brandFontSemi;
+                    &:hover {
+                        cursor: pointer;
+                    }
+                }
+                & i {
+                    color: $brandColorPrimary;
+                }
+                &:hover {
+                    cursor: default;
+                }
+            }
+            &:hover {
+                background-color: rgba($brandColorSecondary, 0.05);
+                border: 1px solid $brandColorPrimary;
+            }
+        }
+
+
+        // to clear and delete
         & button[class^="molContainersButton"] {
             cursor: default;
             border: none;
@@ -451,6 +510,11 @@ span.utUCSmall {
                 color: $brandColorPrimary;
             }
         }
+        & .molContainersButtonOptions {
+            & .atmButtonOptions {
+               
+            }
+        }
         & .molContainersButtonGrid {
             text-align: center;
             & .atmButtonOptions {
@@ -466,6 +530,9 @@ span.utUCSmall {
                 color: $brandColorPrimary;
             }
         }
+
+
+
     }
 }
 

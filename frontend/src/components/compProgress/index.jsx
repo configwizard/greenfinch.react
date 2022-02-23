@@ -3,7 +3,7 @@ import React from "react";
 import { Progress } from 'react-sweet-progress';
 import 'react-sweet-progress/lib/style.css';
 
-const name="percentageProgress"
+const name="percentageProgress";
 
 export default class CompProgress extends React.Component {
     constructor(props) {
@@ -15,7 +15,10 @@ export default class CompProgress extends React.Component {
         }
     }
 
-/*  async componentDidMount () {
+    /* One to check:
+        https://getbootstrap.com/docs/5.0/components/progress/
+    */
+    /*  async componentDidMount () {
         console.log("percentage ready")
         window.runtime.EventsOn(name, async (progressMessage) => {
             console.log("progressMessage", {progressMessage})
