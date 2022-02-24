@@ -42,7 +42,7 @@ class TabVisual extends React.Component {
         await this.setState({...state, selectedObject: objectName, })
     }
     resetBreadcrumb = async () => {
-        console.log("resetting bread")
+        console.log('resetting bread')
         let state = this.state
         await this.setState({...state, selectedObject: null, selectedContainer: null})
     }
@@ -85,7 +85,7 @@ class TabVisual extends React.Component {
                 </div>
                 <div className="row">
                     <div className="col-12">
-                        <ControlBar changeView={this.onViewChange} viewMode={this.state.viewMode} selectedContainer={this.state.selectedContainer}></ControlBar>
+                        <ControlBar resetBreadcrumb={this.resetBreadcrumb} changeView={this.onViewChange} viewMode={this.state.viewMode} selectedContainer={this.state.selectedContainer}></ControlBar>
                     </div>
                 </div>
                 <div className="row">

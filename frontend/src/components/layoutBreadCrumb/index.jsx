@@ -1,18 +1,18 @@
 import React, { useState } from "react";
 
 import CompWallet from "../compWallet";
-import Dropdown from "../dropdown"
+import Dropdown from "../dropdown";
+
 function BreadCrumb(props) {
     const [show, setShow] = useState(false)
-    const selectedContainer = props.container == null ? "..." : props.container
-    const selectedObject = props.object == null ? "..." : props.object
+    const selectedContainer = props.container == null ? "Containers" : props.container
+    const selectedObject = props.object == null ? "" : props.object
     console.log("selectedObject", selectedObject)
     return (
         <div className="molBlockBread d-flex align-items-center">
-            {/* TODO: This is manually added for now*/}
             <div>
                 {/*<span className="atmBreadWallet"><i className="fas fa-lg fa-wallet"/>{props.walletAddress}</span>*/}
-                <span className="atmBreadWallet" onClick={props.resetBreadcrumb}>Containers&nbsp;&nbsp;<i className="fas fa-caret-right"/>&nbsp;&nbsp; {selectedContainer}</span><span>Object&nbsp;&nbsp;<i className="fas fa-caret-right"/>&nbsp;&nbsp; {selectedObject}</span>
+                <span className="utBreadLive" onClick={props.resetBreadcrumb}>{selectedContainer}</span><i className="fas fa-lg fa-caret-right"/><span>{selectedObject}</span>
             </div>
             <div className="ms-auto">
                 <button type="button" className="atmButtonIconClean utButtonWallet" onClick={() => setShow(true)}>
@@ -30,14 +30,14 @@ function BreadCrumb(props) {
                         <div className="offcanvas-body">
                             <div className="molBlockDropdown d-flex">
                                 <Dropdown></Dropdown>
-                                {/*<div class="dropdown">*/}
-                                {/*    <button onclick="myFunction()" class="dropbtn">Dropdown</button>*/}
-                                {/*    <div id="myDropdown" class="dropdown-content">*/}
-                                {/*        <a href="#server01">Server 01</a>*/}
-                                {/*        <a href="#server02">Server 02</a>*/}
-                                {/*        <a href="#contact03">Server 03</a>*/}
-                                {/*    </div>*/}
-                                {/*</div>*/}
+                                {/* <div class="dropdown">
+                                    <button onclick="myFunction()" class="dropbtn">Dropdown</button>
+                                    <div id="myDropdown" class="dropdown-content">
+                                        <a href="#server01">Server 01</a>
+                                        <a href="#server02">Server 02</a>
+                                        <a href="#contact03">Server 03</a>
+                                    </div>
+                                </div> */}
                             </div>
                             <div className="molBlockSwitch d-flex">
                                 <div className="atmSwitchContent">

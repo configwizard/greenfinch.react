@@ -43,6 +43,7 @@ span {
 
 .atmButtonIcon {
     padding: 5px 8px;
+    min-width: 30px; 
 }
 
 .me-auto {
@@ -377,13 +378,19 @@ input:checked + .slider:before {
     margin: 0;
     & span {
         margin-right: 10px;
-        max-width: 130px;
+        max-width: 170px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        & i.fa-wallet {
-            margin-right: 5px;
+        &.utBreadLive {
+            &:hover {
+                text-decoration: underline;
+                cursor: pointer;
+            }
         }
+    }
+    & i {
+        margin-right: $marginXSmall;
     }
 }    
 

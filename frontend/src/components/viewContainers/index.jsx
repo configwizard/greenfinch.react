@@ -10,7 +10,7 @@ function ContainerView({containerList, onContainerSelection, viewMode}) {
             <div className="row">
                 {containerList.map((item,i) =>
                     <>
-                        <div className="col-6 col-lg-4 col-xl-2" key={i}>
+                        <div className="col-6 col-lg-3 col-xl-2" key={i}>
                             <div className="molButtonGrid">
                                 <ContainerGrid onContainerSelection={onContainerSelection} item={item}></ContainerGrid>
                             </div>

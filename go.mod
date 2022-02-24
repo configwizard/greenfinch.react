@@ -7,7 +7,7 @@ require (
 	github.com/machinebox/progress v0.2.0
 	github.com/nspcc-dev/neo-go v0.98.0
 	github.com/nspcc-dev/neofs-sdk-go v0.0.0-20220119080627-f83ff628fb19
-	github.com/wailsapp/wails/v2 v2.0.0-beta.28
+	github.com/wailsapp/wails/v2 v2.0.0-beta.32
 )
 
 require (
