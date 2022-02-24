@@ -60,16 +60,16 @@ class TabVisual extends React.Component {
         } else {
             return (
                 <>
-                <div className="col-12 col-md-9 order-2 order-md-1">
-                    <div className="orgContainersGrid">
-                        <FadeProps animationLength={150}>
-                            <ObjectView objectList={this.state.objectList} viewMode={this.state.viewMode} onObjectSelection={this.onObjectSelection}></ObjectView>
-                        </FadeProps>
+                    <div className="col-12 col-md-9 order-2 order-md-1">
+                        <div className="orgContainersGrid">
+                            <FadeProps animationLength={150}>
+                                <ObjectView objectList={this.state.objectList} viewMode={this.state.viewMode} onObjectSelection={this.onObjectSelection}></ObjectView>
+                            </FadeProps>
+                        </div>
                     </div>
-                </div>
-                <div className="col-12 col-md-3 col-xl-3 order-1 order-md-2">
-                    <DragAndDrop></DragAndDrop>
-                </div>
+                    <div className="col-12 col-md-3 col-xl-3 order-1 order-md-2">
+                        <DragAndDrop></DragAndDrop>
+                    </div>
                 </>
             )
         }

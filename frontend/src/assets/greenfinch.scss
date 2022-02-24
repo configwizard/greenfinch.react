@@ -270,7 +270,7 @@ input:checked + .slider {
             }
             & span.atmToastMessage {
                 color: $toastColorBody;
-                font-size: 0.9rem;
+                font-size: 0.8rem;
                 line-height: 1.2;
                 font-family: $brandFontSemi;
             }
@@ -326,23 +326,23 @@ input:checked + .slider {
     }
 }
 
-/* Styles: Fie icons
+/* Styles: File icons
 - - - - - - - - - - - - - - - - - - */
 .file-icon {
     background: linear-gradient(180deg, $brandColorSecondary 0%, $brandColorPrimary 76%, $brandColorSecondary 100%);
     border-radius: 2px;
     text-align: left;
     -webkit-font-smoothing: antialiased;
+    font-family: $brandFontSemi;
     &:before {
         border-bottom-left-radius: 2px;
         border-width: 5px;
         border-style: solid;
-        border-color: #fff #fff rgba(255,255,255,.35) rgba(255,255,255,.35);
+        border-color: #fff #fff rgba(255,255,255,0.35) rgba(255,255,255,0.35);
     }
     &:after {
-        font-size: 1rem;
-        font-weight:bold;
-        color: #fff;
+        font-size: 0.9rem;
+        color: $brandColorWhite;
         text-transform: lowercase;
         white-space: nowrap;
         overflow: hidden;
@@ -459,6 +459,10 @@ span.utUCSmall {
         & .molButtonGrid {
             background-color: rgba($brandColorSecondary, 0.03);
             border: 1px solid $brandColorWhite;
+            &:hover {
+                background-color: rgba($brandColorSecondary, 0.05);
+                border: 1px solid $brandColorPrimary;
+            }
             & .atmButtonGridHeader {
                 border-radius: 0;
                 background: none;
@@ -483,6 +487,9 @@ span.utUCSmall {
             & .atmButtonGridContent {
                 border-radius: 0;
                 background: none;
+                &:hover {
+                    cursor: default;
+                }
                 & .atmButtonGridName {
                     color: $brandColorSecondary-dark;
                     font-size: 0.75rem;
@@ -494,53 +501,42 @@ span.utUCSmall {
                 & i {
                     color: $brandColorPrimary;
                 }
+            }
+        }
+        & .molButtonRow {
+            background-color: rgba($brandColorSecondary, 0.03);
+            border: 1px solid $brandColorWhite;
+            &:hover {
+                background-color: rgba($brandColorSecondary, 0.05);
+                border: 1px solid $brandColorPrimary;
+            }
+            & .atmButtonRowContent {
+                border-radius: 0;
+                background: none;
                 &:hover {
                     cursor: default;
                 }
+                & i {
+                    color: $brandColorPrimary;
+                }
+                & .atmButtonRowName {
+                    color: $brandColorSecondary-dark;
+                    font-size: 0.75rem;
+                    font-family: $brandFontSemi;
+                    &:hover {
+                        cursor: pointer;
+                    }
+                }
             }
-            &:hover {
-                background-color: rgba($brandColorSecondary, 0.05);
-                border: 1px solid $brandColorPrimary;
-            }
-        }
-
-
-        // to clear and delete
-        & button[class^="molContainersButton"] {
-            cursor: default;
-            border: none;
-            background-color: rgba($brandColorSecondary, 0.02);
-            border: 1px solid $brandColorWhite;
-            &:hover {
-                background-color: rgba($brandColorSecondary, 0.04);
-                border: 1px solid $brandColorPrimary;
-            }
-            & .atmContainerName {
-                color: $brandColorSecondary-dark;
-                font-size: 0.75rem;
-                font-family: $brandFontSemi;
-                cursor: pointer;
-            }
-            & i {
-                color: $brandColorPrimary;
-            }
-        }
-        & .molContainersButtonGrid {
-            text-align: center;
             & .atmButtonOptions {
-                background-color: rgba($brandColorSecondary, 0.05);
+                border-radius: 0;
+                background-color: rgba($brandColorSecondary, 0.04);
                 &:hover {
                     cursor: pointer;
                     background-color: rgba($brandColorSecondary, 0.1);
                 }
             }
         }
-        & .molContainersButtonRow {
-            & i {
-                color: $brandColorPrimary;
-            }
-        }
-
     }
 }
 

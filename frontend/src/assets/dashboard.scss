@@ -48,14 +48,18 @@ span {
 
 .me-auto {
     & .atmButtonSimple, .atmButtonIcon, .atmButtonIconClean {
-        margin-right: $marginXSmall; //temporary
+        margin-right: $marginSmall; //temporary
     }
 }
 
 .ms-auto {
     & .atmButtonSimple, .atmButtonIcon, .atmButtonIconClean {
-        margin-left: $marginXSmall; //temporary
+        margin-left: $marginSmall; //temporary
     }
+}
+
+.atmButtonIconClean {
+    padding: 0;
 }
 
 /* Element: Tabs
@@ -258,19 +262,6 @@ input:checked + .slider:before {
 
 /* Styles: Utilites
 - - - - - - - - - - - - - - - - - - */
-.utOverflow {
-    overflow: scroll;
-}
-
-.utScroll-x {
-    overflow-x: auto;
-    overflow-y: hidden;
-}
-
-.utScroll-y {
-    overflow-x: hidden;
-    overflow-y: auto;
-}
 
 /* Styles: General
 - - - - - - - - - - - - - - - - - - */
@@ -290,7 +281,6 @@ input:checked + .slider:before {
     margin-bottom: $marginSmall;
     & .molViewJSON {
         height: 500px;
-        overflow-x: scroll;
     }
     .orgBlockData {
         height: 120px;
@@ -299,19 +289,21 @@ input:checked + .slider:before {
         padding: $paddingSmall;
         margin-bottom: $marginSmall;
     }
-    
     & .molBlockUpload {
         width: 100%;
         padding: $paddingSmall;
         & .atmBlockUpload {
             width: 100%;
-            height: 300px; //manual height
+            height: 250px; //manual height
             & i {
                 margin-bottom: 10px;
             }
         }
     }
     .orgContainersGrid {
+        height: 400px;
+        overflow-x: hidden;
+        overflow-y: scroll;
         & .molButtonGrid {
             margin-bottom: 14px;
             & .atmButtonGridHeader, .atmButtonGridContent {
@@ -331,7 +323,6 @@ input:checked + .slider:before {
                 }
             }
             & .atmButtonOptions {
-                border-radius: 0;
                 position: relative;
                 padding: 0 5px;
                 & .utOverlayMenuSmall {
@@ -344,13 +335,28 @@ input:checked + .slider:before {
                     padding: $paddingXSmall;
                 }
             }
-            & .molContainersButtonRow { // to bring in line with atmButtonGridContent
-                position: relative;
-                width: 100%;
-                padding: $paddingXSmall $paddingMedium;
-                margin-bottom: 4px;
+        }
+        & .molButtonRow {
+            margin-bottom: 7px;
+            & .atmButtonRowContent {
                 & i {
                     margin-right: $marginMedium;
+                }
+                & .atmButtonRowName {
+                    margin-left: 2px;
+                    margin-left: 2px;
+                }
+            }
+            & .atmButtonOptions {
+                position: relative;
+                & .utOverlayMenuSmall {
+                    position: absolute;
+                    top: 30px;
+                    right: 0;
+                    min-width: 180px;
+                    min-height: 140px;
+                    z-index: 200;
+                    padding: $paddingXSmall;
                 }
             }
         }
@@ -365,7 +371,7 @@ input:checked + .slider:before {
     .orgMainJSON {
         & .molBlockUpload {
             .atmBlockUpload {
-                height: 500px; //manual height
+                height: 300px; //manual height
             }
         }
     }
@@ -374,7 +380,7 @@ input:checked + .slider:before {
 /* Layout: Breadcrumb
 - - - - - - - - - - - - - - - - - - */
 .molBlockBread {
-    padding: $paddingXSmall;
+    padding: $paddingXSmall 0;
     margin: 0;
     & span {
         margin-right: 10px;
@@ -391,6 +397,9 @@ input:checked + .slider:before {
     }
     & i {
         margin-right: $marginXSmall;
+    }
+    & .ms-auto i {
+        margin-right: 0;
     }
 }    
 
