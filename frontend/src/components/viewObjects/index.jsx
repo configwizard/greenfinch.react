@@ -2,20 +2,15 @@ import React  from "react";
 // import JSONView from 'react-json-view';
 
 function ObjectView({objectList, onObjectSelection, viewMode}) {
-    console.log("objectList", objectList) 
+    console.log("objectList", objectList)
     if (viewMode === "grid") {
         return (
             <div className="row">
                 {objectList.map((item,i) => 
                     <div className="col-6 col-lg-4 col-xl-2" key={i}>
-                        <button className="molContainersButtonGrid d-flex flex-column align-items-center justify-content-between" onClick={()=> onObjectSelection(item.id)}>
-                            {/* 
-                            <div className="atmButtonOptions">
-                                <i className="far fa-ellipsis-h"/>
-                            </div>
-                            <i className="fas fa-3x fa-draw-square"/> */ }
+                        <button className="molContainersButtonGrid d-flex flex-column align-items-center justify-content-between" onClick={()=> {console.log("alex"); onObjectSelection(item.id, item.attributes.FileName)}}>
                             <div class="file-icon file-icon-lg" data-type="doc"></div>
-                            <span className="atmContainerName">{item.name}</span>
+                            <span className="atmContainerName">{item.attributes.FileName}</span>
                         </button>
                     </div>
                 )}
@@ -26,15 +21,30 @@ function ObjectView({objectList, onObjectSelection, viewMode}) {
             <div className="row">
                 {objectList.map((item,i) => 
                     <div className="col-12" key={i}>
-                        <button className="molContainersButtonRow d-flex flex-row align-items-center" onClick={()=> onObjectSelection(item.id)}>
+                        <button className="molContainersButtonRow d-flex flex-row align-items-center" onClick={()=> onObjectSelection(item.id, item.attributes.FileName)}>
                             <i className="fas fa-file"/>
-                            <span className="atmContainerName">{item.name}</span>
+                            <span className="atmContainerName">{item.attributes.FileName}</span>
                         </button>
                     </div>
                 )}
             </div>
         )
     }
+}
+
+export function DragAndDrop() {
+    //drag and drop
+    return (
+            <div className="molBlockUpload d-flex align-items-center justify-content-center">
+                <div className="atmBlockUpload d-flex flex-column align-items-center justify-content-center">
+                    <i className="fas fa-2x fa-upload"/>
+                    {/* Add input here for file upload */}
+                    <p><button type="button" className="atmButtonText" title="Choose a file">Choose a file</button> or drag it here</p>
+                    {/* drag and drop upload componet (look for onEvent, onUpload... and console.log 'event' and can find a path) */}
+                    {/* https://stackoverflow.com/questions/58880171/get-file-path-from-drop-event/64616487#64616487 */}
+                </div>
+            </div>
+    )
 }
 
 export default ObjectView;

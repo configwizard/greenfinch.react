@@ -33,20 +33,20 @@ export default class CompToast extends React.Component {
     }
     //todo: uncomment for demoing toasts
 
-    // async componentDidMount () {
-    //     console.log("mounting")
-    //     window.runtime.EventsOn(name, async (message) => {
-    //         console.log(message)
-    //         await this.makeToast(message)
-    //     })
-    //     setInterval(() => {
-    //         if (this.props.autoDelete && this.state.list.length) {
-    //             if (((new Date) - this.state.list[0].startTime) > this.props.autoDeleteTime) {
-    //                 this.deleteToast(this.state.list[0].id);
-    //             }
-    //         }
-    //     }, this.props.autoDeleteTime)
-    // }
+    async componentDidMount () {
+        console.log("mounting")
+        window.runtime.EventsOn(name, async (message) => {
+            console.log(message)
+            await this.makeToast(message)
+        })
+        setInterval(() => {
+            if (this.props.autoDelete && this.state.list.length) {
+                if (((new Date) - this.state.list[0].startTime) > this.props.autoDeleteTime) {
+                    this.deleteToast(this.state.list[0].id);
+                }
+            }
+        }, this.props.autoDeleteTime)
+    }
     makeToast = async (message) => {
         message.startTime = Date.now()
         let list = this.state.list

@@ -1,17 +1,22 @@
 import React, { useState } from "react";
 
 import CompWallet from "../compWallet";
-
-function BreadCrumb() {
+import Dropdown from "../dropdown"
+function BreadCrumb(props) {
     const [show, setShow] = useState(false)
+    const selectedContainer = props.container == null ? "..." : props.container
+    const selectedObject = props.object == null ? "..." : props.object
+    console.log("selectedObject", selectedObject)
     return (
         <div className="molBlockBread d-flex align-items-center">
             {/* TODO: This is manually added for now*/}
             <div>
-                <span className="atmBreadWallet"><i className="fas fa-lg fa-wallet"/>NQtxsStXxadvtRyz2B1yJXTXCeEoxsUJBkxW</span><span>Containers&nbsp;&nbsp;<i className="fas fa-caret-right"/>&nbsp;&nbsp;_</span>{/* breadcrumb horizontal */}
+                {/*<span className="atmBreadWallet"><i className="fas fa-lg fa-wallet"/>{props.walletAddress}</span>*/}
+                <span className="atmBreadWallet" onClick={props.resetBreadcrumb}>Containers&nbsp;&nbsp;<i className="fas fa-caret-right"/>&nbsp;&nbsp; {selectedContainer}</span><span>Object&nbsp;&nbsp;<i className="fas fa-caret-right"/>&nbsp;&nbsp; {selectedObject}</span>
             </div>
             <div className="ms-auto">
-                <button type="button" className="atmButtonIconClean utButtonWallet" onClick={() => setShow(true)}><i className="far fa-wallet" />
+                <button type="button" className="atmButtonIconClean utButtonWallet" onClick={() => setShow(true)}>
+                    <i className="far fa-wallet" />
                     <CompWallet onClose={() => setShow(false)} show={show}></CompWallet>
                 </button>
                 <button type="button" className="atmButtonIconClean" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"><i className="far fa-cog" /></button>
@@ -24,14 +29,15 @@ function BreadCrumb() {
                         </div>
                         <div className="offcanvas-body">
                             <div className="molBlockDropdown d-flex">
-                                <div class="dropdown">
-                                    <button onclick="myFunction()" class="dropbtn">Dropdown</button>
-                                    <div id="myDropdown" class="dropdown-content">
-                                        <a href="#server01">Server 01</a>
-                                        <a href="#server02">Server 02</a>
-                                        <a href="#contact03">Server 03</a>
-                                    </div>
-                                </div>
+                                <Dropdown></Dropdown>
+                                {/*<div class="dropdown">*/}
+                                {/*    <button onclick="myFunction()" class="dropbtn">Dropdown</button>*/}
+                                {/*    <div id="myDropdown" class="dropdown-content">*/}
+                                {/*        <a href="#server01">Server 01</a>*/}
+                                {/*        <a href="#server02">Server 02</a>*/}
+                                {/*        <a href="#contact03">Server 03</a>*/}
+                                {/*    </div>*/}
+                                {/*</div>*/}
                             </div>
                             <div className="molBlockSwitch d-flex">
                                 <div className="atmSwitchContent">
