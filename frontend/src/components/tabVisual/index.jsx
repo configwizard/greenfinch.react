@@ -9,12 +9,12 @@ import {listObjects} from "../../mocker/objects.js";
 import BreadCrumb from "../layoutBreadCrumb";
 import ControlBar from "../viewOptions";
 import ContainerView from "../viewContainers";
-import ObjectView from "../viewObjects";
+import ObjectView, {DragAndDrop} from "../viewObjects";
 
 class TabVisual extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {containerList: [], objectList: [], account: {}, selectedContainer: null, viewMode: "grid"};
+        this.state = {containerList: [], objectList: [], account: {}, selectedObject: null, selectedContainer: null, viewMode: "grid"};
     }
     async componentDidMount() {
         //const resp = await retrieveFullFileSystem()
@@ -29,32 +29,30 @@ class TabVisual extends React.Component {
         let state = this.state
         this.setState({...state, viewMode: viewMode})
     }
-    onContainerSelection = async (containerID) => {
+    onContainerSelection = async (containerID, containerName) => {
         //we will need to call the function to get the objects for a specific container ID and update the objectList
         const objectList = await listObjects(containerID) //list contents of a container
             let state = this.state
-            this.setState({...state, selectedContainer: containerID, objectList})
+            this.setState({...state, selectedContainer: containerName, objectList})
     }
-    onObjectSelection = async (objectID) => {
+    onObjectSelection = async (objectID, objectName) => {
         //we will need to call the function to get the objects for a specific container ID and update the objectList
-        alert("You selected this object: " + objectID)
+        console.log('state after selecting object', this.state)
+        let state = this.state
+        await this.setState({...state, selectedObject: objectName, })
+    }
+    resetBreadcrumb = async () => {
+        console.log("resetting bread")
+        let state = this.state
+        await this.setState({...state, selectedObject: null, selectedContainer: null})
     }
     retrieveCorrectComponent() {
-        let displayContainer
-        if (this.state.selectedContainer == null) {
-            displayContainer = <ContainerView containerList={this.state.containerList} viewMode={this.state.viewMode} onContainerSelection={this.onContainerSelection}></ContainerView>
-        } else {
-            displayContainer = <ObjectView objectList={this.state.objectList} viewMode={this.state.viewMode} onObjectSelection={this.onObjectSelection}></ObjectView>
-        }
-        return displayContainer
-    }
-    retrieveUploadFunction() {
         if (this.state.selectedContainer == null) {
             return (
                 <div className="col-12">
                     <div className="orgContainersGrid">
                         <FadeProps animationLength={150}>
-                            {this.retrieveCorrectComponent(this.state)}
+                            <ContainerView containerList={this.state.containerList} viewMode={this.state.viewMode} onContainerSelection={this.onContainerSelection}></ContainerView>
                         </FadeProps>
                     </div>
                 </div>
@@ -62,35 +60,27 @@ class TabVisual extends React.Component {
         } else {
             return (
                 <>
-                    <div className="col-12 col-md-9 order-2 order-md-1">
-                        <div className="orgContainersGrid">
-                            <FadeProps animationLength={150}>
-                                {this.retrieveCorrectComponent(this.state)}
-                            </FadeProps>
-                        </div>
+                <div className="col-12 col-md-9 order-2 order-md-1">
+                    <div className="orgContainersGrid">
+                        <FadeProps animationLength={150}>
+                            <ObjectView objectList={this.state.objectList} viewMode={this.state.viewMode} onObjectSelection={this.onObjectSelection}></ObjectView>
+                        </FadeProps>
                     </div>
-                    <div className="col-12 col-md-3 col-xl-3 order-1 order-md-2">
-                        {/* TODO 01: Turn this into a component */}
-                        <div className="molBlockUpload d-flex align-items-center justify-content-center">
-                            <div className="atmBlockUpload d-flex flex-column align-items-center justify-content-center">
-                                <i className="fas fa-2x fa-upload"/>
-                                {/* Add input here for file upload */}
-                                <p><button type="button" className="atmButtonText" title="Choose a file">Choose a file</button> or drag it here</p>
-                                {/* drag and drop upload componet (look for onEvent, onUpload... and console.log 'event' and can find a path) */}
-                                {/* https://stackoverflow.com/questions/58880171/get-file-path-from-drop-event/64616487#64616487 */}
-                            </div>
-                        </div>
-                    </div>
+                </div>
+                <div className="col-12 col-md-3 col-xl-3 order-1 order-md-2">
+                    <DragAndDrop></DragAndDrop>
+                </div>
                 </>
             )
         }
     }
+
     render() {
         return (
             <section className="orgViewVisual">
                 <div className="row">
                     <div className="col-12">
-                        <BreadCrumb></BreadCrumb>
+                        <BreadCrumb resetBreadcrumb={this.resetBreadcrumb} container={this.state.selectedContainer} object={this.state.selectedObject}></BreadCrumb>
                     </div>
                 </div>
                 <div className="row">
@@ -99,7 +89,7 @@ class TabVisual extends React.Component {
                     </div>
                 </div>
                 <div className="row">
-                    {this.retrieveUploadFunction(this.state)}
+                    {this.retrieveCorrectComponent()}
                 </div>
             </section>
         );
