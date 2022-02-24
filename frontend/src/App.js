@@ -56,14 +56,11 @@ class App extends React.Component {
     render() {
         return (
             <>
-                <div>
-                    <section className="orgHeaderStatus">
-                        <div className="molHeaderContent">
-                            <Status resp={this.state.account}></Status>
-                        </div>
-                    </section>
-                </div>
-
+                <section className="orgHeaderStatus">
+                    <div className="molHeaderContent">
+                        <Status resp={this.state.account}></Status>
+                    </div>
+                </section>
                 <div className="container-fluid">
                     <section className="orgMainJSON">
                         <div className="row">
@@ -94,12 +91,16 @@ class App extends React.Component {
                         </div>
                     </section>
                     <CompToast autoDelete={true} autoDeleteTime={3000}></CompToast>
-                    <section className="orgFooterAction">
-                        <div className="molFooterContent">
-                            <Footer fireToast={this.fireToast}></Footer>
-                        </div>
-                    </section>
                 </div>
+                {/* 
+                    <div className="container-fluid">
+                        <section className="orgFooterAction">
+                            <div className="molFooterContent">
+                                <Footer fireToast={this.fireToast}></Footer>
+                            </div>
+                        </section>
+                    </div>
+                */}
             </> 
         );
     }

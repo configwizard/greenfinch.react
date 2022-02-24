@@ -14,7 +14,7 @@ export default function Footer({fireToast, percentage}) {
                 <button type="button" className="atmButtonSimple" onClick={() => {fireToast({Title: "clicked", Type:"warning", Description:"Clicking toast works!"})}}><i className="fas fa-hand-point-right"/>Click me for Toast (success)</button>
             </div>
             <div className="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <CompModal title="Greenfinch Modal" buttonText="OK" >
+                <CompModal title="Greenfinch Modal" buttonTextPrimary="OK" buttonTextSecondary="Cancel">
                     <p>Here is the content for the modal. I will need styling.</p>
                 </CompModal>
             </div>

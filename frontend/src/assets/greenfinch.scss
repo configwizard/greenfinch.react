@@ -40,6 +40,7 @@ $toastColorSuccess: #00AF4B;
 $toastColorError: #E5004C;
 $toastColorWarning: #F47A00;
 $toastColorInfo: #0080F4;
+$toastColorBody: $brandColorDark;
 
 
 /* Variables: General
@@ -268,12 +269,13 @@ input:checked + .slider {
                 font-family: $brandFontBold;
             }
             & span.atmToastMessage {
-                color: rgba($brandColorBlack,0.6);
+                color: $toastColorBody;
                 font-size: 0.9rem;
                 line-height: 1.2;
+                font-family: $brandFontSemi;
             }
             & i.fa-times { // close button
-                color: rgba($brandColorBlack,0.6);
+                color: $toastColorBody;
                 font-size: 1.1rem;
             }
         }
@@ -418,6 +420,19 @@ span.utUCSmall {
         font-size: 0.75rem;
         font-family: $brandFontSemi;
         color: $brandColorSecondary;
+        & span {
+            &.utBreadLive {
+                transition: $brandTransitionSpeed;
+                &:hover {
+                    color: $brandColorDark;
+                    text-decoration: underline;
+                    cursor: pointer;
+                }
+            }
+        }
+        & i {
+            color: $brandColorDark;
+        }
     }
     & .molBlockUpload {
         color: $brandColorDark;
@@ -510,11 +525,6 @@ span.utUCSmall {
                 color: $brandColorPrimary;
             }
         }
-        & .molContainersButtonOptions {
-            & .atmButtonOptions {
-               
-            }
-        }
         & .molContainersButtonGrid {
             text-align: center;
             & .atmButtonOptions {
@@ -530,8 +540,6 @@ span.utUCSmall {
                 color: $brandColorPrimary;
             }
         }
-
-
 
     }
 }
