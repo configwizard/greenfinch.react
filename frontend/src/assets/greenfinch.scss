@@ -51,7 +51,6 @@ $brandTransitionSpeed: 0.3s;
 $brandDarkenValue: 12%;
 $brandBoxShadow: 0 0 10px rgba(0,0,0,0.3);
 
-
 /* Mixins
 - - - - - - - - - - - - - - - - - - */
 @mixin titleStyle($titlesize) {
@@ -60,6 +59,22 @@ $brandBoxShadow: 0 0 10px rgba(0,0,0,0.3);
     font-family: $brandFontBold;
     letter-spacing: $brandLetterSpacing;
 }
+
+@mixin ButtonIconSimple($iconSimpleFontSize, $iconSimpleColor) {
+    font-size: $iconSimpleFontSize;
+    color: $iconSimpleColor;
+    cursor: pointer;
+    background: transparent;
+}
+
+@mixin buttonIconFill($iconFillFontSize, $iconFillBorderRadius, $iconFillBgColor) {
+    font-size: $iconFillFontSize;
+    border-radius: $iconFillBorderRadius;
+    background-color: $iconFillBgColor;
+    cursor: pointer;
+}
+
+
 
 /* Styles: Base
 - - - - - - - - - - - - - - - - - - */
@@ -71,18 +86,44 @@ body {
 /* Elements: Buttons
 - - - - - - - - - - - - - - - - - - */
 
-// cover off all, buttons for all states, active/inactive, activated/live/ready (better name needed)
+// cover off all, buttons for all states, active/inactive, activated/live/ready (better name needed), becomes a mixin???
+// Make mixin
 button[class^="atmButton"] {
     transition: $brandTransitionSpeed;
     border: none;
     font-family: $brandFontBold;
-    border-radius: $brandBorderRadius;
+    border-radius: none;
 }
+
+// Make mixin
+.atmButtonBase {
+    transition: $brandTransitionSpeed;
+    border-radius: none;
+    background: none;
+    &.nav-link {
+        font-family: $brandFontSemi;
+        text-align: left;
+        border-radius: none;
+        background-color: rgba(0,0,0,0);
+        border-bottom: 1px solid rgba($brandColorDark, 0.25);
+        color: $brandColorSecondary;
+        &:hover {
+            cursor: pointer;
+            color: $brandColorDark;
+            background-color: rgba(0,0,0,0.05);
+        }
+        &:last-child {
+            border-bottom: none;
+        }
+    }
+}
+
 
 .atmButtonSimple {
     font-size: 13px;
     color: $brandColorWhite;
     background-color: $brandColorDark;
+    border-radius: $brandBorderRadius;
     &:hover {
         color: $brandColorPrimary;
         background-color: $brandColorDark;
@@ -109,6 +150,7 @@ button[class^="atmButton"] {
     font-size: 13px;
     color: $brandColorWhite;
     background-color: $brandColorDark;
+    border-radius: $brandBorderRadius;
     &:hover {
         color: $brandColorPrimary;
         background-color: $brandColorDark;
@@ -133,11 +175,8 @@ button[class^="atmButton"] {
 }
 
 .atmButtonIconClean {
-    font-size: 28px;
-    background-color: unset;
-    color: $brandColorDark;
+    @include ButtonIconSimple(28px, $brandColorDark);
     &:hover {
-        background-color: unset;
         color: $brandColorPrimary;
     }
     &.active {
@@ -222,6 +261,19 @@ input:checked + .slider {
     color: $brandColorDark;
 }
 
+.modal-body {
+    & .form-label {
+        color: $brandColorDark;
+        font-family: $brandFontSemi;
+        font-size: 0.9rem;
+    }
+    & .form-text {
+        color: $brandColorDark;
+        font-family: $brandFontReg;
+        font-size: 0.7rem;
+    }
+}
+
 /* Component: Progress
 - - - - - - - - - - - - - - - - - - */
 .molProgress {
@@ -242,8 +294,16 @@ input:checked + .slider {
 /* Component: Wallet
 - - - - - - - - - - - - - - - - - - */
 .molWallet {
+    cursor: default;
     background-color: $brandColorWhite;
+    color: $brandColorDark;
     box-shadow: $brandBoxShadow;
+    & .atmButtonIconClean {
+        @include ButtonIconSimple(15px,$brandColorDark);
+    }
+    & h4.atmWalletTitle {
+        font-size: 0.9rem;
+    }
 }
 
 /* Component: Toast
@@ -377,6 +437,10 @@ span.utUCSmall {
     @include titleStyle (0.7rem);
 }
 
+.orgHeaderApp {
+    background-color: lighten($brandColorDark, 5%);
+}
+
 .orgHeaderStatus {
     box-shadow: 0 0 15px rgba($brandColorDark, 0.6);
     background-color: $brandColorDark;
@@ -384,7 +448,7 @@ span.utUCSmall {
     & .atmStatus {
         font-size: 0.9rem;
         letter-spacing: 0.07em;
-        font-weight: bold;
+        font-family: $brandFontSemi;
         &:last-child {
             text-align: right;
         }
@@ -430,7 +494,7 @@ span.utUCSmall {
                 }
             }
         }
-        & i {
+        & .atmBlockBread i {
             color: $brandColorDark;
         }
     }
@@ -467,6 +531,7 @@ span.utUCSmall {
                 border-radius: 0;
                 background: none;
                 & .atmButtonOptions {
+                    border-radius: 0;
                     background-color: rgba($brandColorSecondary, 0.04);
                     &:hover {
                         cursor: pointer;

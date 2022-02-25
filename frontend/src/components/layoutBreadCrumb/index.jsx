@@ -8,9 +8,14 @@ function BreadCrumb(props) {
     const selectedContainer = props.container == null ? "Containers" : props.container
     const selectedObject = props.object == null ? "" : props.object
     console.log("selectedObject", selectedObject)
+
+    function refreshPage() {
+        window.location.reload(false);
+    }
+
     return (
         <div className="molBlockBread d-flex align-items-center">
-            <div>
+            <div className="atmBlockBread">
                 {/*<span className="atmBreadWallet"><i className="fas fa-lg fa-wallet"/>{props.walletAddress}</span>*/}
                 <span className="utBreadLive" onClick={props.resetBreadcrumb}>{selectedContainer}</span><i className="fas fa-lg fa-caret-right"/><span>{selectedObject}</span>
             </div>
@@ -20,6 +25,7 @@ function BreadCrumb(props) {
                     <CompWallet onClose={() => setShow(false)} show={show}></CompWallet>
                 </button>
                 <button type="button" className="atmButtonIconClean" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"><i className="far fa-cog" /></button>
+                <button type="button" className="atmButtonIconClean" onClick={refreshPage}><i className="far fa-sync-alt"/></button>
 
                 {/* Offcanvas right: need to do classes and text */}
                     <div className="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">

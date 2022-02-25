@@ -133,7 +133,7 @@ func main() {
 	//manager.PopToast()
 	// Create application with options
 	err = wails.Run(&options.App{
-		Title:  "Gas Pump",
+		// Title:  "Greenfinch",
 		Width:  1024,
 		Height: 768,
 		// MinWidth:          720,
@@ -174,8 +174,8 @@ func main() {
 			WebviewIsTransparent: false,
 			WindowIsTranslucent:  false,
 			About: &mac.AboutInfo{
-				Title:   "Gas Pump",
-				Message: "Decentralised file storage. All yours.",
+				Title:   "Greenfinch",
+				Message: "Decentralised file storage.",
 				Icon:    icon,
 			},
 		},
