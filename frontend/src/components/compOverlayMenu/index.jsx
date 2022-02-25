@@ -8,10 +8,9 @@ function CompOverlayMenu(props) {
         props.show ? <div className="utTest" onClick={() => props.setShowMenu(false)}>
             <div className="utOverlayMenuSmall" onClick={e => e.stopPropagation()}>
                 <nav class="nav flex-column align-items-start">
-                    <button className="nav-link active" onClick=""><i className="fas fa-download"/>&nbsp;Download</button>
-                    <button className="nav-link" onClick=""><i className="fas fa-trash-alt"/>&nbsp;Delete</button>
-                    <button className="nav-link" onClick=""><i className="fas fa-edit"/>&nbsp;Rename</button>
-                    <button className="nav-link disabled">Disabled</button>
+                    <button className="atmButtonBase nav-link" onClick=""><i className="fas fa-trash-alt"/>&nbsp;View</button>
+                    <button className="atmButtonBase nav-link" onClick=""><i className="fas fa-download"/>&nbsp;Download</button>
+                    <button className="atmButtonBase nav-link" onClick=""><i className="fas fa-trash-alt"/>&nbsp;Delete</button>
                 </nav>
                 {/* <button onClick={async () => {console.log("click close"); await this.props.setShow(false)}} className="atmButtonIcon">Close</button> */}
             </div>

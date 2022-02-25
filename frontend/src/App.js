@@ -54,6 +54,7 @@ class App extends React.Component {
     render() {
         return (
             <>
+                <section className="orgHeaderApp"></section>
                 <section className="orgHeaderStatus">
                     <div className="molHeaderContent">
                         <Status resp={this.state.account}></Status>
@@ -67,7 +68,7 @@ class App extends React.Component {
                                     <Tabs defaultActiveKey="keyVisual" id="uncontrolled-tab-example">
                                         <Tab eventKey="keyVisual" className="tabViewVisual" title={(
                                             <>
-                                                <i className="atmTabIcon fas fa-lg fa-kiwi-bird"/>
+                                                <i className="atmTabIcon fas fa-lg fa-feather-alt"/>
                                                 <span className="atmTabTitle d-none d-sm-inline-block">Greenfinch</span>
                                             </>
                                         )}>

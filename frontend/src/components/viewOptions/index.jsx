@@ -32,9 +32,7 @@ function ControlBar({containers, selectedContainer, onSelected, changeView, view
                  aria-hidden="true">
                 <CompModal title="Create a New Container" buttonTextPrimary="Save" buttonTextSecondary="Cancel" clicked={async () => createContainer(document.getElementById("containerName").value)}>
                     <Form.Label>Container name</Form.Label>
-                    <Form.Text className="text-muted">
-                        Choose a name for the container. (N.B. this cannot be changed)
-                    </Form.Text>
+                    <Form.Text> Choose a name for the container. (N.B. this cannot be changed)</Form.Text>
                     <Form.Control id="containerName" type="text" placeholder="e.g. holiday photos" />
                     {/*<button onClick={async () => createContainer(document.getElementById("containerName"))}></button>*/}
                 </CompModal>

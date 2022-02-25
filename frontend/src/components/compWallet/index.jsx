@@ -11,9 +11,31 @@ const CompWallet = props => {
         <div className="utTest">
             <div className="molWallet" onClick={e => e.stopPropagation()}>
                 <div className="molWalletContainer">
-                    <i className="far fa-times" style={{"color":"red"}} onClick={props.onClose}/>
-                    <h4>Title</h4>
-                    <p>Wallet</p>
+                    <section>
+                        <div className="d-flex align-items-right">
+                            <i className="far fa-times" style={{"color":"red"}} onClick={props.onClose}/>
+                        </div>
+                    </section>
+                    <section>
+                        <div className="d-flex align-items-center">
+                            <h4 className="atmWalletTitle">Wallet address</h4>
+                            <div className="ms-auto">
+                                <button type="button" className="atmButtonIconClean" onClick=""><i className="far fa-clone"/></button>    
+                            </div>
+                        </div>
+                        <div className="d-flex align-items-center">
+                            <h4 className="atmWalletTitle">--- Public key ---</h4>
+                            <div className="ms-auto">
+                                <button type="button" className="atmButtonIconClean" onClick=""><i className="far fa-clone"/></button>
+                            </div>
+                        </div>
+                    </section>
+                    <section>
+                        <div>
+                            <h5>Top-up</h5>
+                            <button type="button" className="atmButtonBase atmButtonSimple" onClick=""><i className="fas fa-chart-line"/>Top-up NeoFS Balance</button>
+                        </div>
+                    </section>
                 </div>
             </div>
         </div>

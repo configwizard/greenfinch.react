@@ -28,7 +28,19 @@ span {
 /* Elements: Buttons
 - - - - - - - - - - - - - - - - - - */
 
-// can we make buttons a mixin, to add border radius...etc
+// can we make buttons a mixin, to add border radius...etc, work out what is required from a button - starting point and to build upon.
+
+// Make mixin
+.atmButtonBase {
+    &.nav-link {
+        padding-left: $paddingSmall;
+        width: 100%;
+        & i {
+            margin-right: $marginXSmall;
+        }
+    }
+}
+
 .atmButtonSimple {
     padding: 5px 12px;
     & i {
@@ -86,12 +98,6 @@ span {
     padding: $paddingSmall;
 }
 
-@media (min-width:576px) {
-    .orgViewJSON, .orgViewVisual {
-        padding: $paddingMedium;
-    }
-}
-
 /* Element: Toggle switch
 - - - - - - - - - - - - - - - - - - */
 .switch {
@@ -127,6 +133,20 @@ input:checked + .slider:before {
 
 /* Component: Modal
 - - - - - - - - - - - - - - - - - - */
+.modal {
+    & label {
+        display: block;
+    }
+    .form-label {
+        margin-bottom: 0!important;
+    }
+    .form-text {
+        margin-top: 0!important;
+    }
+    & .form-control {
+        margin-top: $marginSmall;
+    }
+}
 
 /* Component: Progress
 - - - - - - - - - - - - - - - - - - */
@@ -215,13 +235,14 @@ input:checked + .slider:before {
     }
 }
 
-/* Styles: Fie icons
+/* Styles: File icons
 - - - - - - - - - - - - - - - - - - */
 .file-icon {
     display: inline-block;
     width: 24px;
     height: 32px;
     position: relative;
+    margin-bottom: 4px;
     &:before {
         display: block;
         content: "";
@@ -265,10 +286,13 @@ input:checked + .slider:before {
 
 /* Styles: General
 - - - - - - - - - - - - - - - - - - */
+.orgHeaderApp {
+    height: 22px;
+}
+
 .orgHeaderStatus {
-    height: 60px;
     & .molHeaderContent {
-        padding:10px;
+        padding: $paddingSmall;
         padding-left: 80px; //to accommodate the traffic light dots (wails app)
     }
     & .atmStatus {
@@ -301,6 +325,7 @@ input:checked + .slider:before {
         }
     }
     .orgContainersGrid {
+        padding: 0 $paddingSmall;
         height: 400px;
         overflow-x: hidden;
         overflow-y: scroll;
@@ -325,15 +350,6 @@ input:checked + .slider:before {
             & .atmButtonOptions {
                 position: relative;
                 padding: 0 5px;
-                & .utOverlayMenuSmall {
-                    position: absolute;
-                    top: 30px;
-                    left: 0;
-                    min-width: 180px;
-                    min-height: 140px;
-                    z-index: 200;
-                    padding: $paddingXSmall;
-                }
             }
         }
         & .molButtonRow {
@@ -349,18 +365,17 @@ input:checked + .slider:before {
             }
             & .atmButtonOptions {
                 position: relative;
-                & .utOverlayMenuSmall {
-                    position: absolute;
-                    top: 30px;
-                    right: 0;
-                    min-width: 180px;
-                    min-height: 140px;
-                    z-index: 200;
-                    padding: $paddingXSmall;
-                }
             }
         }
     }
+}
+
+.utOverlayMenuSmall {
+    position: absolute;
+    top: 30px;
+    left: 0; // differentiation here.
+    min-width: 180px;
+    z-index: 200;
 }
 
 .atmSwitchContent {
@@ -380,7 +395,7 @@ input:checked + .slider:before {
 /* Layout: Breadcrumb
 - - - - - - - - - - - - - - - - - - */
 .molBlockBread {
-    padding: $paddingXSmall 0;
+    padding: $paddingXSmall $paddingSmall;
     margin: 0;
     & span {
         margin-right: 10px;
@@ -428,12 +443,17 @@ input:checked + .slider:before {
 
 /* View: Options
 - - - - - - - - - - - - - - - - - - */
+.molButtonGroup {
+    margin: 0 5px;
+}
+
 .molContainersHeader {
-    padding: $paddingSmall 0;
+    padding: $paddingSmall $paddingSmall;
     margin-bottom: $marginMedium;
     & .molButtonGroup {
         margin-right: $marginSmall;
         &:first-child {
+            margin-left: 0;
             margin-right: 0;
         }
         &:last-child {
@@ -443,10 +463,6 @@ input:checked + .slider:before {
             }
         }
     }
-}
-
-.molButtonGroup {
-    margin: 0 5px;
 }
 
 
@@ -470,6 +486,12 @@ input:checked + .slider:before {
 - - - - - - - - - - - - - - - - - - */
 h2, h4 {
     margin-bottom: $marginSmall;
+}
+
+h4 {
+    &.atmWalletTitle {
+        margin: 0;
+    }
 }
 
 span {
