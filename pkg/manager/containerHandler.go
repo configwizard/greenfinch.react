@@ -8,6 +8,7 @@ import (
 	"github.com/amlwwalker/gaspump-api/pkg/object"
 	"github.com/nspcc-dev/neofs-sdk-go/container"
 	cid "github.com/nspcc-dev/neofs-sdk-go/container/id"
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"log"
 	"time"
 )
@@ -62,6 +63,35 @@ func (m *Manager) ListContainers() ([]filesystem.Element, error) {
 	}
 	return containers, nil
 }
+func (m *Manager) ListContainersAsync() error {
+	var containers []filesystem.Element
+	runtime.EventsEmit(m.ctx, "clearContainer", nil)
+	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, m.key)
+	if err != nil {
+		return err
+	}
+	ids, err := m.listContainerIDs()
+	if err != nil {
+		return err
+	}
+
+	for _, v := range ids {
+		tmpContainer := filesystem.PopulateContainerList(m.ctx, m.fsCli, v)
+		list, err := object.ListObjects(m.ctx, m.fsCli, v, sessionToken)
+		if err != nil {
+			tmpContainer.Errors = append(tmpContainer.Errors, err)
+			continue
+		}
+		//is this inefficient? the expensive part is the request, but we are throwing away the whole object
+		size, _:= filesystem.GenerateObjectStruct(m.ctx, m.fsCli, sessionToken, list, v)
+		tmpContainer.Size = size
+		runtime.EventsEmit(m.ctx, "appendContainer", tmpContainer)
+	}
+	if m.DEBUG {
+		DebugSaveJson("ListContainers.json", containers)
+	}
+	return nil
+}
 func (m *Manager) GetContainer(id string) (*container.Container, error) {
 	c := cid.New()
 	err := c.Parse(id)
@@ -104,6 +134,12 @@ func (m *Manager) CreateContainer(name string) (string, error) {
 		}
 		_, err := container2.Get(m.ctx, m.fsCli, id)
 		if err == nil {
+			tmp := ToastMessage{
+				Title:       "Container Created",
+				Type:        "Success",
+				Description: "Container " + id.String() + "created",
+			}
+			m.MakeToast(NewToastMessage(&tmp))
 			return id.String(), err
 		}
 		time.Sleep(time.Second)

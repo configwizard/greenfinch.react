@@ -21,9 +21,9 @@ import Status from "./components/status";
 // import {retrieveFullFileSystem} from "./manager/interactions";
 
 //Mocker
-import {getAccountInformation} from "./mocker/manager.js"
-import {createContainer, listContainers} from "./mocker/containers.js"
-import {listObjects, uploadObject, getObject} from "./mocker/objects.js"
+import {getAccountInformation} from "./manager/manager.js"
+import {createContainer, listContainers} from "./manager/containers.js"
+import {listObjects, uploadObject, getObject} from "./manager/objects.js"
 //import {retrieveFullFileSystem} from "./mocker/interactions";
 
 class App extends React.Component {

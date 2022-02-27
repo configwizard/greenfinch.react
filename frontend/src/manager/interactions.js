@@ -17,7 +17,18 @@ const retrieveContainerFileSystem = async (containerID) => {
     }
 }
 
+const searchObjects = async (search) => {
+    try {
+        let resp = await window.go.manager.Manager.Search(search)
+        console.log("search for", search, 'renders ', resp)
+        return resp
+    } catch(e) {
+        console.log("error searching", e)
+    }
+}
+searchObjects("cat").then(r => console.log("found results for cat", r))
 export {
     retrieveContainerFileSystem,
-    retrieveFullFileSystem
+    retrieveFullFileSystem,
+    searchObjects
 }

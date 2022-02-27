@@ -3,11 +3,16 @@ package manager
 import (
 	"context"
 	"crypto/ecdsa"
+	"errors"
 	"github.com/amlwwalker/gaspump-api/pkg/client"
+	"github.com/amlwwalker/gaspump-api/pkg/filesystem"
 	"github.com/amlwwalker/gaspump-api/pkg/wallet"
 	neofscli "github.com/nspcc-dev/neofs-sdk-go/client"
+	obj "github.com/nspcc-dev/neofs-sdk-go/object"
+	"github.com/patrickmn/go-cache"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"math/rand"
+	"strings"
 	"time"
 )
 
@@ -18,51 +23,70 @@ type ProgressMessage struct {
 	Show     bool
 	Error    string
 }
+func NewProgressMessage(p *ProgressMessage) ProgressMessage {
+	p.Id = rand.Intn(101 - 1) + 1
+	return *p
+}
 type ToastMessage struct {
 	Id int
 	Title string
 	Type string
 	Description string
 }
+func NewToastMessage(t *ToastMessage) ToastMessage{
+	t.Id = rand.Intn(101 - 1) + 1
+	return *t
+}
 type Manager struct {
 	walletPath, walletAddr string
 	fsCli                  *neofscli.Client
 	key                    *ecdsa.PrivateKey
+	c *cache.Cache
 	ctx context.Context
 	DEBUG bool
 }
+
+const (
+	CACHE_FILE_SYSTEM = "filesystem"
+)
 
 // startup is called at application startup
 func (m *Manager) Startup(ctx context.Context) {
 	// Perform your setup here
 	m.ctx = ctx
+	go m.RetrieveFileSystem()
 }
 
 // domReady is called after the front-end dom has been loaded
 func (m *Manager) DomReady(ctx context.Context) {
-	go func() {
-		show := true
-		for i := 0; i <= 10; i++ {
-			if i == 10 {
-				show = false
-			}
-			newProgress := ProgressMessage{
-				Id:       rand.Intn(101 - 1) + 1,
-				Title:    "Loading progress",
-				Progress: i * 10,
-				Show:     show,
-			}
-			m.SetProgressPercentage(newProgress)
-			time.Sleep(1 * time.Second)
-		}
-		newToast := ToastMessage{
-			Id:          rand.Intn(101 - 1) + 1,
-			Title:       "Ready for action",
-			Type:        "success",
-			Description: "The application has successfully started",
-		}
-		m.MakeToast(newToast)
-	}()
+	//go func() {
+	//	show := true
+	//	for i := 0; i <= 10; i++ {
+	//		if i == 10 {
+	//			show = false
+	//		}
+	//		newProgress := ProgressMessage{
+	//			Id:       rand.Intn(101 - 1) + 1,
+	//			Title:    "Loading progress",
+	//			Progress: i * 10,
+	//			Show:     show,
+	//		}
+	//		m.SetProgressPercentage(newProgress)
+	//		time.Sleep(1 * time.Second)
+	//	}
+	//	newToast := NewToastMessage(&ToastMessage{
+	//		Title:       "Ready for action",
+	//		Type:        "success",
+	//		Description: "The application has successfully started",
+	//	})
+	//	m.MakeToast(newToast)
+	//}()
+	//newToast := NewToastMessage(&ToastMessage{
+	//	Title:       "Ready for action",
+	//	Type:        "success",
+	//	Description: "The application has successfully started",
+	//})
+	//m.MakeToast(newToast)
 }
 
 func (m *Manager) MakeToast(message ToastMessage) {
@@ -72,12 +96,29 @@ func (m *Manager) MakeToast(message ToastMessage) {
 func (m *Manager) SetProgressPercentage(progressMessage ProgressMessage) {
 	runtime.EventsEmit(m.ctx, "percentageProgress", progressMessage)
 }
-
+func (m *Manager) SendSignal(signalName string, signalValue interface{}) {
+	runtime.EventsEmit(m.ctx, signalName, signalValue)
+}
 // shutdown is called at application termination
 func (m *Manager) Shutdown(ctx context.Context) {
 	// Perform your teardown here
 }
-
+func (m *Manager) Search(search string) ([]filesystem.Element, error) {
+	tmpFS, found := m.c.Get(CACHE_FILE_SYSTEM)
+	if !found {
+		return []filesystem.Element{}, errors.New("no filesystem in cache")
+	}
+	var results []filesystem.Element
+	//now search the filesystem for a string comparison
+	for _, v := range tmpFS.([]filesystem.Element) {
+		if fnAttr, ok := v.Attributes[obj.AttributeFileName]; ok {
+			if strings.Contains(fnAttr, search) {
+				results = append(results, v)
+			}
+		}
+	}
+	return results, nil
+}
 func NewFileSystemManager(walletPath, walletAddr, password string, DEBUG bool) (*Manager, error) {
 	// First obtain client credentials: private key of request owner
 	key, err := wallet.GetCredentialsFromPath(walletPath, walletAddr, password)
@@ -94,6 +135,7 @@ func NewFileSystemManager(walletPath, walletAddr, password string, DEBUG bool) (
 		walletAddr: walletAddr,
 		fsCli:      cli,
 		key:        key, //this is holding the private key in memory - not good?
+		c: 			cache.New(1*time.Minute, 10*time.Minute),
 		ctx:        context.Background(),
 		DEBUG: DEBUG,
 	}, nil

@@ -8,6 +8,8 @@ import (
 	"flag"
 	"fmt"
 	"github.com/nspcc-dev/neo-go/pkg/core/native/nativenames"
+	"path"
+
 	//"github.com/amlwwalker/gaspump-api/pkg/client"
 	"github.com/amlwwalker/gaspump-api/pkg/wallet"
 	//wallet2 "github.com/nspcc-dev/neo-go/pkg/wallet"
@@ -118,7 +120,7 @@ func main() {
 	}
 //https://http.testnet.fs.neo.org/CONTAINER_ID/OBJECT_ID
 	//createContainerOnStart
-	manager, err := manager.NewFileSystemManager(*walletPath, *walletAddr, *walletPassword, true)
+	manager, err := manager.NewFileSystemManager(*walletPath, *walletAddr, *walletPassword, false)
 	if err != nil {
 		log.Fatal("can't create a manager", err)
 	}
@@ -128,7 +130,7 @@ func main() {
 	} else {
 		fmt.Printf("balance: %d, precision %d\r\n", balance.NeoFS.Balance, balance.NeoFS.Precision)
 	}
-	mocker := mocker.Mocker{} //mocker for frontend
+	mocker := mocker.Mocker{BasePath: path.Join("frontend", "src")} //mocker for frontend
 
 	//manager.PopToast()
 	// Create application with options

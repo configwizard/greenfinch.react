@@ -11,7 +11,8 @@ export default class CompProgress extends React.Component {
         this.state = {
             list: [],
             percentage: 0,
-            title:""
+            title:"",
+            show: false
         }
     }
 
@@ -26,15 +27,15 @@ export default class CompProgress extends React.Component {
             await this.setState({...this.state, title: progressMessage.Title, percentage: progressMessage.Progress})
             if (!progressMessage.Show) {
                 console.log("closing the progress bar")
-                await this.props.setShow(false)
+                await this.setState({...this.state, show: false})
             } else if (progressMessage.Show && !this.props.show) { //don't update state every time (would force a re-render)
-                await this.props.setShow(true)
+                await this.setState({...this.state, show: true})
             }
         })
     }
 
     render() {
-        if (!this.props.show) {
+        if (!this.state.show) {
             return null
         }
         return (
@@ -52,7 +53,7 @@ export default class CompProgress extends React.Component {
                         }}
                         percent={this.state.percentage}/>
                     <div className="molProgressFooter">
-                        <button onClick={async () => {console.log("click close"); await this.props.setShow(false)}} className="atmButtonIcon">Close</button>
+                        <button onClick={async () => {await this.setState({...this.state, show: false})}} className="atmButtonIcon">Close</button>
                     </div>
                 </div>
             </div>

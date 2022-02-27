@@ -5,8 +5,8 @@ import Dropdown from "../dropdown";
 
 function BreadCrumb(props) {
     const [show, setShow] = useState(false)
-    const selectedContainer = props.container == null ? "Containers" : props.container
-    const selectedObject = props.object == null ? "" : props.object
+    const selectedContainer = props.container == null ? "Containers" : props.container.containerName
+    const selectedObject = props.object == null ? "" : props.object.objectName
     console.log("selectedObject", selectedObject)
 
     function refreshPage() {
@@ -22,7 +22,7 @@ function BreadCrumb(props) {
             <div className="ms-auto">
                 <button type="button" className="atmButtonIconClean utButtonWallet" onClick={() => setShow(true)}>
                     <i className="far fa-wallet" />
-                    <CompWallet onClose={() => setShow(false)} show={show}></CompWallet>
+                    <CompWallet onClose={() => setShow(false)} show={show} account={props.account}></CompWallet>
                 </button>
                 <button type="button" className="atmButtonIconClean" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"><i className="far fa-cog" /></button>
                 <button type="button" className="atmButtonIconClean" onClick={refreshPage}><i className="far fa-sync-alt"/></button>
