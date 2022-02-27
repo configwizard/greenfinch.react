@@ -34,7 +34,9 @@ import CompToast from "./components/compToast";
 // import {listObjects, uploadObject, getObject} from "./mocker/objects.js"
 //import {retrieveFullFileSystem} from "./mocker/interactions";
 
-import {getAccountInformation} from "./mocker/manager.js"
+import {getAccountInformation} from "./manager/manager.js"
+import FadeProps from "fade-props";
+import CompProgress from "./components/compProgress";
 
 class App extends React.Component {
     constructor(props) {
@@ -57,39 +59,43 @@ class App extends React.Component {
                 <section className="orgHeaderApp"></section>
                 <section className="orgHeaderStatus">
                     <div className="molHeaderContent">
-                        <Status resp={this.state.account}></Status>
+                        <Status account={this.state.account}></Status>
                     </div>
                 </section>
                 <div className="container-fluid">
                     <section className="orgMainJSON">
-                        <div className="row">
-                            <div className="col-12">
-                                <section className="orgTabsView flex-grow-1">
-                                    <Tabs defaultActiveKey="keyVisual" id="uncontrolled-tab-example">
-                                        <Tab eventKey="keyVisual" className="tabViewVisual" title={(
-                                            <>
-                                                <i className="atmTabIcon fas fa-lg fa-feather-alt"/>
-                                                <span className="atmTabTitle d-none d-sm-inline-block">Greenfinch</span>
-                                            </>
-                                        )}>
-                                            {/* { this.state.selectedKey == 0 ? <TabPlaceHolder encrypted={false}></TabPlaceHolder> : <DecryptTab kId={this.state.selectedKey}></DecryptTab>} */}
-                                            <TabVisual></TabVisual>
-                                        </Tab>
-                                        <Tab eventKey="keyJSON" className="tabViewJSON" title={(
-                                            <>
-                                                <i className="atmTabIcon fas fa-lg fa-brackets-curly"/>
-                                                <span className="atmTabTitle d-none d-sm-inline-block">JSON</span>
-                                            </>
-                                        )}>
-                                            {/* { this.state.selectedKey == 0 ? <TabPlaceHolder encrypted={true}></TabPlaceHolder> : <EncryptTab kId={this.state.selectedKey}></EncryptTab>} */}
-                                            <TabJSON></TabJSON>
-                                        </Tab>
-                                    </Tabs>
-                                </section>
-                            </div>
-                        </div>
+                        <TabVisual></TabVisual>
+                        {/*<div className="row">*/}
+                        {/*    <div className="col-12">*/}
+                        {/*        <section className="orgTabsView flex-grow-1">*/}
+                        {/*            <Tabs defaultActiveKey="keyVisual" id="uncontrolled-tab-example">*/}
+                        {/*                <Tab eventKey="keyVisual" className="tabViewVisual" title={(*/}
+                        {/*                    <>*/}
+                        {/*                        <i className="atmTabIcon fas fa-lg fa-feather-alt"/>*/}
+                        {/*                        <span className="atmTabTitle d-none d-sm-inline-block">Greenfinch</span>*/}
+                        {/*                    </>*/}
+                        {/*                )}>*/}
+                        {/*                    /!* { this.state.selectedKey == 0 ? <TabPlaceHolder encrypted={false}></TabPlaceHolder> : <DecryptTab kId={this.state.selectedKey}></DecryptTab>} *!/*/}
+                        {/*                    <TabVisual></TabVisual>*/}
+                        {/*                </Tab>*/}
+                        {/*                <Tab eventKey="keyJSON" className="tabViewJSON" title={(*/}
+                        {/*                    <>*/}
+                        {/*                        <i className="atmTabIcon fas fa-lg fa-brackets-curly"/>*/}
+                        {/*                        <span className="atmTabTitle d-none d-sm-inline-block">JSON</span>*/}
+                        {/*                    </>*/}
+                        {/*                )}>*/}
+                        {/*                    /!* { this.state.selectedKey == 0 ? <TabPlaceHolder encrypted={true}></TabPlaceHolder> : <EncryptTab kId={this.state.selectedKey}></EncryptTab>} *!/*/}
+                        {/*                    <TabJSON></TabJSON>*/}
+                        {/*                </Tab>*/}
+                        {/*            </Tabs>*/}
+                        {/*        </section>*/}
+                        {/*    </div>*/}
+                        {/*</div>*/}
                     </section>
                     <CompToast autoDelete={true} autoDeleteTime={3000}></CompToast>
+                    <FadeProps animationLength={150}>
+                        <CompProgress></CompProgress>
+                    </FadeProps>
                 </div>
                 {/* 
                     <div className="container-fluid">

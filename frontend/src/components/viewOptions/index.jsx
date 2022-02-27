@@ -1,5 +1,5 @@
 import React from "react";
-import { createContainer } from "../../mocker/containers.js";
+import { createContainer } from "../../manager/containers.js";
 import CompModal from "../compModal";
 import { Form } from "react-bootstrap";
 

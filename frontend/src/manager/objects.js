@@ -14,7 +14,7 @@ const getObject = async (objId, containerID) => {
         let metaData = await window.go.manager.Manager.Download(objId, containerID)
         return metaData
     } catch(e) {
-        console.log("error retrieving object", e)
+        console.log("error retrieving object", e, "container id", containerID, "object id", objId)
     }
 }
 const getObjectMetaData = async (objId, containerID) => {

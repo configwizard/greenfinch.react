@@ -6,25 +6,25 @@ function ObjectView({objectList, onObjectSelection, viewMode}) {
     if (viewMode === "grid") {
         return (
             <div className="row">
-                {objectList.map((item,i) =>
+                {objectList.length > 0 ? objectList.map((item,i) =>
                     <div className="col-6 col-lg-3 col-xl-2" key={i}>
                         <div className="molButtonGrid">
                             <button 
                                 type="button"
                                 className="atmButtonGridContent d-flex flex-column align-items-center justify-content-between"
-                                onClick={()=> {console.log("object selected"); onObjectSelection(item.id, item.attributes.FileName)}}>
-                                    <div class="file-icon file-icon-lg" data-type="doc"></div>
+                                onClick={()=> {onObjectSelection(item.id, item.attributes.FileName)}}>
+                                    <div class="file-icon file-icon-lg" data-type="png"></div>
                                     <span className="atmButtonGridName">{item.attributes.FileName}</span>
                             </button>
                         </div>
                     </div>
-                )}
+                ) : <div>no objects yet</div>}
             </div>
         )
     } else {
         return (
             <div className="row">
-                {objectList.map((item,i) => 
+                {objectList.length > 0 ? objectList.map((item,i) =>
                     <div className="col-12" key={i}>
                         <div className="molButtonRow">
                             <div className="d-flex flex-row align-items-center">
@@ -43,20 +43,20 @@ function ObjectView({objectList, onObjectSelection, viewMode}) {
                             </div>
                         </div>
                     </div>
-                )}
+                ) : <div>no objects yet</div>}
             </div>
         )
     }
 }
-
-export function DragAndDrop() {
+// research https://blog.logrocket.com/create-a-drag-and-drop-component-with-react-dropzone/
+export function DragAndDrop({onObjectUpload}) {
     //drag and drop
     return (
         <div className="molBlockUpload d-flex align-items-center justify-content-center">
             <div className="atmBlockUpload d-flex flex-column align-items-center justify-content-center">
                 <i className="fas fa-2x fa-upload"/>
                 {/* Add input here for file upload */}
-                <p><button type="button" className="atmButtonText" title="Choose a file">Choose a file</button> or drag it here</p>
+                <p><button type="button" className="atmButtonText" title="Choose a file" onClick={onObjectUpload}>Choose a file</button> or drag it here</p>
                 {/* drag and drop upload componet (look for onEvent, onUpload... and console.log 'event' and can find a path) */}
                 {/* https://stackoverflow.com/questions/58880171/get-file-path-from-drop-event/64616487#64616487 */}
             </div>

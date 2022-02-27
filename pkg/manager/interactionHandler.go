@@ -5,6 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"github.com/amlwwalker/gaspump-api/pkg/filesystem"
+	"github.com/patrickmn/go-cache"
+	"path"
+
 	//"github.com/amlwwalker/gaspump-api/pkg/object"
 	"github.com/machinebox/progress"
 	cid "github.com/nspcc-dev/neofs-sdk-go/container/id"
@@ -45,17 +48,46 @@ func (m *Manager) Upload(containerID string, attributes map[string]string) (stri
 		progressChan := progress.NewTicker(ctx, r, fs.Size(), 250*time.Millisecond)
 		for p := range progressChan {
 			fmt.Printf("\r%v remaining...", p.Remaining().Round(250*time.Millisecond))
+			tmp := NewProgressMessage(&ProgressMessage{
+				Title:       "Uploading object",
+				Progress:     int(p.Percent()),
+				Show: true,
+			})
+			m.SetProgressPercentage(tmp)
 		}
+		tmp := NewToastMessage(&ToastMessage{
+			Title:       "Uploading complete",
+			Type:        "success",
+			Description: "Uploading " + path.Base(filepath) + " complete",
+		})
+		m.SendSignal("freshUpload", nil)
+		m.MakeToast(tmp)
 		fmt.Println("\rupload is completed")
 	}()
 	rr := (io.Reader)(r)
 
 	objectID, err := m.UploadObject(containerID, filepath, attributes, &rr)
+	if err != nil {
+		tmp := NewToastMessage(&ToastMessage{
+			Title:       "Error uploading",
+			Type:        "error",
+			Description: "Uploading " + path.Base(filepath) + " failed: " + err.Error(),
+		})
+		m.MakeToast(tmp)
+		//auto close the progress bar
+		end := NewProgressMessage(&ProgressMessage{
+			Title:       "Uploading object",
+			Show: false,
+		})
+		m.SetProgressPercentage(end)
+	} else {
+		m.RetrieveFileSystem()
+	}
 	return objectID, err
 }
 //Upload will put an object in NeoFS. You can access publically available files at
 //https://http.testnet.fs.neo.org/<containerID>/<objectID>
-func (m *Manager) Download(objectID, containerID string) (error) {
+func (m *Manager) Download(objectID, containerID string) error {
 	homeDir, err := os.UserHomeDir()
 	filepath, err := runtime.SaveFileDialog(m.ctx, runtime.SaveDialogOptions{
 		DefaultDirectory:           homeDir,
@@ -86,15 +118,64 @@ func (m *Manager) Download(objectID, containerID string) (error) {
 		progressChan := progress.NewTicker(ctx, w, int64(metaData.Object().PayloadSize()), 250*time.Millisecond)
 		for p := range progressChan {
 			fmt.Printf("\r%v remaining...", p.Remaining().Round(250*time.Millisecond))
+			tmp := NewProgressMessage(&ProgressMessage{
+				Title:       "Downloading object",
+				Progress:     int(p.Percent()),
+				Show: true,
+			})
+			m.SetProgressPercentage(tmp)
 		}
+		tmp := NewToastMessage(&ToastMessage{
+			Title:       "Download complete",
+			Type:        "success",
+			Description: "Downloading " + path.Base(filepath) + " complete",
+		})
+		m.MakeToast(tmp)
+		//auto close the progress bar
+		end := NewProgressMessage(&ProgressMessage{
+			Title:       "Downloading object",
+			Show: false,
+		})
+		m.SetProgressPercentage(end)
 		fmt.Println("\rdownload is completed")
 	}()
 	WW := (io.Writer)(w)
-	_, err = m.GetObject(objectID, containerID, &WW)
+	_, err = m.Get(objectID, containerID, &WW)
+	if err != nil {
+		tmp := NewToastMessage(&ToastMessage{
+			Title:       "Error downloading",
+			Type:        "error",
+			Description: "Downloading " + path.Base(filepath) + " failed: " + err.Error(),
+		})
+		m.MakeToast(tmp)
+	}
+	return err
+}
+func (m *Manager) DeleteObject(objectID, containerID string) error {
+	err := m.Delete(objectID, containerID)
+	if err != nil {
+		tmp := NewToastMessage(&ToastMessage{
+			Title:       "Error deleting object",
+			Type:        "error",
+			Description: "Deleting object failed: " + err.Error(),
+		})
+		m.MakeToast(tmp)
+	}
 	return err
 }
 func (m Manager) RetrieveFileSystem() ([]filesystem.Element, error) {
-	return filesystem.GenerateFileSystem(m.ctx, m.fsCli, m.key)
+	el, err := filesystem.GenerateFileSystem(m.ctx, m.fsCli, m.key)
+	if err != nil {
+		tmp := NewToastMessage(&ToastMessage{
+			Title:       "Error updating filesystem",
+			Type:        "error",
+			Description: "Updating latest filesystem failed: " + err.Error(),
+		})
+		m.MakeToast(tmp)
+	} else {
+		m.c.Set(CACHE_FILE_SYSTEM, el, cache.NoExpiration)
+	}
+	return el, err
 }
 func (m Manager) RetrieveContainerFileSystem(containerID string) (filesystem.Element, error) {
 	contID := cid.New()

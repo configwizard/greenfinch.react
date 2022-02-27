@@ -84,7 +84,7 @@ func (m *Manager) GetObjectMetaData(objectID, containerID string) (*client.Objec
 	}
 	return head, err
 }
-func (m *Manager) GetObject(objectID, containerID string, writer *io.Writer) ([]byte, error){
+func (m *Manager) Get(objectID, containerID string, writer *io.Writer) ([]byte, error){
 	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, m.key)
 	if err != nil {
 		return []byte{}, err
@@ -119,6 +119,20 @@ type TmpObjectMeta struct {
 	Size uint64
 	Objects []filesystem.Element
 }
+func (m *Manager) ListObjectsAsync(containerID string) error {
+	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, m.key)
+	if err != nil {
+		return  err
+	}
+	cntID := new(cid.ID)
+	cntID.Parse(containerID)
+	list, err := object.ListObjects(m.ctx, m.fsCli, cntID, sessionToken)
+	_, objects := filesystem.GenerateObjectStruct(m.ctx, m.fsCli, sessionToken, list, cntID)
+	if m.DEBUG {
+		DebugSaveJson("ListContainerPopulatedObjects.json", objects)
+	}
+	return nil
+}
 func (m *Manager) ListContainerPopulatedObjects(containerID string) ([]filesystem.Element, error) {
 	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, m.key)
 	if err != nil {
@@ -133,7 +147,7 @@ func (m *Manager) ListContainerPopulatedObjects(containerID string) ([]filesyste
 	}
 	return objects, nil
 }
-func (m *Manager) DeleteObject(objectID, containerID string) error {
+func (m *Manager) Delete(objectID, containerID string) error {
 	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, m.key)
 	if err != nil {
 		return err

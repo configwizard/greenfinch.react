@@ -11,9 +11,10 @@ import Objects from "../objects";
 // import {retrieveFullFileSystem} from "./manager/interactions";
 
 //Mocker
-import {getAccountInformation} from "../../mocker/manager.js";
-import {listContainers} from "../../mocker/containers.js";
-import {listObjects} from "../../mocker/objects.js";
+import {getAccountInformation} from "../../manager/manager.js";
+import {listContainers} from "../../manager/containers.js";
+import {listObjects} from "../../manager/objects.js";
+import {searchObjects} from "../../manager/interactions"
 
 //import {getAccountInformation} from "../../mocker/manager.js";
 //import {createContainer, listContainers} from "../../mocker/containers.js";
@@ -61,11 +62,9 @@ class TabJSON extends React.Component {
                             <Objects objects={this.state.objectList} containerID={this.selectedContainer}></Objects>
                         </div>
                     </div>
-                    {/*
                         <div className="col-12 col-sm-6 col-xl-3">
-                            <FileSystem resp={this.state.resp}></FileSystem>
+                            <button onClick={searchObjects("cat")}></button>
                         </div>
-                    */}
                 </div>
             </section>
         );

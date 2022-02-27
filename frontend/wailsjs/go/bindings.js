@@ -20,6 +20,15 @@ const go = {
         return window.go.manager.Manager.CreateContainer(arg1);
       },
       /**
+       * Delete
+       * @param {string} arg1 - Go Type: string
+       * @param {string} arg2 - Go Type: string
+       * @returns {Promise<Error>}  - Go Type: error
+       */
+      "Delete": (arg1, arg2) => {
+        return window.go.manager.Manager.Delete(arg1, arg2);
+      },
+      /**
        * DeleteContainer
        * @param {string} arg1 - Go Type: string
        * @returns {Promise<Error>}  - Go Type: error
@@ -46,6 +55,16 @@ const go = {
         return window.go.manager.Manager.Download(arg1, arg2);
       },
       /**
+       * Get
+       * @param {string} arg1 - Go Type: string
+       * @param {string} arg2 - Go Type: string
+       * @param {Writer} arg3 - Go Type: *io.Writer
+       * @returns {Promise<Array<number>|Error>}  - Go Type: []uint8
+       */
+      "Get": (arg1, arg2, arg3) => {
+        return window.go.manager.Manager.Get(arg1, arg2, arg3);
+      },
+      /**
        * GetAccountInformation
        * @returns {Promise<Account|Error>}  - Go Type: manager.Account
        */
@@ -59,16 +78,6 @@ const go = {
        */
       "GetContainer": (arg1) => {
         return window.go.manager.Manager.GetContainer(arg1);
-      },
-      /**
-       * GetObject
-       * @param {string} arg1 - Go Type: string
-       * @param {string} arg2 - Go Type: string
-       * @param {Writer} arg3 - Go Type: *io.Writer
-       * @returns {Promise<Array<number>|Error>}  - Go Type: []uint8
-       */
-      "GetObject": (arg1, arg2, arg3) => {
-        return window.go.manager.Manager.GetObject(arg1, arg2, arg3);
       },
       /**
        * GetObjectMetaData
@@ -110,6 +119,21 @@ const go = {
         return window.go.manager.Manager.ListContainers();
       },
       /**
+       * ListContainersAsync
+       * @returns {Promise<Error>}  - Go Type: error
+       */
+      "ListContainersAsync": () => {
+        return window.go.manager.Manager.ListContainersAsync();
+      },
+      /**
+       * ListObjectsAsync
+       * @param {string} arg1 - Go Type: string
+       * @returns {Promise<Error>}  - Go Type: error
+       */
+      "ListObjectsAsync": (arg1) => {
+        return window.go.manager.Manager.ListObjectsAsync(arg1);
+      },
+      /**
        * MakeToast
        * @param {ToastMessage} arg1 - Go Type: manager.ToastMessage
        * @returns {Promise<void>} 
@@ -131,6 +155,23 @@ const go = {
        */
       "RetrieveFileSystem": () => {
         return window.go.manager.Manager.RetrieveFileSystem();
+      },
+      /**
+       * Search
+       * @param {string} arg1 - Go Type: string
+       * @returns {Promise<Array<Element>|Error>}  - Go Type: []filesystem.Element
+       */
+      "Search": (arg1) => {
+        return window.go.manager.Manager.Search(arg1);
+      },
+      /**
+       * SendSignal
+       * @param {string} arg1 - Go Type: string
+       * @param {number} arg2 - Go Type: interface {}
+       * @returns {Promise<void>} 
+       */
+      "SendSignal": (arg1, arg2) => {
+        return window.go.manager.Manager.SendSignal(arg1, arg2);
       },
       /**
        * SetProgressPercentage
@@ -167,24 +208,36 @@ const go = {
     "Mocker": {
       /**
        * GetAccountInformation
+       * @param {string} arg1 - Go Type: string
        * @returns {Promise<Account|Error>}  - Go Type: manager.Account
        */
-      "GetAccountInformation": () => {
-        return window.go.mocker.Mocker.GetAccountInformation();
+      "GetAccountInformation": (arg1) => {
+        return window.go.mocker.Mocker.GetAccountInformation(arg1);
       },
       /**
        * ListContainerPopulatedObjects
+       * @param {string} arg1 - Go Type: string
        * @returns {Promise<Array<Element>|Error>}  - Go Type: []filesystem.Element
        */
-      "ListContainerPopulatedObjects": () => {
-        return window.go.mocker.Mocker.ListContainerPopulatedObjects();
+      "ListContainerPopulatedObjects": (arg1) => {
+        return window.go.mocker.Mocker.ListContainerPopulatedObjects(arg1);
       },
       /**
        * ListContainers
+       * @param {string} arg1 - Go Type: string
        * @returns {Promise<Array<Element>|Error>}  - Go Type: []filesystem.Element
        */
-      "ListContainers": () => {
-        return window.go.mocker.Mocker.ListContainers();
+      "ListContainers": (arg1) => {
+        return window.go.mocker.Mocker.ListContainers(arg1);
+      },
+      /**
+       * Search
+       * @param {string} arg1 - Go Type: string
+       * @param {string} arg2 - Go Type: string
+       * @returns {Promise<Array<Element>|Error>}  - Go Type: []filesystem.Element
+       */
+      "Search": (arg1, arg2) => {
+        return window.go.mocker.Mocker.Search(arg1, arg2);
       },
     },
   },
