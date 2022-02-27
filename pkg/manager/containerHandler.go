@@ -76,16 +76,18 @@ func (m *Manager) ListContainersAsync() error {
 	}
 
 	for _, v := range ids {
-		tmpContainer := filesystem.PopulateContainerList(m.ctx, m.fsCli, v)
-		list, err := object.ListObjects(m.ctx, m.fsCli, v, sessionToken)
-		if err != nil {
-			tmpContainer.Errors = append(tmpContainer.Errors, err)
-			continue
-		}
-		//is this inefficient? the expensive part is the request, but we are throwing away the whole object
-		size, _:= filesystem.GenerateObjectStruct(m.ctx, m.fsCli, sessionToken, list, v)
-		tmpContainer.Size = size
-		runtime.EventsEmit(m.ctx, "appendContainer", tmpContainer)
+		go func(vID *cid.ID) {
+			tmpContainer := filesystem.PopulateContainerList(m.ctx, m.fsCli, vID)
+			list, err := object.ListObjects(m.ctx, m.fsCli, vID, sessionToken)
+			if err != nil {
+				tmpContainer.Errors = append(tmpContainer.Errors, err)
+				return
+			}
+			//is this inefficient? the expensive part is the request, but we are throwing away the whole object
+			size, _:= filesystem.GenerateObjectStruct(m.ctx, m.fsCli, sessionToken, list, vID)
+			tmpContainer.Size = size
+			runtime.EventsEmit(m.ctx, "appendContainer", tmpContainer)
+		}(v)
 	}
 	if m.DEBUG {
 		DebugSaveJson("ListContainers.json", containers)
