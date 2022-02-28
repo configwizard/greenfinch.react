@@ -1,8 +1,8 @@
-interface go {
+export interface go {
   "manager": {
     "Manager": {
 		Client():Promise<Client>
-		CreateContainer(arg1:string):Promise<string|Error>
+		CreateContainer(arg1:string):Promise<Error>
 		Delete(arg1:string,arg2:string):Promise<Error>
 		DeleteContainer(arg1:string):Promise<Error>
 		DeleteObject(arg1:string,arg2:string):Promise<Error>

@@ -16,6 +16,10 @@ $marginLarge: $baseSizing *2;
 
 /* Reset
 - - - - - - - - - - - - - - - - - - */
+body {
+    height: 100vh;
+}
+
 span {
     display: inline-block;
 }
@@ -286,14 +290,10 @@ input:checked + .slider:before {
 
 /* Styles: General
 - - - - - - - - - - - - - - - - - - */
-.orgHeaderApp {
-    height: 22px;
-}
 
 .orgHeaderStatus {
     & .molHeaderContent {
         padding: $paddingSmall;
-        padding-left: 80px; //to accommodate the traffic light dots (wails app)
     }
     & .atmStatus {
         margin-right: $marginSmall;
@@ -397,17 +397,15 @@ input:checked + .slider:before {
 .molBlockBread {
     padding: $paddingXSmall $paddingSmall;
     margin: 0;
-    & span {
+    & span.atmBreadCrumb, & span.utBreadLive {
         margin-right: 10px;
         max-width: 170px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        &.utBreadLive {
-            &:hover {
-                text-decoration: underline;
-                cursor: pointer;
-            }
+        &:hover {
+            text-decoration: underline;
+            cursor: pointer;
         }
     }
     & i {
@@ -436,9 +434,31 @@ input:checked + .slider:before {
     top: 50px;
     right: 0;
     z-index: 300;
-    min-width: 300px;
-    min-height: 400px;
+    min-width: 320px;
+    min-height: 420px;
+    span.atmWalletNumber {
+        display:block;
+    }
+    span.atmWalletAddress {
+        font-size: 0.7rem;
+    }
+    & h6 {
+        margin-bottom: 3px;
+    }
+}
+
+.orgWalletHeader {
     padding: $paddingXSmall;
+}
+.orgWalletBody {
+    padding: $paddingXSmall;
+}
+.orgWalletFooter {
+    padding: $paddingXSmall;
+}
+
+.molWalletOption {
+    margin-bottom: $marginSmall;
 }
 
 /* View: Options

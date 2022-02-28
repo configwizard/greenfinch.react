@@ -14,7 +14,7 @@ const go = {
       /**
        * CreateContainer
        * @param {string} arg1 - Go Type: string
-       * @returns {Promise<string|Error>}  - Go Type: string
+       * @returns {Promise<Error>}  - Go Type: error
        */
       "CreateContainer": (arg1) => {
         return window.go.manager.Manager.CreateContainer(arg1);

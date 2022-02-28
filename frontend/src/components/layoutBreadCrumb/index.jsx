@@ -17,7 +17,7 @@ function BreadCrumb(props) {
         <div className="molBlockBread d-flex align-items-center">
             <div className="atmBlockBread">
                 {/*<span className="atmBreadWallet"><i className="fas fa-lg fa-wallet"/>{props.walletAddress}</span>*/}
-                <span className="utBreadLive" onClick={props.resetBreadcrumb}>{selectedContainer}</span><i className="fas fa-lg fa-caret-right"/><span>{selectedObject}</span>
+                <span className="utBreadLive" onClick={props.resetBreadcrumb}>{selectedContainer}</span><i className="fas fa-lg fa-caret-right"/><span className="atmBreadCrumb">{selectedObject}</span>
             </div>
             <div className="ms-auto">
                 <button type="button" className="atmButtonIconClean utButtonWallet" onClick={() => setShow(true)}>

@@ -30,7 +30,7 @@ function ControlBar({containers, selectedContainer, onSelected, changeView, view
             </div>
             <div className="modal fade" id="newContainerModal" tabIndex="-1" aria-labelledby="exampleModalLabel"
                  aria-hidden="true">
-                <CompModal title="Create a New Container" buttonTextPrimary="Save" buttonTextSecondary="Cancel" clicked={async () => createContainer(document.getElementById("containerName").value)}>
+                <CompModal title="Create a New Container" buttonTextPrimary="Create" buttonTextSecondary="Cancel" clicked={async () => createContainer(document.getElementById("containerName").value)}>
                     <Form.Label>Container name</Form.Label>
                     <Form.Text> Choose a name for the container. (N.B. this cannot be changed)</Form.Text>
                     <Form.Control id="containerName" type="text" placeholder="e.g. holiday photos" />

@@ -1,5 +1,6 @@
 import React from "react";
-import FadeProps from 'fade-props';
+// import FadeProps from 'fade-props';
+
 //Mocker
 import {getAccountInformation} from "../../manager/manager.js";
 import {listContainers} from "../../manager/containers.js";

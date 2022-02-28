@@ -8,7 +8,7 @@ function CompOverlayMenu(props) {
         props.show ? <div className="utTest" onClick={() => props.setShowMenu(false)}>
             <div className="utOverlayMenuSmall" onClick={e => e.stopPropagation()}>
                 <nav class="nav flex-column align-items-start">
-                    <button className="atmButtonBase nav-link" onClick=""><i className="fas fa-trash-alt"/>&nbsp;View</button>
+                    <button className="atmButtonBase nav-link" onClick=""><i className="fas fa-eye"/>&nbsp;View</button>
                     <button className="atmButtonBase nav-link" onClick=""><i className="fas fa-download"/>&nbsp;Download</button>
                     <button className="atmButtonBase nav-link" onClick=""><i className="fas fa-trash-alt"/>&nbsp;Delete</button>
                 </nav>
