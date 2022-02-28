@@ -295,16 +295,36 @@ input:checked + .slider {
 - - - - - - - - - - - - - - - - - - */
 .molWallet {
     cursor: default;
-    background-color: $brandColorWhite;
+    text-align: left;
+    background-color: $brandColorLight;
     color: $brandColorDark;
     box-shadow: $brandBoxShadow;
+    & .orgWalletHeader {
+        background-color: darken($brandColorLight,5%);
+    }
+    & .orgWalletBody {
+        background-color: $brandColorLight;
+    }
+    & .orgWalletFooter {
+        background-color: $brandColorLight;
+    }
     & .atmButtonIconClean {
         @include ButtonIconSimple(15px,$brandColorDark);
     }
     & h4.atmWalletTitle {
-        font-size: 0.9rem;
+        @include titleStyle(0.9rem);
+        color: $brandColorSecondary-dark;
+    }
+    h6 {
+        @include titleStyle(0.6rem);
+        color: $brandColorSecondary-dark;
+    }
+    span.atmWalletNumber {
+        line-height: 1;
     }
 }
+
+
 
 /* Component: Toast
 - - - - - - - - - - - - - - - - - - */
@@ -437,10 +457,6 @@ span.utUCSmall {
     @include titleStyle (0.7rem);
 }
 
-.orgHeaderApp {
-    background-color: lighten($brandColorDark, 5%);
-}
-
 .orgHeaderStatus {
     box-shadow: 0 0 15px rgba($brandColorDark, 0.6);
     background-color: $brandColorDark;
@@ -459,6 +475,7 @@ span.utUCSmall {
 }
 
 .orgMainJSON { //change this name
+    background-color: $brandColorWhite;
     box-shadow: 0 0 15px rgba($brandColorDark, 0.3);
     & .molBlockJSON {
         background-color: rgba(255,255,255,0.2);
@@ -484,14 +501,12 @@ span.utUCSmall {
         font-size: 0.75rem;
         font-family: $brandFontSemi;
         color: $brandColorSecondary;
-        & span {
-            &.utBreadLive {
-                transition: $brandTransitionSpeed;
-                &:hover {
-                    color: $brandColorDark;
-                    text-decoration: underline;
-                    cursor: pointer;
-                }
+        & span.atmBreadCrumb, & span.utBreadLive {
+            transition: $brandTransitionSpeed;
+            &:hover {
+                color: $brandColorDark;
+                text-decoration: underline;
+                cursor: pointer;
             }
         }
         & .atmBlockBread i {

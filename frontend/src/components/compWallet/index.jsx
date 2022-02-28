@@ -32,33 +32,36 @@ const CompWallet = props => {
         <div className="utTest">
             <div className="molWallet" onClick={e => e.stopPropagation()}>
                 <div className="molWalletContainer">
-                    <section>
-                        <div className="d-flex align-items-right">
+                    <section className="orgWalletHeader d-flex">
+                        <div>
+                            <h4 className="atmWalletTitle">Wallet</h4>
+                        </div>
+                        <div className="ms-auto">
                             <i className="far fa-times" style={{"color":"red"}} onClick={props.onClose}/>
                         </div>
                     </section>
-                    <section>
-                        <div className="d-flex align-items-center">
-                            <h4 className="atmWalletTitle">Wallet address</h4>
-                            <h5 className="atmWalletTitle">{props.account.address}</h5>
-                            <div className="ms-auto">
+                    <section className="orgWalletBody">
+                        <div className="molWalletOption">
+                            <h6 className="atmWallet">Wallet address</h6>
+                            <span className="atmWalletAddress">{props.account.address}</span>
+                            {/* <div className="ms-auto">
                                 <button type="button" className="atmButtonIconClean" onClick=""><i className="far fa-clone"/></button>
-                            </div>
+                            </div> */}
                         </div>
-                        <div className="d-flex align-items-center">
-                            <h4 className="atmWalletTitle">NeoFS Gas balance-</h4>
-                            <h5 className="atmWalletTitle">{neoFSBalance}</h5>
+                        <div className="molWalletOption">
+                            <h6 className="atmWallet">NeoFS Gas balance</h6>
+                            <span className="atmWalletNumber">{neoFSBalance}</span>
                         </div>
-                        <div className="d-flex align-items-center">
-                            <h4 className="atmWalletTitle">Neo balance-</h4>
-                            <h5 className="atmWalletTitle">{neoBalance}</h5>
+                        <div className="molWalletOption">
+                            <h6 className="atmWallet">Neo balance</h6>
+                            <span className="atmWalletNumber">{neoBalance}</span>
                         </div>
-                        <div className="d-flex align-items-center">
-                            <h4 className="atmWalletTitle">Neo Gas balance-</h4>
-                            <h5 className="atmWalletTitle">{gasBalance}</h5>
+                        <div className="molWalletOption">
+                            <h6 className="atmWallet">Neo Gas balance</h6>
+                            <span className="atmWalletNumber">{gasBalance}</span>
                         </div>
                     </section>
-                    <section>
+                    <section className="orgWalletFooter">
                         <div>
                             <h5>Top-up</h5>
                             <button type="button" className="atmButtonBase atmButtonSimple" onClick=""><i className="fas fa-chart-line"/>Top-up NeoFS Balance</button>

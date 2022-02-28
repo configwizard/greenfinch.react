@@ -117,36 +117,56 @@ func (m *Manager) DeleteContainer(id string) error {
 	_, err = container2.Delete(m.ctx, m.fsCli, c)
 	return err
 }
-func (m *Manager) CreateContainer(name string) (string, error) {
+func (m *Manager) CreateContainer(name string) error {
 	log.Println("creating cxontainer with name", name)
 	attr := container.Attribute{}
 	attr.SetKey("name")
 	attr.SetValue(name)
 	var attributes []*container.Attribute
 	attributes = append(attributes, &attr)
-	id, err := container2.Create(m.ctx, m.fsCli, m.key, attributes)
-	if err != nil {
-		return id.String(), err
-	}
 	// Poll containers ID until it will be available in the network.
-	for i := 0; i <= 30; i++ {
-		if i == 30 {
-			log.Printf("Timeout, containers %s was not persisted in side chain\n", id)
-			return id.String(), err
-		}
-		_, err := container2.Get(m.ctx, m.fsCli, id)
-		if err == nil {
+	go func() {
+		id, err := container2.Create(m.ctx, m.fsCli, m.key, attributes)
+		if err != nil {
 			tmp := ToastMessage{
-				Title:       "Container Created",
-				Type:        "Success",
-				Description: "Container " + id.String() + "created",
+				Title:   	"Container Error",
+				Type:        "error",
+				Description: "Container " + name + " failed " + err.Error(),
 			}
 			m.MakeToast(NewToastMessage(&tmp))
-			return id.String(), err
+			return 
 		}
-		time.Sleep(time.Second)
-		//todo output the time/poll to a channel for the frontend
-	}
+		tmp := ToastMessage{
+			Title:       "Container initialised",
+			Type:        "info",
+			Description: "Container " + name + " being created",
+		}
+		m.MakeToast(NewToastMessage(&tmp))		
+		for i := 0; i <= 30; i++ {
+			if i == 30 {
+				log.Printf("Timeout, containers %s was not persisted in side chain\n", id)
+				tmp := ToastMessage{
+					Title:   	"Container Error",
+					Type:        "error",
+					Description: "Container " + name + " failed. Timeout",
+				}
+				m.MakeToast(NewToastMessage(&tmp))
+				return
+			}
+			_, err := container2.Get(m.ctx, m.fsCli, id)
+			if err == nil {
+				tmp := ToastMessage{
+					Title:       "Container Created",
+					Type:        "success",
+					Description: "Container " + name + " created",
+				}
+				m.MakeToast(NewToastMessage(&tmp))
+				return
+			}
+			time.Sleep(time.Second)
+			//todo output the time/poll to a channel for the frontend
+		}
+	}()
 	//convert to frontend friendly format
-	return id.String(), err
+	return nil
 }
