@@ -394,6 +394,12 @@ input:checked + .slider:before {
         min-width: 180px;
         z-index: 200;
     }
+    & .atmRowList {
+        width: 200px;
+        &:first-child {
+            width: 400px;
+        }
+    }
 }
 
 .atmSwitchContent {
