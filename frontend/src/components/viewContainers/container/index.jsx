@@ -28,7 +28,7 @@ export function ContainerRow(props) {
     const [show, setShow] = useState(false)
     return (
         <div className="d-flex flex-row align-items-center">
-            <div>
+            <div className="atmRowList">
                 <button 
                     type="button" 
                     className="atmButtonRowContent" 
@@ -37,6 +37,8 @@ export function ContainerRow(props) {
                         <span className="atmButtonRowName">{props.item.attributes.name}</span>
                 </button>
             </div>
+            <div className="atmRowList">Container Item 2</div>
+            <div className="atmRowList">Container Item 3</div>
             <div className="ms-auto">
                 <button 
                     type="button"   

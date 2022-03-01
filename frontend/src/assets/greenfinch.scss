@@ -600,13 +600,18 @@ span.utUCSmall {
                     color: $brandColorPrimary;
                 }
                 & .atmButtonRowName {
+                    font-family: $brandFontSemi;
                     color: $brandColorSecondary-dark;
                     font-size: 0.75rem;
-                    font-family: $brandFontSemi;
                     &:hover {
                         cursor: pointer;
                     }
-                }
+                }   
+            }
+            & .atmRowList {
+                font-family: $brandFontSemi;
+                color: $brandColorDark;
+                font-size: 0.7rem;
             }
             & .utOverlayMenuSmall {
                 background-color: $brandColorWhite;

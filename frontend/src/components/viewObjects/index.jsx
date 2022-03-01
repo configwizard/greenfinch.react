@@ -28,7 +28,7 @@ function ObjectView({objectList, onObjectSelection, viewMode}) {
                     <div className="col-12" key={i}>
                         <div className="molButtonRow">
                             <div className="d-flex flex-row align-items-center">
-                                <div>
+                                <div className="atmRowList">
                                     <button
                                         type="button"
                                         className="atmButtonRowContent" 
@@ -37,6 +37,8 @@ function ObjectView({objectList, onObjectSelection, viewMode}) {
                                             <span className="atmButtonRowName">{item.attributes.FileName}</span>
                                     </button>
                                 </div>
+                                <div className="atmRowList">Container Item 2</div>
+                                <div className="atmRowList">Container Item 3</div>
                                 <div className="ms-auto">
                                     &nbsp; {/* placeholder for layout purposes */}    
                                 </div>
