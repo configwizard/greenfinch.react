@@ -5,7 +5,6 @@ import { Form } from "react-bootstrap";
 
 function ControlBar({containers, selectedContainer, onSelected, changeView, viewMode, resetBreadcrumb}) {
     console.log("containerList", containers)
-
     return (
         <div className="row">
             <div className="col-12">

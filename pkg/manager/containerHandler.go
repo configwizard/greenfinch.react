@@ -131,7 +131,7 @@ func (m *Manager) CreateContainer(name string) error {
 			tmp := ToastMessage{
 				Title:   	"Container Error",
 				Type:        "error",
-				Description: "Container " + name + " failed " + err.Error(),
+				Description: "Container '" + name + "' failed " + err.Error(),
 			}
 			m.MakeToast(NewToastMessage(&tmp))
 			return 
@@ -139,7 +139,7 @@ func (m *Manager) CreateContainer(name string) error {
 		tmp := ToastMessage{
 			Title:       "Container initialised",
 			Type:        "info",
-			Description: "Container " + name + " being created",
+			Description: "Container '" + name + "' being created",
 		}
 		m.MakeToast(NewToastMessage(&tmp))		
 		for i := 0; i <= 30; i++ {
@@ -148,7 +148,7 @@ func (m *Manager) CreateContainer(name string) error {
 				tmp := ToastMessage{
 					Title:   	"Container Error",
 					Type:        "error",
-					Description: "Container " + name + " failed. Timeout",
+					Description: "Container '" + name + "' failed. Timeout",
 				}
 				m.MakeToast(NewToastMessage(&tmp))
 				return
@@ -158,7 +158,7 @@ func (m *Manager) CreateContainer(name string) error {
 				tmp := ToastMessage{
 					Title:       "Container Created",
 					Type:        "success",
-					Description: "Container " + name + " created",
+					Description: "Container '" + name + "' created",
 				}
 				m.MakeToast(NewToastMessage(&tmp))
 				return

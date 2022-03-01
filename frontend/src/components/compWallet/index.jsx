@@ -32,7 +32,7 @@ const CompWallet = props => {
         <div className="utTest">
             <div className="molWallet" onClick={e => e.stopPropagation()}>
                 <div className="molWalletContainer">
-                    <section className="orgWalletHeader d-flex">
+                    <section className="orgWalletHeader d-flex align-items-center">
                         <div>
                             <h4 className="atmWalletTitle">Wallet</h4>
                         </div>

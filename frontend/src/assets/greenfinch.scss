@@ -313,7 +313,7 @@ input:checked + .slider {
     }
     & h4.atmWalletTitle {
         @include titleStyle(0.9rem);
-        color: $brandColorSecondary-dark;
+        color: $brandColorDark;
     }
     h6 {
         @include titleStyle(0.6rem);
@@ -553,13 +553,6 @@ span.utUCSmall {
                         background-color: rgba($brandColorSecondary, 0.1);
                     }
                 }
-                & .utOverlayMenuSmall {
-                    background-color: $brandColorWhite;
-                    box-shadow: $brandBoxShadow;
-                    font-size: 0.9rem;
-                    text-align: left;
-                    color: $brandColorDark;
-                } // add dots here
                 &:hover {
                     cursor: default;
                 }
@@ -582,6 +575,13 @@ span.utUCSmall {
                     color: $brandColorPrimary;
                 }
             }
+            & .utOverlayMenuSmall {
+                background-color: $brandColorWhite;
+                box-shadow: $brandBoxShadow;
+                font-size: 0.9rem;
+                text-align: left;
+                color: $brandColorDark;
+            } 
         }
         & .molButtonRow {
             background-color: rgba($brandColorSecondary, 0.03);
@@ -608,6 +608,13 @@ span.utUCSmall {
                     }
                 }
             }
+            & .utOverlayMenuSmall {
+                background-color: $brandColorWhite;
+                box-shadow: $brandBoxShadow;
+                font-size: 0.9rem;
+                text-align: left;
+                color: $brandColorDark;
+            } // add dots here
             & .atmButtonOptions {
                 border-radius: 0;
                 background-color: rgba($brandColorSecondary, 0.04);
@@ -616,6 +623,11 @@ span.utUCSmall {
                     background-color: rgba($brandColorSecondary, 0.1);
                 }
             }
+        }
+        & .atmStatusSmall {
+            color: $brandColorDark;
+            font-size: 0.8rem;
+            font-family: $brandFontSemi;
         }
     }
 }

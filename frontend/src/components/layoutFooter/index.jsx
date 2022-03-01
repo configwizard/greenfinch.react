@@ -20,7 +20,7 @@ export default function Footer({fireToast, percentage}) {
             </div>
             <div>
                 <FadeProps animationLength={150}>
-                <CompProgress show={show} setShow={setShow} percentage={percentage}></CompProgress>
+                    <CompProgress show={show} setShow={setShow} percentage={percentage}></CompProgress>
                 </FadeProps>
             </div>
         </>

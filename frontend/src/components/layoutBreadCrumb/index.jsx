@@ -5,7 +5,7 @@ import Dropdown from "../dropdown";
 
 function BreadCrumb(props) {
     const [show, setShow] = useState(false)
-    const selectedContainer = props.container == null ? "Containers" : props.container.containerName
+    const selectedContainer = props.container == null ? "" : props.container.containerName
     const selectedObject = props.object == null ? "" : props.object.objectName
     console.log("selectedObject", selectedObject)
 
@@ -17,7 +17,7 @@ function BreadCrumb(props) {
         <div className="molBlockBread d-flex align-items-center">
             <div className="atmBlockBread">
                 {/*<span className="atmBreadWallet"><i className="fas fa-lg fa-wallet"/>{props.walletAddress}</span>*/}
-                <span className="utBreadLive" onClick={props.resetBreadcrumb}>{selectedContainer}</span><i className="fas fa-lg fa-caret-right"/><span className="atmBreadCrumb">{selectedObject}</span>
+                <span className="atmBreadCrumb"><i className="fas fa-home"/></span><span className="utBreadLive" onClick={props.resetBreadcrumb}>Containers</span><i className="fas fa-lg fa-caret-right"/><span className="utBreadLive">{selectedContainer}</span><i className="fas fa-lg fa-caret-right"/><span className="atmBreadCrumb">{selectedObject}</span>
             </div>
             <div className="ms-auto">
                 <button type="button" className="atmButtonIconClean utButtonWallet" onClick={() => setShow(true)}>
