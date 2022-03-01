@@ -157,11 +157,11 @@ input:checked + .slider:before {
 .molProgress {
     & .utTemp {
         position: fixed;
-        z-index: 99;
-        left: 0;
-        top: 0;
-        right: 0;
-        bottom: 0;
+        z-index: 30000;
+        top: 40px;
+        right: 40px;
+        width: 350px;
+        min-height: 70px;
     }
     & .molProgressContainer {
         width: 600px;
@@ -345,6 +345,10 @@ input:checked + .slider:before {
                 & .atmButtonGridName {
                     margin-top: 2px;
                     margin-bottom: 2px;
+                    max-width: 160px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
                 }
             }
             & .atmButtonOptions {
@@ -370,12 +374,26 @@ input:checked + .slider:before {
     }
 }
 
-.utOverlayMenuSmall {
-    position: absolute;
-    top: 30px;
-    left: 0; // differentiation here.
-    min-width: 180px;
-    z-index: 200;
+.molButtonGrid {
+    & .utOverlayMenuSmall {
+        position: absolute;
+        z-index: 500;
+        top: 30px;
+        left: 0;
+        min-width: 180px;
+        z-index: 200;
+    }
+}
+
+.molButtonRow {
+    & .utOverlayMenuSmall {
+        position: absolute;
+        z-index: 500;
+        top: 20px;
+        right: 0; 
+        min-width: 180px;
+        z-index: 200;
+    }
 }
 
 .atmSwitchContent {
@@ -394,7 +412,7 @@ input:checked + .slider:before {
 
 /* Layout: Breadcrumb
 - - - - - - - - - - - - - - - - - - */
-.molBlockBread {
+.molBlockBread { // to sort as not helpful now
     padding: $paddingXSmall $paddingSmall;
     margin: 0;
     & span.atmBreadCrumb, & span.utBreadLive {
@@ -414,7 +432,18 @@ input:checked + .slider:before {
     & .ms-auto i {
         margin-right: 0;
     }
-}    
+}
+
+
+
+.orgWalletFooter { // short-term option as being over-run below
+    & .atmButtonSimple {
+        margin-left: 0;
+        & i {
+            margin-right: 7px;
+        }
+    }
+}
 
 
 /* Component: Wallet

@@ -18,7 +18,7 @@ function ObjectView({objectList, onObjectSelection, viewMode}) {
                             </button>
                         </div>
                     </div>
-                ) : <div>no objects yet</div>}
+                ) : <div className="atmStatusSmall"><i className="fas fa-exclamation-triangle"/>&nbsp;There are no objects in this container.</div>}
             </div>
         )
     } else {
@@ -43,7 +43,7 @@ function ObjectView({objectList, onObjectSelection, viewMode}) {
                             </div>
                         </div>
                     </div>
-                ) : <div>no objects yet</div>}
+                ) : <div className="atmStatusSmall"><i className="fas fa-exclamation-triangle"/>&nbsp;There are no objects in this container.</div>}
             </div>
         )
     }
