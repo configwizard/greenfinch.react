@@ -1,7 +1,5 @@
 import React from "react";
-
 import {ContainerGrid, ContainerRow} from "./container"
-
 
 function ContainerComponent(props) {
     return (

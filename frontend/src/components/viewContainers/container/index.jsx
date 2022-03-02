@@ -25,7 +25,7 @@ export function ContainerGrid(props) {
     )
 }
 export function ContainerRow(props) {
-    const [show, setShow] = useState(false)
+    const [showMenu, setShowMenu] = useState(false)
     return (
         <div className="d-flex flex-row align-items-center">
             <div className="atmRowList">
@@ -37,15 +37,15 @@ export function ContainerRow(props) {
                         <span className="atmButtonRowName">{props.item.attributes.name}</span>
                 </button>
             </div>
-            <div className="atmRowList">Container Item 2</div>
-            <div className="atmRowList">Container Item 3</div>
+            <div className="atmRowList">{props.item.size}</div>
+            <div className="atmRowList">{props.item.attributes.Timestamp}</div>
             <div className="ms-auto">
                 <button 
                     type="button"   
                     className="atmButtonOptions" 
-                    onClick={() => setShow(true)}>
-                        <i className="far fa-ellipsis-h"/>
-                        <CompOverlayMenu onClose={() => setShow(false)} show={show}></CompOverlayMenu>
+                    onClick={() => setShowMenu(!showMenu)}>
+                        { !showMenu ? <i className="far fa-ellipsis-h"/> : <i className="far fa-times" style={{"color":"red"}}/> }
+                        <CompOverlayMenu setShowMenu={setShowMenu} show={showMenu}></CompOverlayMenu>
                 </button>
             </div>
         </div>
