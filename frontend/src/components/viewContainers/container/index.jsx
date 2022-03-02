@@ -11,7 +11,7 @@ export function ContainerGrid(props) {
                     className="atmButtonOptions ms-auto" 
                     onClick={() => setShowMenu(!showMenu)}>
                         { !showMenu ? <i className="far fa-ellipsis-h"/> : <i className="far fa-times" style={{"color":"red"}}/> }
-                        <CompOverlayMenu setShowMenu={setShowMenu} show={showMenu}></CompOverlayMenu>
+                        <CompOverlayMenu onDelete={props.onDelete} setShowMenu={setShowMenu} show={showMenu}></CompOverlayMenu>
                 </button>
             </div>
             <button 
@@ -19,7 +19,7 @@ export function ContainerGrid(props) {
                 className="atmButtonGridContent d-flex flex-column align-items-center justify-content-between"
                 onClick={() => props.onContainerSelection(props.item.id, props.item.attributes.name)}>
                     <div className="neo folder-icon"></div>
-                    <span className="atmButtonGridName">{props.item.attributes.name}</span>
+                    <span className="atmButtonGridName">{props.item.attributes.FileName}</span>
             </button>
         </>
     )
@@ -34,7 +34,7 @@ export function ContainerRow(props) {
                     className="atmButtonRowContent" 
                     onClick={() => props.onContainerSelection(props.item.id, props.item.attributes.name)}>
                         <i className="fas fa-folder"/>
-                        <span className="atmButtonRowName">{props.item.attributes.name}</span>
+                        <span className="atmButtonRowName">{props.item.attributes.FileName}</span>
                 </button>
             </div>
             <div className="atmRowList">{props.item.size}</div>
@@ -45,7 +45,7 @@ export function ContainerRow(props) {
                     className="atmButtonOptions" 
                     onClick={() => setShowMenu(!showMenu)}>
                         { !showMenu ? <i className="far fa-ellipsis-h"/> : <i className="far fa-times" style={{"color":"red"}}/> }
-                        <CompOverlayMenu setShowMenu={setShowMenu} show={showMenu}></CompOverlayMenu>
+                        <CompOverlayMenu onDelete={props.onDelete} setShowMenu={setShowMenu} show={showMenu}></CompOverlayMenu>
                 </button>
             </div>
         </div>

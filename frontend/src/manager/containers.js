@@ -24,6 +24,7 @@ const createContainer = async (name) => {
 }
 
 const deleteContainer = async (containerId) => {
+    console.log("deleting container with id -", containerId)
     try {
         await window.go.manager.Manager.DeleteContainer(containerId)
     } catch (e) {
