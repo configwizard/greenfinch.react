@@ -17,7 +17,7 @@ export function ContainerGrid(props) {
             <button 
                 type="button"
                 className="atmButtonGridContent d-flex flex-column align-items-center justify-content-between"
-                onClick={() => props.onContainerSelection(props.item.id, props.item.attributes.name)}>
+                onClick={() => props.onContainerSelection(props.item.id, props.item.attributes.FileName)}>
                     <div className="neo folder-icon"></div>
                     <span className="atmButtonGridName">{props.item.attributes.FileName}</span>
             </button>
@@ -32,7 +32,7 @@ export function ContainerRow(props) {
                 <button 
                     type="button" 
                     className="atmButtonRowContent" 
-                    onClick={() => props.onContainerSelection(props.item.id, props.item.attributes.name)}>
+                    onClick={() => props.onContainerSelection(props.item.id, props.item.attributes.FileName)}>
                         <i className="fas fa-folder"/>
                         <span className="atmButtonRowName">{props.item.attributes.FileName}</span>
                 </button>
