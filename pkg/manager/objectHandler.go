@@ -1,6 +1,7 @@
 package manager
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	client2 "github.com/amlwwalker/gaspump-api/pkg/client"
@@ -128,6 +129,11 @@ func (m *Manager) ListObjectsAsync(containerID string) error {
 	cntID.Parse(containerID)
 	list, err := object.ListObjects(m.ctx, m.fsCli, cntID, sessionToken)
 	_, objects := filesystem.GenerateObjectStruct(m.ctx, m.fsCli, sessionToken, list, cntID)
+	str, err := json.MarshalIndent(objects, "", "  ")
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(string(str))
 	if m.DEBUG {
 		DebugSaveJson("ListContainerPopulatedObjects.json", objects)
 	}
@@ -142,6 +148,11 @@ func (m *Manager) ListContainerPopulatedObjects(containerID string) ([]filesyste
 	cntID.Parse(containerID)
 	list, err := object.ListObjects(m.ctx, m.fsCli, cntID, sessionToken)
 	_, objects := filesystem.GenerateObjectStruct(m.ctx, m.fsCli, sessionToken, list, cntID)
+	str, err := json.MarshalIndent(objects, "", "  ")
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(string(str))
 	if m.DEBUG {
 		DebugSaveJson("ListContainerPopulatedObjects.json", objects)
 	}
