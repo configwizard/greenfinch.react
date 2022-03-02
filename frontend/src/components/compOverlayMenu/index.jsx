@@ -18,10 +18,8 @@ function CompOverlayMenu(props) {
     )
 }
 
-
 const clickOutsideConfig = {
     handleClickOutside: () => CompOverlayMenu.handleClickOutside,
-
 };
 
 export default onClickOutside(CompOverlayMenu, clickOutsideConfig);
