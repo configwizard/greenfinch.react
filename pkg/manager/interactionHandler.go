@@ -4,11 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/amlwwalker/gaspump-api/pkg/filesystem"
+	"github.com/configwizard/gaspump-api/pkg/filesystem"
 	"github.com/patrickmn/go-cache"
 	"path"
 
-	//"github.com/amlwwalker/gaspump-api/pkg/object"
+	//"github.com/configwizard/gaspump-api/pkg/object"
 	"github.com/machinebox/progress"
 	cid "github.com/nspcc-dev/neofs-sdk-go/container/id"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
@@ -87,10 +87,12 @@ func (m *Manager) Upload(containerID string, attributes map[string]string) (stri
 }
 //Upload will put an object in NeoFS. You can access publically available files at
 //https://http.testnet.fs.neo.org/<containerID>/<objectID>
-func (m *Manager) Download(objectID, containerID string) error {
+func (m *Manager) Download(filename, objectID, containerID string) error {
 	homeDir, err := os.UserHomeDir()
+	fmt.Println("downloading to ", filename)
 	filepath, err := runtime.SaveFileDialog(m.ctx, runtime.SaveDialogOptions{
 		DefaultDirectory:           homeDir,
+		DefaultFilename: 			filename,
 		Title:                      "Choose where to save file to",
 		Filters:                    nil,
 		ShowHiddenFiles:            false,

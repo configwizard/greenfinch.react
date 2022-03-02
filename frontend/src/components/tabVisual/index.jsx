@@ -1,9 +1,9 @@
 import React from "react";
 // import FadeProps from 'fade-props';
 
-//Mocker
+//Mocker/Manager
 import {getAccountInformation} from "../../manager/manager.js";
-import {listContainers} from "../../manager/containers.js";
+import {deleteContainer, listContainers} from "../../manager/containers.js";
 import {getObject, listObjects, uploadObject} from "../../manager/objects.js";
 
 //Components
@@ -64,15 +64,16 @@ class TabVisual extends React.Component {
         if (this.state.selectedContainer == null) {
             throw new Error("cannot retrieve an object from non existent container")
         }
+        console.log("selected", objectID, objectName)
         //we will need to call the function to get the objects for a specific container ID and update the objectList
         const selectedObject = {
             objectID,
             objectName
         }
         console.log('state after selecting object', this.state)
+        await getObject(objectName, objectID, this.state.selectedContainer.containerID)
         let state = this.state
         await this.setState({...state, selectedObject})
-        await getObject(objectID, state.selectedContainer.containerID)
     }
     onObjectUpload = async () => {
         if (this.state.selectedContainer == null) {
@@ -80,6 +81,10 @@ class TabVisual extends React.Component {
         }
         let state = this.state
         await uploadObject(this.state.selectedContainer.containerID)
+    }
+    onContainerDelete = async (containerId) => {
+        let response = await deleteContainer(containerId)
+        console.log("deleting container ", containerId, response)
     }
     resetBreadcrumb = async () => {
         let state = this.state
@@ -91,7 +96,7 @@ class TabVisual extends React.Component {
                 <div className="col-12">
                     <div className="orgContainersGrid">
                         {/*<FadeProps animationLength={150}>*/}
-                            <ContainerView containerList={this.state.containerList} viewMode={this.state.viewMode} onContainerSelection={this.onContainerSelection}></ContainerView>
+                            <ContainerView containerList={this.state.containerList} onDelete={this.onContainerDelete} viewMode={this.state.viewMode} onContainerSelection={this.onContainerSelection}></ContainerView>
                         {/*</FadeProps>*/}
                     </div>
                 </div>

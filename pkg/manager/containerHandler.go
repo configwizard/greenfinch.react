@@ -3,12 +3,14 @@ package manager
 import (
 	"encoding/json"
 	"fmt"
-	client2 "github.com/amlwwalker/gaspump-api/pkg/client"
-	container2 "github.com/amlwwalker/gaspump-api/pkg/container"
-	"github.com/amlwwalker/gaspump-api/pkg/filesystem"
-	"github.com/amlwwalker/gaspump-api/pkg/object"
+	client2 "github.com/configwizard/gaspump-api/pkg/client"
+	container2 "github.com/configwizard/gaspump-api/pkg/container"
+	"github.com/configwizard/gaspump-api/pkg/filesystem"
+	"github.com/configwizard/gaspump-api/pkg/object"
+	"github.com/nspcc-dev/neofs-sdk-go/acl"
 	"github.com/nspcc-dev/neofs-sdk-go/container"
 	cid "github.com/nspcc-dev/neofs-sdk-go/container/id"
+	obj "github.com/nspcc-dev/neofs-sdk-go/object"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"log"
 	"time"
@@ -49,13 +51,13 @@ func (m *Manager) ListContainers() ([]filesystem.Element, error) {
 	var containers []filesystem.Element
 	for _, v := range ids {
 		tmpContainer := filesystem.PopulateContainerList(m.ctx, m.fsCli, v)
-		list, err := object.ListObjects(m.ctx, m.fsCli, v, sessionToken)
+		list, err := object.ListObjects(m.ctx, m.fsCli, v, nil, sessionToken)
 		if err != nil {
 			tmpContainer.Errors = append(tmpContainer.Errors, err)
 			continue
 		}
 		//is this inefficient? the expensive part is the request, but we are throwing away the whole object
-		size, _:= filesystem.GenerateObjectStruct(m.ctx, m.fsCli, sessionToken, list, v)
+		size, _:= filesystem.GenerateObjectStruct(m.ctx, m.fsCli, nil, sessionToken, list, v)
 		tmpContainer.Size = size
 		containers = append(containers, tmpContainer)
 	}
@@ -79,13 +81,13 @@ func (m *Manager) ListContainersAsync() error {
 	for _, v := range ids {
 		go func(vID *cid.ID) {
 			tmpContainer := filesystem.PopulateContainerList(m.ctx, m.fsCli, vID)
-			list, err := object.ListObjects(m.ctx, m.fsCli, vID, sessionToken)
+			list, err := object.ListObjects(m.ctx, m.fsCli, vID, nil, sessionToken)
 			if err != nil {
 				tmpContainer.Errors = append(tmpContainer.Errors, err)
 				return
 			}
 			//is this inefficient? the expensive part is the request, but we are throwing away the whole object
-			size, _:= filesystem.GenerateObjectStruct(m.ctx, m.fsCli, sessionToken, list, vID)
+			size, _:= filesystem.GenerateObjectStruct(m.ctx, m.fsCli, nil, sessionToken, list, vID)
 			tmpContainer.Size = size
 			str, err := json.MarshalIndent(tmpContainer, "", "  ")
 			if err != nil {
@@ -114,25 +116,51 @@ func (m *Manager) GetContainer(id string) (*container.Container, error) {
 	return cont, err
 }
 func (m *Manager) DeleteContainer(id string) error {
+	fmt.Println("deleting container ", id)
 	c := cid.New()
 	err := c.Parse(id)
 	if err != nil {
-		fmt.Println("error parsing id", err)
+		tmp := ToastMessage{
+			Title:   	"Container Error",
+			Type:        "error",
+			Description: "Container does not exist " + err.Error(),
+		}
+		m.MakeToast(NewToastMessage(&tmp))
 		return err
 	}
 	_, err = container2.Delete(m.ctx, m.fsCli, c)
+	if err != nil {
+		tmp := ToastMessage{
+			Title:   	"Container Error",
+			Type:        "error",
+			Description: "Container could not be deleted " + err.Error(),
+		}
+		m.MakeToast(NewToastMessage(&tmp))
+	} else {
+		tmp := ToastMessage{
+			Title:   	"Container Deleted",
+			Type:        "success",
+			Description: "Container successfully deleted",
+		}
+		m.MakeToast(NewToastMessage(&tmp))
+	}
 	return err
 }
 func (m *Manager) CreateContainer(name string) error {
 	log.Println("creating cxontainer with name", name)
 	attr := container.Attribute{}
-	attr.SetKey("name")
+	attr.SetKey(obj.AttributeFileName)
 	attr.SetValue(name)
 	var attributes []*container.Attribute
 	attributes = append(attributes, &attr)
 	// Poll containers ID until it will be available in the network.
 	go func() {
-		id, err := container2.Create(m.ctx, m.fsCli, m.key, attributes)
+        placementPolicy := `REP 2 IN X
+        CBF 2
+        SELECT 2 FROM * AS X
+        `
+        customACL := acl.BasicACL(0x0FFFCFFF)
+		id, err := container2.Create(m.ctx, m.fsCli, m.key, placementPolicy, customACL, attributes)
 		if err != nil {
 			tmp := ToastMessage{
 				Title:   	"Container Error",

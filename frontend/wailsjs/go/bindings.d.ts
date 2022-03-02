@@ -6,7 +6,7 @@ interface go {
 		Delete(arg1:string,arg2:string):Promise<Error>
 		DeleteContainer(arg1:string):Promise<Error>
 		DeleteObject(arg1:string,arg2:string):Promise<Error>
-		Download(arg1:string,arg2:string):Promise<Error>
+		Download(arg1:string,arg2:string,arg3:string):Promise<Error>
 		Get(arg1:string,arg2:string,arg3:Writer):Promise<Array<number>|Error>
 		GetAccountInformation():Promise<Account|Error>
 		GetContainer(arg1:string):Promise<Container|Error>

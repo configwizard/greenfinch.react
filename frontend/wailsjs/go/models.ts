@@ -147,7 +147,6 @@ export class ObjectHeadRes {
 export class Element {
     id: string;
     type: string;
-    name: string;
     size: number;
     attributes: {[key: string]: string};
     errors: any[];
@@ -161,7 +160,6 @@ export class Element {
         if ('string' === typeof source) source = JSON.parse(source);
         this.id = source["id"];
         this.type = source["type"];
-        this.name = source["name"];
         this.size = source["size"];
         this.attributes = source["attributes"];
         this.errors = source["errors"];

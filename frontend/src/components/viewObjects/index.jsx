@@ -13,7 +13,7 @@ function ObjectView({objectList, onObjectSelection, viewMode}) {
                                 type="button"
                                 className="atmButtonGridContent d-flex flex-column align-items-center justify-content-between"
                                 onClick={()=> {onObjectSelection(item.id, item.attributes.FileName)}}>
-                                    <div class="file-icon file-icon-lg" data-type="png"></div>
+                                    <div class="file-icon file-icon-lg" data-type={item.attributes.X_EXT}></div>
                                     <span className="atmButtonGridName">{item.attributes.FileName}</span>
                             </button>
                         </div>

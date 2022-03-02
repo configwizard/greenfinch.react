@@ -1,15 +1,6 @@
 import React from "react";
 import {ContainerGrid, ContainerRow} from "./container"
 
-function ContainerComponent(props) {
-    return (
-        <div className="col-6 col-lg-3 col-xl-2">
-            <div className="molButtonGrid">
-                <ContainerGrid onContainerSelection={props.onContainerSelection} item={props.container}></ContainerGrid>
-            </div>
-        </div>
-    )
-}
 class ContainerView extends React.Component {
     constructor(props) {
         super(props);
@@ -23,7 +14,7 @@ class ContainerView extends React.Component {
                 {containerList.map((item, i) =>
                     <div className="col-6 col-lg-3 col-xl-2" key={i}>
                         <div className="molButtonGrid">
-                            <ContainerGrid onContainerSelection={onContainerSelection} item={item}></ContainerGrid>
+                            <ContainerGrid type={item.type} onDelete={() => {this.props.onDelete(item.id)}} onContainerSelection={this.props.onContainerSelection} item={item}></ContainerGrid>
                         </div>
                     </div>
                 )}
@@ -35,7 +26,8 @@ class ContainerView extends React.Component {
                     {containerList.map((item, i) =>
                         <div className="col-12" key={i}>
                             <div className="molButtonRow">
-                                <ContainerRow onContainerSelection={onContainerSelection} item={item}></ContainerRow>
+                                <ContainerRow type={item.type} onDelete={() => {this.props.onDelete(item.id)}} onContainerSelection={this.props.onContainerSelection} item={item}></ContainerRow>
+
                             </div>
                         </div>
                     )}

@@ -49,10 +49,11 @@ const go = {
        * Download
        * @param {string} arg1 - Go Type: string
        * @param {string} arg2 - Go Type: string
+       * @param {string} arg3 - Go Type: string
        * @returns {Promise<Error>}  - Go Type: error
        */
-      "Download": (arg1, arg2) => {
-        return window.go.manager.Manager.Download(arg1, arg2);
+      "Download": (arg1, arg2, arg3) => {
+        return window.go.manager.Manager.Download(arg1, arg2, arg3);
       },
       /**
        * Get
