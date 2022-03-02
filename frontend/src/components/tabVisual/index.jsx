@@ -70,10 +70,10 @@ class TabVisual extends React.Component {
             objectID,
             objectName
         }
-        console.log('state after selecting object', this.state)
-        await getObject(objectName, objectID, this.state.selectedContainer.containerID)
         let state = this.state
-        await this.setState({...state, selectedObject})
+        this.setState({...state, selectedObject})
+        await getObject(objectName, objectID, this.state.selectedContainer.containerID)
+        console.log('state after selecting object', this.state)
     }
     onObjectUpload = async () => {
         if (this.state.selectedContainer == null) {

@@ -1,11 +1,11 @@
-module changeme
+module github.com/amlwwalker/gaspump.react
 
 go 1.17
 
 require (
-	github.com/configwizard/gaspump-api v0.2.3
+	github.com/configwizard/gaspump-api v0.2.5
 	github.com/machinebox/progress v0.2.0
-	github.com/nspcc-dev/neo-go v0.98.0
+	github.com/nspcc-dev/neo-go v0.98.1
 	github.com/nspcc-dev/neofs-sdk-go v0.0.0-20220119080627-f83ff628fb19
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/wailsapp/wails/v2 v2.0.0-beta.28
@@ -28,7 +28,6 @@ require (
 	github.com/google/uuid v1.2.0 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
-	github.com/holiman/uint256 v1.2.0 // indirect
 	github.com/imdario/mergo v0.3.12 // indirect
 	github.com/jchv/go-winloader v0.0.0-20210711035445-715c2860da7e // indirect
 	github.com/klauspost/compress v1.12.2 // indirect
@@ -41,9 +40,9 @@ require (
 	github.com/leaanthony/winc v0.0.0-20220208061147-37b059b9dc3b // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
 	github.com/mr-tron/base58 v1.2.0 // indirect
-	github.com/nspcc-dev/go-ordered-json v0.0.0-20210915112629-e1b6cce73d02 // indirect
+	github.com/nspcc-dev/go-ordered-json v0.0.0-20220111165707-25110be27d22 // indirect
 	github.com/nspcc-dev/hrw v1.0.9 // indirect
-	github.com/nspcc-dev/neofs-api-go/v2 v2.11.2-0.20220114101721-227a871a04ac // indirect
+	github.com/nspcc-dev/neofs-api-go/v2 v2.11.2-0.20220127135316-32dd0bb3f9c5 // indirect
 	github.com/nspcc-dev/neofs-crypto v0.3.0 // indirect
 	github.com/nspcc-dev/rfc6979 v0.2.0 // indirect
 	github.com/pkg/browser v0.0.0-20210706143420-7d21f8c997e2 // indirect
@@ -67,16 +66,13 @@ require (
 	go.uber.org/multierr v1.6.0 // indirect
 	go.uber.org/zap v1.18.1 // indirect
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect
-	golang.org/x/net v0.0.0-20210510120150-4163338589ed // indirect
+	golang.org/x/net v0.0.0-20211015210444-4f30a5c0130f // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
 	golang.org/x/sys v0.0.0-20220114195835-da31bd327af9 // indirect
-	golang.org/x/text v0.3.6 // indirect
+	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013 // indirect
 	google.golang.org/grpc v1.41.0 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
+	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
-
-//replace github.com/wailsapp/wails/v2 v2.0.0-beta.28 => /Users/alex.walker/go/src/github.com/wailsapp/wails/v2
-
-//replace github.com/configwizard/gaspump-api => /Users/alex.walker/go/src/github.com/amlwwalker/gaspump-api

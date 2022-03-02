@@ -1,9 +1,9 @@
 package mocker
 
 import (
-	"changeme/pkg/manager"
 	"encoding/json"
 	"fmt"
+	"github.com/amlwwalker/gaspump.react/pkg/manager"
 	"github.com/configwizard/gaspump-api/pkg/filesystem"
 	obj "github.com/nspcc-dev/neofs-sdk-go/object"
 	"io/ioutil"

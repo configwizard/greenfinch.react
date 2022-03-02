@@ -161,8 +161,13 @@ func (m *Manager) ListContainerPopulatedObjects(containerID string) ([]filesyste
 func (m *Manager) Delete(objectID, containerID string) error {
 	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, m.key)
 	if err != nil {
+		fmt.Println("error getting session key", err)
 		return err
 	}
 	objAddress := getObjectAddress(objectID, containerID)
-	return object.DeleteObject(m.ctx, m.fsCli, objAddress, nil, sessionToken)
+	err = object.DeleteObject(m.ctx, m.fsCli, objAddress, nil, sessionToken)
+	if err != nil {
+		fmt.Println("error deleting object ", err)
+	}
+	return nil
 }

@@ -16,7 +16,7 @@ function CompOverlayMenu(props) {
                         <button className="atmButtonBase nav-link" onClick={props.download}><i className="fas fa-download"/>&nbsp;Download</button> 
                          </>
                 : null }
-                    <button data-bs-toggle="modal" data-bs-target="#deleteModal" type="button" className="atmButtonBase nav-link"><i className="fas fa-plus-circle"/><i className="fas fa-trash-alt"/>&nbsp;Delete</button>
+                    <button data-bs-toggle="modal" data-bs-target="#deleteModal" type="button" className="atmButtonBase nav-link"><i className="fas fa-trash-alt"/>&nbsp;Delete</button>
                 </nav>
                 {/* <button onClick={async () => {console.log("click close"); await this.props.setShow(false)}} className="atmButtonIcon">Close</button> */}
             </div>

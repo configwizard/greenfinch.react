@@ -1,18 +1,16 @@
 package main
 
 import (
-	"changeme/pkg/manager"
-	"changeme/pkg/mocker"
 	"context"
 	"embed"
 	"flag"
 	"fmt"
+	"github.com/amlwwalker/gaspump.react/pkg/manager"
+	"github.com/amlwwalker/gaspump.react/pkg/mocker"
 	"github.com/nspcc-dev/neo-go/pkg/core/native/nativenames"
 	"path"
 
-	//"github.com/configwizard/gaspump-api/pkg/client"
 	"github.com/configwizard/gaspump-api/pkg/wallet"
-	//wallet2 "github.com/nspcc-dev/neo-go/pkg/wallet"
 	client2 "github.com/nspcc-dev/neo-go/pkg/rpc/client"
 	"log"
 	"os"

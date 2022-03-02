@@ -7,7 +7,7 @@ function BreadCrumb(props) {
     const [show, setShow] = useState(false)
     const selectedContainer = props.container == null ? "" : props.container.containerName
     const selectedObject = props.object == null ? "" : props.object.objectName
-    console.log("selectedObject", selectedObject)
+    console.log("selectedObject", props, selectedObject, selectedContainer)
 
     function refreshPage() {
         window.location.reload(false);
