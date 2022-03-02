@@ -1,6 +1,7 @@
 package manager
 
 import (
+	"encoding/json"
 	"fmt"
 	client2 "github.com/amlwwalker/gaspump-api/pkg/client"
 	container2 "github.com/amlwwalker/gaspump-api/pkg/container"
@@ -86,6 +87,11 @@ func (m *Manager) ListContainersAsync() error {
 			//is this inefficient? the expensive part is the request, but we are throwing away the whole object
 			size, _:= filesystem.GenerateObjectStruct(m.ctx, m.fsCli, sessionToken, list, vID)
 			tmpContainer.Size = size
+			str, err := json.MarshalIndent(tmpContainer, "", "  ")
+			if err != nil {
+				fmt.Println(err)
+			}
+			fmt.Println(string(str))
 			runtime.EventsEmit(m.ctx, "appendContainer", tmpContainer)
 		}(v)
 	}
