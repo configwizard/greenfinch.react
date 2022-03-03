@@ -1,5 +1,5 @@
 {
-  "name": "GasPump",
+  "name": "Greenfinch",
   "assetdir": "frontend/build",
   "frontend:build": "npm run build",
   "frontend:install": "npm install",
@@ -8,7 +8,7 @@
   "version": "2",
   "Path": "",
   "BuildDir": "",
-  "outputfilename": "GasPump",
+  "outputfilename": "Greenfinch",
   "OutputType": "",
   "Platform": "",
   "Author": {
