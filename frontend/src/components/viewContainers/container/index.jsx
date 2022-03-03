@@ -1,5 +1,7 @@
 import React, {useState} from "react"
 import CompOverlayMenu from "../../compOverlayMenu";
+import Moment from "react-moment";
+import ByteConverter from "byte-converter-react";
 
 export function ContainerGrid(props) {
     const [showMenu, setShowMenu] = useState(false)
@@ -37,8 +39,8 @@ export function ContainerRow(props) {
                         <span className="atmButtonRowName">{props.item.attributes.FileName}</span>
                 </button>
             </div>
-            <div className="atmRowList">{props.item.size}</div>
-            <div className="atmRowList">{props.item.attributes.Timestamp}</div>
+            <div className="atmRowList"><ByteConverter suffix inUnit="B" outUnit="KB">{props.item.size}</ByteConverter></div>
+            <div className="atmRowList"><Moment unix format="DD MMM YY">{props.item.attributes.Timestamp}</Moment></div>
             <div className="ms-auto">
                 <button 
                     type="button"   
