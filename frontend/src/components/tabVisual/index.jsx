@@ -23,21 +23,23 @@ class TabVisual extends React.Component {
         this.setState({account})
         window.runtime.EventsOn("appendContainer", async (container) => {
             let containerList = this.state.containerList
+			console.log("new container added", container)
             containerList.push(container)
-            this.setState({...this.state, containerList})
+            await this.setState({...this.state, containerList})
         })
         window.runtime.EventsOn("appendObject", async (object) => {
             let objectList = this.state.objectList
             objectList.push(object)
-            this.setState({...this.state, objectList})
+            await this.setState({...this.state, objectList})
         })
 
         window.runtime.EventsOn("clearContainer", async () => {
-            this.setState(this.setState({...this.state, containerList: []}))
+            await this.setState(this.setState({...this.state, containerList: []}))
         })
-        window.runtime.EventsOn("freshUpload", async () => {
+        window.runtime.EventsOn("freshUpload", async (value) => {
+			console.log("fresh objects made", value)
             const objectList = await listObjects(this.state.selectedContainer.containerID) || []//list contents of a container
-            this.setState({...this.state, objectList})
+            await this.setState({...this.state, objectList})
         })
         listContainers()
     }
