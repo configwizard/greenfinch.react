@@ -1,4 +1,4 @@
-interface go {
+export interface go {
   "manager": {
     "Manager": {
 		Client():Promise<Client>

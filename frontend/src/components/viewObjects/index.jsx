@@ -1,4 +1,7 @@
 import React  from "react";
+import Moment from "react-moment";
+import ByteConverter from "byte-converter-react";
+
 // import JSONView from 'react-json-view';
 
 function ObjectView({objectList, onObjectSelection, viewMode}) {
@@ -34,11 +37,11 @@ function ObjectView({objectList, onObjectSelection, viewMode}) {
                                         className="atmButtonRowContent" 
                                         onClick={()=> onObjectSelection(item.id, item.attributes.FileName)}>
                                             <i className="fas fa-file"/>
-                                            <span className="atmButtonRowName">{item.attributes.FileName}</span>
+                                            <span className="atmButtonRowName">{item.attributes.FileName}</span> 
                                     </button>
                                 </div>
-                                <div className="atmRowList">Container Item 2</div>
-                                <div className="atmRowList">Container Item 3</div>
+                                <div className="atmRowList"><ByteConverter suffix inUnit="B" outUnit="KB">{item.size}</ByteConverter></div>
+                                <div className="atmRowList"><Moment unix format="DD MMM YY">{item.attributes.Timestamp}</Moment></div>
                                 <div className="ms-auto">
                                     &nbsp; {/* placeholder for layout purposes */}    
                                 </div>
