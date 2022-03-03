@@ -4,17 +4,19 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/configwizard/gaspump-api/pkg/filesystem"
-	"github.com/patrickmn/go-cache"
 	"path"
 
+	"github.com/configwizard/gaspump-api/pkg/filesystem"
+	"github.com/patrickmn/go-cache"
+
 	//"github.com/configwizard/gaspump-api/pkg/object"
-	"github.com/machinebox/progress"
-	cid "github.com/nspcc-dev/neofs-sdk-go/container/id"
-	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"io"
 	"os"
 	"time"
+
+	"github.com/machinebox/progress"
+	cid "github.com/nspcc-dev/neofs-sdk-go/container/id"
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 //Upload will put an object in NeoFS. You can access publically available files at
@@ -49,9 +51,9 @@ func (m *Manager) Upload(containerID string, attributes map[string]string) (stri
 		for p := range progressChan {
 			fmt.Printf("\r%v remaining...", p.Remaining().Round(250*time.Millisecond))
 			tmp := NewProgressMessage(&ProgressMessage{
-				Title:       "Uploading object",
-				Progress:     int(p.Percent()),
-				Show: true,
+				Title:    "Uploading object",
+				Progress: int(p.Percent()),
+				Show:     true,
 			})
 			m.SetProgressPercentage(tmp)
 		}
@@ -60,7 +62,8 @@ func (m *Manager) Upload(containerID string, attributes map[string]string) (stri
 			Type:        "success",
 			Description: "Uploading " + path.Base(filepath) + " complete",
 		})
-		m.SendSignal("freshUpload", nil)
+		var o interface{}
+		m.SendSignal("freshUpload", o)
 		m.MakeToast(tmp)
 		fmt.Println("\rupload is completed")
 	}()
@@ -76,8 +79,8 @@ func (m *Manager) Upload(containerID string, attributes map[string]string) (stri
 		m.MakeToast(tmp)
 		//auto close the progress bar
 		end := NewProgressMessage(&ProgressMessage{
-			Title:       "Uploading object",
-			Show: false,
+			Title: "Uploading object",
+			Show:  false,
 		})
 		m.SetProgressPercentage(end)
 	} else {
@@ -85,6 +88,7 @@ func (m *Manager) Upload(containerID string, attributes map[string]string) (stri
 	}
 	return objectID, err
 }
+
 //Upload will put an object in NeoFS. You can access publically available files at
 //https://http.testnet.fs.neo.org/<containerID>/<objectID>
 func (m *Manager) Download(filename, objectID, containerID string) error {
@@ -92,7 +96,7 @@ func (m *Manager) Download(filename, objectID, containerID string) error {
 	fmt.Println("downloading to ", filename)
 	filepath, err := runtime.SaveFileDialog(m.ctx, runtime.SaveDialogOptions{
 		DefaultDirectory:           homeDir,
-		DefaultFilename: 			filename,
+		DefaultFilename:            filename,
 		Title:                      "Choose where to save file to",
 		Filters:                    nil,
 		ShowHiddenFiles:            false,
@@ -121,9 +125,9 @@ func (m *Manager) Download(filename, objectID, containerID string) error {
 		for p := range progressChan {
 			fmt.Printf("\r%v remaining...", p.Remaining().Round(250*time.Millisecond))
 			tmp := NewProgressMessage(&ProgressMessage{
-				Title:       "Downloading object",
-				Progress:     int(p.Percent()),
-				Show: true,
+				Title:    "Downloading object",
+				Progress: int(p.Percent()),
+				Show:     true,
 			})
 			m.SetProgressPercentage(tmp)
 		}
@@ -135,8 +139,8 @@ func (m *Manager) Download(filename, objectID, containerID string) error {
 		m.MakeToast(tmp)
 		//auto close the progress bar
 		end := NewProgressMessage(&ProgressMessage{
-			Title:       "Downloading object",
-			Show: false,
+			Title: "Downloading object",
+			Show:  false,
 		})
 		m.SetProgressPercentage(end)
 		fmt.Println("\rdownload is completed")

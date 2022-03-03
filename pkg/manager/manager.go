@@ -4,6 +4,11 @@ import (
 	"context"
 	"crypto/ecdsa"
 	"errors"
+	"fmt"
+	"math/rand"
+	"strings"
+	"time"
+
 	"github.com/configwizard/gaspump-api/pkg/client"
 	"github.com/configwizard/gaspump-api/pkg/filesystem"
 	"github.com/configwizard/gaspump-api/pkg/wallet"
@@ -11,39 +16,40 @@ import (
 	obj "github.com/nspcc-dev/neofs-sdk-go/object"
 	"github.com/patrickmn/go-cache"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
-	"math/rand"
-	"strings"
-	"time"
 )
 
 type ProgressMessage struct {
-	Id int
-	Title string
+	Id       int
+	Title    string
 	Progress int
 	Show     bool
 	Error    string
 }
+
 func NewProgressMessage(p *ProgressMessage) ProgressMessage {
-	p.Id = rand.Intn(101 - 1) + 1
+	p.Id = rand.Intn(101-1) + 1
 	return *p
 }
+
 type ToastMessage struct {
-	Id int
-	Title string
-	Type string
+	Id          int
+	Title       string
+	Type        string
 	Description string
 }
-func NewToastMessage(t *ToastMessage) ToastMessage{
-	t.Id = rand.Intn(101 - 1) + 1
+
+func NewToastMessage(t *ToastMessage) ToastMessage {
+	t.Id = rand.Intn(101-1) + 1
 	return *t
 }
+
 type Manager struct {
 	walletPath, walletAddr string
 	fsCli                  *neofscli.Client
 	key                    *ecdsa.PrivateKey
-	c *cache.Cache
-	ctx context.Context
-	DEBUG bool
+	c                      *cache.Cache
+	ctx                    context.Context
+	DEBUG                  bool
 }
 
 const (
@@ -97,8 +103,10 @@ func (m *Manager) SetProgressPercentage(progressMessage ProgressMessage) {
 	runtime.EventsEmit(m.ctx, "percentageProgress", progressMessage)
 }
 func (m *Manager) SendSignal(signalName string, signalValue interface{}) {
+	fmt.Println("sending signal", signalName)
 	runtime.EventsEmit(m.ctx, signalName, signalValue)
 }
+
 // shutdown is called at application termination
 func (m *Manager) Shutdown(ctx context.Context) {
 	// Perform your teardown here
@@ -135,9 +143,9 @@ func NewFileSystemManager(walletPath, walletAddr, password string, DEBUG bool) (
 		walletAddr: walletAddr,
 		fsCli:      cli,
 		key:        key, //this is holding the private key in memory - not good?
-		c: 			cache.New(1*time.Minute, 10*time.Minute),
+		c:          cache.New(1*time.Minute, 10*time.Minute),
 		ctx:        context.Background(),
-		DEBUG: DEBUG,
+		DEBUG:      DEBUG,
 	}, nil
 }
 
@@ -152,15 +160,16 @@ func NewFileSystemManager(walletPath, walletAddr, password string, DEBUG bool) (
 func (m Manager) Client() *neofscli.Client {
 	return m.fsCli
 }
-type Account struct{
+
+type Account struct {
 	Address string `json:"address"`
-	NeoFS struct{
-		Balance   int64 `json:"balance"`
+	NeoFS   struct {
+		Balance   int64  `json:"balance"`
 		Precision uint32 `json:"precision"`
 	} `json:"neofs"`
 	Nep17 map[string]wallet.Nep17Tokens `json:"nep17"'`
-
 }
+
 func (m *Manager) GetAccountInformation() (Account, error) {
 
 	w, err := wallet.RetrieveWallet(m.walletPath)
@@ -188,7 +197,7 @@ func (m *Manager) GetAccountInformation() (Account, error) {
 			Balance   int64
 			Precision uint32
 		}{
-			Balance: (*result.Amount()).Value(),
+			Balance:   (*result.Amount()).Value(),
 			Precision: (*result.Amount()).Precision(),
 		}),
 	}
@@ -198,4 +207,3 @@ func (m *Manager) GetAccountInformation() (Account, error) {
 	}
 	return b, nil
 }
-
