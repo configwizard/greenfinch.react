@@ -137,7 +137,8 @@ func (m *Manager) DeleteContainer(id string) error {
 		m.MakeToast(NewToastMessage(&tmp))
 		return err
 	}
-	_, err = container2.Delete(m.ctx, m.fsCli, c)
+	resp, err := container2.Delete(m.ctx, m.fsCli, c)
+	fmt.Printf("resp %+v\r\n", resp.Status())
 	if err != nil {
 		tmp := ToastMessage{
 			Title:       "Container Error",
@@ -156,7 +157,7 @@ func (m *Manager) DeleteContainer(id string) error {
 	return err
 }
 func (m *Manager) CreateContainer(name string) error {
-	log.Println("creating cxontainer with name", name)
+	log.Println("creating container with name", name)
 	attr := container.NewAttribute()
 	attr.SetKey(obj.AttributeFileName)
 	attr.SetValue(name)
