@@ -29,7 +29,7 @@ const CompWallet = props => {
     let neoBalance = props.account.nep17.NEO.amount
     // /* Helpful: https://medium.com/tinyso/how-to-create-a-modal-component-in-react-from-basic-to-advanced-a3357a2a716a */
     return ( 
-        <div className="utTest">
+        <div>
             <div className="molWallet" onClick={e => e.stopPropagation()}>
                 <div className="molWalletContainer">
                     <section className="orgWalletHeader d-flex align-items-center">
