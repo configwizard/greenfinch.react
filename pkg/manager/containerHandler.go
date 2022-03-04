@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"strconv"
 	"time"
 
 	client2 "github.com/configwizard/gaspump-api/pkg/client"
@@ -156,11 +157,15 @@ func (m *Manager) DeleteContainer(id string) error {
 }
 func (m *Manager) CreateContainer(name string) error {
 	log.Println("creating cxontainer with name", name)
-	attr := container.Attribute{}
+	attr := container.NewAttribute()
 	attr.SetKey(obj.AttributeFileName)
 	attr.SetValue(name)
+
+	timeAttr := container.NewAttribute()
+	timeAttr.SetKey(container.AttributeTimestamp)
+	timeAttr.SetValue(strconv.FormatInt(time.Now().Unix(), 10))
 	var attributes []*container.Attribute
-	attributes = append(attributes, &attr)
+	attributes = append(attributes, []*container.Attribute{attr, timeAttr}...)
 	// Poll containers ID until it will be available in the network.
 	go func() {
 		placementPolicy := `REP 2 IN X
