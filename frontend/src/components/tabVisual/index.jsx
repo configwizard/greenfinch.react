@@ -10,7 +10,7 @@ import {getObject, listObjects, uploadObject} from "../../manager/objects.js";
 import BreadCrumb from "../layoutBreadCrumb";
 import ControlBar from "../viewOptions";
 import ContainerView from "../viewContainers";
-import ObjectView, {DragAndDrop} from "../viewObjects";
+import ObjectView, {FileUpload} from "../viewObjects";
 // import {listContainers} from "../../mocker/containers.js";
 
 class TabVisual extends React.Component {
@@ -97,24 +97,29 @@ class TabVisual extends React.Component {
             return (
                 <div className="col-12">
                     <div className="orgContainersGrid">
-                        {/*<FadeProps animationLength={150}>*/}
-                            <ContainerView containerList={this.state.containerList} onDelete={this.onContainerDelete} viewMode={this.state.viewMode} onContainerSelection={this.onContainerSelection}></ContainerView>
-                        {/*</FadeProps>*/}
+                        <div className="row">
+                            {/*<FadeProps animationLength={150}>*/}
+                                <ContainerView containerList={this.state.containerList} onDelete={this.onContainerDelete} viewMode={this.state.viewMode} onContainerSelection={this.onContainerSelection}></ContainerView>
+                            {/*</FadeProps>*/}
+                        </div>
                     </div>
                 </div>
             )
         } else {
             return (
                 <>
-                    <div className="col-12 col-md-9 order-2 order-md-1">
-                        <div className="orgContainersGrid">
-                            {/*<FadeProps animationLength={150}>*/}
-                                <ObjectView objectList={this.state.objectList} viewMode={this.state.viewMode} onObjectSelection={this.onObjectSelection}></ObjectView>
-                            {/*</FadeProps>*/}
-                        </div>
+                    <div className="col-12">
+                        <FileUpload onObjectUpload={this.onObjectUpload}></FileUpload>
                     </div>
-                    <div className="col-12 col-md-3 col-xl-3 order-1 order-md-2">
-                        <DragAndDrop onObjectUpload={this.onObjectUpload} ></DragAndDrop>
+                    <div className="col-12">
+                        <div className="orgContainersGrid">
+                            <div className="row">
+                            <FileUpload onObjectUpload={this.onObjectUpload}></FileUpload>
+                                {/*<FadeProps animationLength={150}>*/}
+                                    <ObjectView objectList={this.state.objectList} viewMode={this.state.viewMode} onObjectSelection={this.onObjectSelection}></ObjectView>
+                                {/*</FadeProps>*/}
+                            </div>
+                        </div>
                     </div>
                 </>
             )

@@ -517,18 +517,18 @@ span.utUCSmall {
         color: $brandColorDark;
         background-color: lighten($brandColorDark, 75%);
         & .atmBlockUpload {
-            border: 1px solid $brandColorPrimary;
             border-radius: $brandBorderRadius;
-            background: repeating-linear-gradient(
+            & p, p .atmButtonText {
+                font-size: 0.8rem;
+            }
+            // border: 1px solid $brandColorPrimary;
+            /* background: repeating-linear-gradient(
                 135deg,
                 rgba(0,0,0,0),
                 rgba(0,0,0,0) 10px,
                 rgba(0,0,0,0.03) 10px,
                 rgba(0,0,0,0.03) 20px
-            );
-            & p, p .atmButtonText {
-                font-size: 0.8rem;
-            }
+            ); */
         }
     }
     & p {

@@ -8,7 +8,7 @@ function ObjectView({objectList, onObjectSelection, viewMode}) {
     console.log("objectList", objectList)
     if (viewMode === "grid") {
         return (
-            <div className="row">
+            <>
                 {objectList.length > 0 ? objectList.map((item,i) =>
                     <div className="col-6 col-lg-3 col-xl-2" key={i}>
                         <div className="molButtonGrid">
@@ -21,12 +21,13 @@ function ObjectView({objectList, onObjectSelection, viewMode}) {
                             </button>
                         </div>
                     </div>
+                   /* Add a loading component here, otherwise 'no objects' show */
                 ) : <div className="atmStatusSmall"><i className="fas fa-exclamation-triangle"/>&nbsp;There are no objects in this container.</div>}
-            </div>
+            </>           
         )
     } else {
         return (
-            <div className="row">
+            <>
                 {objectList.length > 0 ? objectList.map((item,i) =>
                     <div className="col-12" key={i}>
                         <div className="molButtonRow">
@@ -49,25 +50,20 @@ function ObjectView({objectList, onObjectSelection, viewMode}) {
                         </div>
                     </div>
                 ) : <div className="atmStatusSmall"><i className="fas fa-exclamation-triangle"/>&nbsp;There are no objects in this container.</div>}
-            </div>
+            </>
         )
     }
 }
-// research https://blog.logrocket.com/create-a-drag-and-drop-component-with-react-dropzone/
-export function DragAndDrop({onObjectUpload}) {
-    //drag and drop
+export function FileUpload({onObjectUpload}) {
     return (
         <div className="molBlockUpload d-flex align-items-center justify-content-center">
             <div className="atmBlockUpload d-flex flex-column align-items-center justify-content-center">
-                <i className="fas fa-2x fa-upload"/>
-                {/* Add input here for file upload */}
-                <p><button type="button" className="atmButtonText" title="Choose a file" onClick={onObjectUpload}>Choose a file</button> or drag it here</p>
-                {/* drag and drop upload componet (look for onEvent, onUpload... and console.log 'event' and can find a path) */}
-                {/* https://stackoverflow.com/questions/58880171/get-file-path-from-drop-event/64616487#64616487 */}
+                {/* <i className="fas fa-upload"/> */}
+                <button type="button" className="atmButtonText" title="Upload a file" onClick={onObjectUpload}>Upload a file</button>
             </div>
         </div>
     )
-}
+} 
 
 export default ObjectView;
 
