@@ -114,7 +114,6 @@ class TabVisual extends React.Component {
                     <div className="col-12">
                         <div className="orgContainersGrid">
                             <div className="row">
-                            <FileUpload onObjectUpload={this.onObjectUpload}></FileUpload>
                                 {/*<FadeProps animationLength={150}>*/}
                                     <ObjectView objectList={this.state.objectList} viewMode={this.state.viewMode} onObjectSelection={this.onObjectSelection}></ObjectView>
                                 {/*</FadeProps>*/}
