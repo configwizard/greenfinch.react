@@ -24,7 +24,9 @@ function BreadCrumb(props) {
                     <i className="far fa-wallet" />
                     <CompWallet onClose={() => setShow(false)} show={show} account={props.account}></CompWallet>
                 </button>
-                <button type="button" className="atmButtonIconClean" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"><i className="far fa-cog" /></button>
+                {/*
+                    <button type="button" className="atmButtonIconClean" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"><i className="far fa-cog" /></button>
+                */}
                 <button type="button" className="atmButtonIconClean" onClick={refreshPage}><i className="far fa-sync-alt"/></button>
 
                 {/* Offcanvas right: need to do classes and text */}

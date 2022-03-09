@@ -436,6 +436,9 @@ input:checked + .slider:before {
             margin-right: 7px;
         }
     }
+    & .form-control {
+        margin-top: $marginXSmall*1.5;
+    }
 }
 
 
@@ -452,14 +455,14 @@ input:checked + .slider:before {
     z-index: 300;
     min-width: 320px;
     min-height: 420px;
-    span.atmWalletNumber {
+    & span.atmWalletNumber, span.atmWalletAddress {
         display:block;
-    }
-    span.atmWalletAddress {
-        font-size: 0.7rem;
     }
     & h6 {
         margin-bottom: 3px;
+    }
+    & span.atmWalletAddress {
+        margin-top: 2px;
     }
 }
 
@@ -468,6 +471,7 @@ input:checked + .slider:before {
 }
 .orgWalletBody {
     padding: $paddingXSmall;
+    padding-top: $paddingMedium;
 }
 .orgWalletFooter {
     padding: $paddingXSmall;

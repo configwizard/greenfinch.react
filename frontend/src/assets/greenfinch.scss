@@ -306,6 +306,7 @@ input:checked + .slider {
         background-color: $brandColorLight;
     }
     & .orgWalletFooter {
+        border-top: 2px solid darken($brandColorLight,5%);
         background-color: $brandColorLight;
     }
     & .atmButtonIconClean {
@@ -319,7 +320,11 @@ input:checked + .slider {
         @include titleStyle(0.6rem);
         color: $brandColorSecondary-dark;
     }
-    span.atmWalletNumber {
+    & span.atmWalletAddress {
+        font-size: 0.8rem;
+        line-height: 1.4;
+    }
+    & span.atmWalletNumber {
         line-height: 1;
     }
 }
