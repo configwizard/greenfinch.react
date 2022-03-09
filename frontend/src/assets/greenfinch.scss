@@ -276,12 +276,10 @@ input:checked + .slider {
 
 /* Component: Progress
 - - - - - - - - - - - - - - - - - - */
-.molProgress {
-    & .utTemp {
-        background-color: rgba(0,0,0,0.5);
-    }
-    & .molProgressContainer {
-        background-color: $brandColorWhite;
+.molProgressContainer {
+    & .molProgressWrapper {
+        font-family: $brandFontSemi;
+        background: $brandColorWhite;
         box-shadow: $brandBoxShadow;
     }
 }
@@ -336,7 +334,7 @@ input:checked + .slider {
 .molToastWrapper {
     font-family: $brandFontSemi;
     background: $brandColorWhite;
-    box-shadow: 0 3px 7px rgba(0, 0, 0, 0.2);
+    box-shadow: $brandBoxShadow;
     & .molToastInner {
         & .molToastIcon {
             & i {

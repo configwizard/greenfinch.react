@@ -154,23 +154,30 @@ input:checked + .slider:before {
 
 /* Component: Progress
 - - - - - - - - - - - - - - - - - - */
-.molProgress {
-    & .utTemp {
-        position: fixed;
-        z-index: 30000;
-        top: 40px;
-        right: 40px;
-        width: 350px;
+.molProgressContainer {
+    transition: transform .6s ease-in-out;
+    animation: toast-in-right .7s;
+}
+
+.molProgressWrapper {
+    position: fixed;
+    top: 40%;
+    right: 25%;
+    margin: 0 auto;
+    width: 450px;
+    min-height: 70px;
+    z-index: 30000;
+    .molProgress {
         min-height: 70px;
-    }
-    & .molProgressContainer {
-        width: 600px;
+        width: 100%;
         padding: $paddingSmall;
         & .molProgressFooter {
             padding-top: $paddingSmall;
         }
-    }   
+    }
 }
+
+
 
 /* Component: Toast
 - - - - - - - - - - - - - - - - - - */
