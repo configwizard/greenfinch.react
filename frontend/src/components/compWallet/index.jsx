@@ -1,4 +1,5 @@
 import React from "react";
+import { Form } from "react-bootstrap";
 
 const CompWallet = props => {
 
@@ -37,7 +38,7 @@ const CompWallet = props => {
                             <h4 className="atmWalletTitle">Wallet</h4>
                         </div>
                         <div className="ms-auto">
-                            <i className="far fa-times" style={{"color":"red"}} onClick={props.onClose}/>
+                            <i className="far fa-times" onClick={props.onClose}/>
                         </div>
                     </section>
                     <section className="orgWalletBody">
@@ -49,7 +50,7 @@ const CompWallet = props => {
                             </div> */}
                         </div>
                         <div className="molWalletOption">
-                            <h6 className="atmWallet">NeoFS Gas balance</h6>
+                            <h6 className="atmWallet">NeoFS GAS balance</h6>
                             <span className="atmWalletNumber">{neoFSBalance}</span>
                         </div>
                         <div className="molWalletOption">
@@ -57,14 +58,15 @@ const CompWallet = props => {
                             <span className="atmWalletNumber">{neoBalance}</span>
                         </div>
                         <div className="molWalletOption">
-                            <h6 className="atmWallet">Neo Gas balance</h6>
+                            <h6 className="atmWallet">GAS balance</h6>
                             <span className="atmWalletNumber">{gasBalance}</span>
                         </div>
                     </section>
                     <section className="orgWalletFooter">
-                        <div>
-                            <h5>Top-up</h5>
-                            <button type="button" className="atmButtonBase atmButtonSimple" onClick=""><i className="fas fa-chart-line"/>Top-up NeoFS Balance</button>
+                        <div className="molWalletOption">
+                            <h6 className="atmWallet">Top-up NeoFS GAS Balance</h6>
+                            <Form.Control type="number" placeholder="GAS amount" />
+                            <button type="button" className="atmButtonBase atmButtonSimple" onClick=""><i className="fas fa-chart-line"/>Top-up</button>
                         </div>
                     </section>
                 </div>
