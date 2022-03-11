@@ -155,29 +155,50 @@ input:checked + .slider:before {
 /* Component: Progress
 - - - - - - - - - - - - - - - - - - */
 .molProgressContainer {
-    transition: transform .6s ease-in-out;
-    animation: toast-in-right .7s;
+    // transition: transform .6s ease-in-out;
+    // animation: progress-in-bottom .7s;
+    position: fixed;
+    top: 20px;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 30000;
+}
+
+@keyframes progress-in-bottom {
+	from {
+	  transform: translateY(100%);
+	}
+	to {
+	  transform: translateY(0);
+	}
 }
 
 .molProgressWrapper {
     position: fixed;
-    top: 40%;
-    right: 25%;
-    margin: 0 auto;
+    top: 20px;
+    left: 50%;
+    transform: translate(-50%, 0);
+    z-index: 30000;
     width: 450px;
     min-height: 70px;
-    z-index: 30000;
-    .molProgress {
+    margin: 0 auto;
+    & .molProgressInner {
         min-height: 70px;
         width: 100%;
-        padding: $paddingSmall;
-        & .molProgressFooter {
-            padding-top: $paddingSmall;
+        & .molProgressContent {
+            min-height: 70px;
+            width: 100%;
+            padding: $paddingSmall;
+            & i.fa-times { // close button
+                position: absolute;
+                top: 3px;
+                right: 0;
+                cursor: pointer;
+            }
         }
     }
 }
-
-
 
 /* Component: Toast
 - - - - - - - - - - - - - - - - - - */
@@ -299,6 +320,7 @@ input:checked + .slider:before {
 - - - - - - - - - - - - - - - - - - */
 
 .orgHeaderStatus {
+    min-height: 72px;
     & .molHeaderContent {
         padding: $paddingSmall;
     }
@@ -531,6 +553,13 @@ input:checked + .slider:before {
 
 /* Styles: Typography
 - - - - - - - - - - - - - - - - - - */
+.utLoading {
+    display: block;
+    & i {
+        margin-right: $marginXSmall;
+    }
+}
+
 h2, h4 {
     margin-bottom: $marginSmall;
 }
