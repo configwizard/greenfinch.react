@@ -281,6 +281,14 @@ input:checked + .slider {
         font-family: $brandFontSemi;
         background-color: $brandColorLight;
         box-shadow: $brandBoxShadow;
+        & i.fa-times { // close button]
+            transition: $brandTransitionSpeed;
+            color: rgba($brandColorDark, 0.5);
+            font-size: 1.1rem;
+            &:hover {
+                color: rgba($brandColorDark, 0.8);
+            }
+        }
     }
     & h6 {
         font-size: 0.9rem;
@@ -361,8 +369,12 @@ input:checked + .slider {
                 font-family: $brandFontSemi;
             }
             & i.fa-times { // close button
-                color: $toastColorBody;
+                transition: $brandTransitionSpeed;
+                color: rgba($brandColorDark, 0.5);
                 font-size: 1.1rem;
+                &:hover {
+                    color: rgba($brandColorDark, 0.8);
+                }
             }
         }
     }
