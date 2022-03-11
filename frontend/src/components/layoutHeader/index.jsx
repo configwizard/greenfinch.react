@@ -11,8 +11,8 @@ class Status extends React.Component {
             (this.props.account.nep17.GAS === undefined) ||
             (this.props.account.nep17.GAS.meta === undefined) ||
             (this.props.account.nep17.NEO === undefined)) {
-                console.log("Waiting...");
-                return(<div>Waiting...</div>)
+                console.log("Loading...");
+                return(<div className="utLoading"><i className="fas fa-spinner fa-spin"/>Loading...</div>)
             }
         //
         // //TODO: Don't think you need Number()
@@ -24,9 +24,6 @@ class Status extends React.Component {
         return (
             <>
                 <div className="d-flex">
-                    <div className="atmStatus">
-                        <span className="utUCSmall d-block">Mode</span> Mocker
-                    </div>
                     <div className="atmStatus">
                         <span className="utUCSmall d-block">Net</span> Testnet
                     </div>

@@ -11,8 +11,8 @@ export default class CompProgress extends React.Component {
         this.state = {
             list: [],
             percentage: 0,
-            title:"",
-            show: false
+            title:"Test",
+            show: true
         }
     }
     /* One to check: https://getbootstrap.com/docs/5.0/components/progress/ */
@@ -37,22 +37,22 @@ export default class CompProgress extends React.Component {
         return (
             <div className="molProgressContainer">
                 <div className="molProgressWrapper">
-                    <div className="molProgress d-flex align-items-center justify-content-center">
-                        <div className="molProgressBody">
-                            <h4>{this.state.title}</h4>
-                            <Progress
-                                theme={{
-                                    active: {
-                                        color: 'rgba(0, 175, 75, 0.5)'
-                                    },
-                                    success: {
-                                        color: 'rgb(0, 175, 75)'
-                                    }
-                                }}
-                                percent={this.state.percentage}/>
-                        </div>
-                        <div className="molProgressFooter">
-                            <button onClick={async () => {await this.setState({...this.state, show: false})}} className="atmButtonIcon">Close</button>
+                    <div className="molProgressInner d-flex">
+                        <div className="molProgressContent d-flex align-items-center justify-content-center">
+                                <i className="fa fa-fw fa-times" onClick={async () => {await this.setState({...this.state, show: false})}}/>
+                                <Progress
+                                    theme={{
+                                        success: {
+                                            color: 'rgba(0, 175, 75, 1)'
+                                        },
+                                        active: {
+                                            color: 'rgba(0, 175, 75, 0.5)'
+                                        },
+                                        default: {
+                                            color: 'rgba(43, 57, 63, 0.2)'
+                                        }
+                                    }}
+                                    percent={this.state.percentage}/>
                         </div>
                     </div>
                 </div>

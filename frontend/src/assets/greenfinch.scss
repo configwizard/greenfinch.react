@@ -36,7 +36,7 @@ $brandColorBlack: #000; // Change to a very dark green
 $brandColorDark: #2b393f;
 $brandColorLight: #f0f5f6;
 
-$toastColorSuccess: #00AF4B;
+$toastColorSuccess: #00ad4b;
 $toastColorError: #E5004C;
 $toastColorWarning: #F47A00;
 $toastColorInfo: #0080F4;
@@ -279,8 +279,11 @@ input:checked + .slider {
 .molProgressContainer {
     & .molProgressWrapper {
         font-family: $brandFontSemi;
-        background: $brandColorWhite;
+        background-color: $brandColorLight;
         box-shadow: $brandBoxShadow;
+    }
+    & h6 {
+        font-size: 0.9rem;
     }
 }
 
@@ -667,6 +670,12 @@ span.utUCSmall {
 
 /* Styles: Typography
 - - - - - - - - - - - - - - - - - - */
+.utLoading {
+    font-size: 0.8rem;
+    font-family: $brandFontSemi;
+    color: $brandColorPrimary;
+}
+
 h2 {
     &.atmTitle {
         @include titleStyle(0.9rem);
