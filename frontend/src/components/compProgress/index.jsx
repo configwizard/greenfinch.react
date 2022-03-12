@@ -35,7 +35,7 @@ export default class CompProgress extends React.Component {
             return null
         }
         return (
-            <div className="molProgressContainer"> 
+            <div className="molProgressContainer">
                 <div className="molProgressWrapper">
                     <div className="molProgressInner d-flex">
                         <div className="molProgressContent d-flex align-items-center justify-content-center">
