@@ -3,6 +3,7 @@ package manager
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/nspcc-dev/neofs-sdk-go/token"
 	"log"
 	"strconv"
 	"time"
@@ -53,15 +54,17 @@ func (m *Manager) ListContainers() ([]filesystem.Element, error) {
 		return []filesystem.Element{}, err
 	}
 	var containers []filesystem.Element
+	var filters = obj.SearchFilters{}
+	filters.AddRootFilter()
 	for _, v := range ids {
-		tmpContainer := filesystem.PopulateContainerList(m.ctx, m.fsCli, v)
-		list, err := object.ListObjects(m.ctx, m.fsCli, v, nil, sessionToken)
+		tmpContainer := filesystem.PopulateContainerList(m.ctx, m.fsCli, *v)
+		list, err := object.QueryObjects(m.ctx, m.fsCli, *v, filters, nil, sessionToken)
 		if err != nil {
 			tmpContainer.Errors = append(tmpContainer.Errors, err)
 			continue
 		}
 		//is this inefficient? the expensive part is the request, but we are throwing away the whole object
-		size, _ := filesystem.GenerateObjectStruct(m.ctx, m.fsCli, nil, sessionToken, list, v)
+		size, _ := filesystem.GenerateObjectStruct(m.ctx, m.fsCli, list, *v, nil, sessionToken)
 		tmpContainer.Size = size
 		containers = append(containers, tmpContainer)
 	}
@@ -84,7 +87,7 @@ func (m *Manager) ListContainersAsync() error {
 
 	for _, v := range ids {
 		go func(vID *cid.ID) {
-			m.prepareAndAppendContainer(vID, sessionToken)
+			m.prepareAndAppendContainer(*vID, nil, sessionToken)
 		}(v)
 	}
 	if m.DEBUG {
@@ -93,16 +96,18 @@ func (m *Manager) ListContainersAsync() error {
 	return nil
 }
 
-func (m *Manager) prepareAndAppendContainer(vID *cid.ID, sessionToken *session.Token) {
+func (m *Manager) prepareAndAppendContainer(vID cid.ID, bearerToken *token.BearerToken, sessionToken *session.Token) {
 
+	var filters = obj.SearchFilters{}
+	filters.AddRootFilter()
 	tmpContainer := filesystem.PopulateContainerList(m.ctx, m.fsCli, vID)
-	list, err := object.ListObjects(m.ctx, m.fsCli, vID, nil, sessionToken)
+	list, err := object.QueryObjects(m.ctx, m.fsCli, vID, filters, bearerToken, sessionToken)
 	if err != nil {
 		tmpContainer.Errors = append(tmpContainer.Errors, err)
 		return
 	}
 	//is this inefficient? the expensive part is the request, but we are throwing away the whole object
-	size, _ := filesystem.GenerateObjectStruct(m.ctx, m.fsCli, nil, sessionToken, list, vID)
+	size, _ := filesystem.GenerateObjectStruct(m.ctx, m.fsCli,  list, vID, bearerToken, sessionToken)
 	tmpContainer.Size = size
 	str, err := json.MarshalIndent(tmpContainer, "", "  ")
 	if err != nil {
@@ -118,7 +123,7 @@ func (m *Manager) GetContainer(id string) (*container.Container, error) {
 		fmt.Println("error parsing id", err)
 		return nil, err
 	}
-	cont, err := container2.Get(m.ctx, m.fsCli, c)
+	cont, err := container2.Get(m.ctx, m.fsCli, *c)
 	if m.DEBUG {
 		DebugSaveJson("GetContainer.json", cont)
 	}
@@ -137,7 +142,7 @@ func (m *Manager) DeleteContainer(id string) error {
 		m.MakeToast(NewToastMessage(&tmp))
 		return err
 	}
-	resp, err := container2.Delete(m.ctx, m.fsCli, c)
+	resp, err := container2.Delete(m.ctx, m.fsCli, *c)
 	fmt.Printf("resp %+v\r\n", resp.Status())
 	if err != nil {
 		tmp := ToastMessage{
@@ -207,7 +212,7 @@ func (m *Manager) CreateContainer(name string) error {
 				m.MakeToast(NewToastMessage(&tmp))
 				return
 			}
-			newContainer, err := container2.Get(m.ctx, m.fsCli, id)
+			newContainer, err := container2.Get(m.ctx, m.fsCli, *id)
 			if err == nil {
 				tmp := ToastMessage{
 					Title:       "Container Created",
@@ -215,7 +220,7 @@ func (m *Manager) CreateContainer(name string) error {
 					Description: "Container '" + name + "' created",
 				}
 
-				m.prepareAndAppendContainer(id, sessionToken)
+				m.prepareAndAppendContainer(*id, nil, sessionToken)
 				m.SendSignal("appendContainer", newContainer)
 				//m.SendSignal("freshUpload", o)
 				m.MakeToast(NewToastMessage(&tmp))

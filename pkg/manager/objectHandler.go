@@ -8,9 +8,9 @@ import (
 	"github.com/configwizard/gaspump-api/pkg/filesystem"
 	"github.com/configwizard/gaspump-api/pkg/object"
 	"github.com/configwizard/gaspump-api/pkg/wallet"
-	"github.com/nspcc-dev/neofs-sdk-go/client"
 	cid "github.com/nspcc-dev/neofs-sdk-go/container/id"
 	obj "github.com/nspcc-dev/neofs-sdk-go/object"
+	oid "github.com/nspcc-dev/neofs-sdk-go/object/id"
 	"io"
 	"path"
 	"strconv"
@@ -20,17 +20,17 @@ import (
 const (
 	TIMESTAMP_FORMAT string = "2006.01.02 15:04:05"
 )
-
-func getObjectAddress(objectID, containerID string) *obj.Address {
-	contID := cid.New()
-	contID.Parse(containerID)
-	objID := obj.NewID()
-	objID.Parse(objectID)
-	objAddress := obj.NewAddress()
-	objAddress.SetObjectID(objID)
-	objAddress.SetContainerID(contID)
-	return objAddress
-}
+//
+//func getObjectAddress(objectID, containerID string) *obj.Address {
+//	contID := cid.New()
+//	contID.Parse(containerID)
+//	objID := obj.NewID()
+//	objID.Parse(objectID)
+//	objAddress := obj.NewAddress()
+//	objAddress.SetObjectID(objID)
+//	objAddress.SetContainerID(contID)
+//	return objAddress
+//}
 
 func (m *Manager) UploadObject(containerID, filepath string, attributes map[string]string, ioReader *io.Reader) (string, error) {
 
@@ -73,29 +73,34 @@ func (m *Manager) UploadObject(containerID, filepath string, attributes map[stri
 	return id.String(), err
 }
 
-func (m *Manager) GetObjectMetaData(objectID, containerID string) (*client.ObjectHeadRes, error){
+func (m *Manager) GetObjectMetaData(objectID, containerID string) (obj.Object, error){
 	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, m.key)
 	if err != nil {
-		return &client.ObjectHeadRes{}, err
+		return obj.Object{}, err
 	}
-	objAddress := getObjectAddress(objectID, containerID)
-	head, err := object.GetObjectMetaData(m.ctx, m.fsCli, objAddress, nil, sessionToken)
+	objID := oid.NewID()
+	objID.Parse(objectID)
+	cntID := cid.New()
+	cntID.Parse(containerID)
+	headObj, err := object.GetObjectMetaData(m.ctx, m.fsCli, *objID, *cntID, nil, sessionToken)
 	if m.DEBUG {
-		DebugSaveJson("GetObjectMetaData.json", head)
+		DebugSaveJson("GetObjectMetaData.json", headObj)
 	}
-	return head, err
+	return *headObj, err
 }
 func (m *Manager) Get(objectID, containerID string, writer *io.Writer) ([]byte, error){
 	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, m.key)
 	if err != nil {
 		return []byte{}, err
 	}
-	objAddress := getObjectAddress(objectID, containerID)
-	o, err := object.GetObject(m.ctx, m.fsCli, objAddress, nil, sessionToken, writer)
+
+	objId := oid.ID{}
+	objId.Parse(objectID)
+	o, err := object.GetObject(m.ctx, m.fsCli, objId, nil, sessionToken, writer)
 	if m.DEBUG {
 		DebugSaveJson("GetObject.json", o)
 	}
-	return o, err
+	return o.Payload(), err
 }
 
 func (m *Manager) ListContainerObjectIDs(containerID string) ([]string, error) {
@@ -104,10 +109,12 @@ func (m *Manager) ListContainerObjectIDs(containerID string) ([]string, error) {
 	if err != nil {
 		return stringIds, err
 	}
-	cntID := new(cid.ID)
+	cntID := cid.ID{}
 	cntID.Parse(containerID)
-	list, err := object.ListObjects(m.ctx, m.fsCli, cntID, nil, sessionToken)
-	filesystem.GenerateObjectStruct(m.ctx, m.fsCli, nil, sessionToken, list, cntID)
+	var filters = obj.SearchFilters{}
+	filters.AddRootFilter()
+	list, err := object.QueryObjects(m.ctx, m.fsCli, cntID, filters, nil, sessionToken)
+	filesystem.GenerateObjectStruct(m.ctx, m.fsCli, list, cntID, nil, sessionToken)
 	for _, v := range list {
 		stringIds = append(stringIds, v.String())
 	}
@@ -125,10 +132,12 @@ func (m *Manager) ListObjectsAsync(containerID string) error {
 	if err != nil {
 		return  err
 	}
-	cntID := new(cid.ID)
+	cntID := cid.ID{}
 	cntID.Parse(containerID)
-	list, err := object.ListObjects(m.ctx, m.fsCli, cntID, nil, sessionToken)
-	_, objects := filesystem.GenerateObjectStruct(m.ctx, m.fsCli, nil, sessionToken, list, cntID)
+	var filters = obj.SearchFilters{}
+	filters.AddRootFilter()
+	list, err := object.QueryObjects(m.ctx, m.fsCli, cntID, filters, nil, sessionToken)
+	_, objects := filesystem.GenerateObjectStruct(m.ctx, m.fsCli, list, cntID, nil, sessionToken)
 	str, err := json.MarshalIndent(objects, "", "  ")
 	if err != nil {
 		fmt.Println(err)
@@ -144,10 +153,12 @@ func (m *Manager) ListContainerPopulatedObjects(containerID string) ([]filesyste
 	if err != nil {
 		return []filesystem.Element{}, err
 	}
-	cntID := new(cid.ID)
+	cntID := cid.ID{}
 	cntID.Parse(containerID)
-	list, err := object.ListObjects(m.ctx, m.fsCli, cntID, nil, sessionToken)
-	_, objects := filesystem.GenerateObjectStruct(m.ctx, m.fsCli, nil, sessionToken, list, cntID)
+	var filters = obj.SearchFilters{}
+	filters.AddRootFilter()
+	list, err := object.QueryObjects(m.ctx, m.fsCli, cntID, filters, nil, sessionToken)
+	_, objects := filesystem.GenerateObjectStruct(m.ctx, m.fsCli, list, cntID, nil, sessionToken)
 	str, err := json.MarshalIndent(objects, "", "  ")
 	if err != nil {
 		fmt.Println(err)
@@ -164,8 +175,12 @@ func (m *Manager) Delete(objectID, containerID string) error {
 		fmt.Println("error getting session key", err)
 		return err
 	}
-	objAddress := getObjectAddress(objectID, containerID)
-	err = object.DeleteObject(m.ctx, m.fsCli, objAddress, nil, sessionToken)
+	cntID := cid.ID{}
+	cntID.Parse(containerID)
+	objID := oid.ID{}
+	objID.Parse(objectID)
+	//objAddress := getObjectAddress(objectID, containerID)
+	_, err = object.DeleteObject(m.ctx, m.fsCli, objID, cntID, nil, sessionToken)
 	if err != nil {
 		fmt.Println("error deleting object ", err)
 	}

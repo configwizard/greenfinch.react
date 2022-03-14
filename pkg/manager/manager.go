@@ -183,7 +183,9 @@ func (m *Manager) GetAccountInformation() (Account, error) {
 		return Account{}, err
 	}
 	ctx := context.Background()
-	result, err := m.fsCli.GetBalance(ctx, id)
+	get := neofscli.PrmBalanceGet{}
+	get.SetAccount(*id)
+	result, err := m.fsCli.BalanceGet(ctx, get)
 	if err != nil {
 		return Account{}, err
 	}

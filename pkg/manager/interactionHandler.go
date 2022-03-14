@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	client2 "github.com/configwizard/gaspump-api/pkg/client"
 	"path"
 
 	"github.com/configwizard/gaspump-api/pkg/filesystem"
@@ -121,7 +122,7 @@ func (m *Manager) Download(filename, objectID, containerID string) error {
 	w := progress.NewWriter(f)
 	go func() {
 		ctx := context.Background()
-		progressChan := progress.NewTicker(ctx, w, int64(metaData.Object().PayloadSize()), 250*time.Millisecond)
+		progressChan := progress.NewTicker(ctx, w, int64(metaData.PayloadSize()), 250*time.Millisecond)
 		for p := range progressChan {
 			fmt.Printf("\r%v remaining...", p.Remaining().Round(250*time.Millisecond))
 			tmp := NewProgressMessage(&ProgressMessage{
@@ -170,7 +171,12 @@ func (m *Manager) DeleteObject(objectID, containerID string) error {
 	return err
 }
 func (m Manager) RetrieveFileSystem() ([]filesystem.Element, error) {
-	el, err := filesystem.GenerateFileSystem(m.ctx, m.fsCli, m.key)
+	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, m.key)
+	if err != nil {
+		fmt.Println("could not create session token")
+		return []filesystem.Element{}, err
+	}
+	el, err := filesystem.GenerateFileSystem(m.ctx, m.fsCli, m.key, nil, sessionToken)
 	if err != nil {
 		tmp := NewToastMessage(&ToastMessage{
 			Title:       "Error updating filesystem",
@@ -184,9 +190,14 @@ func (m Manager) RetrieveFileSystem() ([]filesystem.Element, error) {
 	return el, err
 }
 func (m Manager) RetrieveContainerFileSystem(containerID string) (filesystem.Element, error) {
-	contID := cid.New()
+	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, m.key)
+	if err != nil {
+		fmt.Println("could not create session token")
+		return filesystem.Element{}, err
+	}
+	contID := cid.ID{}
 	contID.Parse(containerID)
-	fs := filesystem.GenerateFileSystemFromContainer(m.ctx, m.fsCli, m.key, contID)
+	fs := filesystem.GenerateFileSystemFromContainer(m.ctx, m.fsCli, contID, nil, sessionToken)
 	if m.DEBUG {
 		DebugSaveJson("RetrieveContainerFileSystem.json", fs)
 	}

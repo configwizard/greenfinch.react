@@ -1,4 +1,4 @@
-export interface go {
+interface go {
   "manager": {
     "Manager": {
 		Client():Promise<Client>
@@ -10,7 +10,7 @@ export interface go {
 		Get(arg1:string,arg2:string,arg3:Writer):Promise<Array<number>|Error>
 		GetAccountInformation():Promise<Account|Error>
 		GetContainer(arg1:string):Promise<Container|Error>
-		GetObjectMetaData(arg1:string,arg2:string):Promise<ObjectHeadRes|Error>
+		GetObjectMetaData(arg1:string,arg2:string):Promise<Object|Error>
 		ListContainerIDs():Promise<Array<string>|Error>
 		ListContainerObjectIDs(arg1:string):Promise<Array<string>|Error>
 		ListContainerPopulatedObjects(arg1:string):Promise<Array<Element>|Error>

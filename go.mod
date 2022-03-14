@@ -3,12 +3,12 @@ module github.com/amlwwalker/gaspump.react
 go 1.17
 
 require (
-	github.com/configwizard/gaspump-api v0.2.5
+	github.com/configwizard/gaspump-api v0.2.6-0.20220312133720-3e14375e3863
 	github.com/machinebox/progress v0.2.0
 	github.com/nspcc-dev/neo-go v0.98.1
-	github.com/nspcc-dev/neofs-sdk-go v0.0.0-20220119080627-f83ff628fb19
+	github.com/nspcc-dev/neofs-sdk-go v1.0.0-rc.2
 	github.com/patrickmn/go-cache v2.1.0+incompatible
-	github.com/wailsapp/wails/v2 v2.0.0-beta.32
+	github.com/wailsapp/wails/v2 v2.0.0-beta.28
 )
 
 require (
@@ -42,7 +42,7 @@ require (
 	github.com/mr-tron/base58 v1.2.0 // indirect
 	github.com/nspcc-dev/go-ordered-json v0.0.0-20220111165707-25110be27d22 // indirect
 	github.com/nspcc-dev/hrw v1.0.9 // indirect
-	github.com/nspcc-dev/neofs-api-go/v2 v2.11.2-0.20220127135316-32dd0bb3f9c5 // indirect
+	github.com/nspcc-dev/neofs-api-go/v2 v2.11.2-0.20220302134950-d065453bd0a7 // indirect
 	github.com/nspcc-dev/neofs-crypto v0.3.0 // indirect
 	github.com/nspcc-dev/rfc6979 v0.2.0 // indirect
 	github.com/pkg/browser v0.0.0-20210706143420-7d21f8c997e2 // indirect
@@ -76,3 +76,5 @@ require (
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
+
+replace github.com/configwizard/gaspump-api => /Users/alex.walker/go/src/github.com/configwizard/gaspump-api

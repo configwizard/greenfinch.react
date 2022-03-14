@@ -84,7 +84,7 @@ const go = {
        * GetObjectMetaData
        * @param {string} arg1 - Go Type: string
        * @param {string} arg2 - Go Type: string
-       * @returns {Promise<ObjectHeadRes|Error>}  - Go Type: *client.ObjectHeadRes
+       * @returns {Promise<Object|Error>}  - Go Type: object.Object
        */
       "GetObjectMetaData": (arg1, arg2) => {
         return window.go.manager.Manager.GetObjectMetaData(arg1, arg2);

@@ -132,11 +132,11 @@ export class Container {
 
     }
 }
-export class ObjectHeadRes {
+export class Object {
 
 
     static createFrom(source: any = {}) {
-        return new ObjectHeadRes(source);
+        return new Object(source);
     }
 
     constructor(source: any = {}) {
