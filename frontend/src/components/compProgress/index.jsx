@@ -12,7 +12,7 @@ export default class CompProgress extends React.Component {
             list: [],
             percentage: 0,
             title:"Test",
-            show: true
+            show: false
         }
     }
     /* One to check: https://getbootstrap.com/docs/5.0/components/progress/ */

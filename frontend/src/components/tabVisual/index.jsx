@@ -123,7 +123,6 @@ class TabVisual extends React.Component {
             )
         }
     }
-
     render() {
         return (
             <section className="orgViewVisual">
