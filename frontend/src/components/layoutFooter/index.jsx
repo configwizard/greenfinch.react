@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import FadeProps from 'fade-props';
 import CompModal from "../compModal";
 import CompProgress from "../compProgress";
 
@@ -18,9 +17,7 @@ export default function Footer({fireToast, percentage}) {
                 </CompModal>
             </div>
             <div style={{"position":"relative"}}>
-                <FadeProps animationLength={150}>
-                    <CompProgress show={show} setShow={setShow} percentage={percentage}></CompProgress>
-                </FadeProps>
+                <CompProgress show={show} setShow={setShow} percentage={percentage}></CompProgress>
             </div>
         </>
     );

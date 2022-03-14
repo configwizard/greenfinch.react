@@ -12,7 +12,6 @@ import './assets/greenfinch.scss'; //brand css
 import TabVisual from "./components/tabVisual";
 // import TabJSON from "./components/tabJSON";
 import Status from "./components/layoutHeader";
-
 import CompToast from "./components/compToast";
 
 // import Wallet from "./components/wallet";
@@ -35,7 +34,6 @@ import CompToast from "./components/compToast";
 //import {retrieveFullFileSystem} from "./mocker/interactions";
 
 import {getAccountInformation} from "./manager/manager.js"
-import FadeProps from "fade-props";
 import CompProgress from "./components/compProgress";
 
 class App extends React.Component {
@@ -92,9 +90,7 @@ class App extends React.Component {
                         </div> */}
                     </section>
                     <CompToast autoDelete={true} autoDeleteTime={3000}></CompToast>
-                    <FadeProps animationLength={150}>
-                        <CompProgress></CompProgress>
-                    </FadeProps>
+                    <CompProgress></CompProgress>
                 </div>
                 {/* 
                     <div className="container-fluid">

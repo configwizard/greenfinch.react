@@ -80,7 +80,9 @@
     "@storybook/node-logger": "^6.4.19",
     "@storybook/preset-create-react-app": "^3.2.0",
     "@storybook/react": "^6.4.19",
-    "@storybook/testing-library": "^0.0.9",
-    "fade-props": "^2.1.1"
+    "@storybook/testing-library": "^0.0.9"
+  },
+  "optionalDependencies": {
+    "babel-loader": "8.1.0"
   }
 }
