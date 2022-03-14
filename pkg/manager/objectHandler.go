@@ -60,6 +60,11 @@ func (m *Manager) UploadObject(containerID, filepath string, attributes map[stri
 	if err != nil {
 		return "", err
 	}
+	err = sessionToken.Sign(m.key)
+	if err != nil {
+		fmt.Println("error signing session token", err)
+		return "", err
+	}
 	ownerID, err := wallet.OwnerIDFromPrivateKey(m.key)
 	if err != nil {
 		return "", err
@@ -78,6 +83,11 @@ func (m *Manager) GetObjectMetaData(objectID, containerID string) (obj.Object, e
 	if err != nil {
 		return obj.Object{}, err
 	}
+	err = sessionToken.Sign(m.key)
+	if err != nil {
+		fmt.Println("error signing session token", err)
+		return obj.Object{}, err
+	}
 	objID := oid.NewID()
 	objID.Parse(objectID)
 	cntID := cid.New()
@@ -93,7 +103,11 @@ func (m *Manager) Get(objectID, containerID string, writer *io.Writer) ([]byte, 
 	if err != nil {
 		return []byte{}, err
 	}
-
+	err = sessionToken.Sign(m.key)
+	if err != nil {
+		fmt.Println("error signing session token", err)
+		return []byte{}, err
+	}
 	objId := oid.ID{}
 	objId.Parse(objectID)
 	o, err := object.GetObject(m.ctx, m.fsCli, objId, nil, sessionToken, writer)
@@ -107,6 +121,11 @@ func (m *Manager) ListContainerObjectIDs(containerID string) ([]string, error) {
 	var stringIds []string
 	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, m.key)
 	if err != nil {
+		return stringIds, err
+	}
+	err = sessionToken.Sign(m.key)
+	if err != nil {
+		fmt.Println("error signing session token", err)
 		return stringIds, err
 	}
 	cntID := cid.ID{}
@@ -132,6 +151,11 @@ func (m *Manager) ListObjectsAsync(containerID string) error {
 	if err != nil {
 		return  err
 	}
+	err = sessionToken.Sign(m.key)
+	if err != nil {
+		fmt.Println("error signing session token", err)
+		return err
+	}
 	cntID := cid.ID{}
 	cntID.Parse(containerID)
 	var filters = obj.SearchFilters{}
@@ -151,6 +175,11 @@ func (m *Manager) ListObjectsAsync(containerID string) error {
 func (m *Manager) ListContainerPopulatedObjects(containerID string) ([]filesystem.Element, error) {
 	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, m.key)
 	if err != nil {
+		return []filesystem.Element{}, err
+	}
+	err = sessionToken.Sign(m.key)
+	if err != nil {
+		fmt.Println("error signing session token", err)
 		return []filesystem.Element{}, err
 	}
 	cntID := cid.ID{}
@@ -173,6 +202,11 @@ func (m *Manager) Delete(objectID, containerID string) error {
 	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, m.key)
 	if err != nil {
 		fmt.Println("error getting session key", err)
+		return err
+	}
+	err = sessionToken.Sign(m.key)
+	if err != nil {
+		fmt.Println("error signing session token", err)
 		return err
 	}
 	cntID := cid.ID{}

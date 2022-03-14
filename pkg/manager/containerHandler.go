@@ -49,6 +49,10 @@ func (m *Manager) ListContainers() ([]filesystem.Element, error) {
 	if err != nil {
 		return []filesystem.Element{}, err
 	}
+	if err != nil {
+		fmt.Println("error signing session token", err)
+		return []filesystem.Element{}, err
+	}
 	ids, err := m.listContainerIDs()
 	if err != nil {
 		return []filesystem.Element{}, err
@@ -80,15 +84,21 @@ func (m *Manager) ListContainersAsync() error {
 	if err != nil {
 		return err
 	}
+
+	if err := sessionToken.Sign(m.key); err != nil {
+		return err
+	}
+
 	ids, err := m.listContainerIDs()
 	if err != nil {
 		return err
 	}
 
 	for _, v := range ids {
-		go func(vID *cid.ID) {
-			m.prepareAndAppendContainer(*vID, nil, sessionToken)
-		}(v)
+		//go func(vID *cid.ID) {
+			fmt.Println("appending container", *v)
+			m.prepareAndAppendContainer(*v, nil, sessionToken)
+		//}(v)
 	}
 	if m.DEBUG {
 		DebugSaveJson("ListContainers.json", containers)
@@ -101,11 +111,14 @@ func (m *Manager) prepareAndAppendContainer(vID cid.ID, bearerToken *token.Beare
 	var filters = obj.SearchFilters{}
 	filters.AddRootFilter()
 	tmpContainer := filesystem.PopulateContainerList(m.ctx, m.fsCli, vID)
+	fmt.Printf("tmpContainer %+v\r\n", tmpContainer)
 	list, err := object.QueryObjects(m.ctx, m.fsCli, vID, filters, bearerToken, sessionToken)
 	if err != nil {
+		fmt.Printf("error listing objects%+v\r\n", err)
 		tmpContainer.Errors = append(tmpContainer.Errors, err)
 		return
 	}
+	fmt.Printf("tmpContainer objects %+v\r\n", list)
 	//is this inefficient? the expensive part is the request, but we are throwing away the whole object
 	size, _ := filesystem.GenerateObjectStruct(m.ctx, m.fsCli,  list, vID, bearerToken, sessionToken)
 	tmpContainer.Size = size
@@ -113,7 +126,7 @@ func (m *Manager) prepareAndAppendContainer(vID cid.ID, bearerToken *token.Beare
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(string(str))
+	fmt.Println("container ", string(str))
 	runtime.EventsEmit(m.ctx, "appendContainer", tmpContainer)
 }
 func (m *Manager) GetContainer(id string) (*container.Container, error) {
@@ -184,13 +197,21 @@ func (m *Manager) CreateContainer(name string) error {
 		sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, m.key)
 		if err != nil {
 			fmt.Println("could not create session token")
-			return
-		}
-		if err != nil {
 			tmp := ToastMessage{
 				Title:       "Container Error",
 				Type:        "error",
 				Description: "Container '" + name + "' failed " + err.Error(),
+			}
+			m.MakeToast(NewToastMessage(&tmp))
+			return
+		}
+		err = sessionToken.Sign(m.key)
+		if err != nil {
+			fmt.Println("error signing session token", err)
+			tmp := ToastMessage{
+				Title:       "Container Signing Error",
+				Type:        "error",
+				Description: err.Error(),
 			}
 			m.MakeToast(NewToastMessage(&tmp))
 			return
@@ -212,7 +233,8 @@ func (m *Manager) CreateContainer(name string) error {
 				m.MakeToast(NewToastMessage(&tmp))
 				return
 			}
-			newContainer, err := container2.Get(m.ctx, m.fsCli, *id)
+			_, err := container2.Get(m.ctx, m.fsCli, *id)
+
 			if err == nil {
 				tmp := ToastMessage{
 					Title:       "Container Created",
@@ -221,7 +243,7 @@ func (m *Manager) CreateContainer(name string) error {
 				}
 
 				m.prepareAndAppendContainer(*id, nil, sessionToken)
-				m.SendSignal("appendContainer", newContainer)
+				//m.SendSignal("appendContainer", newContainer)
 				//m.SendSignal("freshUpload", o)
 				m.MakeToast(NewToastMessage(&tmp))
 				return

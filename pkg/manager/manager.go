@@ -60,7 +60,7 @@ const (
 func (m *Manager) Startup(ctx context.Context) {
 	// Perform your setup here
 	m.ctx = ctx
-	go m.RetrieveFileSystem()
+	//go m.RetrieveFileSystem()
 }
 
 // domReady is called after the front-end dom has been loaded

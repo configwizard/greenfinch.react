@@ -1,10 +1,12 @@
 package manager
 
 import (
+	"path/filepath"
 	"context"
 	"errors"
 	"fmt"
 	client2 "github.com/configwizard/gaspump-api/pkg/client"
+	"github.com/nspcc-dev/neofs-sdk-go/object"
 	"path"
 
 	"github.com/configwizard/gaspump-api/pkg/filesystem"
@@ -24,7 +26,7 @@ import (
 //https://http.testnet.fs.neo.org/<containerID>/<objectID>
 func (m *Manager) Upload(containerID string, attributes map[string]string) (string, error) {
 	homeDir, err := os.UserHomeDir()
-	filepath, err := runtime.OpenFileDialog(m.ctx, runtime.OpenDialogOptions{
+	fp, err := runtime.OpenFileDialog(m.ctx, runtime.OpenDialogOptions{
 		DefaultDirectory:           homeDir,
 		Title:                      "Choose a file to upload",
 		Filters:                    nil,
@@ -36,7 +38,7 @@ func (m *Manager) Upload(containerID string, attributes map[string]string) (stri
 	if err != nil {
 		return "", err
 	}
-	f, err := os.Open(filepath)
+	f, err := os.Open(fp)
 	defer f.Close()
 	if err != nil {
 		return "", err
@@ -50,7 +52,7 @@ func (m *Manager) Upload(containerID string, attributes map[string]string) (stri
 		ctx := context.Background()
 		progressChan := progress.NewTicker(ctx, r, fs.Size(), 250*time.Millisecond)
 		for p := range progressChan {
-			fmt.Printf("\r%v remaining...", p.Remaining().Round(250*time.Millisecond))
+			//fmt.Printf("\r%v remaining...", p.Remaining().Round(250*time.Millisecond))
 			tmp := NewProgressMessage(&ProgressMessage{
 				Title:    "Uploading object",
 				Progress: int(p.Percent()),
@@ -61,7 +63,7 @@ func (m *Manager) Upload(containerID string, attributes map[string]string) (stri
 		tmp := NewToastMessage(&ToastMessage{
 			Title:       "Uploading complete",
 			Type:        "success",
-			Description: "Uploading " + path.Base(filepath) + " complete",
+			Description: "Uploading " + path.Base(fp) + " complete",
 		})
 		var o interface{}
 		m.SendSignal("freshUpload", o)
@@ -70,12 +72,12 @@ func (m *Manager) Upload(containerID string, attributes map[string]string) (stri
 	}()
 	rr := (io.Reader)(r)
 
-	objectID, err := m.UploadObject(containerID, filepath, attributes, &rr)
+	objectID, err := m.UploadObject(containerID, fp, attributes, &rr)
 	if err != nil {
 		tmp := NewToastMessage(&ToastMessage{
 			Title:       "Error uploading",
 			Type:        "error",
-			Description: "Uploading " + path.Base(filepath) + " failed: " + err.Error(),
+			Description: "Uploading " + path.Base(fp) + " failed: " + err.Error(),
 		})
 		m.MakeToast(tmp)
 		//auto close the progress bar
@@ -85,7 +87,29 @@ func (m *Manager) Upload(containerID string, attributes map[string]string) (stri
 		})
 		m.SetProgressPercentage(end)
 	} else {
-		m.RetrieveFileSystem()
+		obj, err := m.GetObjectMetaData(objectID, containerID)
+		if err != nil {
+			fmt.Println("error getting object ", err)
+		} else {
+
+			tmp := filesystem.Element{
+				Type: "object",
+				ID:         obj.ID().String(),
+				Attributes: make(map[string]string),
+			}
+
+			for _, a := range obj.Attributes() {
+				tmp.Attributes[a.Key()] = a.Value()
+			}
+			if filename, ok := tmp.Attributes[object.AttributeFileName]; ok {
+				tmp.Attributes["X_EXT"] = filepath.Ext(filename)[1:]
+			} else {
+				tmp.Attributes["X_EXT"] = ""
+			}
+			fmt.Printf("appending object %+v\r\n", obj)
+			runtime.EventsEmit(m.ctx, "appendObject", obj)
+		}
+
 	}
 	return objectID, err
 }
