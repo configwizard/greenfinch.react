@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import CompModal from "../compModal";
+import CompModalStandard from "../compModals/compModalStandard";
 import CompProgress from "../compProgress";
 
 export default function Footer({fireToast, percentage}) {
@@ -12,9 +12,9 @@ export default function Footer({fireToast, percentage}) {
                 <button type="button" className="atmButtonSimple" onClick={() => {fireToast({Title: "clicked", Type:"success", Description:"Toast launched."})}}><i className="fas fa-hand-point-right"/>Click me for Toast (success)</button>
             </div>
             <div className="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <CompModal title="Greenfinch Modal" buttonTextPrimary="OK" buttonTextSecondary="Cancel">
+                <CompModalStandard title="Greenfinch Modal" buttonTextPrimary="OK" buttonTextSecondary="Cancel">
                     <p>Here is the content for the modal. I will need styling.</p>
-                </CompModal>
+                </CompModalStandard>
             </div>
             <div style={{"position":"relative"}}>
                 <CompProgress show={show} setShow={setShow} percentage={percentage}></CompProgress>
