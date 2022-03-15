@@ -28,8 +28,8 @@ $brandFontBold: 'AvertaStdPE-Bold', Arial, Helvetica, sans-serif;
 
 /* Variables: Color
 - - - - - - - - - - - - - - - - - - */
-$brandColorPrimary: #00E599;
-$brandColorSecondary: #00AF92;
+$brandColorPrimary: #00e599;
+$brandColorSecondary: #00af92;
 $brandColorSecondary-dark: darken($brandColorSecondary, 15%);
 $brandColorWhite: #fff;
 $brandColorBlack: #000; // Change to a very dark green
@@ -273,6 +273,17 @@ input:checked + .slider {
         font-size: 0.7rem;
     }
 }
+
+// To pickup another time...
+.modal-open {
+    filter: blur(5px);
+}
+
+.modal {
+    filter: blur(0);
+}
+
+
 
 /* Component: Progress
 - - - - - - - - - - - - - - - - - - */
