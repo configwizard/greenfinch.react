@@ -1,7 +1,7 @@
 import React from "react";
 import { createContainer } from "../../manager/containers.js";
 import CompModalStandard from "../compModals/compModalStandard";
-import CompModalFrosted from "../compModals/compModalFrosted";
+//import CompModalFrosted from "../compModals/compModalFrosted";
 import { Form } from "react-bootstrap";
 
 function ControlBar({containers, selectedContainer, onSelected, changeView, viewMode, resetBreadcrumb}) {
@@ -33,14 +33,16 @@ function ControlBar({containers, selectedContainer, onSelected, changeView, view
                     <Form.Label>Container name</Form.Label> 
                     <Form.Text> Choose a name for the container. (N.B. this cannot be changed)</Form.Text>
                     <Form.Control id="containerName" type="text" placeholder="e.g. holiday photos" />
-                    {/*<button onClick={async () => createContainer(document.getElementById("containerName"))}></button>*/}
+                    {/* <button onClick={async () => createContainer(document.getElementById("containerName"))}></button> */}
                 </CompModalStandard>
             </div>
-            <div className="modal fade" id="compModalFrosted" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <CompModalFrosted title="Create a New Container" buttonTextSecondary="Cancel">
-                    Test
-                </CompModalFrosted>
-            </div>
+            {/*
+                <div className="modal fade" id="compModalFrosted" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <CompModalFrosted title="Create a New Container" buttonTextSecondary="Cancel">
+                        Test
+                    </CompModalFrosted>
+                </div>
+            */}
         </div>
     );
 }
