@@ -118,7 +118,6 @@ button[class^="atmButton"] {
     }
 }
 
-
 .atmButtonSimple {
     font-size: 13px;
     color: $brandColorWhite;
@@ -153,7 +152,7 @@ button[class^="atmButton"] {
     border-radius: $brandBorderRadius;
     &:hover {
         color: $brandColorPrimary;
-        background-color: $brandColorDark;
+        background-color: $brandColorDark; 
     }
     &.utLive {
         cursor: default!important;
