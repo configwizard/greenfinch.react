@@ -23,7 +23,7 @@ function ObjectView({objectList, onObjectSelection, objectsLoaded, viewMode}) {
                         </div>
                     </div>
                    /* Add a loading component here, otherwise 'no objects' show */
-                ) : objectsLoaded ? <div className="atmStatusSmall"><i className="fas fa-exclamation-triangle"/>&nbsp;There are no objects in this container.</div> : <div>loading</div>}
+                ) : objectsLoaded ? <div className="atmStatusSmall"><i className="fas fa-exclamation-triangle"/>&nbsp;There are no objects in this container.</div> : <div className="utLoading"><i className="fas fa-spinner fa-spin"/>Loading...</div>}
             </>           
         )
     } else {

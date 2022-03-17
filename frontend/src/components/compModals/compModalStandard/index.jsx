@@ -3,10 +3,19 @@ import React from "react";
 const CompModalStandard = props => {
     return (
         <>
-            <h5>{props.title}</h5>
-            {props.children}
-            <button type="button" className="atmButtonSimple" onClick={() => {props.secondaryClicked()}}>{props.buttonTextSecondary}</button>
-            <button type="button" className="atmButtonSimple" onClick={() => {props.primaryClicked()}}>{props.buttonTextPrimary}</button>
+            <div className="molModalHeader">
+                {/* TODO these are bs standard classes */ }
+                <h2>{props.title}</h2>
+            </div>
+            <div className="molModalBody">
+                {props.children}
+            </div>
+            <div className="molModalFooter d-flex">
+                <div className="ms-auto molButtonGroup">
+                    <button type="button" className="atmButtonSimple" onClick={() => {props.secondaryClicked()}}>{props.buttonTextSecondary}</button>
+                    <button type="button" className="atmButtonSimple" onClick={() => {props.primaryClicked()}}>{props.buttonTextPrimary}</button>
+                </div>
+            </div>
         </>
         // <div className="modal-dialog">
         //     <div className="modal-content">

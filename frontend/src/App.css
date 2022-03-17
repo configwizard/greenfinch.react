@@ -1,69 +1,10 @@
 html {
-  background-color: white;
-  color: black;
+    background-color: white;
+    color: black;
 }
 
 body {
-  margin: 0;
-  font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
-  "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-  sans-serif;
-  overscroll-behavior: none;
-}
-
-
-.modal {
-  --spacing: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-}
-
-.modal__close {
-  display: block;
-  position: fixed;
-  background: rgba(255, 255, 255, 0.5);
-  border: none;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.modal__inner {
-  position: relative;
-  width: calc(var(--spacing) * 36);
-  max-width: 100%;
-  padding: calc(var(--spacing) * 3) calc(var(--spacing) * 1.5);
-  border-radius: 5px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  background-color: #ffffff;
-  box-shadow: rgba(9, 30, 66, 0.25) 0px 20px 32px -8px;
-}
-
-.modal__close-btn {
-  position: absolute;
-  top: var(--spacing);
-  right: var(--spacing);
-  padding: 0;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-}
-
-.modal__close-btn svg {
-  width: var(--spacing);
-  height: var(--spacing);
-  fill: currentColor;
-  opacity: 0.5;
-}
-
-.modal__close-btn:hover svg {
-  opacity: 1;
+    margin: 0;
+    font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto","Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+    overscroll-behavior: none;
 }

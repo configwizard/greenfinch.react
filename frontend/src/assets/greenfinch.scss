@@ -105,7 +105,7 @@ button[class^="atmButton"] {
         text-align: left;
         border-radius: none;
         background-color: rgba(0,0,0,0);
-        border-bottom: 1px solid rgba($brandColorDark, 0.25);
+        border-bottom: 1px solid rgba($brandColorDark, 0.3);
         color: $brandColorSecondary;
         &:hover {
             cursor: pointer;
@@ -255,12 +255,54 @@ input:checked + .slider {
 
 /* Component: Modal
 - - - - - - - - - - - - - - - - - - */
-.modal-title {
-    @include titleStyle(1rem);
-    color: $brandColorDark;
+// Need to sort modal widths (as per Bootstrap)
+.orgModal {
+    & .molModalWrapper {
+        background: rgba(0,0,0, 0.6);
+        filter: blur(5px);
+        border: none;
+        cursor: default;
+    } 
+    & .molModalContainer {
+        border-radius: 5px;
+        border: 1px solid rgba($brandColorDark, 0.1);
+        background-color: #ffffff;
+        box-shadow: 0px 20px 32px -8px rgba(0,0,0, 0.25);
+        & .modal__close-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            & i {
+                transition: $brandTransitionSpeed;
+                color: $brandColorDark;
+                opacity: 0.2;
+                &:hover {
+                    opacity: 1;
+                }
+            }
+        }
+    }   
 }
 
-.modal-body {
+.molModalHeader {
+    background-color: darken($brandColorLight,0.1);
+    & h2 {
+        @include titleStyle(1rem);
+        color: $brandColorDark;
+    }
+}
+
+.molModalBody {
+    & h3 {
+        color: $brandColorDark;
+        font-size: 1.6rem;
+        font-family: $brandFontBold;
+    }
+    & h4 {
+        color: $brandColorDark;
+        font-size: 1.3rem;
+        font-family: $brandFontSemi;
+    }
     & .form-label {
         color: $brandColorDark;
         font-family: $brandFontSemi;
@@ -273,15 +315,9 @@ input:checked + .slider {
     }
 }
 
-// To pickup another time...
-/* .modal-open {
-    filter: blur(5px);
+.molModalFooter {
+    background-color: $brandColorLight;
 }
-
-.modal {
-    filter: blur(0);
-} */
-
 
 
 /* Component: Progress
@@ -539,6 +575,9 @@ span.utUCSmall {
         }
         & .atmBlockBread i {
             color: $brandColorDark;
+            &.fa-home {
+                cursor: default;
+            }
         }
     }
     & .molBlockUpload {
@@ -695,7 +734,7 @@ span.utUCSmall {
 .utLoading {
     font-size: 0.8rem;
     font-family: $brandFontSemi;
-    color: $brandColorPrimary;
+    color: $brandColorDark;
 }
 
 h2 {

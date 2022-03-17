@@ -137,7 +137,7 @@ input:checked + .slider:before {
 
 /* Component: Modal
 - - - - - - - - - - - - - - - - - - */
-.modal {
+.orgModal {
     & label {
         display: block;
     }
@@ -150,6 +150,52 @@ input:checked + .slider:before {
     & .form-control {
         margin-top: $marginSmall;
     }
+}
+
+// Modal styles from demo (stackoverflow: )
+.orgModal {
+    --spacing: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    z-index: 8000;
+    & .molModalWrapper {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+    & .molModalContainer {
+        position: relative;
+        width: calc(var(--spacing) * 30);
+        max-width: 100%;
+        & .modal__close-btn {
+            position: absolute;
+            top: 6px;
+            right: 9px;
+            padding: 0;
+        }
+    }
+}
+.molModalHeader {
+    padding: $paddingMedium $paddingSmall;
+    & h2 {
+        margin-bottom: 0;
+    }
+}
+.molModalBody {
+    padding: $paddingMedium $paddingSmall;
+}
+.molModalFooter {
+    padding: $paddingSmall;
 }
 
 /* Component: Progress
@@ -403,11 +449,10 @@ input:checked + .slider:before {
 .molButtonGrid {
     & .utOverlayMenuSmall {
         position: absolute;
-        z-index: 500;
+        z-index: 150;
         top: 30px;
         left: 0;
         min-width: 180px;
-        z-index: 200;
     }
 }
 
@@ -455,8 +500,6 @@ input:checked + .slider:before {
         margin-right: 0;
     }
 }
-
-
 
 .orgWalletFooter { // short-term option as being over-run below
     & .atmButtonSimple {
@@ -514,6 +557,16 @@ input:checked + .slider:before {
 - - - - - - - - - - - - - - - - - - */
 .molButtonGroup {
     margin: 0 5px;
+}
+
+.ms-auto .molButtonGroup {
+    margin: 0;
+    & button {
+        margin-left: 5px;
+        &:last-child {
+            margin-left: 0;
+        }
+    }
 }
 
 .molContainersHeader {
