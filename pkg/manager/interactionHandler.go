@@ -57,6 +57,12 @@ func (m *Manager) Upload(containerID string, attributes map[string]string) (stri
 			})
 			m.SetProgressPercentage(tmp)
 		}
+		end := NewProgressMessage(&ProgressMessage{
+			Title: "Uploading object",
+			Show:  false,
+		})
+		//auto close the progress bar
+		m.SetProgressPercentage(end)
 		tmp := NewToastMessage(&ToastMessage{
 			Title:       "Uploading complete",
 			Type:        "success",
@@ -71,21 +77,24 @@ func (m *Manager) Upload(containerID string, attributes map[string]string) (stri
 
 	objectID, err := m.UploadObject(containerID, filepath, attributes, &rr)
 	if err != nil {
+		end := NewProgressMessage(&ProgressMessage{
+			Title: "Uploading object",
+			Show:  false,
+		})
+		//auto close the progress bar
+		m.SetProgressPercentage(end)
 		tmp := NewToastMessage(&ToastMessage{
 			Title:       "Error uploading",
 			Type:        "error",
 			Description: "Uploading " + path.Base(filepath) + " failed: " + err.Error(),
 		})
 		m.MakeToast(tmp)
-		//auto close the progress bar
-		end := NewProgressMessage(&ProgressMessage{
-			Title: "Uploading object",
-			Show:  false,
-		})
-		m.SetProgressPercentage(end)
+
 	} else {
 		m.RetrieveFileSystem()
 	}
+
+
 	return objectID, err
 }
 
