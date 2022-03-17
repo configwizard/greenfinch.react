@@ -15,7 +15,7 @@ import ObjectView, {FileUpload} from "../viewObjects";
 class TabVisual extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {containerList: [], objectList: [], account: {}, selectedObject: null, selectedContainer: null, viewMode: "grid"};
+        this.state = {containerList: [], objectList: [], account: {}, selectedObject: null, selectedContainer: null, viewMode: "grid", objectsLoaded: false};
     }
     async componentDidMount() {
         const account = await getAccountInformation()
@@ -57,9 +57,10 @@ class TabVisual extends React.Component {
             containerName
         }
         let state = this.state
-        this.setState({...state, selectedContainer})
+
+        this.setState({...state, selectedContainer, objectsLoaded: false})
         const objectList = await listObjects(containerID) || []//list contents of a container
-        this.setState({...state, selectedContainer, objectList})
+        this.setState({...state, selectedContainer, objectList, objectsLoaded: true})
     }
     onObjectSelection = async (objectID, objectName) => {
         if (this.state.selectedContainer == null) {
@@ -97,9 +98,7 @@ class TabVisual extends React.Component {
                 <div className="col-12">
                     <div className="orgContainersGrid">
                         <div className="row">
-                            {/*<FadeProps animationLength={150}>*/}
                                 <ContainerView containerList={this.state.containerList} onDelete={this.onContainerDelete} viewMode={this.state.viewMode} onContainerSelection={this.onContainerSelection}></ContainerView>
-                            {/*</FadeProps>*/}
                         </div>
                     </div>
                 </div>
@@ -113,9 +112,7 @@ class TabVisual extends React.Component {
                     <div className="col-12">
                         <div className="orgContainersGrid">
                             <div className="row">
-                                {/*<FadeProps animationLength={150}>*/}
-                                    <ObjectView objectList={this.state.objectList} viewMode={this.state.viewMode} onObjectSelection={this.onObjectSelection}></ObjectView>
-                                {/*</FadeProps>*/}
+                                    <ObjectView objectsLoaded={this.state.objectsLoaded} objectList={this.state.objectList} viewMode={this.state.viewMode} onObjectSelection={this.onObjectSelection}></ObjectView>
                             </div>
                         </div>
                     </div>

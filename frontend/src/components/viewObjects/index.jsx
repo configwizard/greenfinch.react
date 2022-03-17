@@ -4,12 +4,13 @@ import ByteConverter from "byte-converter-react";
 
 // import JSONView from 'react-json-view';
 
-function ObjectView({objectList, onObjectSelection, viewMode}) {
+function ObjectView({objectList, onObjectSelection, objectsLoaded, viewMode}) {
     console.log("objectList", objectList)
+
     if (viewMode === "grid") {
         return (
             <>
-                {objectList.length > 0 ? objectList.map((item,i) =>
+                {objectsLoaded && objectList.length > 0 ? objectList.map((item,i) =>
                     <div className="col-6 col-lg-3 col-xl-2" key={i}>
                         <div className="molButtonGrid">
                             <button 
@@ -22,7 +23,7 @@ function ObjectView({objectList, onObjectSelection, viewMode}) {
                         </div>
                     </div>
                    /* Add a loading component here, otherwise 'no objects' show */
-                ) : <div className="atmStatusSmall"><i className="fas fa-exclamation-triangle"/>&nbsp;There are no objects in this container.</div>}
+                ) : objectsLoaded ? <div className="atmStatusSmall"><i className="fas fa-exclamation-triangle"/>&nbsp;There are no objects in this container.</div> : <div>loading</div>}
             </>           
         )
     } else {
