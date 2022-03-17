@@ -207,7 +207,7 @@ func (m *Manager) CreateContainer(name string) error {
 				m.MakeToast(NewToastMessage(&tmp))
 				return
 			}
-			newContainer, err := container2.Get(m.ctx, m.fsCli, id)
+			_, err := container2.Get(m.ctx, m.fsCli, id)
 			if err == nil {
 				tmp := ToastMessage{
 					Title:       "Container Created",
@@ -216,7 +216,7 @@ func (m *Manager) CreateContainer(name string) error {
 				}
 
 				m.prepareAndAppendContainer(id, sessionToken)
-				m.SendSignal("appendContainer", newContainer)
+				//m.SendSignal("appendContainer", newContainer)
 				//m.SendSignal("freshUpload", o)
 				m.MakeToast(NewToastMessage(&tmp))
 				return
