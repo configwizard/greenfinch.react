@@ -8,6 +8,9 @@ const CompModalBrand = props => {
             </div>
             <div className="molModalBody">
                 {props.children}
+                {/* Do you want to create a new wallet. Or load an existing wallet.
+                Create: button asks where to save it
+                Load button asks where to find it. I'll wire up */}
             </div>
             {/* 
             <div className="molModalFooter d-flex">
