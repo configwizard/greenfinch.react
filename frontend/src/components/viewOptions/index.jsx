@@ -32,12 +32,14 @@ function ControlBar({containers, selectedContainer, onSelected, changeView, view
                                             <p>Welcome to Greenfinch, to get started you will need a wallet.</p>
                                             <button 
                                                 type="button" 
-                                                className="atmButtonSimple">
+                                                className="atmButtonSimple"
+                                                onClick="">
                                                     <i className="fas fa-star-shooting"/>Create new wallet
                                             </button>
                                             <button 
                                                 type="button" 
-                                                className="atmButtonText">
+                                                className="atmButtonText"
+                                                onClick="">
                                                     <i className="fas fa-upload"/>Load existing wallet
                                             </button>
                                         </div>
