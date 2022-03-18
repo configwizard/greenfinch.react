@@ -2,7 +2,7 @@ import React from "react";
 
 const CompModalStandard = props => {
     return (
-        <div>
+        <section className="orgModalBrand">
             <div className="molModalHeader">
                 <h2>{props.title}</h2>
             </div>
@@ -15,7 +15,7 @@ const CompModalStandard = props => {
                     <button type="button" className="atmButtonSimple" onClick={() => {props.primaryClicked()}}>{props.buttonTextPrimary}</button>
                 </div>
             </div>
-        </div>
+        </section>
         // <div className="modal-dialog">
         //     <div className="modal-content">
         //         <div className="modal-header">

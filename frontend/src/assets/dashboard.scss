@@ -55,6 +55,9 @@ span {
 .atmButtonText {
     padding: 0;
     margin: 0;
+    & i {
+        margin-right: 7px;
+    }
 }
 
 .atmButtonIcon {
@@ -63,19 +66,26 @@ span {
 }
 
 .me-auto {
-    & .atmButtonSimple, .atmButtonIcon, .atmButtonIconClean {
+    & .atmButtonSimple, & .atmButtonIcon, & .atmButtonIconClean {
         margin-right: $marginSmall; //temporary
     }
 }
 
 .ms-auto {
-    & .atmButtonSimple, .atmButtonIcon, .atmButtonIconClean {
+    & .atmButtonSimple, & .atmButtonIcon, & .atmButtonIconClean {
         margin-left: $marginSmall; //temporary
     }
 }
 
 .atmButtonIconClean {
     padding: 0;
+}
+
+.molModalBody {
+    & .atmButtonSimple {
+        margin-top: $marginXSmall;
+        margin-bottom: $marginXSmall;
+    }
 }
 
 /* Element: Tabs
@@ -179,8 +189,8 @@ input:checked + .slider:before {
         max-width: 100%;
         & .modal__close-btn {
             position: absolute;
-            top: 6px;
-            right: 9px;
+            top: 16px;
+            right: 19px;
             padding: 0;
         }
     }

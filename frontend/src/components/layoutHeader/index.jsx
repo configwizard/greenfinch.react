@@ -12,7 +12,7 @@ class Status extends React.Component {
             (this.props.account.nep17.GAS.meta === undefined) ||
             (this.props.account.nep17.NEO === undefined)) {
                 console.log("Loading...");
-                return(<div className="utLoading"><i className="fas fa-spinner fa-spin"/>Loading...</div>)
+                return(<div className="utLoading"><i className="fad fa-spinner fa-spin"/>Loading...</div>)
             }
         //
         // //TODO: Don't think you need Number()

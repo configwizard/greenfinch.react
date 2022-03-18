@@ -23,7 +23,7 @@ function ObjectView({objectList, onObjectSelection, objectsLoaded, viewMode}) {
                         </div>
                     </div>
                    /* Add a loading component here, otherwise 'no objects' show */
-                ) : objectsLoaded ? <div className="atmStatusSmall"><i className="fas fa-exclamation-triangle"/>&nbsp;There are no objects in this container.</div> : <div className="utLoading"><i className="fas fa-spinner fa-spin"/>Loading...</div>}
+                ) : objectsLoaded ? <div className="atmStatusSmall"><i className="fas fa-exclamation-triangle"/>&nbsp;There are no objects in this container.</div> : <div className="utLoading"><i className="fad fa-spinner fa-spin"/>Loading...</div>}
             </>           
         )
     } else {
@@ -60,7 +60,13 @@ export function FileUpload({onObjectUpload}) {
         <div className="molBlockUpload d-flex align-items-center justify-content-center">
             <div className="atmBlockUpload d-flex flex-column align-items-center justify-content-center">
                 {/* <i className="fas fa-upload"/> */}
-                <button type="button" className="atmButtonText" title="Upload a file" onClick={onObjectUpload}>Upload a file</button>
+                <button 
+                    type="button" 
+                    className="atmButtonText" 
+                    title="Upload a file" 
+                    onClick={onObjectUpload}>
+                        Upload a file
+                </button>
             </div>
         </div>
     )

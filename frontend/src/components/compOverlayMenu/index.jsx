@@ -32,8 +32,7 @@ function CompOverlayMenu(props) {
                                     buttonTextSecondary={"No"} 
                                     secondaryClicked={async () => unSetModal()} 
                                     primaryClicked={props.onDelete}>
-                                        <h3>Are you sure?</h3>
-                                        <h4>Are you sure you want to delete this item?</h4>
+                                        <p>Are you sure you want to delete this item?</p>
                                 </CompModalStandard>)
                             }}>
                             <i className="fas fa-trash-alt"/>&nbsp;Delete
