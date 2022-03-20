@@ -25,7 +25,7 @@ type Container struct {
 }
 
 func (m *Manager) listContainerIDs() ([]*cid.ID, error) {
-		tmpWallet, err := m.retrieveWallet()
+	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
 		return []*cid.ID{}, err
 	}
@@ -49,7 +49,7 @@ func (m *Manager) ListContainerIDs() ([]string, error) {
 	return stringIds, err
 }
 func (m *Manager) ListContainers() ([]filesystem.Element, error) {
-		tmpWallet, err := m.retrieveWallet()
+	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
 		return []filesystem.Element{}, err
 	}
@@ -83,7 +83,7 @@ func (m *Manager) ListContainers() ([]filesystem.Element, error) {
 func (m *Manager) ListContainersAsync() error {
 	var containers []filesystem.Element
 	runtime.EventsEmit(m.ctx, "clearContainer", nil)
-		tmpWallet, err := m.retrieveWallet()
+	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
 		return err
 	}
@@ -176,6 +176,7 @@ func (m *Manager) CreateContainer(name string) error {
 	if err != nil {
 		return err
 	}
+	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
 	log.Println("creating container with name", name)
 	attr := container.NewAttribute()
 	attr.SetKey(obj.AttributeFileName)
@@ -192,7 +193,6 @@ func (m *Manager) CreateContainer(name string) error {
         CBF 2
         SELECT 2 FROM * AS X
         `
-		tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
 		customACL := acl.BasicACL(0x0FFFCFFF)
 		id, err := container2.Create(m.ctx, m.fsCli, &tmpKey, placementPolicy, customACL, attributes)
 

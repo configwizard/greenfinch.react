@@ -195,7 +195,7 @@ func (m Manager) RetrieveFileSystem() ([]filesystem.Element, error) {
 	return el, err
 }
 func (m Manager) RetrieveContainerFileSystem(containerID string) (filesystem.Element, error) {
-		tmpWallet, err := m.retrieveWallet()
+	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
 		return filesystem.Element{}, err
 	}

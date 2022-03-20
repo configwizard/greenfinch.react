@@ -56,7 +56,7 @@ func (m *Manager) UploadObject(containerID, filepath string, attributes map[stri
 
 	attr = append(attr, []*obj.Attribute{timeStampAttr, fileNameAttr}...)
 
-		tmpWallet, err := m.retrieveWallet()
+	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
 		return "", err
 	}
@@ -141,7 +141,7 @@ type TmpObjectMeta struct {
 	Objects []filesystem.Element
 }
 func (m *Manager) ListObjectsAsync(containerID string) error {
-		tmpWallet, err := m.retrieveWallet()
+	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
 		return err
 	}
@@ -165,7 +165,7 @@ func (m *Manager) ListObjectsAsync(containerID string) error {
 	return nil
 }
 func (m *Manager) ListContainerPopulatedObjects(containerID string) ([]filesystem.Element, error) {
-		tmpWallet, err := m.retrieveWallet()
+	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
 		return []filesystem.Element{}, err
 	}
@@ -189,7 +189,7 @@ func (m *Manager) ListContainerPopulatedObjects(containerID string) ([]filesyste
 	return objects, nil
 }
 func (m *Manager) Delete(objectID, containerID string) error {
-		tmpWallet, err := m.retrieveWallet()
+	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
 		return err
 	}
