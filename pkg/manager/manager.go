@@ -139,6 +139,7 @@ type Account struct {
 	Nep17 map[string]wallet.Nep17Tokens `json:"nep17"'`
 }
 
+var NotFound = errors.New("wallet not found")
 func (m *Manager) retrieveWallet() (*wal.Wallet, error) {
 	if m.wallet == nil {
 		tmp := NewToastMessage(&ToastMessage{
@@ -147,15 +148,18 @@ func (m *Manager) retrieveWallet() (*wal.Wallet, error) {
 			Description: "Please select a wallet",
 		})
 		m.MakeToast(tmp)
-		return nil, errors.New("no wallet selected")
+		runtime.EventsEmit(m.ctx, "select-wallet", "sending message - no wallet yet selected")
+		return nil, NotFound
 	}
-
 	return m.wallet, nil
 }
 
 func (m *Manager) GetAccountInformation() (Account, error) {
 	w, err := m.retrieveWallet()
 	if err != nil {
+		//if !errors.Is(err, NotFound) {
+		//	return Account{}, err
+		//}
 		return Account{}, err
 	}
 	balances, err := wallet.GetNep17Balances(w.Accounts[0].Address, wallet.RPC_TESTNET)
