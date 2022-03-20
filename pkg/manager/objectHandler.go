@@ -56,11 +56,12 @@ func (m *Manager) UploadObject(containerID, filepath string, attributes map[stri
 
 	attr = append(attr, []*obj.Attribute{timeStampAttr, fileNameAttr}...)
 
-	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, m.key)
+	tmpKey := m.wallet.Accounts[0].PrivateKey().PrivateKey
+	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, &tmpKey)
 	if err != nil {
 		return "", err
 	}
-	ownerID, err := wallet.OwnerIDFromPrivateKey(m.key)
+	ownerID, err := wallet.OwnerIDFromPrivateKey(&tmpKey)
 	if err != nil {
 		return "", err
 	}
@@ -74,7 +75,8 @@ func (m *Manager) UploadObject(containerID, filepath string, attributes map[stri
 }
 
 func (m *Manager) GetObjectMetaData(objectID, containerID string) (*client.ObjectHeadRes, error){
-	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, m.key)
+	tmpKey := m.wallet.Accounts[0].PrivateKey().PrivateKey
+	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, &tmpKey)
 	if err != nil {
 		return &client.ObjectHeadRes{}, err
 	}
@@ -86,7 +88,8 @@ func (m *Manager) GetObjectMetaData(objectID, containerID string) (*client.Objec
 	return head, err
 }
 func (m *Manager) Get(objectID, containerID string, writer *io.Writer) ([]byte, error){
-	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, m.key)
+	tmpKey := m.wallet.Accounts[0].PrivateKey().PrivateKey
+	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, &tmpKey)
 	if err != nil {
 		return []byte{}, err
 	}
@@ -99,8 +102,9 @@ func (m *Manager) Get(objectID, containerID string, writer *io.Writer) ([]byte, 
 }
 
 func (m *Manager) ListContainerObjectIDs(containerID string) ([]string, error) {
+	tmpKey := m.wallet.Accounts[0].PrivateKey().PrivateKey
 	var stringIds []string
-	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, m.key)
+	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, &tmpKey)
 	if err != nil {
 		return stringIds, err
 	}
@@ -121,7 +125,8 @@ type TmpObjectMeta struct {
 	Objects []filesystem.Element
 }
 func (m *Manager) ListObjectsAsync(containerID string) error {
-	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, m.key)
+	tmpKey := m.wallet.Accounts[0].PrivateKey().PrivateKey
+	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, &tmpKey)
 	if err != nil {
 		return  err
 	}
@@ -140,7 +145,8 @@ func (m *Manager) ListObjectsAsync(containerID string) error {
 	return nil
 }
 func (m *Manager) ListContainerPopulatedObjects(containerID string) ([]filesystem.Element, error) {
-	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, m.key)
+	tmpKey := m.wallet.Accounts[0].PrivateKey().PrivateKey
+	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, &tmpKey)
 	if err != nil {
 		return []filesystem.Element{}, err
 	}
@@ -159,7 +165,8 @@ func (m *Manager) ListContainerPopulatedObjects(containerID string) ([]filesyste
 	return objects, nil
 }
 func (m *Manager) Delete(objectID, containerID string) error {
-	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, m.key)
+	tmpKey := m.wallet.Accounts[0].PrivateKey().PrivateKey
+	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, &tmpKey)
 	if err != nil {
 		fmt.Println("error getting session key", err)
 		return err

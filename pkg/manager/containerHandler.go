@@ -25,7 +25,8 @@ type Container struct {
 }
 
 func (m *Manager) listContainerIDs() ([]*cid.ID, error) {
-	ids, err := container2.List(m.ctx, m.fsCli, m.key)
+	tmpKey := m.wallet.Accounts[0].PrivateKey().PrivateKey
+	ids, err := container2.List(m.ctx, m.fsCli, &tmpKey)
 	log.Printf("%v\r\n", ids)
 	return ids, err
 }
@@ -44,7 +45,8 @@ func (m *Manager) ListContainerIDs() ([]string, error) {
 	return stringIds, err
 }
 func (m *Manager) ListContainers() ([]filesystem.Element, error) {
-	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, m.key)
+	tmpKey := m.wallet.Accounts[0].PrivateKey().PrivateKey
+	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, &tmpKey)
 	if err != nil {
 		return []filesystem.Element{}, err
 	}
@@ -73,7 +75,8 @@ func (m *Manager) ListContainers() ([]filesystem.Element, error) {
 func (m *Manager) ListContainersAsync() error {
 	var containers []filesystem.Element
 	runtime.EventsEmit(m.ctx, "clearContainer", nil)
-	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, m.key)
+	tmpKey := m.wallet.Accounts[0].PrivateKey().PrivateKey
+	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, &tmpKey)
 	if err != nil {
 		return err
 	}
@@ -173,10 +176,11 @@ func (m *Manager) CreateContainer(name string) error {
         CBF 2
         SELECT 2 FROM * AS X
         `
+		tmpKey := m.wallet.Accounts[0].PrivateKey().PrivateKey
 		customACL := acl.BasicACL(0x0FFFCFFF)
-		id, err := container2.Create(m.ctx, m.fsCli, m.key, placementPolicy, customACL, attributes)
+		id, err := container2.Create(m.ctx, m.fsCli, &tmpKey, placementPolicy, customACL, attributes)
 
-		sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, m.key)
+		sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, &tmpKey)
 		if err != nil {
 			fmt.Println("could not create session token")
 			return

@@ -179,7 +179,8 @@ func (m *Manager) DeleteObject(objectID, containerID string) error {
 	return err
 }
 func (m Manager) RetrieveFileSystem() ([]filesystem.Element, error) {
-	el, err := filesystem.GenerateFileSystem(m.ctx, m.fsCli, m.key)
+	tmpKey := m.wallet.Accounts[0].PrivateKey().PrivateKey
+	el, err := filesystem.GenerateFileSystem(m.ctx, m.fsCli, &tmpKey)
 	if err != nil {
 		tmp := NewToastMessage(&ToastMessage{
 			Title:       "Error updating filesystem",
@@ -193,9 +194,10 @@ func (m Manager) RetrieveFileSystem() ([]filesystem.Element, error) {
 	return el, err
 }
 func (m Manager) RetrieveContainerFileSystem(containerID string) (filesystem.Element, error) {
+	tmpKey := m.wallet.Accounts[0].PrivateKey().PrivateKey
 	contID := cid.New()
 	contID.Parse(containerID)
-	fs := filesystem.GenerateFileSystemFromContainer(m.ctx, m.fsCli, m.key, contID)
+	fs := filesystem.GenerateFileSystemFromContainer(m.ctx, m.fsCli, &tmpKey, contID)
 	if m.DEBUG {
 		DebugSaveJson("RetrieveContainerFileSystem.json", fs)
 	}

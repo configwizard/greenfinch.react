@@ -2,18 +2,19 @@ package manager
 
 import (
 	"context"
-	"crypto/ecdsa"
 	"errors"
 	"fmt"
 	"math/rand"
 	"strings"
 	"time"
 
+
 	"github.com/configwizard/gaspump-api/pkg/client"
 	"github.com/configwizard/gaspump-api/pkg/filesystem"
 	"github.com/configwizard/gaspump-api/pkg/wallet"
 	neofscli "github.com/nspcc-dev/neofs-sdk-go/client"
 	obj "github.com/nspcc-dev/neofs-sdk-go/object"
+	wal "github.com/nspcc-dev/neo-go/pkg/wallet"
 	"github.com/patrickmn/go-cache"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
@@ -44,11 +45,12 @@ func NewToastMessage(t *ToastMessage) ToastMessage {
 }
 
 type Manager struct {
-	walletPath, walletAddr string
+	//walletPath, walletAddr string
 	fsCli                  *neofscli.Client
-	key                    *ecdsa.PrivateKey
+	//key                    *ecdsa.PrivateKey
 	c                      *cache.Cache
 	ctx                    context.Context
+	wallet 				*wal.Wallet
 	DEBUG                  bool
 }
 
@@ -56,6 +58,9 @@ const (
 	CACHE_FILE_SYSTEM = "filesystem"
 )
 
+func (m *Manager) UnlockWallet(password string) error {
+	return m.wallet.Accounts[0].Decrypt(password, m.wallet.Scrypt)
+}
 // startup is called at application startup
 func (m *Manager) Startup(ctx context.Context) {
 	// Perform your setup here
@@ -65,34 +70,6 @@ func (m *Manager) Startup(ctx context.Context) {
 
 // domReady is called after the front-end dom has been loaded
 func (m *Manager) DomReady(ctx context.Context) {
-	//go func() {
-	//	show := true
-	//	for i := 0; i <= 10; i++ {
-	//		if i == 10 {
-	//			show = false
-	//		}
-	//		newProgress := ProgressMessage{
-	//			Id:       rand.Intn(101 - 1) + 1,
-	//			Title:    "Loading progress",
-	//			Progress: i * 10,
-	//			Show:     show,
-	//		}
-	//		m.SetProgressPercentage(newProgress)
-	//		time.Sleep(1 * time.Second)
-	//	}
-	//	newToast := NewToastMessage(&ToastMessage{
-	//		Title:       "Ready for action",
-	//		Type:        "success",
-	//		Description: "The application has successfully started",
-	//	})
-	//	m.MakeToast(newToast)
-	//}()
-	//newToast := NewToastMessage(&ToastMessage{
-	//	Title:       "Ready for action",
-	//	Type:        "success",
-	//	Description: "The application has successfully started",
-	//})
-	//m.MakeToast(newToast)
 }
 
 func (m *Manager) MakeToast(message ToastMessage) {
@@ -139,23 +116,15 @@ func NewFileSystemManager(walletPath, walletAddr, password string, DEBUG bool) (
 	}
 
 	return &Manager{
-		walletPath: walletPath,
-		walletAddr: walletAddr,
+		//walletPath: walletPath,
+		//walletAddr: walletAddr,
 		fsCli:      cli,
-		key:        key, //this is holding the private key in memory - not good?
+		//key:        key, //this is holding the private key in memory - not good?
 		c:          cache.New(1*time.Minute, 10*time.Minute),
 		ctx:        context.Background(),
 		DEBUG:      DEBUG,
 	}, nil
 }
-
-//func (m Manager) PopToast() {
-//
-//	go func() {
-//		time.Sleep(5 * time.Second)
-//		runtime.EventsEmit(m.ctx, "freshtoast", "hello world!")
-//	}()
-//}
 
 func (m Manager) Client() *neofscli.Client {
 	return m.fsCli
@@ -170,15 +139,29 @@ type Account struct {
 	Nep17 map[string]wallet.Nep17Tokens `json:"nep17"'`
 }
 
+func (m *Manager) retrieveWallet() (*wal.Wallet, error) {
+	if m.wallet == nil {
+		tmp := NewToastMessage(&ToastMessage{
+			Title:       "Wallet error",
+			Type:        "error",
+			Description: "You must have selected a wallet",
+		})
+		m.MakeToast(tmp)
+		return nil, errors.New("no wallet selected")
+	}
+
+	return m.wallet, nil
+}
+
 func (m *Manager) GetAccountInformation() (Account, error) {
 
-	w, err := wallet.RetrieveWallet(m.walletPath)
+	w, err := m.retrieveWallet()
 	if err != nil {
 		return Account{}, err
 	}
 	balances, err := wallet.GetNep17Balances(w.Accounts[0].Address, wallet.RPC_TESTNET)
 	//Now the neo fs gas balance
-	id, err := wallet.OwnerIDFromPrivateKey(m.key)
+	id, err := wallet.OwnerIDFromPrivateKey(&m.wallet.Accounts[0].PrivateKey().PrivateKey)
 	if err != nil {
 		return Account{}, err
 	}
