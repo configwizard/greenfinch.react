@@ -107,15 +107,15 @@ func main() {
 		//stringTx := wallet.Uint160ToString(transactionID)
 		log.Println("transaction made txID ", transactionID)
 		os.Exit(0)
-	default:
-		if *walletPath == "" {
-			*walletPath = "./wallets/wallet.json"
-		}
-		log.Println("starting gaspump. Using wallet at", *walletPath)
+	//default:
+	//	if *walletPath == "" {
+	//		*walletPath = "./wallets/wallet.json"
+	//	}
+	//	log.Println("starting gaspump. Using wallet at", *walletPath)
 	}
 //https://http.testnet.fs.neo.org/CONTAINER_ID/OBJECT_ID
 	//createContainerOnStart
-	manager, err := manager.NewFileSystemManager(*walletPath, *walletAddr, *walletPassword, false)
+	manager, err := manager.NewFileSystemManager(false)
 	if err != nil {
 		log.Fatal("can't create a manager", err)
 	}

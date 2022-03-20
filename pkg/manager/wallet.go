@@ -96,6 +96,9 @@ func (m *Manager) NewWallet(password string) error {
 		Description: "You will need to transfer the wallet some gas. Then you will need to transfer to NeoFS. Your wallet",
 	}
 	m.MakeToast(NewToastMessage(&tmp))
+	if _, err = m.Client(); err != nil {
+		return err
+	}
 	runtime.EventsEmit(m.ctx, "fresh-wallet", nil)
 	return nil
 }
@@ -146,6 +149,10 @@ func (m *Manager) LoadWallet(password string) error {
 		Description: "Using wallet "  + w.Accounts[0].Address,
 	}
 	m.MakeToast(NewToastMessage(&tmp))
+
+	if _, err = m.Client(); err != nil {
+		return err
+	}
 	runtime.EventsEmit(m.ctx, "fresh-wallet", nil)
 	return nil
 }

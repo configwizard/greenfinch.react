@@ -4,17 +4,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/configwizard/gaspump-api/pkg/client"
 	"math/rand"
 	"strings"
 	"time"
 
-
-	"github.com/configwizard/gaspump-api/pkg/client"
 	"github.com/configwizard/gaspump-api/pkg/filesystem"
 	"github.com/configwizard/gaspump-api/pkg/wallet"
+	wal "github.com/nspcc-dev/neo-go/pkg/wallet"
 	neofscli "github.com/nspcc-dev/neofs-sdk-go/client"
 	obj "github.com/nspcc-dev/neofs-sdk-go/object"
-	wal "github.com/nspcc-dev/neo-go/pkg/wallet"
 	"github.com/patrickmn/go-cache"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
@@ -104,21 +103,12 @@ func (m *Manager) Search(search string) ([]filesystem.Element, error) {
 	}
 	return results, nil
 }
-func NewFileSystemManager(walletPath, walletAddr, password string, DEBUG bool) (*Manager, error) {
-	// First obtain client credentials: private key of request owner
-	key, err := wallet.GetCredentialsFromPath(walletPath, walletAddr, password)
-	if err != nil {
-		return &Manager{}, err
-	}
-	cli, err := client.NewClient(key, client.TESTNET)
-	if err != nil {
-		return &Manager{}, err
-	}
+func NewFileSystemManager(DEBUG bool) (*Manager, error) {
 
 	return &Manager{
 		//walletPath: walletPath,
 		//walletAddr: walletAddr,
-		fsCli:      cli,
+		fsCli:      nil,
 		//key:        key, //this is holding the private key in memory - not good?
 		c:          cache.New(1*time.Minute, 10*time.Minute),
 		ctx:        nil,
@@ -126,8 +116,18 @@ func NewFileSystemManager(walletPath, walletAddr, password string, DEBUG bool) (
 	}, nil
 }
 
-func (m Manager) Client() *neofscli.Client {
-	return m.fsCli
+// todo we will want to have things dependent on the wallet controlled elsewhere with singletons and no other way of getting the value
+// todo remove the need to pass the private key to the api (usually for getOwnerID - however this should be passed into the backend
+func (m Manager) Client() (*neofscli.Client, error) {
+
+	if m.fsCli == nil {
+		cli, err := client.NewClient(&m.wallet.Accounts[0].PrivateKey().PrivateKey, client.TESTNET)
+		if err != nil {
+			return nil, err
+		}
+		m.fsCli = cli
+	}
+	return m.fsCli, nil
 }
 
 type Account struct {
@@ -168,7 +168,12 @@ func (m *Manager) GetAccountInformation() (Account, error) {
 	if err != nil {
 		return Account{}, err
 	}
-	result, err := m.fsCli.GetBalance(m.ctx, id)
+
+	fsCli, err := m.Client()
+	if err != nil {
+		return Account{}, err
+	}
+	result, err := fsCli.GetBalance(m.ctx, id)
 	if err != nil {
 		return Account{}, err
 	}

@@ -2,7 +2,7 @@ import React from "react";
 
 //Mocker/Manager
 import {getAccountInformation} from "../../manager/manager.js";
-import {deleteContainer, listContainers} from "../../manager/containers.js";
+import {createContainer, deleteContainer, listContainers} from "../../manager/containers.js";
 import {getObject, listObjects, uploadObject} from "../../manager/objects.js";
 import {useModal} from "../compModals/compModalContext";
 // import CompModalBrand from "../compModals/compModalBrand";
@@ -14,6 +14,7 @@ import ControlBar from "../viewOptions";
 import ContainerView from "../viewContainers";
 import ObjectView, {FileUpload} from "../viewObjects";
 import CompModalBrand from "../compModals/compModalBrand";
+import {Form} from "react-bootstrap";
 // import {listContainers} from "../../mocker/containers.js";
 
 class TabVisual extends React.Component {
@@ -171,16 +172,18 @@ class TabVisual extends React.Component {
                             title={"Get started"}>
                             <div className="d-flex flex-column align-items-center">
                                 <p>Welcome to Greenfinch, to get started you will need a wallet.</p>
+                                <p><b>Please first, enter the password you would like to use for the wallet</b></p>
+                                <Form.Control id="walletPassword" type="password" placeholder="strong-password" />
                                 <button
                                     type="button"
                                     className="atmButtonSimple"
-                                    onClick={async () => {await newWallet("password")}}>
+                                    onClick={async () => {await newWallet(document.getElementById("walletPassword").value)}}>
                                     <i className="fas fa-star-shooting"/>Create new wallet
                                 </button>
                                 <button
                                     type="button"
                                     className="atmButtonText"
-                                    onClick={async () => {await loadWallet("password")}}>
+                                    onClick={async () => {await loadWallet(document.getElementById("walletPassword").value)}}>
                                     <i className="fas fa-upload"/>Load existing wallet
                                 </button>
                             </div>

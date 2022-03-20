@@ -1,7 +1,7 @@
 interface go {
   "manager": {
     "Manager": {
-		Client():Promise<Client>
+		Client():Promise<Client|Error>
 		CreateContainer(arg1:string):Promise<Error>
 		Delete(arg1:string,arg2:string):Promise<Error>
 		DeleteContainer(arg1:string):Promise<Error>

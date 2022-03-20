@@ -181,7 +181,11 @@ func (m Manager) RetrieveFileSystem() ([]filesystem.Element, error) {
 		return []filesystem.Element{}, err
 	}
 	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
-	el, err := filesystem.GenerateFileSystem(m.ctx, m.fsCli, &tmpKey)
+	fsCli, err := m.Client()
+	if err != nil {
+		return []filesystem.Element{}, err
+	}
+	el, err := filesystem.GenerateFileSystem(m.ctx, fsCli, &tmpKey)
 	if err != nil {
 		tmp := NewToastMessage(&ToastMessage{
 			Title:       "Error updating filesystem",
@@ -200,9 +204,13 @@ func (m Manager) RetrieveContainerFileSystem(containerID string) (filesystem.Ele
 		return filesystem.Element{}, err
 	}
 	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
+	fsCli, err := m.Client()
+	if err != nil {
+		return filesystem.Element{}, err
+	}
 	contID := cid.New()
 	contID.Parse(containerID)
-	fs := filesystem.GenerateFileSystemFromContainer(m.ctx, m.fsCli, &tmpKey, contID)
+	fs := filesystem.GenerateFileSystemFromContainer(m.ctx, fsCli, &tmpKey, contID)
 	if m.DEBUG {
 		DebugSaveJson("RetrieveContainerFileSystem.json", fs)
 	}

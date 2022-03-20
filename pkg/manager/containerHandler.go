@@ -30,7 +30,11 @@ func (m *Manager) listContainerIDs() ([]*cid.ID, error) {
 		return []*cid.ID{}, err
 	}
 	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
-	ids, err := container2.List(m.ctx, m.fsCli, &tmpKey)
+	c, err := m.Client()
+	if err != nil {
+		return []*cid.ID{}, err
+	}
+	ids, err := container2.List(m.ctx, c, &tmpKey)
 	log.Printf("%v\r\n", ids)
 	return ids, err
 }
@@ -54,7 +58,11 @@ func (m *Manager) ListContainers() ([]filesystem.Element, error) {
 		return []filesystem.Element{}, err
 	}
 	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
-	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, &tmpKey)
+	c, err := m.Client()
+	if err != nil {
+		return []filesystem.Element{}, err
+	}
+	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, c, &tmpKey)
 	if err != nil {
 		return []filesystem.Element{}, err
 	}
@@ -64,14 +72,14 @@ func (m *Manager) ListContainers() ([]filesystem.Element, error) {
 	}
 	var containers []filesystem.Element
 	for _, v := range ids {
-		tmpContainer := filesystem.PopulateContainerList(m.ctx, m.fsCli, v)
-		list, err := object.ListObjects(m.ctx, m.fsCli, v, nil, sessionToken)
+		tmpContainer := filesystem.PopulateContainerList(m.ctx, c, v)
+		list, err := object.ListObjects(m.ctx, c, v, nil, sessionToken)
 		if err != nil {
 			tmpContainer.Errors = append(tmpContainer.Errors, err)
 			continue
 		}
 		//is this inefficient? the expensive part is the request, but we are throwing away the whole object
-		size, _ := filesystem.GenerateObjectStruct(m.ctx, m.fsCli, nil, sessionToken, list, v)
+		size, _ := filesystem.GenerateObjectStruct(m.ctx, c, nil, sessionToken, list, v)
 		tmpContainer.Size = size
 		containers = append(containers, tmpContainer)
 	}
@@ -88,7 +96,11 @@ func (m *Manager) ListContainersAsync() error {
 		return err
 	}
 	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
-	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, &tmpKey)
+	c, err := m.Client()
+	if err != nil {
+		return err
+	}
+	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, c, &tmpKey)
 	if err != nil {
 		return err
 	}
@@ -109,15 +121,19 @@ func (m *Manager) ListContainersAsync() error {
 }
 
 func (m *Manager) prepareAndAppendContainer(vID *cid.ID, sessionToken *session.Token) {
-
-	tmpContainer := filesystem.PopulateContainerList(m.ctx, m.fsCli, vID)
-	list, err := object.ListObjects(m.ctx, m.fsCli, vID, nil, sessionToken)
+	c, err := m.Client()
+	if err != nil {
+		log.Fatal("SERIOUS ERROR , could not create client - in Go routine", err)
+		return
+	}
+	tmpContainer := filesystem.PopulateContainerList(m.ctx, c, vID)
+	list, err := object.ListObjects(m.ctx, c, vID, nil, sessionToken)
 	if err != nil {
 		tmpContainer.Errors = append(tmpContainer.Errors, err)
 		return
 	}
 	//is this inefficient? the expensive part is the request, but we are throwing away the whole object
-	size, _ := filesystem.GenerateObjectStruct(m.ctx, m.fsCli, nil, sessionToken, list, vID)
+	size, _ := filesystem.GenerateObjectStruct(m.ctx, c, nil, sessionToken, list, vID)
 	tmpContainer.Size = size
 	str, err := json.MarshalIndent(tmpContainer, "", "  ")
 	if err != nil {
@@ -133,7 +149,11 @@ func (m *Manager) GetContainer(id string) (*container.Container, error) {
 		fmt.Println("error parsing id", err)
 		return nil, err
 	}
-	cont, err := container2.Get(m.ctx, m.fsCli, c)
+	fcCli, err := m.Client()
+	if err != nil {
+		return nil, err
+	}
+	cont, err := container2.Get(m.ctx, fcCli, c)
 	if m.DEBUG {
 		DebugSaveJson("GetContainer.json", cont)
 	}
@@ -152,7 +172,11 @@ func (m *Manager) DeleteContainer(id string) error {
 		m.MakeToast(NewToastMessage(&tmp))
 		return err
 	}
-	resp, err := container2.Delete(m.ctx, m.fsCli, c)
+	fsCli, err := m.Client()
+	if err != nil {
+		return err
+	}
+	resp, err := container2.Delete(m.ctx, fsCli, c)
 	fmt.Printf("resp %+v\r\n", resp.Status())
 	if err != nil {
 		tmp := ToastMessage{
@@ -177,6 +201,10 @@ func (m *Manager) CreateContainer(name string) error {
 		return err
 	}
 	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
+	fsCli, err := m.Client()
+	if err != nil {
+		return err
+	}
 	log.Println("creating container with name", name)
 	attr := container.NewAttribute()
 	attr.SetKey(obj.AttributeFileName)
@@ -194,9 +222,9 @@ func (m *Manager) CreateContainer(name string) error {
         SELECT 2 FROM * AS X
         `
 		customACL := acl.BasicACL(0x0FFFCFFF)
-		id, err := container2.Create(m.ctx, m.fsCli, &tmpKey, placementPolicy, customACL, attributes)
+		id, err := container2.Create(m.ctx, fsCli, &tmpKey, placementPolicy, customACL, attributes)
 
-		sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, &tmpKey)
+		sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, fsCli, &tmpKey)
 		if err != nil {
 			fmt.Println("could not create session token")
 			return
@@ -227,7 +255,7 @@ func (m *Manager) CreateContainer(name string) error {
 				m.MakeToast(NewToastMessage(&tmp))
 				return
 			}
-			_, err := container2.Get(m.ctx, m.fsCli, id)
+			_, err := container2.Get(m.ctx, fsCli, id)
 			if err == nil {
 				tmp := ToastMessage{
 					Title:       "Container Created",

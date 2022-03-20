@@ -61,7 +61,11 @@ func (m *Manager) UploadObject(containerID, filepath string, attributes map[stri
 		return "", err
 	}
 	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
-	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, &tmpKey)
+	c, err := m.Client()
+	if err != nil {
+		return "", err
+	}
+	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, c, &tmpKey)
 	if err != nil {
 		return "", err
 	}
@@ -71,7 +75,7 @@ func (m *Manager) UploadObject(containerID, filepath string, attributes map[stri
 	}
 	cntId := new(cid.ID)
 	cntId.Parse(containerID)
-	id, err := object.UploadObject(m.ctx, m.fsCli, cntId, ownerID, attr, nil, sessionToken, ioReader)
+	id, err := object.UploadObject(m.ctx, c, cntId, ownerID, attr, nil, sessionToken, ioReader)
 	if err != nil {
 		fmt.Println("error attempting to upload", err)
 	}
@@ -84,12 +88,16 @@ func (m *Manager) GetObjectMetaData(objectID, containerID string) (*client.Objec
 		return nil, err
 	}
 	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
-	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, &tmpKey)
+	c, err := m.Client()
+	if err != nil {
+		return nil, err
+	}
+	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, c, &tmpKey)
 	if err != nil {
 		return &client.ObjectHeadRes{}, err
 	}
 	objAddress := getObjectAddress(objectID, containerID)
-	head, err := object.GetObjectMetaData(m.ctx, m.fsCli, objAddress, nil, sessionToken)
+	head, err := object.GetObjectMetaData(m.ctx, c, objAddress, nil, sessionToken)
 	if m.DEBUG {
 		DebugSaveJson("GetObjectMetaData.json", head)
 	}
@@ -101,12 +109,16 @@ func (m *Manager) Get(objectID, containerID string, writer *io.Writer) ([]byte, 
 		return []byte{}, err
 	}
 	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
-	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, &tmpKey)
+	c, err := m.Client()
+	if err != nil {
+		return nil, err
+	}
+	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, c, &tmpKey)
 	if err != nil {
 		return []byte{}, err
 	}
 	objAddress := getObjectAddress(objectID, containerID)
-	o, err := object.GetObject(m.ctx, m.fsCli, objAddress, nil, sessionToken, writer)
+	o, err := object.GetObject(m.ctx, c, objAddress, nil, sessionToken, writer)
 	if m.DEBUG {
 		DebugSaveJson("GetObject.json", o)
 	}
@@ -119,15 +131,22 @@ func (m *Manager) ListContainerObjectIDs(containerID string) ([]string, error) {
 		return []string{}, err
 	}
 	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
+	c, err := m.Client()
+	if err != nil {
+		return nil, err
+	}
 	var stringIds []string
-	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, &tmpKey)
+	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, c, &tmpKey)
 	if err != nil {
 		return stringIds, err
 	}
 	cntID := new(cid.ID)
 	cntID.Parse(containerID)
-	list, err := object.ListObjects(m.ctx, m.fsCli, cntID, nil, sessionToken)
-	filesystem.GenerateObjectStruct(m.ctx, m.fsCli, nil, sessionToken, list, cntID)
+	list, err := object.ListObjects(m.ctx, c, cntID, nil, sessionToken)
+	if err != nil {
+		return stringIds, err
+	}
+	filesystem.GenerateObjectStruct(m.ctx, c, nil, sessionToken, list, cntID)
 	for _, v := range list {
 		stringIds = append(stringIds, v.String())
 	}
@@ -146,14 +165,18 @@ func (m *Manager) ListObjectsAsync(containerID string) error {
 		return err
 	}
 	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
-	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, &tmpKey)
+	c, err := m.Client()
+	if err != nil {
+		return err
+	}
+	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, c, &tmpKey)
 	if err != nil {
 		return  err
 	}
 	cntID := new(cid.ID)
 	cntID.Parse(containerID)
 	list, err := object.ListObjects(m.ctx, m.fsCli, cntID, nil, sessionToken)
-	_, objects := filesystem.GenerateObjectStruct(m.ctx, m.fsCli, nil, sessionToken, list, cntID)
+	_, objects := filesystem.GenerateObjectStruct(m.ctx, c, nil, sessionToken, list, cntID)
 	str, err := json.MarshalIndent(objects, "", "  ")
 	if err != nil {
 		fmt.Println(err)
@@ -170,14 +193,21 @@ func (m *Manager) ListContainerPopulatedObjects(containerID string) ([]filesyste
 		return []filesystem.Element{}, err
 	}
 	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
-	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, &tmpKey)
+	c, err := m.Client()
+	if err != nil {
+		return nil, err
+	}
+	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, c, &tmpKey)
 	if err != nil {
 		return []filesystem.Element{}, err
 	}
 	cntID := new(cid.ID)
 	cntID.Parse(containerID)
-	list, err := object.ListObjects(m.ctx, m.fsCli, cntID, nil, sessionToken)
-	_, objects := filesystem.GenerateObjectStruct(m.ctx, m.fsCli, nil, sessionToken, list, cntID)
+	list, err := object.ListObjects(m.ctx, c, cntID, nil, sessionToken)
+	if err != nil {
+		return []filesystem.Element{}, err
+	}
+	_, objects := filesystem.GenerateObjectStruct(m.ctx, c, nil, sessionToken, list, cntID)
 	str, err := json.MarshalIndent(objects, "", "  ")
 	if err != nil {
 		fmt.Println(err)
@@ -194,13 +224,17 @@ func (m *Manager) Delete(objectID, containerID string) error {
 		return err
 	}
 	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
-	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, &tmpKey)
+	c, err := m.Client()
+	if err != nil {
+		return err
+	}
+	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, c, &tmpKey)
 	if err != nil {
 		fmt.Println("error getting session key", err)
 		return err
 	}
 	objAddress := getObjectAddress(objectID, containerID)
-	err = object.DeleteObject(m.ctx, m.fsCli, objAddress, nil, sessionToken)
+	err = object.DeleteObject(m.ctx, c, objAddress, nil, sessionToken)
 	if err != nil {
 		fmt.Println("error deleting object ", err)
 	}

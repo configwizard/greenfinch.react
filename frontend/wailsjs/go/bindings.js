@@ -6,7 +6,7 @@ const go = {
     "Manager": {
       /**
        * Client
-       * @returns {Promise<Client>}  - Go Type: *client.Client
+       * @returns {Promise<Client|Error>}  - Go Type: *client.Client
        */
       "Client": () => {
         return window.go.manager.Manager.Client();
