@@ -6,11 +6,8 @@ import (
 	"flag"
 	"fmt"
 	"github.com/amlwwalker/gaspump.react/pkg/manager"
-	"github.com/amlwwalker/gaspump.react/pkg/mocker"
-	"github.com/nspcc-dev/neo-go/pkg/core/native/nativenames"
-	"path"
-
 	"github.com/configwizard/gaspump-api/pkg/wallet"
+	"github.com/nspcc-dev/neo-go/pkg/core/native/nativenames"
 	client2 "github.com/nspcc-dev/neo-go/pkg/rpc/client"
 	"log"
 	"os"
@@ -122,13 +119,13 @@ func main() {
 	if err != nil {
 		log.Fatal("can't create a manager", err)
 	}
-	balance, err := manager.GetAccountInformation()
-	if err != nil {
-		fmt.Println("error retrieving neo fs balance", err)
-	} else {
-		fmt.Printf("balance: %d, precision %d\r\n", balance.NeoFS.Balance, balance.NeoFS.Precision)
-	}
-	mocker := mocker.Mocker{BasePath: path.Join("frontend", "src")} //mocker for frontend
+	//balance, err := manager.GetAccountInformation()
+	//if err != nil {
+	//	fmt.Println("error retrieving neo fs balance", err)
+	//} else {
+	//	fmt.Printf("balance: %d, precision %d\r\n", balance.NeoFS.Balance, balance.NeoFS.Precision)
+	//}
+	//mocker := mocker.Mocker{BasePath: path.Join("frontend", "src")} //mocker for frontend
 
 	//manager.PopToast()
 	// Create application with options
@@ -153,7 +150,7 @@ func main() {
 		OnShutdown:        manager.Shutdown,
 		Bind: []interface{}{
 			manager,
-			&mocker,
+			//&mocker,
 		},
 		// Windows platform specific options
 		Windows: &windows.Options{

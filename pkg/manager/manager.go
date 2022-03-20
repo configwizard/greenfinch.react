@@ -65,7 +65,7 @@ func (m *Manager) UnlockWallet(password string) error {
 func (m *Manager) Startup(ctx context.Context) {
 	// Perform your setup here
 	m.ctx = ctx
-	go m.RetrieveFileSystem()
+	//go m.RetrieveFileSystem()
 }
 
 // domReady is called after the front-end dom has been loaded
@@ -121,7 +121,7 @@ func NewFileSystemManager(walletPath, walletAddr, password string, DEBUG bool) (
 		fsCli:      cli,
 		//key:        key, //this is holding the private key in memory - not good?
 		c:          cache.New(1*time.Minute, 10*time.Minute),
-		ctx:        context.Background(),
+		ctx:        nil,
 		DEBUG:      DEBUG,
 	}, nil
 }
@@ -165,8 +165,7 @@ func (m *Manager) GetAccountInformation() (Account, error) {
 	if err != nil {
 		return Account{}, err
 	}
-	ctx := context.Background()
-	result, err := m.fsCli.GetBalance(ctx, id)
+	result, err := m.fsCli.GetBalance(m.ctx, id)
 	if err != nil {
 		return Account{}, err
 	}

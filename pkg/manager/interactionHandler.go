@@ -1,7 +1,6 @@
 package manager
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"path"
@@ -46,8 +45,7 @@ func (m *Manager) Upload(containerID string, attributes map[string]string) (stri
 	}
 	r := progress.NewReader(f)
 	go func() {
-		ctx := context.Background()
-		progressChan := progress.NewTicker(ctx, r, fs.Size(), 250*time.Millisecond)
+		progressChan := progress.NewTicker(m.ctx, r, fs.Size(), 250*time.Millisecond)
 		for p := range progressChan {
 			fmt.Printf("\r%v remaining...", p.Remaining().Round(250*time.Millisecond))
 			tmp := NewProgressMessage(&ProgressMessage{
@@ -129,8 +127,7 @@ func (m *Manager) Download(filename, objectID, containerID string) error {
 	}
 	w := progress.NewWriter(f)
 	go func() {
-		ctx := context.Background()
-		progressChan := progress.NewTicker(ctx, w, int64(metaData.Object().PayloadSize()), 250*time.Millisecond)
+		progressChan := progress.NewTicker(m.ctx, w, int64(metaData.Object().PayloadSize()), 250*time.Millisecond)
 		for p := range progressChan {
 			fmt.Printf("\r%v remaining...", p.Remaining().Round(250*time.Millisecond))
 			tmp := NewProgressMessage(&ProgressMessage{
@@ -179,7 +176,11 @@ func (m *Manager) DeleteObject(objectID, containerID string) error {
 	return err
 }
 func (m Manager) RetrieveFileSystem() ([]filesystem.Element, error) {
-	tmpKey := m.wallet.Accounts[0].PrivateKey().PrivateKey
+	tmpWallet, err := m.retrieveWallet()
+	if err != nil {
+		return []filesystem.Element{}, err
+	}
+	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
 	el, err := filesystem.GenerateFileSystem(m.ctx, m.fsCli, &tmpKey)
 	if err != nil {
 		tmp := NewToastMessage(&ToastMessage{
@@ -194,7 +195,11 @@ func (m Manager) RetrieveFileSystem() ([]filesystem.Element, error) {
 	return el, err
 }
 func (m Manager) RetrieveContainerFileSystem(containerID string) (filesystem.Element, error) {
-	tmpKey := m.wallet.Accounts[0].PrivateKey().PrivateKey
+		tmpWallet, err := m.retrieveWallet()
+	if err != nil {
+		return filesystem.Element{}, err
+	}
+	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
 	contID := cid.New()
 	contID.Parse(containerID)
 	fs := filesystem.GenerateFileSystemFromContainer(m.ctx, m.fsCli, &tmpKey, contID)

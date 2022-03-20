@@ -56,7 +56,11 @@ func (m *Manager) UploadObject(containerID, filepath string, attributes map[stri
 
 	attr = append(attr, []*obj.Attribute{timeStampAttr, fileNameAttr}...)
 
-	tmpKey := m.wallet.Accounts[0].PrivateKey().PrivateKey
+		tmpWallet, err := m.retrieveWallet()
+	if err != nil {
+		return "", err
+	}
+	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
 	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, &tmpKey)
 	if err != nil {
 		return "", err
@@ -75,7 +79,11 @@ func (m *Manager) UploadObject(containerID, filepath string, attributes map[stri
 }
 
 func (m *Manager) GetObjectMetaData(objectID, containerID string) (*client.ObjectHeadRes, error){
-	tmpKey := m.wallet.Accounts[0].PrivateKey().PrivateKey
+	tmpWallet, err := m.retrieveWallet()
+	if err != nil {
+		return nil, err
+	}
+	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
 	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, &tmpKey)
 	if err != nil {
 		return &client.ObjectHeadRes{}, err
@@ -88,7 +96,11 @@ func (m *Manager) GetObjectMetaData(objectID, containerID string) (*client.Objec
 	return head, err
 }
 func (m *Manager) Get(objectID, containerID string, writer *io.Writer) ([]byte, error){
-	tmpKey := m.wallet.Accounts[0].PrivateKey().PrivateKey
+	tmpWallet, err := m.retrieveWallet()
+	if err != nil {
+		return []byte{}, err
+	}
+	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
 	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, &tmpKey)
 	if err != nil {
 		return []byte{}, err
@@ -102,7 +114,11 @@ func (m *Manager) Get(objectID, containerID string, writer *io.Writer) ([]byte, 
 }
 
 func (m *Manager) ListContainerObjectIDs(containerID string) ([]string, error) {
-	tmpKey := m.wallet.Accounts[0].PrivateKey().PrivateKey
+	tmpWallet, err := m.retrieveWallet()
+	if err != nil {
+		return []string{}, err
+	}
+	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
 	var stringIds []string
 	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, &tmpKey)
 	if err != nil {
@@ -125,7 +141,11 @@ type TmpObjectMeta struct {
 	Objects []filesystem.Element
 }
 func (m *Manager) ListObjectsAsync(containerID string) error {
-	tmpKey := m.wallet.Accounts[0].PrivateKey().PrivateKey
+		tmpWallet, err := m.retrieveWallet()
+	if err != nil {
+		return err
+	}
+	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
 	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, &tmpKey)
 	if err != nil {
 		return  err
@@ -145,7 +165,11 @@ func (m *Manager) ListObjectsAsync(containerID string) error {
 	return nil
 }
 func (m *Manager) ListContainerPopulatedObjects(containerID string) ([]filesystem.Element, error) {
-	tmpKey := m.wallet.Accounts[0].PrivateKey().PrivateKey
+		tmpWallet, err := m.retrieveWallet()
+	if err != nil {
+		return []filesystem.Element{}, err
+	}
+	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
 	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, &tmpKey)
 	if err != nil {
 		return []filesystem.Element{}, err
@@ -165,7 +189,11 @@ func (m *Manager) ListContainerPopulatedObjects(containerID string) ([]filesyste
 	return objects, nil
 }
 func (m *Manager) Delete(objectID, containerID string) error {
-	tmpKey := m.wallet.Accounts[0].PrivateKey().PrivateKey
+		tmpWallet, err := m.retrieveWallet()
+	if err != nil {
+		return err
+	}
+	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
 	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, m.fsCli, &tmpKey)
 	if err != nil {
 		fmt.Println("error getting session key", err)
