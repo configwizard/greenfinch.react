@@ -42,12 +42,16 @@ class App extends React.Component {
     }
     async componentDidMount() {
         //const resp = await retrieveFullFileSystem()
-        const account = await getAccountInformation()
-        this.setState({account})
+        // const account = await getAccountInformation()
+        // this.setState({account})
     }
     fireToast(message) {
         console.log("making toast with ", message)
         window.go.manager.Manager.MakeToast(message)
+    }
+
+    setStatusAccount = async (account) => {
+        await this.setState({account})
     }
 
     render() {
@@ -60,7 +64,7 @@ class App extends React.Component {
                 </section>
                 <div className="container-fluid">
                     <section className="orgMainJSON">
-                        <TabVisual></TabVisual>
+                        <TabVisual setStatusAccount={this.setStatusAccount}></TabVisual>
                     </section>
                     <CompToast autoDelete={true} autoDeleteTime={3000}></CompToast>
                     <CompProgress></CompProgress>

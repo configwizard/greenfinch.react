@@ -148,7 +148,7 @@ func (m *Manager) retrieveWallet() (*wal.Wallet, error) {
 			Description: "Please select a wallet",
 		})
 		m.MakeToast(tmp)
-		runtime.EventsEmit(m.ctx, "select-wallet", "sending message - no wallet yet selected")
+		runtime.EventsEmit(m.ctx, "select_wallet", "sending message - no wallet yet selected")
 		return nil, NotFound
 	}
 	return m.wallet, nil

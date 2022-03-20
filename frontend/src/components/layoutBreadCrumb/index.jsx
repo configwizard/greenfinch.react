@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-
 import CompWallet from "../compWallet";
 import Dropdown from "../dropdown";
 import {topUpNeoFS} from "../../manager/manager.js";
+
 function BreadCrumb(props) {
+
     const [show, setShow] = useState(false)
     const selectedContainer = props.container == null ? "" : props.container.containerName
     const selectedObject = props.object == null ? "" : props.object.objectName
@@ -20,7 +21,9 @@ function BreadCrumb(props) {
         const result = topUpNeoFS(amount)
         console.log(result)
     }
+
     return (
+
         <div className="molBlockBread d-flex align-items-center">
             <div className="atmBlockBread">
                 {/*<span className="atmBreadWallet"><i className="fas fa-lg fa-wallet"/>{props.walletAddress}</span>*/}
@@ -29,7 +32,7 @@ function BreadCrumb(props) {
             <div className="ms-auto">
                 <button type="button" className="atmButtonIconClean utButtonWallet" onClick={() => setShow(true)}>
                     <i className="far fa-wallet" />
-                    <CompWallet onClose={() => setShow(false)} show={show} account={props.account} topUpWallet={topUpWallet}></CompWallet>
+                    <CompWallet  onClose={() => setShow(false)} show={show} account={props.account} topUpWallet={topUpWallet}></CompWallet>
                 </button>
                 {/*
                     <button type="button" className="atmButtonIconClean" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"><i className="far fa-cog" /></button>

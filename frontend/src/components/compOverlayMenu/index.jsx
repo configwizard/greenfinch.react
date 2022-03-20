@@ -31,7 +31,7 @@ function CompOverlayMenu(props) {
                                     buttonTextPrimary={"Yes"} 
                                     buttonTextSecondary={"No"} 
                                     secondaryClicked={async () => unSetModal()} 
-                                    primaryClicked={props.onDelete}>
+                                    primaryClicked={() => {props.onDelete(); unSetModal()}}>
                                         <p>Are you sure you want to delete this item?</p>
                                 </CompModalStandard>)
                             }}>

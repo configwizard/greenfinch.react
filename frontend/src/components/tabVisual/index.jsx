@@ -4,22 +4,35 @@ import React from "react";
 import {getAccountInformation} from "../../manager/manager.js";
 import {deleteContainer, listContainers} from "../../manager/containers.js";
 import {getObject, listObjects, uploadObject} from "../../manager/objects.js";
-
+import {useModal} from "../compModals/compModalContext";
+// import CompModalBrand from "../compModals/compModalBrand";
+import NewWalletModal from "../compModals/compModalNewWallet"
+import {newWallet, loadWallet} from "../../manager/manager"
 //Components
 import BreadCrumb from "../layoutBreadCrumb";
 import ControlBar from "../viewOptions";
 import ContainerView from "../viewContainers";
 import ObjectView, {FileUpload} from "../viewObjects";
+import CompModalBrand from "../compModals/compModalBrand";
 // import {listContainers} from "../../mocker/containers.js";
 
 class TabVisual extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {containerList: [], objectList: [], account: {}, selectedObject: null, selectedContainer: null, viewMode: "grid", objectsLoaded: false};
+        this.state = {containerList: [], objectList: [], account: null, selectedObject: null, selectedContainer: null, viewMode: "grid", objectsLoaded: false, requestNewWallet: false};
     }
     async componentDidMount() {
+
         const account = await getAccountInformation()
-        this.setState({account})
+        if (account) {
+            console.log("fresh wallet")
+            await this.props.setStatusAccount(account)
+            await this.setState({... this.state, account, requestNewWallet: false})
+            await listContainers()
+
+
+            // await this.onFreshWallet()
+        }
         // listContainers()
         window.runtime.EventsOn("appendContainer", async (container) => {
             let containerList = this.state.containerList
@@ -41,8 +54,32 @@ class TabVisual extends React.Component {
             const objectList = await listObjects(this.state.selectedContainer.containerID) || []//list contents of a container
             await this.setState({...this.state, objectList})
         })
+        // const [chooseWallet, setChooseWallet] = useState(false)
+        window.runtime.EventsOn("select_wallet", async (title) => {
+            // if (this.state.requestNewWallet) {
+            //     return
+            // }
+            //open new wallet window
+            console.log("requesting wallet select ", title)
+            try {
+                console.log("setting modal")
+                await this.setState({... this.state, requestNewWallet: true})
+            } catch (e) {
+                console.log("error setting modal ", e)
+            }
+        })
+        window.runtime.EventsOn("fresh-wallet", async (title) => {
+            await this.onFreshWallet()
+        })
     }
 
+    onFreshWallet = async() => {
+        console.log("fresh wallet")
+        await this.setState({... this.state, requestNewWallet: false})
+        await listContainers()
+        const account = await getAccountInformation()
+        this.setState({account})
+    }
     onSelected = async (selected) => {
         console.dir(selected)
     }
@@ -121,11 +158,38 @@ class TabVisual extends React.Component {
         }
     }
     render() {
+        if (this.state.requestNewWallet) {
+            return (<div className="col-12">
+                <div className="orgContainersGrid">
+                    <div className="row">
+                        <CompModalBrand
+                            title={"Get started"}>
+                            <div className="d-flex flex-column align-items-center">
+                                <p>Welcome to Greenfinch, to get started you will need a wallet.</p>
+                                <button
+                                    type="button"
+                                    className="atmButtonSimple"
+                                    onClick={async () => {await newWallet("password")}}>
+                                    <i className="fas fa-star-shooting"/>Create new wallet
+                                </button>
+                                <button
+                                    type="button"
+                                    className="atmButtonText"
+                                    onClick={async () => {await loadWallet("password")}}>
+                                    <i className="fas fa-upload"/>Load existing wallet
+                                </button>
+                            </div>
+                        </CompModalBrand>
+                        {/*<NewWalletModal requestNewWallet={this.state.requestNewWallet} containerList={this.state.containerList} onDelete={this.onContainerDelete} viewMode={this.state.viewMode} onContainerSelection={this.onContainerSelection}></NewWalletModal>*/}
+                    </div>
+                </div>
+            </div>)
+        }
         return (
             <section className="orgViewVisual">
                 <div className="row">
                     <div className="col-12">
-                        <BreadCrumb account={this.state.account} resetBreadcrumb={this.resetBreadcrumb} container={this.state.selectedContainer} object={this.state.selectedObject}></BreadCrumb>
+                        <BreadCrumb requestNewWallet={this.state.requestNewWallet} account={this.state.account} resetBreadcrumb={this.resetBreadcrumb} container={this.state.selectedContainer} object={this.state.selectedObject}></BreadCrumb>
                     </div>
                 </div>
                 <div className="row">
