@@ -142,9 +142,9 @@ type Account struct {
 func (m *Manager) retrieveWallet() (*wal.Wallet, error) {
 	if m.wallet == nil {
 		tmp := NewToastMessage(&ToastMessage{
-			Title:       "Wallet error",
-			Type:        "error",
-			Description: "You must have selected a wallet",
+			Title:       "Lets get started",
+			Type:        "info",
+			Description: "Please select a wallet",
 		})
 		m.MakeToast(tmp)
 		return nil, errors.New("no wallet selected")
@@ -154,7 +154,6 @@ func (m *Manager) retrieveWallet() (*wal.Wallet, error) {
 }
 
 func (m *Manager) GetAccountInformation() (Account, error) {
-
 	w, err := m.retrieveWallet()
 	if err != nil {
 		return Account{}, err

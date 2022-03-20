@@ -17,12 +17,15 @@ interface go {
 		ListContainers():Promise<Array<Element>|Error>
 		ListContainersAsync():Promise<Error>
 		ListObjectsAsync(arg1:string):Promise<Error>
+		LoadWallet(arg1:string):Promise<Error>
 		MakeToast(arg1:ToastMessage):Promise<void>
+		NewWallet(arg1:string):Promise<Error>
 		RetrieveContainerFileSystem(arg1:string):Promise<Element|Error>
 		RetrieveFileSystem():Promise<Array<Element>|Error>
 		Search(arg1:string):Promise<Array<Element>|Error>
 		SendSignal(arg1:string,arg2:number):Promise<void>
 		SetProgressPercentage(arg1:ProgressMessage):Promise<void>
+		TopUpNeoWallet(arg1:number):Promise<string|Error>
 		UnlockWallet(arg1:string):Promise<Error>
 		Upload(arg1:string,arg2:any):Promise<string|Error>
 		UploadObject(arg1:string,arg2:string,arg3:any,arg4:Reader):Promise<string|Error>

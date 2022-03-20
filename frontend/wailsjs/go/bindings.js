@@ -135,12 +135,28 @@ const go = {
         return window.go.manager.Manager.ListObjectsAsync(arg1);
       },
       /**
+       * LoadWallet
+       * @param {string} arg1 - Go Type: string
+       * @returns {Promise<Error>}  - Go Type: error
+       */
+      "LoadWallet": (arg1) => {
+        return window.go.manager.Manager.LoadWallet(arg1);
+      },
+      /**
        * MakeToast
        * @param {ToastMessage} arg1 - Go Type: manager.ToastMessage
        * @returns {Promise<void>} 
        */
       "MakeToast": (arg1) => {
         return window.go.manager.Manager.MakeToast(arg1);
+      },
+      /**
+       * NewWallet
+       * @param {string} arg1 - Go Type: string
+       * @returns {Promise<Error>}  - Go Type: error
+       */
+      "NewWallet": (arg1) => {
+        return window.go.manager.Manager.NewWallet(arg1);
       },
       /**
        * RetrieveContainerFileSystem
@@ -181,6 +197,14 @@ const go = {
        */
       "SetProgressPercentage": (arg1) => {
         return window.go.manager.Manager.SetProgressPercentage(arg1);
+      },
+      /**
+       * TopUpNeoWallet
+       * @param {number} arg1 - Go Type: float64
+       * @returns {Promise<string|Error>}  - Go Type: string
+       */
+      "TopUpNeoWallet": (arg1) => {
+        return window.go.manager.Manager.TopUpNeoWallet(arg1);
       },
       /**
        * UnlockWallet
