@@ -42,8 +42,8 @@ class App extends React.Component {
     }
     async componentDidMount() {
         //const resp = await retrieveFullFileSystem()
-        // const account = await getAccountInformation()
-        // this.setState({account})
+        const account = await getAccountInformation()
+        this.setState({account})
     }
     fireToast(message) {
         console.log("making toast with ", message)

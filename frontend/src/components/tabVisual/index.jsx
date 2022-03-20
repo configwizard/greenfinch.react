@@ -23,20 +23,9 @@ class TabVisual extends React.Component {
     }
     async componentDidMount() {
 
-        const account = await getAccountInformation()
-        if (account) {
-            console.log("fresh wallet")
-            await this.props.setStatusAccount(account)
-            await this.setState({... this.state, account, requestNewWallet: false})
-            await listContainers()
-
-
-            // await this.onFreshWallet()
-        }
-        // listContainers()
         window.runtime.EventsOn("appendContainer", async (container) => {
             let containerList = this.state.containerList
-			console.log("new container added", container)
+            console.log("new container added", container)
             containerList.push(container)
             await this.setState({...this.state, containerList})
         })
@@ -50,7 +39,7 @@ class TabVisual extends React.Component {
             await this.setState(this.setState({...this.state, containerList: []}))
         })
         window.runtime.EventsOn("freshUpload", async (value) => {
-			console.log("fresh objects made", value)
+            console.log("fresh objects made", value)
             const objectList = await listObjects(this.state.selectedContainer.containerID) || []//list contents of a container
             await this.setState({...this.state, objectList})
         })
@@ -63,7 +52,7 @@ class TabVisual extends React.Component {
             console.log("requesting wallet select ", title)
             try {
                 console.log("setting modal")
-                await this.setState({... this.state, requestNewWallet: true})
+                await this.setState({...this.state, requestNewWallet: true})
             } catch (e) {
                 console.log("error setting modal ", e)
             }
@@ -71,6 +60,22 @@ class TabVisual extends React.Component {
         window.runtime.EventsOn("fresh-wallet", async (title) => {
             await this.onFreshWallet()
         })
+        try {
+            const account = await getAccountInformation()
+            console.log("account", account)
+            if (account) {
+                console.log("fresh wallet")
+                await this.props.setStatusAccount(account)
+                await this.setState({...this.state, account, requestNewWallet: false})
+                await listContainers()
+
+
+                // await this.onFreshWallet()
+            }
+            await listContainers()
+        } catch(e) {
+            console.log(e)
+        }
     }
 
     onFreshWallet = async() => {
