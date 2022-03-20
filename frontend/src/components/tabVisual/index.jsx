@@ -20,6 +20,7 @@ class TabVisual extends React.Component {
     async componentDidMount() {
         const account = await getAccountInformation()
         this.setState({account})
+        // listContainers()
         window.runtime.EventsOn("appendContainer", async (container) => {
             let containerList = this.state.containerList
 			console.log("new container added", container)
@@ -40,7 +41,6 @@ class TabVisual extends React.Component {
             const objectList = await listObjects(this.state.selectedContainer.containerID) || []//list contents of a container
             await this.setState({...this.state, objectList})
         })
-        listContainers()
     }
 
     onSelected = async (selected) => {
