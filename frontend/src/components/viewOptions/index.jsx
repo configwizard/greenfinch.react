@@ -5,6 +5,8 @@ import {useModal} from "../compModals/compModalContext";
 import CompModalStandard from "../compModals/compModalStandard";
 import CompModalBrand from "../compModals/compModalBrand";
 
+import {newWallet, loadWallet} from "../../manager/manager"
+
 function ControlBar({containers, selectedContainer, onSelected, changeView, viewMode, resetBreadcrumb}) {
     console.log("containerList", containers)
     const { setModal, unSetModal } = useModal()
@@ -33,13 +35,13 @@ function ControlBar({containers, selectedContainer, onSelected, changeView, view
                                             <button 
                                                 type="button" 
                                                 className="atmButtonSimple"
-                                                onClick="">
+                                                onClick={() => newWallet("password")}>
                                                     <i className="fas fa-star-shooting"/>Create new wallet
                                             </button>
                                             <button 
                                                 type="button" 
                                                 className="atmButtonText"
-                                                onClick="">
+                                                onClick={() => loadWallet("password")}>
                                                     <i className="fas fa-upload"/>Load existing wallet
                                             </button>
                                         </div>

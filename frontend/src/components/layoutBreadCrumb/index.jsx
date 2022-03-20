@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import CompWallet from "../compWallet";
 import Dropdown from "../dropdown";
-
+import {topUpNeoFS} from "../../manager/manager.js";
 function BreadCrumb(props) {
     const [show, setShow] = useState(false)
     const selectedContainer = props.container == null ? "" : props.container.containerName
@@ -13,6 +13,13 @@ function BreadCrumb(props) {
         window.location.reload(false);
     }
 
+    function topUpWallet(amount) {
+        console.log("top up amount", amount)
+        alert("topping up amount " + amount)
+
+        const result = topUpNeoFS(amount)
+        console.log(result)
+    }
     return (
         <div className="molBlockBread d-flex align-items-center">
             <div className="atmBlockBread">
@@ -22,7 +29,7 @@ function BreadCrumb(props) {
             <div className="ms-auto">
                 <button type="button" className="atmButtonIconClean utButtonWallet" onClick={() => setShow(true)}>
                     <i className="far fa-wallet" />
-                    <CompWallet onClose={() => setShow(false)} show={show} account={props.account}></CompWallet>
+                    <CompWallet onClose={() => setShow(false)} show={show} account={props.account} topUpWallet={topUpWallet}></CompWallet>
                 </button>
                 {/*
                     <button type="button" className="atmButtonIconClean" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"><i className="far fa-cog" /></button>
