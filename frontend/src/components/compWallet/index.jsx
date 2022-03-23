@@ -7,7 +7,6 @@ const CompWallet = props => {
         return null
     }
 
-    console.log("props.account", props.account)
     if (
         (props.account.nep17 === undefined) ||
         (props.account.nep17.GAS === undefined) ||
@@ -17,8 +16,8 @@ const CompWallet = props => {
         return(<div>Waiting...</div>)
     }
     //TODO: Don't think you need Number()
-    let b = Number((props.account.neofs.balance));
-    let p = Number((props.account.neofs.precision));
+    let b = props.account.neofs.balance || 0.0;
+    let p = props.account.neofs.precision || 8;
     let m = Math.pow(10,p);
     let neoFSBalance = Number(b/m).toFixed(4);
 

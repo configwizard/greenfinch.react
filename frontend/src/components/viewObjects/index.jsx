@@ -2,13 +2,39 @@ import React  from "react";
 import Moment from "react-moment";
 import ByteConverter from "byte-converter-react";
 
+import {ObjectGrid, ObjectRow} from "./object"
+
 // import JSONView from 'react-json-view';
 
-function ObjectView({objectList, onObjectSelection, objectsLoaded, viewMode}) {
+function ObjectView({onDelete, onObjectSelection, viewMode, objectList}) {
+    /* what actually props looks like
+        props = {
+            onObjectSelection = fnuction....
+            onDelete = function...
+        }
+    
+        oldschool extract children:
+        const onDelete = props.onDelete
+        const onObjectSelection = props.onObjectSelection
+        
+        new school:
+        const {onDelete, onObjectSelection} = props
+   */
     console.log("objectList", objectList)
 
     if (viewMode === "grid") {
         return (
+            <div id="objectGridView" className="row">
+                {objectList.map((item, i) =>
+                    <div className="col-6 col-lg-3 col-xl-2" key={i}>
+                        <div className="molButtonGrid">
+                            <ObjectGrid onDelete={() => {onDelete(item.id)}} onObjectSelection={onObjectSelection} item={item}></ObjectGrid>
+                        </div>
+                    </div>
+                )}
+            </div>
+        )
+        /* return (
             <>
                 {objectsLoaded && objectList.length > 0 ? objectList.map((item,i) =>
                     <div className="col-6 col-lg-3 col-xl-2" key={i}>
@@ -22,13 +48,22 @@ function ObjectView({objectList, onObjectSelection, objectsLoaded, viewMode}) {
                             </button>
                         </div>
                     </div>
-                   /* Add a loading component here, otherwise 'no objects' show */
+                   /* Add a loading component here, otherwise 'no objects' show
                 ) : objectsLoaded ? <div className="atmStatusSmall"><i className="fas fa-exclamation-triangle"/>&nbsp;There are no objects in this container.</div> : <div className="utLoading"><i className="fad fa-spinner fa-spin"/>Loading...</div>}
             </>           
-        )
+        ) */
     } else {
         return (
-            <>
+            <div className="row">
+                {objectList.map((item, i) =>
+                    <div className="col-12" key={i}> 
+                        <div className="molButtonRow">
+                            <ObjectRow onDelete={() => {onDelete(item.id)}} onObjectSelection={onObjectSelection} item={item}></ObjectRow>
+                        </div>
+                    </div>
+                )}
+            </div>
+           /*  <>
                 {objectList.length > 0 ? objectList.map((item,i) =>
                     <div className="col-12" key={i}>
                         <div className="molButtonRow">
@@ -45,13 +80,13 @@ function ObjectView({objectList, onObjectSelection, objectsLoaded, viewMode}) {
                                 <div className="atmRowList"><ByteConverter suffix inUnit="B" outUnit="KB">{item.size}</ByteConverter></div>
                                 <div className="atmRowList"><Moment unix format="DD MMM YY">{item.attributes.Timestamp}</Moment></div>
                                 <div className="ms-auto">
-                                    &nbsp; {/* placeholder for layout purposes */}    
+                                    &nbsp; {/* placeholder for layout purposes
                                 </div>
                             </div>
                         </div>
                     </div>
                 ) : <div className="atmStatusSmall"><i className="fas fa-exclamation-triangle"/>&nbsp;There are no objects in this container.</div>}
-            </>
+            </> */
         )
     }
 }

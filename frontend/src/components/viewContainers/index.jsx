@@ -14,7 +14,7 @@ class ContainerView extends React.Component {
                 {containerList.map((item, i) =>
                     <div className="col-6 col-lg-3 col-xl-2" key={i}>
                         <div className="molButtonGrid">
-                            <ContainerGrid type={item.type} onDelete={() => {this.props.onDelete(item.id)}} onContainerSelection={this.props.onContainerSelection} item={item}></ContainerGrid>
+                            <ContainerGrid onDelete={() => {this.props.onDelete(item.id)}} onContainerSelection={this.props.onContainerSelection} item={item}></ContainerGrid>
                         </div>
                     </div>
                 )}
@@ -26,8 +26,7 @@ class ContainerView extends React.Component {
                     {containerList.map((item, i) =>
                         <div className="col-12" key={i}>
                             <div className="molButtonRow">
-                                <ContainerRow type={item.type} onDelete={() => {this.props.onDelete(item.id)}} onContainerSelection={this.props.onContainerSelection} item={item}></ContainerRow>
-
+                                <ContainerRow onDelete={() => {this.props.onDelete(item.id)}} onContainerSelection={this.props.onContainerSelection} item={item}></ContainerRow>
                             </div>
                         </div>
                     )}
