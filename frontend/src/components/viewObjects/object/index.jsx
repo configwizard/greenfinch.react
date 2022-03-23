@@ -3,7 +3,7 @@ import CompOverlayMenu from "../../compOverlayMenu";
 import Moment from "react-moment";
 import {fileSize} from "humanize-plus";
 
-export function ContainerGrid(props) {
+export function ObjectGrid({onDelete, onObjectSelection, item}) {
     const [showMenu, setShowMenu] = useState(false)
     return (
         <>
@@ -13,20 +13,20 @@ export function ContainerGrid(props) {
                     className="atmButtonOptions ms-auto" 
                     onClick={() => setShowMenu(!showMenu)}>
                         { !showMenu ? <i className="far fa-ellipsis-h"/> : <i className="far fa-times" style={{"color":"red"}}/> }
-                        <CompOverlayMenu type={props.item.type} onDelete={props.onDelete} setShowMenu={setShowMenu} show={showMenu}></CompOverlayMenu>
+                        <CompOverlayMenu onDelete={onDelete} type={item.type} setShowMenu={setShowMenu} show={showMenu}></CompOverlayMenu>
                 </button>
             </div>
             <button 
                 type="button"
                 className="atmButtonGridContent d-flex flex-column align-items-center justify-content-between"
-                onClick={() => props.onContainerSelection(props.item.id, props.item.attributes.FileName)}>
+                onClick={() => onObjectSelection(item.id, item.attributes.FileName)}>
                     <div className="neo folder-icon"></div>
-                    <span className="atmButtonGridName">{props.item.attributes.FileName}</span>
+                    <span className="atmButtonGridName">{item.attributes.FileName}</span>
             </button>
         </>
     )
 }
-export function ContainerRow(props) {
+export function ObjectRow({onDelete, onObjectSelection, item}) { 
     const [showMenu, setShowMenu] = useState(false)
     return (
         <div className="d-flex flex-row align-items-center">
@@ -34,20 +34,20 @@ export function ContainerRow(props) {
                 <button 
                     type="button" 
                     className="atmButtonRowContent" 
-                    onClick={() => props.onContainerSelection(props.item.id, props.item.attributes.FileName)}>
+                    onClick={() => onObjectSelection(item.id, item.attributes.FileName)}>
                         <i className="fas fa-folder"/>
-                        <span className="atmButtonRowName">{props.item.attributes.FileName}</span>
+                        <span className="atmButtonRowName">{item.attributes.FileName}</span>
                 </button>
             </div>
-            <div className="atmRowList">{fileSize(props.item.size)}</div>
-            <div className="atmRowList"><Moment unix format="DD MMM YY">{props.item.attributes.Timestamp}</Moment></div>
+            <div className="atmRowList">{fileSize(item.size)}</div>
+            <div className="atmRowList"><Moment unix format="DD MMM YY">{item.attributes.Timestamp}</Moment></div>
             <div className="ms-auto">
                 <button 
                     type="button"   
                     className="atmButtonOptions" 
                     onClick={() => setShowMenu(!showMenu)}>
                         { !showMenu ? <i className="far fa-ellipsis-h"/> : <i className="far fa-times" style={{"color":"red"}}/> }
-                        <CompOverlayMenu type={props.item.type} nDelete={props.onDelete} setShowMenu={setShowMenu} show={showMenu}></CompOverlayMenu>
+                        <CompOverlayMenu onDelete={onDelete} type={item.type} setShowMenu={setShowMenu} show={showMenu}></CompOverlayMenu>
                 </button>
             </div>
         </div>
