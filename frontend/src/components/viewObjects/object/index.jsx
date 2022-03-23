@@ -13,7 +13,7 @@ export function ObjectGrid({onDelete, onObjectSelection, item}) {
                     className="atmButtonOptions ms-auto" 
                     onClick={() => setShowMenu(!showMenu)}>
                         { !showMenu ? <i className="far fa-ellipsis-h"/> : <i className="far fa-times" style={{"color":"red"}}/> }
-                        <CompOverlayMenu onDelete={onDelete} onObjectSelection={onObjectSelection} id={item.id} filename={item.attributes.FileName} type={item.type} setShowMenu={setShowMenu} show={showMenu}></CompOverlayMenu>
+                        <CompOverlayMenu onDelete={onDelete} type={item.type} setShowMenu={setShowMenu} show={showMenu}></CompOverlayMenu>
                 </button>
             </div>
             <button 

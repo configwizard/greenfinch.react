@@ -6,20 +6,7 @@ import {ObjectGrid, ObjectRow} from "./object"
 
 // import JSONView from 'react-json-view';
 
-function ObjectView({onDelete, onObjectSelection, viewMode, objectList}) {
-    /* what actually props looks like
-        props = {
-            onObjectSelection = function....
-            onDelete = function...
-        }
-    
-        oldschool extract children:
-        const onDelete = props.onDelete
-        const onObjectSelection = props.onObjectSelection
-        
-        new school:
-        const {onDelete, onObjectSelection} = props
-   */
+function ObjectView({objectList, onObjectSelection, objectsLoaded, viewMode}) {
     console.log("objectList", objectList)
 
     if (viewMode === "grid") {
@@ -56,7 +43,7 @@ function ObjectView({onDelete, onObjectSelection, viewMode, objectList}) {
         return (
             <div className="row">
                 {objectList.map((item, i) =>
-                    <div className="col-12" key={i}> 
+                    <div className="col-12" key={i}>
                         <div className="molButtonRow">
                             <ObjectRow onDelete={() => {onDelete(item.id)}} onObjectSelection={onObjectSelection} item={item}></ObjectRow>
                         </div>
