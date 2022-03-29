@@ -42,7 +42,6 @@ class TabVisual extends React.Component {
         })
         listContainers()
     }
-
     onSelected = async (selected) => {
         console.dir(selected)
     }
@@ -98,7 +97,7 @@ class TabVisual extends React.Component {
                 <div className="col-12">
                     <div className="orgContainersGrid">
                         <div className="row">
-                                <ContainerView containerList={this.state.containerList} onDelete={this.onContainerDelete} viewMode={this.state.viewMode} onContainerSelection={this.onContainerSelection}></ContainerView>
+                            <ContainerView containerList={this.state.containerList} onDelete={this.onContainerDelete} viewMode={this.state.viewMode} onContainerSelection={this.onContainerSelection}></ContainerView>
                         </div>
                     </div>
                 </div>
@@ -112,7 +111,7 @@ class TabVisual extends React.Component {
                     <div className="col-12">
                         <div className="orgContainersGrid">
                             <div className="row">
-                                    <ObjectView objectsLoaded={this.state.objectsLoaded} objectList={this.state.objectList} viewMode={this.state.viewMode} onObjectSelection={this.onObjectSelection}></ObjectView>
+                                <ObjectView objectsLoaded={this.state.objectsLoaded} objectList={this.state.objectList} viewMode={this.state.viewMode} onObjectSelection={this.onObjectSelection}></ObjectView>
                             </div>
                         </div>
                     </div>

@@ -16,8 +16,8 @@ function CompOverlayMenu(props) {
                     <nav class="nav flex-column align-items-start">
                         { props.type === "object" ?  
                             <>
-                                {/* <button className="atmButtonBase nav-link" onClick={props.view}><i className="fas fa-eye"/>&nbsp;View</button> */}
-                                <button className="atmButtonBase nav-link" onClick={props.download}><i className="fas fa-download"/>&nbsp;Download</button> 
+                                {/* <button className="atmButtonBase nav-link" onClick={props.view}><i className="fas fa-eye"/>&nbsp;View</button>*/}
+                                <button className="atmButtonBase nav-link" onClick={() => props.onObjectSelection(props.id, props.filename)}><i className="fas fa-download"/>&nbsp;Download</button> 
                             </>
                         : null }
                         {/*  <button data-bs-toggle="modal" data-bs-target="#deleteModal" type="button" className="atmButtonBase nav-link"><i className="fas fa-trash-alt"/>&nbsp;Delete</button> */}

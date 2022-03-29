@@ -6,7 +6,7 @@ const go = {
     "Manager": {
       /**
        * Client
-       * @returns {Promise<Client>}  - Go Type: *client.Client
+       * @returns {Promise<models.Client>}  - Go Type: *client.Client
        */
       "Client": () => {
         return window.go.manager.Manager.Client();
@@ -59,7 +59,7 @@ const go = {
        * Get
        * @param {string} arg1 - Go Type: string
        * @param {string} arg2 - Go Type: string
-       * @param {Writer} arg3 - Go Type: *io.Writer
+       * @param {models.Writer} arg3 - Go Type: *io.Writer
        * @returns {Promise<Array<number>|Error>}  - Go Type: []uint8
        */
       "Get": (arg1, arg2, arg3) => {
@@ -67,7 +67,7 @@ const go = {
       },
       /**
        * GetAccountInformation
-       * @returns {Promise<Account|Error>}  - Go Type: manager.Account
+       * @returns {Promise<models.Account|Error>}  - Go Type: manager.Account
        */
       "GetAccountInformation": () => {
         return window.go.manager.Manager.GetAccountInformation();
@@ -75,7 +75,7 @@ const go = {
       /**
        * GetContainer
        * @param {string} arg1 - Go Type: string
-       * @returns {Promise<Container|Error>}  - Go Type: *container.Container
+       * @returns {Promise<models.Container|Error>}  - Go Type: *container.Container
        */
       "GetContainer": (arg1) => {
         return window.go.manager.Manager.GetContainer(arg1);
@@ -84,7 +84,7 @@ const go = {
        * GetObjectMetaData
        * @param {string} arg1 - Go Type: string
        * @param {string} arg2 - Go Type: string
-       * @returns {Promise<ObjectHeadRes|Error>}  - Go Type: *client.ObjectHeadRes
+       * @returns {Promise<models.ObjectHeadRes|Error>}  - Go Type: *client.ObjectHeadRes
        */
       "GetObjectMetaData": (arg1, arg2) => {
         return window.go.manager.Manager.GetObjectMetaData(arg1, arg2);
@@ -107,14 +107,14 @@ const go = {
       /**
        * ListContainerPopulatedObjects
        * @param {string} arg1 - Go Type: string
-       * @returns {Promise<Array<Element>|Error>}  - Go Type: []filesystem.Element
+       * @returns {Promise<Array<models.Element>|Error>}  - Go Type: []filesystem.Element
        */
       "ListContainerPopulatedObjects": (arg1) => {
         return window.go.manager.Manager.ListContainerPopulatedObjects(arg1);
       },
       /**
        * ListContainers
-       * @returns {Promise<Array<Element>|Error>}  - Go Type: []filesystem.Element
+       * @returns {Promise<Array<models.Element>|Error>}  - Go Type: []filesystem.Element
        */
       "ListContainers": () => {
         return window.go.manager.Manager.ListContainers();
@@ -136,7 +136,7 @@ const go = {
       },
       /**
        * MakeToast
-       * @param {ToastMessage} arg1 - Go Type: manager.ToastMessage
+       * @param {models.ToastMessage} arg1 - Go Type: manager.ToastMessage
        * @returns {Promise<void>} 
        */
       "MakeToast": (arg1) => {
@@ -145,14 +145,14 @@ const go = {
       /**
        * RetrieveContainerFileSystem
        * @param {string} arg1 - Go Type: string
-       * @returns {Promise<Element|Error>}  - Go Type: filesystem.Element
+       * @returns {Promise<models.Element|Error>}  - Go Type: filesystem.Element
        */
       "RetrieveContainerFileSystem": (arg1) => {
         return window.go.manager.Manager.RetrieveContainerFileSystem(arg1);
       },
       /**
        * RetrieveFileSystem
-       * @returns {Promise<Array<Element>|Error>}  - Go Type: []filesystem.Element
+       * @returns {Promise<Array<models.Element>|Error>}  - Go Type: []filesystem.Element
        */
       "RetrieveFileSystem": () => {
         return window.go.manager.Manager.RetrieveFileSystem();
@@ -160,7 +160,7 @@ const go = {
       /**
        * Search
        * @param {string} arg1 - Go Type: string
-       * @returns {Promise<Array<Element>|Error>}  - Go Type: []filesystem.Element
+       * @returns {Promise<Array<models.Element>|Error>}  - Go Type: []filesystem.Element
        */
       "Search": (arg1) => {
         return window.go.manager.Manager.Search(arg1);
@@ -176,7 +176,7 @@ const go = {
       },
       /**
        * SetProgressPercentage
-       * @param {ProgressMessage} arg1 - Go Type: manager.ProgressMessage
+       * @param {models.ProgressMessage} arg1 - Go Type: manager.ProgressMessage
        * @returns {Promise<void>} 
        */
       "SetProgressPercentage": (arg1) => {
@@ -196,7 +196,7 @@ const go = {
        * @param {string} arg1 - Go Type: string
        * @param {string} arg2 - Go Type: string
        * @param {any} arg3 - Go Type: map[string]string
-       * @param {Reader} arg4 - Go Type: *io.Reader
+       * @param {models.Reader} arg4 - Go Type: *io.Reader
        * @returns {Promise<string|Error>}  - Go Type: string
        */
       "UploadObject": (arg1, arg2, arg3, arg4) => {
@@ -210,7 +210,7 @@ const go = {
       /**
        * GetAccountInformation
        * @param {string} arg1 - Go Type: string
-       * @returns {Promise<Account|Error>}  - Go Type: manager.Account
+       * @returns {Promise<models.Account|Error>}  - Go Type: manager.Account
        */
       "GetAccountInformation": (arg1) => {
         return window.go.mocker.Mocker.GetAccountInformation(arg1);
@@ -218,7 +218,7 @@ const go = {
       /**
        * ListContainerPopulatedObjects
        * @param {string} arg1 - Go Type: string
-       * @returns {Promise<Array<Element>|Error>}  - Go Type: []filesystem.Element
+       * @returns {Promise<Array<models.Element>|Error>}  - Go Type: []filesystem.Element
        */
       "ListContainerPopulatedObjects": (arg1) => {
         return window.go.mocker.Mocker.ListContainerPopulatedObjects(arg1);
@@ -226,7 +226,7 @@ const go = {
       /**
        * ListContainers
        * @param {string} arg1 - Go Type: string
-       * @returns {Promise<Array<Element>|Error>}  - Go Type: []filesystem.Element
+       * @returns {Promise<Array<models.Element>|Error>}  - Go Type: []filesystem.Element
        */
       "ListContainers": (arg1) => {
         return window.go.mocker.Mocker.ListContainers(arg1);
@@ -235,7 +235,7 @@ const go = {
        * Search
        * @param {string} arg1 - Go Type: string
        * @param {string} arg2 - Go Type: string
-       * @returns {Promise<Array<Element>|Error>}  - Go Type: []filesystem.Element
+       * @returns {Promise<Array<models.Element>|Error>}  - Go Type: []filesystem.Element
        */
       "Search": (arg1, arg2) => {
         return window.go.mocker.Mocker.Search(arg1, arg2);
