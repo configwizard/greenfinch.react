@@ -43,7 +43,7 @@ function ObjectView({objectList, onObjectSelection, objectsLoaded, viewMode}) {
         return (
             <div className="row">
                 {objectList.map((item, i) =>
-                    <div className="col-12" key={i}>
+                    <div className="col-12" key={i}> 
                         <div className="molButtonRow">
                             <ObjectRow onDelete={() => {onDelete(item.id)}} onObjectSelection={onObjectSelection} item={item}></ObjectRow>
                         </div>
