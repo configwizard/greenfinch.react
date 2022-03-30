@@ -3,7 +3,7 @@ import React from "react";
 //Mocker/Manager
 import {getAccountInformation} from "../../manager/manager.js";
 import {createContainer, deleteContainer, listContainers} from "../../manager/containers.js";
-import {getObject, listObjects, uploadObject} from "../../manager/objects.js";
+import {deleteObject, getObject, listObjects, uploadObject} from "../../manager/objects.js";
 import {useModal} from "../compModals/compModalContext";
 // import CompModalBrand from "../compModals/compModalBrand";
 import NewWalletModal from "../compModals/compModalNewWallet"
@@ -51,33 +51,21 @@ class TabVisual extends React.Component {
         })
         console.log("received wallet", this.props.account)
         await listContainers()
-        // window.runtime.EventsOn("select_wallet", async (set) => {
-        //     console.log("select_wallet response", set)
-        //     // if (this.state.requestNewWallet) {
-        //     //     return
-        //     // }
-        //     //open new wallet window
-        //     console.log("requesting wallet select ", set)
-        //     try {
-        //         if (!set) {
-        //             console.log("select_wallet ", set, " returns ", this.props.account)
-        //             //suggests we have a wallet and can attempt to get the containers etc
-        //             await listContainers()
-        //         }
-        //         console.log("setting modal")
-        //         await this.setState({...this.state, requestNewWallet: set})
-        //     } catch (e) {
-        //         console.log("error setting modal ", e)
-        //     }
-        // })
+        console.log("componentDidMount, objects", this.state.objectList)
     }
 
     onRefresh = async() => {
 
+        console.log("onRefresh, objects", this.state.objectList)
         //ROBIN!! -- uncomment this following line if you want to really refresh the app.
         // window.location.reload(false); //disable this
+        await this.setState(this.setState({...this.state, containerList: [], objectList: []}))
         await listContainers()
-        await listObjects()
+        if (this.state.selectedContainer == null) {
+            return
+        }
+        const objectList = await listObjects(this.state.selectedContainer.containerID) || []
+        await this.setState({...this.state, objectList})
     }
     onSelected = async (selected) => {
         console.dir(selected)
@@ -127,6 +115,16 @@ class TabVisual extends React.Component {
 
         await listContainers()
     }
+    onObjectDelete = async (objectId) => {
+        if (this.state.selectedContainer == null) {
+            throw new Error("cannot retrieve an object from non existent container")
+        }
+        const containerId = this.state.selectedContainer.containerID
+        let response = await deleteObject(objectId, containerId)
+        console.log("deleting object ", objectId, containerId, response)
+
+    }
+
     resetBreadcrumb = async () => {
         let state = this.state
         await this.setState({...state, objectList: [], selectedObject: null, selectedContainer: null})
@@ -151,7 +149,7 @@ class TabVisual extends React.Component {
                     <div className="col-12">
                         <div className="orgContainersGrid">
                             <div className="row">
-                                <ObjectView objectsLoaded={this.state.objectsLoaded} objectList={this.state.objectList} viewMode={this.state.viewMode} onObjectSelection={this.onObjectSelection}></ObjectView>
+                                <ObjectView objectsLoaded={this.state.objectsLoaded} onDelete={this.onObjectDelete} objectList={this.state.objectList} viewMode={this.state.viewMode} onObjectSelection={this.onObjectSelection}></ObjectView>
                             </div>
                         </div>
                     </div>

@@ -1,9 +1,13 @@
 const getAccountInformation = async () => {
+    try {
     let b = await window.go.manager.Manager.GetAccountInformation().then((balance, error) => {
         console.log(balance, error)
         return balance
     })
     return b
+    } catch(e) {
+        console.log("error topping up", e)
+    }
 }
 
 const topUpNeoFS = async (amount) => {

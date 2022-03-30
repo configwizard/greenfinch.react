@@ -159,6 +159,12 @@ func (m *Manager) LoadWallet(password string) error {
 	m.MakeToast(NewToastMessage(&tmp))
 
 	if _, err = m.Client(); err != nil {
+		tmp := ToastMessage{
+			Title:       "error retrieving clien",
+			Type:        err.Error(),
+			Description: err.Error(),
+		}
+		m.MakeToast(NewToastMessage(&tmp))
 		fmt.Println("error retrieving client: ", err)
 		return err
 	}

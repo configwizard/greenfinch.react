@@ -105,7 +105,8 @@ class App extends React.Component {
     render() {
         console.log("propogating wallet", this.state.account)
         if (!this.state.account || this.state.account.address == "") { // if true then show the selection page
-            return (<div className="col-12">
+            return (
+                <div className="col-12">
                 <div className="orgContainersGrid">
                     <div className="row">
                         <CompModalBrand
@@ -131,6 +132,7 @@ class App extends React.Component {
                         {/*<NewWalletModal requestNewWallet={this.state.requestNewWallet} containerList={this.state.containerList} onDelete={this.onContainerDelete} viewMode={this.state.viewMode} onContainerSelection={this.onContainerSelection}></NewWalletModal>*/}
                     </div>
                 </div>
+                <CompToast autoDelete={true} autoDeleteTime={3000}></CompToast>
             </div>)
         }
         return (

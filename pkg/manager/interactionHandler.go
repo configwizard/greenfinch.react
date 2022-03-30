@@ -172,8 +172,15 @@ func (m *Manager) DeleteObject(objectID, containerID string) error {
 			Description: "Deleting object failed: " + err.Error(),
 		})
 		m.MakeToast(tmp)
+		return err
 	}
-	return err
+	tmp := NewToastMessage(&ToastMessage{
+		Title:       "Object deleted",
+		Type:        "error",
+		Description: "This can take time to propogate",
+	})
+	m.MakeToast(tmp)
+	return nil
 }
 func (m Manager) RetrieveFileSystem() ([]filesystem.Element, error) {
 	tmpWallet, err := m.retrieveWallet()
