@@ -239,13 +239,13 @@ func (m *Manager) CreateContainer(name string) error {
 			return
 		}
 		tmp := ToastMessage{
-			Title:       "Container initialised",
+			Title:       "Container " + name + " initialised",
 			Type:        "info",
-			Description: "Container '" + name + "' being created",
+			Description: "Please wait up to 1 minute",
 		}
 		m.MakeToast(NewToastMessage(&tmp))
-		for i := 0; i <= 30; i++ {
-			if i == 30 {
+		for i := 0; i <= 60; i++ {
+			if i == 60 {
 				log.Printf("Timeout, containers %s was not persisted in side chain\n", id)
 				tmp := ToastMessage{
 					Title:       "Container Error",

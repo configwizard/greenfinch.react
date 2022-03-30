@@ -21,7 +21,15 @@ func (m *Manager) TopUpNeoWallet(amount float64) (string, error){
 	if err != nil {
 		return "", err
 	}
-	w.Accounts[0].Decrypt("password", w.Scrypt) //todo this line must go. Wallet must be decrypted at source - possibly with timeout for new password requirement
+	if err := m.UnlockWallet(); err != nil {
+		tmp := ToastMessage{
+			Title:       "Error unlocking wallet",
+			Type:        "error",
+			Description: err.Error(),
+		}
+		m.MakeToast(NewToastMessage(&tmp))
+		return "", err
+	}
 	cli, err := walletClient.New(m.ctx, string(wallet.RPC_TESTNET), walletClient.Options{})
 	if err != nil {
 		return "", err
@@ -70,6 +78,10 @@ func (m *Manager) NewWallet(password string) error {
 	if err != nil {
 		return err
 	}
+	if filepath == "" {
+		fmt.Println("no filepath. Bailing out")
+		return nil
+	}
 	w, err := wallet.GenerateNewSecureWallet(filepath, "", password)
 	if err != nil {
 		tmp := ToastMessage{
@@ -80,16 +92,8 @@ func (m *Manager) NewWallet(password string) error {
 		m.MakeToast(NewToastMessage(&tmp))
 		return err
 	}
+	m.password = password
 	m.wallet = w
-	if err := m.UnlockWallet(password); err != nil {
-		tmp := ToastMessage{
-			Title:       "Error unlocking wallet",
-			Type:        "error",
-			Description: err.Error(),
-		}
-		m.MakeToast(NewToastMessage(&tmp))
-		return err
-	}
 	tmp := ToastMessage{
 		Title:       "Success creating wallet: " + w.Accounts[0].Address,
 		Type:        "success",
@@ -97,9 +101,12 @@ func (m *Manager) NewWallet(password string) error {
 	}
 	m.MakeToast(NewToastMessage(&tmp))
 	if _, err = m.Client(); err != nil {
+		fmt.Println("error retrieving client: ", err)
 		return err
 	}
-	runtime.EventsEmit(m.ctx, "fresh-wallet", nil)
+	runtime.EventsEmit(m.ctx, "fresh_wallet", w.Accounts[0])
+	runtime.EventsEmit(m.ctx, "select_wallet", false)
+
 	return nil
 }
 func (m *Manager) LoadWallet(password string) error {
@@ -142,6 +149,7 @@ func (m *Manager) LoadWallet(password string) error {
 		m.MakeToast(NewToastMessage(&tmp))
 		return err
 	}
+	m.password = password
 	m.wallet = w
 	tmp := ToastMessage{
 		Title:       "Success reading wallet",
@@ -151,8 +159,10 @@ func (m *Manager) LoadWallet(password string) error {
 	m.MakeToast(NewToastMessage(&tmp))
 
 	if _, err = m.Client(); err != nil {
+		fmt.Println("error retrieving client: ", err)
 		return err
 	}
-	runtime.EventsEmit(m.ctx, "fresh-wallet", nil)
+	runtime.EventsEmit(m.ctx, "fresh_wallet", w.Accounts[0])
+	runtime.EventsEmit(m.ctx, "select_wallet", false)
 	return nil
 }

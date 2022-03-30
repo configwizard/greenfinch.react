@@ -208,11 +208,10 @@ const go = {
       },
       /**
        * UnlockWallet
-       * @param {string} arg1 - Go Type: string
        * @returns {Promise<Error>}  - Go Type: error
        */
-      "UnlockWallet": (arg1) => {
-        return window.go.manager.Manager.UnlockWallet(arg1);
+      "UnlockWallet": () => {
+        return window.go.manager.Manager.UnlockWallet();
       },
       /**
        * Upload

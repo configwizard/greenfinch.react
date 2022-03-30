@@ -6,27 +6,7 @@ const CompWallet = props => {
         return null
     }
 
-    console.log("props.account", props.account)
-    if (
-        (props.account.nep17 === undefined) ||
-        (props.account.nep17.GAS === undefined) ||
-        (props.account.nep17.GAS.meta === undefined) ||
-        (props.account.nep17.NEO === undefined)) {
-        console.log("Waiting...");
-        return(<div>Waiting...</div>)
-    }
-    //TODO: Don't think you need Number()
-    let b = Number((props.account.neofs.balance));
-    let p = Number((props.account.neofs.precision));
-    let m = Math.pow(10,p);
-    let neoFSBalance = Number(b/m).toFixed(4);
 
-    let gs = Number((props.account.nep17.GAS.amount));
-    let dp = Number((props.account.nep17.GAS.meta.decimals));
-    let ms = Math.pow(10,dp);
-    let gasBalance = Number(gs/ms).toFixed(4); //TODO: Check that this is 10 to the power...
-
-    let neoBalance = props.account.nep17.NEO.amount
     // /* Helpful: https://medium.com/tinyso/how-to-create-a-modal-component-in-react-from-basic-to-advanced-a3357a2a716a */
     return (
         <div>
@@ -50,15 +30,15 @@ const CompWallet = props => {
                         </div>
                         <div className="molWalletOption">
                             <h6 className="atmWallet">NeoFS GAS balance</h6>
-                            <span className="atmWalletNumber">{neoFSBalance}</span>
+                            <span className="atmWalletNumber">{props.account.neoFSBalance}</span>
                         </div>
                         <div className="molWalletOption">
                             <h6 className="atmWallet">Neo balance</h6>
-                            <span className="atmWalletNumber">{neoBalance}</span>
+                            <span className="atmWalletNumber">{props.account.neoBalance}</span>
                         </div>
                         <div className="molWalletOption">
                             <h6 className="atmWallet">GAS balance</h6>
-                            <span className="atmWalletNumber">{gasBalance}</span>
+                            <span className="atmWalletNumber">{props.account.gasBalance}</span>
                         </div>
                     </section>
                     <section className="orgWalletFooter">

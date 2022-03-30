@@ -1,4 +1,4 @@
-interface go {
+export interface go {
   "manager": {
     "Manager": {
 		Client():Promise<Client|Error>
@@ -26,7 +26,7 @@ interface go {
 		SendSignal(arg1:string,arg2:number):Promise<void>
 		SetProgressPercentage(arg1:ProgressMessage):Promise<void>
 		TopUpNeoWallet(arg1:number):Promise<string|Error>
-		UnlockWallet(arg1:string):Promise<Error>
+		UnlockWallet():Promise<Error>
 		Upload(arg1:string,arg2:any):Promise<string|Error>
 		UploadObject(arg1:string,arg2:string,arg3:any,arg4:Reader):Promise<string|Error>
     },

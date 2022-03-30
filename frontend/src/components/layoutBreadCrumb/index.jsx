@@ -5,14 +5,11 @@ import {topUpNeoFS} from "../../manager/manager.js";
 
 function BreadCrumb(props) {
 
+    console.log("breadcrumb received wallet ", props.account)
     const [show, setShow] = useState(false)
     const selectedContainer = props.container == null ? "" : props.container.containerName
     const selectedObject = props.object == null ? "" : props.object.objectName
     console.log("selectedObject", props, selectedObject, selectedContainer)
-
-    function refreshPage() {
-        window.location.reload(false);
-    }
 
     function topUpWallet(amount) {
         console.log("top up amount", amount)
@@ -37,7 +34,7 @@ function BreadCrumb(props) {
                 {/*
                     <button type="button" className="atmButtonIconClean" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"><i className="far fa-cog" /></button>
                 */}
-                <button type="button" className="atmButtonIconClean" onClick={refreshPage}><i className="far fa-sync-alt"/></button>
+                <button type="button" className="atmButtonIconClean" onClick={props.onRefresh}><i className="far fa-sync-alt"/></button>
 
                 {/* Offcanvas right: need to do classes and text */}
                     <div className="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">

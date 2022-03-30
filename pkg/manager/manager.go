@@ -50,6 +50,7 @@ type Manager struct {
 	c                      *cache.Cache
 	ctx                    context.Context
 	wallet 				*wal.Wallet
+	password			string //warning this is not a good idea
 	DEBUG                  bool
 }
 
@@ -57,8 +58,8 @@ const (
 	CACHE_FILE_SYSTEM = "filesystem"
 )
 
-func (m *Manager) UnlockWallet(password string) error {
-	return m.wallet.Accounts[0].Decrypt(password, m.wallet.Scrypt)
+func (m *Manager) UnlockWallet() error {
+	return m.wallet.Accounts[0].Decrypt(m.password, m.wallet.Scrypt)
 }
 // startup is called at application startup
 func (m *Manager) Startup(ctx context.Context) {
@@ -69,6 +70,15 @@ func (m *Manager) Startup(ctx context.Context) {
 
 // domReady is called after the front-end dom has been loaded
 func (m *Manager) DomReady(ctx context.Context) {
+	if m.wallet == nil {
+		tmp := NewToastMessage(&ToastMessage{
+			Title:       "Lets get started",
+			Type:        "info",
+			Description: "Please select a wallet",
+		})
+		m.MakeToast(tmp)
+		runtime.EventsEmit(m.ctx, "select_wallet", true)
+	}
 }
 
 func (m *Manager) MakeToast(message ToastMessage) {
@@ -148,7 +158,7 @@ func (m *Manager) retrieveWallet() (*wal.Wallet, error) {
 			Description: "Please select a wallet",
 		})
 		m.MakeToast(tmp)
-		runtime.EventsEmit(m.ctx, "select_wallet", "sending message - no wallet yet selected")
+
 		return nil, NotFound
 	}
 	return m.wallet, nil
@@ -160,9 +170,13 @@ func (m *Manager) GetAccountInformation() (Account, error) {
 		//if !errors.Is(err, NotFound) {
 		//	return Account{}, err
 		//}
-		return Account{}, err
+		runtime.EventsEmit(m.ctx, "select_wallet", true)
+		return Account{}, nil
 	}
 	balances, err := wallet.GetNep17Balances(w.Accounts[0].Address, wallet.RPC_TESTNET)
+	if err != nil {
+		return Account{}, err
+	}
 	//Now the neo fs gas balance
 	id, err := wallet.OwnerIDFromPrivateKey(&m.wallet.Accounts[0].PrivateKey().PrivateKey)
 	if err != nil {
@@ -192,8 +206,15 @@ func (m *Manager) GetAccountInformation() (Account, error) {
 		}),
 	}
 	b.Nep17 = balances
+	if _, ok := b.Nep17["GAS"]; !ok {
+		b.Nep17["GAS"] = wallet.Nep17Tokens{}
+	}
+	if _, ok := b.Nep17["NEO"]; !ok {
+		b.Nep17["NEO"] = wallet.Nep17Tokens{}
+	}
 	if m.DEBUG {
 		DebugSaveJson("GetAccountInformation.json", b)
 	}
 	return b, nil
 }
+
