@@ -56,6 +56,7 @@ class TabVisual extends React.Component {
 
     onRefresh = async() => {
 
+        await this.props.refreshAccount()
         console.log("onRefresh, objects", this.state.objectList)
         //ROBIN!! -- uncomment this following line if you want to really refresh the app.
         // window.location.reload(false); //disable this

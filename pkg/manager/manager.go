@@ -2,10 +2,15 @@ package manager
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/configwizard/gaspump-api/pkg/client"
+	"github.com/blang/semver/v4"
+	"io/ioutil"
+	"log"
 	"math/rand"
+	"net/http"
 	"strings"
 	"time"
 
@@ -47,6 +52,7 @@ type Manager struct {
 	//walletPath, walletAddr string
 	fsCli                  *neofscli.Client
 	//key                    *ecdsa.PrivateKey
+	version string
 	c                      *cache.Cache
 	ctx                    context.Context
 	wallet 				*wal.Wallet
@@ -70,6 +76,7 @@ func (m *Manager) Startup(ctx context.Context) {
 
 // domReady is called after the front-end dom has been loaded
 func (m *Manager) DomReady(ctx context.Context) {
+	m.checkForVersion()
 	if m.wallet == nil {
 		tmp := NewToastMessage(&ToastMessage{
 			Title:       "Lets get started",
@@ -81,6 +88,56 @@ func (m *Manager) DomReady(ctx context.Context) {
 	}
 }
 
+func (m *Manager) checkForVersion() {
+	//version
+	go func() {
+		time.Sleep(1 * time.Second) //lets make sure we are ready to show the version issue
+		//if v1 is older than v2, then compare returns -1
+		//http://localhost:8000/version.json
+		resp, err := http.Get("https://greenfinch.app/version.json")
+		if err != nil {
+			log.Println("err retrieving version", err)
+		} else {
+			var metadata struct{
+				RemoteVersion string `json:"binary_version"`
+			}
+			body, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				log.Println("error retrieving remote version body", err)
+			}
+			fmt.Println("version check received", string(body))
+			json.Unmarshal(body, &metadata)
+			remoteVersion, _ := semver.Make(metadata.RemoteVersion)
+			fmt.Println("parsing ", m.version)
+			tmpVersion := m.version
+			if strings.HasPrefix(m.version, "v") {
+				tmpVersion = strings.TrimPrefix(m.version, "v")
+			}
+			v, err := semver.Parse(tmpVersion)
+			if err != nil {
+				log.Println("error with versioning. Not Semantic", err)
+				tmp := NewToastMessage(&ToastMessage{
+					Title:       "Error checking for update",
+					Type:        "warn",
+					Description: "error with versioning " + err.Error() + " " + m.version + " - " + tmpVersion,
+				})
+				m.MakeToast(tmp)
+				return
+			}
+
+			log.Printf("version %s", v)
+			if v.Compare(remoteVersion) < 0 {
+				tmp := NewToastMessage(&ToastMessage{
+					Title:       "Update Available",
+					Type:        "info",
+					Description: "Please visit greenfinch.app to download version " + remoteVersion.String(),
+				})
+				m.MakeToast(tmp)
+			}
+			fmt.Println("version comparison", v.Compare(remoteVersion))
+		}
+	}()
+}
 func (m *Manager) MakeToast(message ToastMessage) {
 	runtime.EventsEmit(m.ctx, "freshtoast", message)
 }
@@ -113,11 +170,12 @@ func (m *Manager) Search(search string) ([]filesystem.Element, error) {
 	}
 	return results, nil
 }
-func NewFileSystemManager(DEBUG bool) (*Manager, error) {
+func NewFileSystemManager(version string, DEBUG bool) (*Manager, error) {
 
 	return &Manager{
 		//walletPath: walletPath,
 		//walletAddr: walletAddr,
+		version: version,
 		fsCli:      nil,
 		//key:        key, //this is holding the private key in memory - not good?
 		c:          cache.New(1*time.Minute, 10*time.Minute),

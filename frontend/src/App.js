@@ -80,11 +80,6 @@ class App extends React.Component {
         this.state = {account: null};
     }
     async componentDidMount() {
-        const walletData  = await getAccountInformation()
-        const account = prepareWalletData(walletData)
-        console.log("setting wallet details to ", account)
-        await this.setState({account})
-
         window.runtime.EventsOn("fresh_wallet", async (newAccount) => {
             console.log("fresh_wallet response", newAccount)
             const walletData  = await getAccountInformation()
@@ -92,6 +87,7 @@ class App extends React.Component {
             console.log("setting wallet details to ", account)
             await this.setState({account})
         })
+        await this.setStatusAccount()
     }
 
     fireToast(message) {
@@ -99,7 +95,10 @@ class App extends React.Component {
         window.go.manager.Manager.MakeToast(message)
     }
 
-    setStatusAccount = async (account) => {
+    setStatusAccount = async () => {
+        const walletData  = await getAccountInformation()
+        const account = prepareWalletData(walletData)
+        console.log("setting wallet details to ", account)
         await this.setState({account})
     }
     render() {
@@ -144,7 +143,7 @@ class App extends React.Component {
                 </section>
                 <div className="container-fluid">
                     <section className="orgMainJSON">
-                        <TabVisual account={this.state.account}></TabVisual>
+                        <TabVisual account={this.state.account} refreshAccount={this.setStatusAccount}></TabVisual>
                     </section>
                     <CompToast autoDelete={true} autoDeleteTime={3000}></CompToast>
                     <CompProgress></CompProgress>

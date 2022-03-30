@@ -41,6 +41,8 @@ var (
 	createContainerOnStart = flag.Bool("container", false, "should create a container on start")
 )
 
+var version = "undefined"
+
 func main() {
 	flag.Usage = func() {
 		_, _ = fmt.Fprintf(os.Stderr, usage)
@@ -82,7 +84,7 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		unlockedWallet, err := wallet.UnlockWallet(*walletPath, "", "password")
+		unlockedWallet, err := wallet.UnlockWallet(*walletPath, "", *walletPassword)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -107,15 +109,10 @@ func main() {
 		//stringTx := wallet.Uint160ToString(transactionID)
 		log.Println("transaction made txID ", transactionID)
 		os.Exit(0)
-	//default:
-	//	if *walletPath == "" {
-	//		*walletPath = "./wallets/wallet.json"
-	//	}
-	//	log.Println("starting gaspump. Using wallet at", *walletPath)
 	}
 //https://http.testnet.fs.neo.org/CONTAINER_ID/OBJECT_ID
 	//createContainerOnStart
-	manager, err := manager.NewFileSystemManager(false)
+	manager, err := manager.NewFileSystemManager(version, false)
 	if err != nil {
 		log.Fatal("can't create a manager", err)
 	}

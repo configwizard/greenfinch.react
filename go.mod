@@ -3,6 +3,7 @@ module github.com/amlwwalker/gaspump.react
 go 1.17
 
 require (
+	github.com/blang/semver/v4 v4.0.0
 	github.com/configwizard/gaspump-api v0.2.5
 	github.com/machinebox/progress v0.2.0
 	github.com/nspcc-dev/neo-go v0.98.1

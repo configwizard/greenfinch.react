@@ -23,12 +23,12 @@ tag-minor:
 #while developing, run this to create an app
 .PHONY: dev
 dev:
-	wails build -p ${LDFLAGS}
+	wails build ${LDFLAGS}
 
 #when going to production, run this
 .PHONY: prod
 prod:
-	wails build -p -f ${LDFLAGS}
+	wails build -f ${LDFLAGS}
 
 # instructions on manually signing, in order are below
 # now for the bit where an app is signed, notorized and stapled
