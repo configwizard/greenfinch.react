@@ -210,12 +210,12 @@ type Account struct {
 var NotFound = errors.New("wallet not found")
 func (m *Manager) retrieveWallet() (*wal.Wallet, error) {
 	if m.wallet == nil {
-		tmp := NewToastMessage(&ToastMessage{
-			Title:       "Lets get started",
-			Type:        "info",
-			Description: "Please select a wallet",
-		})
-		m.MakeToast(tmp)
+		//tmp := NewToastMessage(&ToastMessage{
+		//	Title:       "Lets get started",
+		//	Type:        "info",
+		//	Description: "Please select a wallet",
+		//})
+		//m.MakeToast(tmp)
 
 		return nil, NotFound
 	}
