@@ -8,7 +8,7 @@ require (
 	github.com/nspcc-dev/neo-go v0.98.1
 	github.com/nspcc-dev/neofs-sdk-go v0.0.0-20220119080627-f83ff628fb19
 	github.com/patrickmn/go-cache v2.1.0+incompatible
-	github.com/wailsapp/wails/v2 v2.0.0-beta.34
+	github.com/wailsapp/wails/v2 v2.0.0-beta.33
 )
 
 require (
