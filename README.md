@@ -1,4 +1,4 @@
-# GasPump Desktop React App
+# Greenfinch Desktop React App
 
 This application uses Wails 2.0 to create a desktop app to interact with the gaspump application.
 

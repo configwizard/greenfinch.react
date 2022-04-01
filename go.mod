@@ -1,4 +1,4 @@
-module github.com/amlwwalker/gaspump.react
+module github.com/amlwwalker/greenfinch.react
 
 go 1.17
 

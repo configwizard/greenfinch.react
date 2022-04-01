@@ -5,7 +5,7 @@ import (
 	"embed"
 	"flag"
 	"fmt"
-	"github.com/amlwwalker/gaspump.react/pkg/manager"
+	"github.com/amlwwalker/greenfinch.react/pkg/manager"
 	"github.com/configwizard/gaspump-api/pkg/wallet"
 	"github.com/nspcc-dev/neo-go/pkg/core/native/nativenames"
 	client2 "github.com/nspcc-dev/neo-go/pkg/rpc/client"
