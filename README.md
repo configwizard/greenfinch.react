@@ -2,6 +2,8 @@
 
 This application uses Wails 2.0 to create a desktop app to interact with the gaspump application.
 
+Greenfinch is a UI into the NeoFS ecosystem. Although the desktop application doesn't need the API, this is a 'sister' project to the greenfinch-api
+
 ## To do
 
 * pipe the upload and response with notifications on upload/download status
