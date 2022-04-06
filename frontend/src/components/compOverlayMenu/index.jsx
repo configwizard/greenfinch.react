@@ -2,8 +2,6 @@ import React from "react";
 import onClickOutside from "react-onclickoutside";
 import {useModal} from "../compModals/compModalContext";
 import CompModalStandard from "../compModals/compModalStandard";
-// import {createContainer} from "../../manager/containers";
-// import { Form } from "react-bootstrap";
 
 function CompOverlayMenu(props) {
     //leave this for the time being - it should allow us to click outside to close like the dropdown, but currently not working

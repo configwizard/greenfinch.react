@@ -1,5 +1,5 @@
 {
-  "name": "GasPump",
+  "name": "Greenfinch",
   "version": "1.0.0",
   "description": "",
   "main": "",
@@ -74,16 +74,21 @@
   "keywords": [],
   "author": "Alex Walker",
   "devDependencies": {
-    "@storybook/addon-actions": "^6.4.19",
-    "@storybook/addon-essentials": "^6.4.19",
-    "@storybook/addon-interactions": "^6.4.19",
-    "@storybook/addon-links": "^6.4.19",
-    "@storybook/node-logger": "^6.4.19",
+    "@storybook/addon-actions": "^6.4.20",
+    "@storybook/addon-essentials": "^6.4.20",
+    "@storybook/addon-interactions": "^6.4.20",
+    "@storybook/addon-links": "^6.4.20",
+    "@storybook/node-logger": "^6.4.20",
     "@storybook/preset-create-react-app": "^3.2.0",
-    "@storybook/react": "^6.4.19",
-    "@storybook/testing-library": "^0.0.9"
+    "@storybook/react": "^6.4.20",
+    "@storybook/testing-library": "^0.0.9",
+    "react-error-overlay": "^6.0.9"
   },
   "optionalDependencies": {
     "babel-loader": "8.1.0"
+  },
+  "resolutions": {
+    "//": "See https://github.com/facebook/create-react-app/issues/11773",
+    "react-error-overlay": "6.0.9"
   }
 }

@@ -5,36 +5,18 @@ import 'bootstrap/dist/css/bootstrap.min.css'; // Every page will use bootstrap
 import 'bootstrap/dist/js/bootstrap.min.js'; // TEMP - fine for V1
 import './assets/dashboard.scss'; //structural css
 import './assets/greenfinch.scss'; //brand css
-// import './assets/fontawesome.css';
-// import { Tab, Tabs } from 'react-bootstrap';
 
 import TabVisual from "./components/tabVisual";
-// import TabJSON from "./components/tabJSON";
 import Status from "./components/layoutHeader";
-import CompToast from "./components/compToast";
+// import CompToast from "./components/compToast";
 
-// import Wallet from "./components/wallet";
-// import Containers from "./components/containers";
-// import Objects from "./components/objects";
-// import Status from "./components/status";
+// Actual
+// import { getAccountInformation, loadWallet, newWallet } from "./manager/manager.js"
 
-// import FileSystem from "./components/filesystem";
+// Mocker
+import { getAccountInformation, loadWallet, newWallet } from "./mocker/manager.js"
 
-//Actual
-// import {getAccountInformation} from "./manager/manager.js"
-// import {createContainer, listContainers} from "./manager/containers.js"
-// import {listObjects, uploadObject, getObject} from "./manager/objects.js"
-// import {retrieveFullFileSystem} from "./manager/interactions";
-
-//Mocker
-// import {getAccountInformation} from "./mocker/manager.js"
-// import {createContainer, listContainers} from "./mocker/containers.js"
-// import {listObjects, uploadObject, getObject} from "./mocker/objects.js"
-//import {retrieveFullFileSystem} from "./mocker/interactions";
-
-import {getAccountInformation, loadWallet, newWallet} from "./manager/manager.js"
 import CompProgress from "./components/compProgress";
-import {listContainers} from "./manager/containers";
 import CompModalBrand from "./components/compModals/compModalBrand";
 import {Form} from "react-bootstrap";
 
@@ -43,18 +25,18 @@ function prepareWalletData(account) {
     console.log("props.account", account)
     let clean = {
         neofs: {
-            balance: account.neofs != undefined ? account.neofs.balance : 0,
-            precision: account.neofs != undefined ? account.neofs.precision : 0
+            balance: account.neofs !== undefined ? account.neofs.balance : 0,
+            precision: account.neofs !== undefined ? account.neofs.precision : 0
         },
         nep17: {
             GAS: {
-                amount: account.nep17 != undefined ? account.nep17.GAS.amount : 0,
+                amount: account.nep17 !== undefined ? account.nep17.GAS.amount : 0,
                 meta: {
-                    decimals: account.nep17 != undefined ? account.nep17.GAS.meta.decimals : 0,
+                    decimals: account.nep17 !== undefined ? account.nep17.GAS.meta.decimals : 0,
                 }
             },
             NEO: {
-                amount: account.nep17 != undefined  ? account.nep17.NEO.amount : 0
+                amount: account.nep17 !== undefined  ? account.nep17.NEO.amount : 0
             }
         }
     }
@@ -80,6 +62,14 @@ class App extends React.Component {
         this.state = {account: null};
     }
     async componentDidMount() {
+        const account = {
+            address: 'WalletMocker',
+            neoFSBalance: 4.3556,
+            gasBalance: 8.8777,
+            neoBalance: 15
+        }
+        await this.setState({account})
+        /* 
         window.runtime.EventsOn("fresh_wallet", async (newAccount) => {
             console.log("fresh_wallet response", newAccount)
             const walletData  = await getAccountInformation()
@@ -87,6 +77,7 @@ class App extends React.Component {
             console.log("setting wallet details to ", account)
             await this.setState({account})
         })
+        */
         await this.setStatusAccount()
     }
 
@@ -103,7 +94,7 @@ class App extends React.Component {
     }
     render() {
         console.log("propogating wallet", this.state.account)
-        if (!this.state.account || this.state.account.address == "") { // if true then show the selection page
+        if (!this.state.account || this.state.account.address === "") { // if true then show the selection page
             return (
                 <div className="col-12">
                 <div className="orgContainersGrid">
@@ -131,7 +122,9 @@ class App extends React.Component {
                         {/*<NewWalletModal requestNewWallet={this.state.requestNewWallet} containerList={this.state.containerList} onDelete={this.onContainerDelete} viewMode={this.state.viewMode} onContainerSelection={this.onContainerSelection}></NewWalletModal>*/}
                     </div>
                 </div>
-                <CompToast autoDelete={true} autoDeleteTime={3000}></CompToast>
+                {/*
+                    <CompToast autoDelete={true} autoDeleteTime={3000}></CompToast>
+                */}
             </div>)
         }
         return (
@@ -145,7 +138,9 @@ class App extends React.Component {
                     <section className="orgMainJSON">
                         <TabVisual account={this.state.account} refreshAccount={this.setStatusAccount}></TabVisual>
                     </section>
-                    <CompToast autoDelete={true} autoDeleteTime={3000}></CompToast>
+                    {/*
+                        <CompToast autoDelete={true} autoDeleteTime={3000}></CompToast>
+                    */}
                     <CompProgress></CompProgress>
                 </div>
             </>

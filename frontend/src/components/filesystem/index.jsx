@@ -1,6 +1,5 @@
 import React from "react";
 import JSONView from 'react-json-view';
-// import {retrieveFullFileSystem} from "../../manager/interactions";
 
 class FileSystem extends React.Component {
     constructor(props) {

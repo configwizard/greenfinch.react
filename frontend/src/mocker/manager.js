@@ -3,6 +3,12 @@ const getAccountInformation = async () => {
     return b
 }
 
+const newWallet = async (password) => {}
+
+const loadWallet = async (password) => {}
+
 export {
-    getAccountInformation
+    getAccountInformation,
+    newWallet,
+    loadWallet
 }

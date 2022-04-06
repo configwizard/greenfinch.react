@@ -1,5 +1,11 @@
 import CompModalBrand from "../compModalBrand";
-import {loadWallet, newWallet} from "../../../manager/manager";
+
+// Actual
+// import { loadWallet, newWallet } from "../../../manager/manager.js";
+
+// Mocker 
+import { loadWallet, newWallet } from "../../../mocker/manager.js";
+
 import React from "react";
 import {useModal} from "../compModalContext";
 

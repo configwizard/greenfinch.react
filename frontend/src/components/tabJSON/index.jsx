@@ -4,22 +4,17 @@ import Wallet from "../wallet";
 import Containers from "../containers";
 import Objects from "../objects";
 
-//Actual
-// import {getAccountInformation} from "./manager/manager.js";
-// import {createContainer, listContainers} from "./manager/containers.js";
-// import {listObjects, uploadObject, getObject} from "./manager/objects.js";
-// import {retrieveFullFileSystem} from "./manager/interactions";
+// Actual
+// import { getAccountInformation } from "../../manager/manager.js";
+// import { listContainers } from "../../manager/containers.js";
+// import { listObjects } from "../../manager/objects.js";
+// import { searchObjects } from "../../manager/interactions.js"
 
-//Mocker
-import {getAccountInformation} from "../../manager/manager.js";
-import {listContainers} from "../../manager/containers.js";
-import {listObjects} from "../../manager/objects.js";
-import {searchObjects} from "../../manager/interactions"
-
-//import {getAccountInformation} from "../../mocker/manager.js";
-//import {createContainer, listContainers} from "../../mocker/containers.js";
-//import {listObjects, uploadObject, getObject} from "../../mocker/objects.js";
-//import {retrieveFullFileSystem} from "./mocker/interactions";
+// Mocker
+import { getAccountInformation } from "../../mocker/manager.js";
+import { listContainers } from "../../mocker/containers.js";
+import { listObjects } from "../../mocker/objects.js";
+import { searchObjects } from "../../mocker/interactions.js"
 
 class TabJSON extends React.Component {
     constructor(props) {

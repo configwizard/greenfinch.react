@@ -1,21 +1,18 @@
 import React from "react";
 
-//Mocker/Manager
-import {getAccountInformation} from "../../manager/manager.js";
-import {createContainer, deleteContainer, listContainers} from "../../manager/containers.js";
-import {deleteObject, getObject, listObjects, uploadObject} from "../../manager/objects.js";
-import {useModal} from "../compModals/compModalContext";
-// import CompModalBrand from "../compModals/compModalBrand";
-import NewWalletModal from "../compModals/compModalNewWallet"
-import {newWallet, loadWallet} from "../../manager/manager"
-//Components
+// Actual
+// import { deleteContainer, listContainers} from "../../manager/containers.js";
+// import { deleteObject, getObject, listObjects, uploadObject } from "../../manager/objects.js";
+
+// Mocker
+import { deleteContainer, listContainers} from "../../mocker/containers.js";
+import { deleteObject, getObject, listObjects, uploadObject } from "../../mocker/objects.js";
+
+// Components
 import BreadCrumb from "../layoutBreadCrumb";
 import ControlBar from "../viewOptions";
 import ContainerView from "../viewContainers";
 import ObjectView, {FileUpload} from "../viewObjects";
-import CompModalBrand from "../compModals/compModalBrand";
-import {Form} from "react-bootstrap";
-// import {listContainers} from "../../mocker/containers.js";
 
 class TabVisual extends React.Component {
     constructor(props) {
@@ -29,6 +26,7 @@ class TabVisual extends React.Component {
         // await this.props.setStatusAccount(account)
         // // await this.setState({...this.state, account})
 
+        /*
         window.runtime.EventsOn("appendContainer", async (container) => {
             let containerList = this.state.containerList
             console.log("new container added", container)
@@ -40,7 +38,6 @@ class TabVisual extends React.Component {
             objectList.push(object)
             await this.setState({...this.state, objectList})
         })
-
         window.runtime.EventsOn("clearContainer", async () => {
             await this.setState(this.setState({...this.state, containerList: []}))
         })
@@ -49,6 +46,7 @@ class TabVisual extends React.Component {
             const objectList = await listObjects(this.state.selectedContainer.containerID) || []//list contents of a container
             await this.setState({...this.state, objectList})
         })
+        */
         console.log("received wallet", this.props.account)
         await listContainers()
         console.log("componentDidMount, objects", this.state.objectList)
