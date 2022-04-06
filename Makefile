@@ -38,34 +38,34 @@ prod:
 #1. make sure any attributes are removed
 .PHONY: remove-attributes
 remove-attributes:
-	sudo xattr -lr "./build/EncryptEasy.app"
+	sudo xattr -lr "./build/Greenfinch.app"
 
 #2. set permissions on anything inside the app
 .PHONY: set-permissions
 set-permissions:
-	sudo chmod -R u+rw "./build/EncryptEasy.app"
+	sudo chmod -R u+rw "./build/bin/Greenfinch.app"
 
 #3. sign the app itself
 .PHONY: codesign-app
 codesign-app:
-	codesign --deep --force --verify --verbose --sign "Developer ID Application: Alexander Walker (65V77NRF7L)" --options runtime "./build/EncryptEasy.app"
+	codesign --deep --force --verify --verbose --sign "Developer ID Application: Alexander Walker (65V77NRF7L)" --options runtime "./build/bin/Greenfinch.app"
 
 #4. Verify that the app is signed
 .PHONY: verify-app-signature
 verify-app-signature:
-	codesign --verify --verbose "./build/EncryptEasy.app"
+	codesign --verify --verbose "./build/bin/Greenfinch.app"
 
 #5. create a dmg and automatically sign it
 .PHONY: dmg
 dmg:
 	cd build && \
-	create-dmg ./EncryptEasy.app --dmg-title=EncryptEasy --identity="Developer ID Application: Alexander Walker (65V77NRF7L)" && \
+	create-dmg ./build/bin/Greenfinch.app --dmg-title=Greenfinch --identity="Developer ID Application: Alexander Walker (65V77NRF7L)" && \
 	cd ..
 
 #6. verify the DMG signature
 .PHONY: verify-dmg-signature
 verify-dmg-signature:
-	codesign --verify --verbose ./build/EncryptEasy\ *.dmg
+	codesign --verify --verbose ./build/bin/Greenfinch\ *.dmg
 
 #7a. Store your app specific password against your apple ID in the keychain:
 #security add-generic-password -a "<apple_id>" -w "<app_specific_password>"  -s "<keychain_item_name>"
@@ -75,22 +75,23 @@ verify-dmg-signature:
 #7b. Notorize the dmg
 .PHONY: notorize
 notorize:
-	sudo xcrun altool -type osx --notarize-app --primary-bundle-id "app.encrypteasy" --username "amlwwalker@gmail.com" --password "@keychain:Notarizing" --file ./build/EncryptEasy\ *.dmg
+	sudo xcrun altool -type osx --notarize-app --primary-bundle-id "app.greenfinch" --username "amlwwalker@gmail.com" --password "@keychain:Notarizing" --file Greenfinch\ *.dmg
 #remember to record the request UUID, something like 47cb3c7f-7ffb-4d5c-bff1-7bbc7b064645
+#b58ad5e2-6c49-4346-bc8a-a8a73863cddc
 
 #8 Checl the dmg notorization status
 .PHONY: notorize-status
 notorize-status:
-	xcrun altool --notarization-info 3abfba86-f449-4e25-8f5a-3af9c3f89a4f --username "amlwwalker@gmail.com" --password "@keychain:Notarizing"
+	xcrun altool --notarization-info b58ad5e2-6c49-4346-bc8a-a8a73863cddc --username "amlwwalker@gmail.com" --password "@keychain:Notarizing"
 
 #9. Once notorized, staple the notorization cert to the app so offline users can still use it
 .PHONY: staple
 staple:
-	xcrun stapler staple -v ./build/EncryptEasy\ *.dmg
+	xcrun stapler staple -v Greenfinch\ *.dmg
 
 .PHONY: compress
 compress:
-	zip -j /Users/alex.walker/dev/sites/encrypteasy-site/dist/EncryptEasy.zip ./build/EncryptEasy\ *.dmg
+	zip -j ./build/Greenfinch.zip Greenfinch\ *.dmg
 
 .PHONE: move-dmg
 move-dmg:
