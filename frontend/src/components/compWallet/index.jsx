@@ -45,7 +45,7 @@ const CompWallet = props => {
                         <div className="molWalletOption">
                             <h6 className="atmWallet">Top-up NeoFS GAS Balance</h6>
                             <Form.Control type="number" placeholder="GAS amount" id={"topUpAmount"}/>
-                            <button type="button" className="atmButtonBase atmButtonSimple" onClick={(amount) => {console.log("topping up"); props.topUpWallet(document.getElementById("topUpAmount").value)}}><i className="fas fa-chart-line"/>Top-up</button>
+                            <button type="button" className="atmButtonBase atmButtonDefault" onClick={(amount) => {console.log("topping up"); props.topUpWallet(document.getElementById("topUpAmount").value)}}><i className="fas fa-chart-line"/>Top-up</button>
                         </div>
                     </section>
                 </div>

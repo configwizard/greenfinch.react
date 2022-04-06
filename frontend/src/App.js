@@ -107,7 +107,7 @@ class App extends React.Component {
                                 <Form.Control id="walletPassword" type="password" placeholder="strong-password" />
                                 <button
                                     type="button"
-                                    className="atmButtonSimple"
+                                    className="atmButtonDefault"
                                     onClick={async () => {await newWallet(document.getElementById("walletPassword").value)}}>
                                     <i className="fas fa-star-shooting"/>Create new wallet
                                 </button>

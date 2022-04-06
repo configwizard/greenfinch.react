@@ -15,7 +15,7 @@ function NewWalletModal(props) {
         <div className="ms-auto molButtonGroup">
             <button
                 type="button"
-                className={`atmButtonSimple`}
+                className={`atmButtonDefault`}
                 onClick={() => {
                     setModal(<CompModalBrand
                         title={"Get started"}
@@ -24,7 +24,7 @@ function NewWalletModal(props) {
                             <p>Welcome to Greenfinch, to get started you will need a wallet.</p>
                             <button
                                 type="button"
-                                className="atmButtonSimple"
+                                className="atmButtonDefault"
                                 onClick={async () => {await newWallet("password"); unSetModal()}}>
                                 <i className="fas fa-star-shooting"/>Create new wallet
                             </button>

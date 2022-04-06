@@ -9,9 +9,9 @@ export default function Footer({fireToast, percentage}) {
         <>
             <div className="d-flex ms-auto">
                 <button onClick={() => show(<SomeModalContent/>)}>Click to Open!</button>
-                <button type="button" className="atmButtonSimple" data-bs-toggle="modal" data-bs-target="#exampleModal"><i className="fas fa-hand-point-right"/>Click me for modal</button>
-                <button type="button" className="atmButtonSimple" onClick={() => setShow(true)}><i className="fas fa-hand-point-right"/>Click me for progress</button>
-                <button type="button" className="atmButtonSimple" onClick={() => {fireToast({Title: "clicked", Type:"success", Description:"Toast launched."})}}><i className="fas fa-hand-point-right"/>Click me for Toast (success)</button>
+                <button type="button" className="atmButtonDefault" data-bs-toggle="modal" data-bs-target="#exampleModal"><i className="fas fa-hand-point-right"/>Click me for modal</button>
+                <button type="button" className="atmButtonDefault" onClick={() => setShow(true)}><i className="fas fa-hand-point-right"/>Click me for progress</button>
+                <button type="button" className="atmButtonDefault" onClick={() => {fireToast({Title: "clicked", Type:"success", Description:"Toast launched."})}}><i className="fas fa-hand-point-right"/>Click me for Toast (success)</button>
             </div>
             {/*<div className="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">*/}
             {/*    <CompModalStandard title="Greenfinch Modal" buttonTextPrimary="OK" buttonTextSecondary="Cancel">*/}

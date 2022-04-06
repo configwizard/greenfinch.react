@@ -118,7 +118,7 @@ button[class^="atmButton"] {
     }
 }
 
-.atmButtonSimple {
+.atmButtonDefault {
     font-size: 0.9rem;
     color: $brandColorWhite;
     background-color: $brandColorDark;
@@ -184,7 +184,7 @@ button[class^="atmButton"] {
 }
 
 .molModalBody {
-    & .atmButtonSimple {
+    & .atmButtonDefault {
         font-size: 1.1rem;
     }
     & .atmButtonText {

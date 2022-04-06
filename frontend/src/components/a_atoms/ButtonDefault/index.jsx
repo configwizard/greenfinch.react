@@ -1,66 +1,46 @@
 import React from 'react';
-import classnames from 'classnames'
+import PropTypes from 'prop-types';
 
-export const ButtonType = {
-    BUTTON: 'button',
-    RESET: 'reset',
-    SUBMIT: 'submit',
-}
-  
-export const ButtonTheme = {
-    DEFAULT: 'default',
-    ROUNDED: 'rounded',
-}
-  
-export const ButtonSize = {
-    SMALL: 'small',
-    MEDIUM: 'medium',
-    LARGE: 'large',
-}
-  
-type Props = {
-    type: string,
-    theme: string,
-    size: string,
-    onClick: Function,
-    children: React.Node,
-    className: string,
-    disabled: boolean,
-}
+// https://github.com/Mind-over-Tech/bloom-frontend/blob/master/src/components/atoms/PillButton.js
 
-const ButtonDefault = ({ color }) => (
+// import { Button, Flex, Box } from 'rebass/styled-components';
+// import Icon from './Icon';
+// import Typography from 'components/atoms/Typography';
+// constantas = themes
+
+
+const ButtonDefault = ({ buttonClass, disabled, onClick, iconIncluded, iconClasses, text }) => {
+  return (
     <button
         type="button"
-        className={classProps}
-        onClick= {onClick}
-        {/* 
-        className={`atmButtonSimple ${selectedContainer ? "utInactive" : "utActive"}`}
-            onClick={() => {    
-                setModal(
-                <CompModalStandard
-                    title={"Add a new container"}
-                    buttonTextPrimary={"Send"}
-                    buttonTextSecondary={"Cancel"}
-                    primaryClicked={async () => {await createContainer(document.getElementById("containerName").value); unSetModal()}}
-                    secondaryClicked={async () => unSetModal()}>
-                        <p>Choose a name for the container. (N.B. this cannot be changed)</p>
-                        <Form.Control id="containerName" type="text" placeholder="e.g. holiday photos" />
-                </CompModalStandard>)
-        }}> 
-        */} >
-        <i className="fas fa-plus-circle"/>New container
+        className={buttonClass}
+        disabled={disabled} 
+        onClick={onClick} >
+            {
+                iconIncluded && (
+                    <i className={iconClasses} />
+                )
+            }
+            {text}
     </button>
-);
-  
-Button.defaultProps = {
-    type: ButtonType.BUTTON,
-    theme: ButtonTheme.DEFAULT,
-    size: ButtonSize.MEDIUM,
-    onClick: () => {},
-    className: '',
-    disabled: false,
-  }
-  
-  export default Button
+  )
+};
 
 export default ButtonDefault;
+
+ButtonDefault.propTypes = {
+    buttonClass: PropTypes.string,
+    disabled: PropTypes.bool,
+    onClick: PropTypes.func,
+    iconIncluded: PropTypes.bool,
+    iconClasses: PropTypes.string,
+    text: PropTypes.string  
+};
+
+ButtonDefault.defaultProps = {
+    buttonClass: "atmButtonDefault",
+    disabled: false,
+    iconIncluded: false,
+    iconClasses: "fas fa-flag",
+    text: "button text"
+};                            
