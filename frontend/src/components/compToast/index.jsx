@@ -35,10 +35,12 @@ export default class CompToast extends React.Component {
 
     async componentDidMount () {
         console.log("mounting")
+        /*
         window.runtime.EventsOn(name, async (message) => {
             console.log(message)
             await this.makeToast(message)
         })
+        */
         setInterval(() => {
             if (this.props.autoDelete && this.state.list.length) {
                 if (((new Date) - this.state.list[0].startTime) > this.props.autoDeleteTime) {
