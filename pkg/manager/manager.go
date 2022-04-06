@@ -118,7 +118,7 @@ func (m *Manager) checkForVersion() {
 				log.Println("error with versioning. Not Semantic", err)
 				tmp := NewToastMessage(&ToastMessage{
 					Title:       "Error checking for update",
-					Type:        "warn",
+					Type:        "warning",
 					Description: "error with versioning " + err.Error() + " " + m.version + " - " + tmpVersion,
 				})
 				m.MakeToast(tmp)
