@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import './style.scss';
+
 // https://github.com/Mind-over-Tech/bloom-frontend/blob/master/src/components/atoms/PillButton.js
 
 // import { Button, Flex, Box } from 'rebass/styled-components';

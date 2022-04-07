@@ -1,5 +1,7 @@
 import React from "react";
 
+import ButtonDefault from '../../a_atoms/ButtonDefault';
+
 const CompModalStandard = props => {
     return (
         <section className="orgModalBrand">
@@ -11,27 +13,19 @@ const CompModalStandard = props => {
             </div>
             <div className="molModalFooter d-flex">
                 <div className="ms-auto molButtonGroup">
-                    <button type="button" className="atmButtonDefault" onClick={() => {props.secondaryClicked()}}>{props.buttonTextSecondary}</button>
-                    <button type="button" className="atmButtonDefault" onClick={() => {props.primaryClicked()}}>{props.buttonTextPrimary}</button>
+                    <ButtonDefault
+                        buttonClass={"atmButtonDefault"}
+                        iconIncluded={false}
+                        text={props.buttonTextSecondary}
+                        onClick={() => {props.secondaryClicked()}} />
+                    <ButtonDefault
+                        buttonClass={"atmButtonDefault"}
+                        iconIncluded={false}
+                        text={props.buttonTextPrimary}
+                        onClick={() => {props.primaryClicked()}} />
                 </div>
             </div>
         </section>
-        // <div className="modal-dialog">
-        //     <div className="modal-content">
-        //         <div className="modal-header">
-        //             <h5 className="modal-title" id="exampleModalLabel">{props.title}</h5>
-        //         </div>
-        //         <div className="modal-body">
-        //             {props.children}
-        //         </div>
-        //         {/* Helpful: https://medium.com/tinyso/how-to-create-a-modal-component-in-react-from-basic-to-advanced-a3357a2a716a */}
-        //         <div className="modal-footer">
-        //             <h5 className="modal-title" id="exampleModalLabel">{props.title}</h5>
-        //             <button type="button" className="atmButtonDefault" data-bs-dismiss="modal">{props.buttonTextSecondary}</button>
-        //             <button type="button" className="atmButtonDefault" onClick={() => {props.clicked()}}>{props.buttonTextPrimary}</button>
-        //         </div>
-        //     </div>
-        // </div>
     )
 }
 

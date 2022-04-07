@@ -6,6 +6,8 @@ import CompModalBrand from "../compModalBrand";
 // Mocker 
 import { loadWallet, newWallet } from "../../../mocker/manager.js";
 
+import ButtonDefault from "../a_atoms/ButtonDefault";
+
 import React from "react";
 import {useModal} from "../compModalContext";
 
@@ -22,12 +24,13 @@ function NewWalletModal(props) {
                         secondaryClicked={unSetModal}>
                         <div className="d-flex flex-column align-items-center">
                             <p>Welcome to Greenfinch, to get started you will need a wallet.</p>
-                            <button
-                                type="button"
-                                className="atmButtonDefault"
-                                onClick={async () => {await newWallet("password"); unSetModal()}}>
-                                <i className="fas fa-star-shooting"/>Create new wallet
-                            </button>
+                            <ButtonDefault
+                                buttonClass={"atmButtonDefault"}
+                                iconIncluded={true}
+                                iconClasses={"fas fa-star-shooting"} 
+                                text={"Create new wallet"}
+                                onClick={async () => {await newWallet("password"); unSetModal()}} 
+                            />
                             <button
                                 type="button"
                                 className="atmButtonText"

@@ -5,14 +5,14 @@ import React from "react";
 // import { deleteObject, getObject, listObjects, uploadObject } from "../../manager/objects.js";
 
 // Mocker
-import { deleteContainer, listContainers} from "../../mocker/containers.js";
-import { deleteObject, getObject, listObjects, uploadObject } from "../../mocker/objects.js";
+import { deleteContainer, listContainers} from "../../../mocker/containers.js";
+import { deleteObject, getObject, listObjects, uploadObject } from "../../../mocker/objects.js";
 
 // Components
-import BreadCrumb from "../layoutBreadCrumb";
-import ControlBar from "../viewOptions";
-import ContainerView from "../viewContainers";
-import ObjectView, {FileUpload} from "../viewObjects";
+import BreadCrumb from "../../layoutBreadCrumb";
+import ControlBar from "../../viewOptions";
+import ContainerView from "../../viewContainers";
+import ObjectView, {FileUpload} from "../../viewObjects";
 
 class TabVisual extends React.Component {
     constructor(props) {

@@ -3,11 +3,14 @@ import React from "react";
 
 import 'bootstrap/dist/css/bootstrap.min.css'; // Every page will use bootstrap
 import 'bootstrap/dist/js/bootstrap.min.js'; // TEMP - fine for V1
-import './assets/dashboard.scss'; //structural css
-import './assets/greenfinch.scss'; //brand css
+import './assets/dashboard.scss';
+import './assets/greenfinch.scss';
 
-import TabVisual from "./components/tabVisual";
-import Status from "./components/layoutHeader";
+import Status from "./components/a_organisms/Header";
+import TabVisual from "./components/a_templates/Artboard";
+
+import ButtonDefault from "./components/a_atoms/ButtonDefault";
+
 // import CompToast from "./components/compToast";
 
 // Actual
@@ -103,14 +106,15 @@ class App extends React.Component {
                             title={"Get started"}>
                             <div className="d-flex flex-column align-items-center">
                                 <p>Welcome to Greenfinch, to get started you will need a wallet.</p>
-                                <p><b>Please first, enter the password you would like to use for the wallet</b></p>
+                                <p><strong>Please first, enter the password you would like to use for the wallet</strong></p>
                                 <Form.Control id="walletPassword" type="password" placeholder="strong-password" />
-                                <button
-                                    type="button"
-                                    className="atmButtonDefault"
-                                    onClick={async () => {await newWallet(document.getElementById("walletPassword").value)}}>
-                                    <i className="fas fa-star-shooting"/>Create new wallet
-                                </button>
+                                <ButtonDefault
+                                    buttonClass={"atmButtonDefault"}
+                                    iconIncluded={true}
+                                    iconClasses={"fas fa-star-shooting"} 
+                                    text={"Create new wallet"}
+                                    onClick={async () => {await newWallet(document.getElementById("walletPassword").value)}} 
+                                />
                                 <button
                                     type="button"
                                     className="atmButtonText"

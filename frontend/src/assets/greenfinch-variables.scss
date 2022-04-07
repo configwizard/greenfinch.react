@@ -1,0 +1,52 @@
+// Brand stylesheet
+
+/* Variables: Fonts
+- - - - - - - - - - - - - - - - - - */
+// Myfonts.com - use the 'Webfont Kit Download' configuration
+@import url("https://hello.myfonts.net/count/3e7d84");
+
+@font-face {
+    font-family: 'AvertaStdPE-Regular';
+    src: url('fonts/AvertaStdPERegular/font.woff2') format('woff2'), url('fonts/AvertaStdPERegular/font.woff') format('woff');
+}
+@font-face {
+    font-family: 'AvertaStdPE-Semibold';
+    src: url('fonts/AvertaStdPESemibold/font.woff2') format('woff2'), url('fonts/AvertaStdPESemibold/font.woff') format('woff');
+}
+@font-face {
+    font-family: 'AvertaStdPE-Bold';
+    src: url('fonts/AvertaStdPEBold/font.woff2') format('woff2'), url('fonts/AvertaStdPEBold/font.woff') format('woff');
+}
+
+$brandFontReg: 'AvertaStdPE-Regular', Arial, Helvetica, sans-serif;
+$brandFontSemi: 'AvertaStdPE-Semibold', Arial, Helvetica, sans-serif;
+$brandFontBold: 'AvertaStdPE-Bold', Arial, Helvetica, sans-serif;
+
+/* Variables: Font Sizes
+- - - - - - - - - - - - - - - - - - */
+
+
+/* Variables: Color
+- - - - - - - - - - - - - - - - - - */
+$brandColorPrimary: #00e599;
+$brandColorSecondary: #00af92;
+$brandColorSecondary-dark: darken($brandColorSecondary, 15%);
+$brandColorWhite: #fff;
+$brandColorBlack: #000; // Change to a very dark green
+$brandColorDark: #2b393f;
+$brandColorLight: #f0f5f6;
+
+$toastColorSuccess: #00ad4b;
+$toastColorError: #E5004C;
+$toastColorWarning: #F47A00;
+$toastColorInfo: #0080F4;
+$toastColorBody: $brandColorDark;
+
+
+/* Variables: General
+- - - - - - - - - - - - - - - - - - */
+$brandLetterSpacing: 0.2rem;
+$brandBorderRadius: 5px;
+$brandTransitionSpeed: 0.3s;
+$brandDarkenValue: 12%;
+$brandBoxShadow: 0 0 10px rgba(0,0,0,0.3);

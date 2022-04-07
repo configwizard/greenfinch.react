@@ -1,18 +1,4 @@
-// Layout stylesheet
-
-/* Variables: Margin & Padding
-- - - - - - - - - - - - - - - - - - */
-$baseSizing: 1rem; // To test this value. We think 16px;
-
-$paddingXSmall: $baseSizing*0.5;
-$paddingSmall: $baseSizing;
-$paddingMedium: $baseSizing *1.5;
-$paddingLarge: $baseSizing *2;
-
-$marginXSmall: $baseSizing*0.5;
-$marginSmall: $baseSizing;
-$marginMedium: $baseSizing *1.5;
-$marginLarge: $baseSizing *2;
+@import "./dashboard-variables.scss";
 
 /* Reset
 - - - - - - - - - - - - - - - - - - */
@@ -45,12 +31,7 @@ span {
     }
 }
 
-.atmButtonDefault {
-    padding: 5px 12px;
-    & i {
-        margin-right: 7px;
-    }
-}
+
 
 .atmButtonText {
     padding: 0;
@@ -66,26 +47,19 @@ span {
 }
 
 .me-auto {
-    & .atmButtonDefault, & .atmButtonIcon, & .atmButtonIconClean {
+    & .atmButtonIcon, & .atmButtonIconClean {
         margin-right: $marginSmall; //temporary
     }
 }
 
 .ms-auto {
-    & .atmButtonDefault, & .atmButtonIcon, & .atmButtonIconClean {
+    & .atmButtonIcon, & .atmButtonIconClean {
         margin-left: $marginSmall; //temporary
     }
 }
 
 .atmButtonIconClean {
     padding: 0;
-}
-
-.molModalBody {
-    & .atmButtonDefault {
-        margin-top: $marginXSmall;
-        margin-bottom: $marginXSmall;
-    }
 }
 
 /* Element: Tabs
@@ -512,12 +486,6 @@ input:checked + .slider:before {
 }
 
 .orgWalletFooter { // short-term option as being over-run below
-    & .atmButtonDefault {
-        margin-left: 0;
-        & i {
-            margin-right: 7px;
-        }
-    }
     & .form-control {
         margin-top: $marginXSmall*1.5;
     }
