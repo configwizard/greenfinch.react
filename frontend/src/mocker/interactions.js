@@ -7,7 +7,6 @@ const retrieveFullFileSystem = async () => {
         console.log("error retrieving filesystem", e)
     }
 }
-
 const retrieveContainerFileSystem = async (containerID) => {
     try {
         let resp = await window.go.mocker.Mocker.RetrieveContainerFileSystem(containerID, "listContainerPopulatedObjects.json")

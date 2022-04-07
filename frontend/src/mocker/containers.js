@@ -1,7 +1,7 @@
 const listContainers = async () => {
     try {
-        // let containers = require('../dbg_data_structures/ListPopulatedContainers.json');
-        let containers = await window.go.mocker.Mocker.ListContainers("ListPopulatedContainers.json")
+        let containers = require('../dbg_data_structures/ListPopulatedContainers.json');
+        // let containers = await window.go.mocker.Mocker.ListContainers("ListPopulatedContainers.json")
         console.log("containers", containers)
         return containers
     } catch(e) {

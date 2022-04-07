@@ -1,20 +1,21 @@
 import * as React from 'react'
+import { Form } from 'react-bootstrap';
 
 // Actual
-// import { createContainer } from "../../manager/containers.js";
+// import { createContainer } from '../../manager/containers.js';
 
 // Mocker
-import { createContainer } from "../../mocker/containers.js"
+import { createContainer } from '../../../mocker/containers.js'
 
-import {useModal} from "../compModals/compModalContext";
-import CompModalStandard from "../compModals/compModalStandard";
-import { Form } from "react-bootstrap";
+// Components
+import { useModal } from '../../compModals/compModalContext';
+import CompModalStandard from '../../compModals/compModalStandard';
 
-import ButtonDefault from '../a_atoms/ButtonDefault';
-import ButtonIcon from '../a_atoms/ButtonIcon';
+import ButtonDefault from '../../a_atoms/ButtonDefault';
+import ButtonIcon from '../../a_atoms/ButtonIcon';
 
 function ControlBar({containers, selectedContainer, onSelected, changeView, viewMode, resetBreadcrumb}) {
-    console.log("containerList", containers)
+    // console.log("containerList", containers)
     const { setModal, unSetModal } = useModal()
 
     return (

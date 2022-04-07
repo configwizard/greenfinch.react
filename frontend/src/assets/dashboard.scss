@@ -498,39 +498,6 @@ input:checked + .slider:before {
     position: relative;
 }
 
-.molWallet {
-    position: absolute;
-    top: 50px;
-    right: 0;
-    z-index: 300;
-    min-width: 320px;
-    min-height: 420px;
-    & span.atmWalletNumber, span.atmWalletAddress {
-        display:block;
-    }
-    & h6 {
-        margin-bottom: 3px;
-    }
-    & span.atmWalletAddress {
-        margin-top: 2px;
-    }
-}
-
-.orgWalletHeader {
-    padding: $paddingXSmall;
-}
-.orgWalletBody {
-    padding: $paddingXSmall;
-    padding-top: $paddingMedium;
-}
-.orgWalletFooter {
-    padding: $paddingXSmall;
-}
-
-.molWalletOption {
-    margin-bottom: $marginSmall;
-}
-
 /* View: Options
 - - - - - - - - - - - - - - - - - - */
 .molButtonGroup {

@@ -1,15 +1,15 @@
 import './App.css';
-import React from "react";
+import React from 'react';
 
 import 'bootstrap/dist/css/bootstrap.min.css'; // Every page will use bootstrap
 import 'bootstrap/dist/js/bootstrap.min.js'; // TEMP - fine for V1
 import './assets/dashboard.scss';
 import './assets/greenfinch.scss';
 
-import Status from "./components/a_organisms/Header";
-import TabVisual from "./components/a_templates/Artboard";
+import ButtonDefault from './components/a_atoms/ButtonDefault';
+import Status from './components/a_organisms/Header';
+import Artboard from './components/a_templates/Artboard';
 
-import ButtonDefault from "./components/a_atoms/ButtonDefault";
 
 // import CompToast from "./components/compToast";
 
@@ -22,7 +22,6 @@ import { getAccountInformation, loadWallet, newWallet } from "./mocker/manager.j
 import CompProgress from "./components/compProgress";
 import CompModalBrand from "./components/compModals/compModalBrand";
 import {Form} from "react-bootstrap";
-
 
 function prepareWalletData(account) {
     console.log("props.account", account)
@@ -140,7 +139,7 @@ class App extends React.Component {
                 </section>
                 <div className="container-fluid">
                     <section className="orgMainJSON">
-                        <TabVisual account={this.state.account} refreshAccount={this.setStatusAccount}></TabVisual>
+                        <Artboard account={this.state.account} refreshAccount={this.setStatusAccount}></Artboard>
                     </section>
                     {/*
                         <CompToast autoDelete={true} autoDeleteTime={3000}></CompToast>

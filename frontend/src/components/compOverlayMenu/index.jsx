@@ -37,12 +37,6 @@ function CompOverlayMenu(props) {
                         </button>
                     </nav>
                 </div>
-                {/* <div className="modal fade" id="deleteModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <CompModalStandard title="Delete?" buttonTextPrimary="Yes" buttonTextSecondary="No" clicked={props.onDelete}>
-                        <Form.Label>Are you sure?</Form.Label>
-                        <Form.Text>Are you sure you want to delete this item?</Form.Text>
-                    </CompModalStandard>
-                </div> */}
             </div> : null
     )
 }

@@ -1,7 +1,9 @@
-import React, { useState } from "react";
-import CompWallet from "../compWallet";
-import Dropdown from "../dropdown";
-import {topUpNeoFS} from "../../manager/manager.js";
+import React, { useState } from 'react';
+
+import Dropdown from '../../dropdown';
+import {topUpNeoFS} from '../../../manager/manager.js';
+
+import Wallet from '../Wallet';
 
 function BreadCrumb(props) {
 
@@ -20,7 +22,6 @@ function BreadCrumb(props) {
     }
 
     return (
-
         <div className="molBlockBread d-flex align-items-center">
             <div className="atmBlockBread">
                 {/*<span className="atmBreadWallet"><i className="fas fa-lg fa-wallet"/>{props.walletAddress}</span>*/}
@@ -29,7 +30,7 @@ function BreadCrumb(props) {
             <div className="ms-auto">
                 <button type="button" className="atmButtonIconClean utButtonWallet" onClick={() => setShow(true)}>
                     <i className="far fa-wallet" />
-                    <CompWallet  onClose={() => setShow(false)} show={show} account={props.account} topUpWallet={topUpWallet}></CompWallet>
+                    <Wallet onClose={() => setShow(false)} show={show} account={props.account} topUpWallet={topUpWallet}></Wallet>
                 </button>
                 {/*
                     <button type="button" className="atmButtonIconClean" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"><i className="far fa-cog" /></button>
@@ -37,7 +38,7 @@ function BreadCrumb(props) {
                 <button type="button" className="atmButtonIconClean" onClick={props.onRefresh}><i className="far fa-sync-alt"/></button>
 
                 {/* Offcanvas right: need to do classes and text */}
-                    <div className="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+                    <div className="offcanvas offcanvas-end" tabIndex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
                         <div className="offcanvas-header d-flex align-items-center">
                             <h4 id="offcanvasRightLabel">Account Settings</h4>
                             <button type="button" className="atmButtonIconClean" data-bs-dismiss="offcanvas" aria-label="Close"><i className="fas fa-times"/></button>

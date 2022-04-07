@@ -1,20 +1,21 @@
-import React from "react";
+import React from 'react';
 
 // Actual
-// import { deleteContainer, listContainers} from "../../manager/containers.js";
-// import { deleteObject, getObject, listObjects, uploadObject } from "../../manager/objects.js";
+// import { deleteContainer, listContainers} from '../../../manager/containers.js';
+// import { deleteObject, getObject, listObjects, uploadObject } from '../../../manager/objects.js';
 
 // Mocker
-import { deleteContainer, listContainers} from "../../../mocker/containers.js";
-import { deleteObject, getObject, listObjects, uploadObject } from "../../../mocker/objects.js";
+import { deleteContainer, listContainers} from '../../../mocker/containers.js';
+import { deleteObject, getObject, listObjects, uploadObject } from '../../../mocker/objects.js';
 
 // Components
-import BreadCrumb from "../../layoutBreadCrumb";
-import ControlBar from "../../viewOptions";
-import ContainerView from "../../viewContainers";
-import ObjectView, {FileUpload} from "../../viewObjects";
+import ContainerView from '../../viewContainers';
+import ObjectView, {FileUpload} from '../../viewObjects';
 
-class TabVisual extends React.Component {
+import BreadCrumb from '../../a_organisms/HeaderArtboard';
+import ControlBar from '../../a_molecules/ControlBar';
+
+class Artboard extends React.Component {
     constructor(props) {
         super(props);
         this.state = {containerList: [], objectList: [], selectedObject: null, selectedContainer: null, viewMode: "grid", objectsLoaded: false, requestNewWallet: false};
@@ -51,9 +52,7 @@ class TabVisual extends React.Component {
         await listContainers()
         console.log("componentDidMount, objects", this.state.objectList)
     }
-
     onRefresh = async() => {
-
         await this.props.refreshAccount()
         console.log("onRefresh, objects", this.state.objectList)
         //ROBIN!! -- uncomment this following line if you want to really refresh the app.
@@ -179,4 +178,4 @@ class TabVisual extends React.Component {
     }
 }
 
-export default TabVisual;
+export default Artboard;

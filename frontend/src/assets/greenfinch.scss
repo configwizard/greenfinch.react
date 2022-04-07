@@ -1,27 +1,6 @@
 @import "./greenfinch-variables.scss";
 
-/* Mixins
-- - - - - - - - - - - - - - - - - - */
-@mixin titleStyle($titlesize) {
-    font-size: $titlesize;
-    text-transform: uppercase; 
-    font-family: $brandFontBold;
-    letter-spacing: $brandLetterSpacing;
-}
 
-@mixin ButtonIconSimple($iconSimpleFontSize, $iconSimpleColor) {
-    font-size: $iconSimpleFontSize;
-    color: $iconSimpleColor;
-    cursor: pointer;
-    background: transparent;
-}
-
-@mixin buttonIconFill($iconFillFontSize, $iconFillBorderRadius, $iconFillBgColor) {
-    font-size: $iconFillFontSize;
-    border-radius: $iconFillBorderRadius;
-    background-color: $iconFillBgColor;
-    cursor: pointer;
-}
 
 
 
@@ -290,43 +269,7 @@ input:checked + .slider {
 }
 
 
-/* Component: Wallet
-- - - - - - - - - - - - - - - - - - */
-.molWallet {
-    cursor: default;
-    text-align: left;
-    background-color: $brandColorLight;
-    color: $brandColorDark;
-    box-shadow: $brandBoxShadow;
-    & .orgWalletHeader {
-        background-color: darken($brandColorLight,5%);
-    }
-    & .orgWalletBody {
-        background-color: $brandColorLight;
-    }
-    & .orgWalletFooter {
-        border-top: 2px solid darken($brandColorLight,5%);
-        background-color: $brandColorLight;
-    }
-    & .atmButtonIconClean {
-        @include ButtonIconSimple(15px,$brandColorDark);
-    }
-    & h4.atmWalletTitle {
-        @include titleStyle(0.9rem);
-        color: $brandColorDark;
-    }
-    h6 {
-        @include titleStyle(0.6rem);
-        color: $brandColorSecondary-dark;
-    }
-    & span.atmWalletAddress {
-        font-size: 0.8rem;
-        line-height: 1.4;
-    }
-    & span.atmWalletNumber {
-        line-height: 1;
-    }
-}
+
 
 
 
