@@ -1,2 +1,75 @@
 @import "../../../assets/dashboard-variables.scss";
 @import "../../../assets/greenfinch-variables.scss";
+
+// And to do spacing... width vs height
+.atmButtonSmall {
+    font-size: 0.8rem;
+}
+
+.atmButtonMedium {
+    font-size: 1.2rem;
+}
+
+.atmButtonLarge {
+    font-size: 1.6rem;
+}
+
+// To Sort
+.atmButtonIcon {
+    color: $brandColorWhite;
+    background-color: $brandColorDark;
+    border-radius: $brandBorderRadius;
+    &:hover {
+        color: $brandColorPrimary;
+        background-color: $brandColorDark; 
+    }
+    &.utLive {
+        cursor: default!important;
+        background-color: $brandColorPrimary;
+        color: $brandColorWhite;
+        &:hover {
+            background-color: $brandColorPrimary;
+            color: $brandColorWhite;
+        }
+    }
+    &.utInactive {
+        cursor: not-allowed!important;
+        opacity: 0.1;
+        &:hover {
+            background-color: $brandColorDark;
+            color: $brandColorWhite;
+        }
+    }
+}
+
+.atmButtonIconClean {
+    // @include ButtonIconSimple(28px, $brandColorDark); To sort mixin
+    &:hover {
+        color: $brandColorPrimary;
+    }
+    &.active {
+        cursor: default;
+    }
+}
+
+
+.atmButtonIcon {
+    padding: 5px 8px;
+    min-width: 30px; 
+}
+
+.me-auto {
+    & .atmButtonIcon, & .atmButtonIconClean {
+        margin-right: $marginSmall; //temporary
+    }
+}
+
+.ms-auto {
+    & .atmButtonIcon, & .atmButtonIconClean {
+        margin-left: $marginSmall; //temporary
+    }
+}
+
+.atmButtonIconClean {
+    padding: 0;
+}

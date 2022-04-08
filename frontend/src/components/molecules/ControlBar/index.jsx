@@ -8,11 +8,8 @@ import { Form } from 'react-bootstrap';
 import { createContainer } from '../../../mocker/containers.js'
 
 // Components
-
-
 import ButtonDefault from '../../atoms/ButtonDefault';
 import ButtonIcon from '../../atoms/ButtonIcon';
-
 import { useModal } from '../../organisms/Modal/ModalContext';
 import CompModalStandard from '../../organisms/Modal/ModalStandard';
 
@@ -53,17 +50,23 @@ function ControlBar({containers, selectedContainer, onSelected, changeView, view
                     </div>
                     <div className="molButtonGroup">
                         <ButtonIcon
-                            buttonClass={`atmButtonIcon ${selectedContainer ? "utActive" : "utInactive"}`}
+                            hasBackground={true}
+                            buttonSize={"small"}
+                            buttonClasses={selectedContainer ? "utActive" : "utInactive"}
                             iconClasses={"fas fa-arrow-alt-to-left"}
                             onClick={()=>{resetBreadcrumb()}} />
                     </div>
                     <div className="molButtonGroup">
                         <ButtonIcon
-                            buttonClass={`atmButtonIcon ${viewMode === 'grid' ? "utLive" : "utReady"}`}
+                            hasBackground={true}
+                            buttonSize={"medium"}
+                            buttonClasses={viewMode === 'grid' ? "utLive" : "utReady"}
                             iconClasses={"fas fa-th-large"}
                             onClick={()=>{changeView("grid")}} />
                         <ButtonIcon
-                            buttonClass={`atmButtonIcon ${viewMode === 'grid' ? "utReady" : "utLive"}`}
+                            hasBackground={true}
+                            buttonSize={"large"}
+                            buttonClasses={viewMode === 'grid' ? "utReady" : "utLive"}
                             iconClasses={"fas fa-list"}
                             onClick={()=>{changeView("list")}} />
                     </div>

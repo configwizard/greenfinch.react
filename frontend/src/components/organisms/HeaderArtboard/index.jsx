@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { topUpNeoFS } from '../../../manager/manager.js';
 
 // Components
+import ButtonIcon from '../../atoms/ButtonIcon';
 import Dropdown from '../../molecules/Dropdown';
 import Wallet from '../Wallet';
 
@@ -31,14 +32,33 @@ function BreadCrumb(props) {
                 <span className="atmBreadCrumb"><i className="fas fa-home"/></span><span className="utBreadLive" onClick={props.resetBreadcrumb}>Containers</span><i className="fas fa-lg fa-caret-right"/><span className="utBreadLive">{selectedContainer}</span><i className="fas fa-lg fa-caret-right"/><span className="atmBreadCrumb">{selectedObject}</span>
             </div>
             <div className="ms-auto">
-                <button type="button" className="atmButtonIconClean utButtonWallet" onClick={() => setShow(true)}>
-                    <i className="far fa-wallet" />
+                <ButtonIcon 
+                    hasBackground={false}
+                    buttonSize={"large"}
+                    buttonClasses={"utButtonWallet"}
+                    onClick={() => setShow(true)}
+                    iconClasses={"far fa-wallet"} />
+                    {/* How to work this as originally wrapped in <button> tag */}
                     <Wallet onClose={() => setShow(false)} show={show} account={props.account} topUpWallet={topUpWallet}></Wallet>
-                </button>
-                {/*
-                    <button type="button" className="atmButtonIconClean" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"><i className="far fa-cog" /></button>
-                */}
-                <button type="button" className="atmButtonIconClean" onClick={props.onRefresh}><i className="far fa-sync-alt"/></button>
+                <ButtonIcon 
+                    hasBackground={false}
+                    buttonSize={"medium"}
+                    buttonClasses={"utButtonWallet"}
+                    iconClasses={"far fa-bell"} />
+                <ButtonIcon 
+                    hasBackground={false}
+                    buttonSize={"small"}
+                    buttonClasses={"utButtonWallet"}
+                    iconClasses={"far fa-cog"} />   
+                    {/*
+                        <button type="button" className="atmButtonIconClean" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"><i className="far fa-cog" /></button>
+                    */}
+                <ButtonIcon 
+                    hasBackground={false}
+                    buttonSize={"large"}
+                    buttonClasses={"utButtonWallet"}
+                    onClick={props.onRefresh}
+                    iconClasses={"far fa-sync-alt"} />
 
                 {/* Offcanvas right: need to do classes and text */}
                     <div className="offcanvas offcanvas-end" tabIndex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">

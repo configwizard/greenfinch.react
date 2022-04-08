@@ -31,35 +31,12 @@ span {
     }
 }
 
-
-
 .atmButtonText {
     padding: 0;
     margin: 0;
     & i {
         margin-right: 7px;
     }
-}
-
-.atmButtonIcon {
-    padding: 5px 8px;
-    min-width: 30px; 
-}
-
-.me-auto {
-    & .atmButtonIcon, & .atmButtonIconClean {
-        margin-right: $marginSmall; //temporary
-    }
-}
-
-.ms-auto {
-    & .atmButtonIcon, & .atmButtonIconClean {
-        margin-left: $marginSmall; //temporary
-    }
-}
-
-.atmButtonIconClean {
-    padding: 0;
 }
 
 /* Element: Tabs

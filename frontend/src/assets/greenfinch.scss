@@ -56,43 +56,7 @@ button[class^="atmButton"] {
     }
 }
 
-.atmButtonIcon {
-    font-size: 0.8rem;
-    color: $brandColorWhite;
-    background-color: $brandColorDark;
-    border-radius: $brandBorderRadius;
-    &:hover {
-        color: $brandColorPrimary;
-        background-color: $brandColorDark; 
-    }
-    &.utLive {
-        cursor: default!important;
-        background-color: $brandColorPrimary;
-        color: $brandColorWhite;
-        &:hover {
-            background-color: $brandColorPrimary;
-            color: $brandColorWhite;
-        }
-    }
-    &.utInactive {
-        cursor: not-allowed!important;
-        opacity: 0.1;
-        &:hover {
-            background-color: $brandColorDark;
-            color: $brandColorWhite;
-        }
-    }
-}
 
-.atmButtonIconClean {
-    @include ButtonIconSimple(28px, $brandColorDark);
-    &:hover {
-        color: $brandColorPrimary;
-    }
-    &.active {
-        cursor: default;
-    }
-}
 
 .molModalBody {
     & .atmButtonText {
