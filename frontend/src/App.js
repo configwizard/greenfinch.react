@@ -1,17 +1,11 @@
 import './App.css';
 import React from 'react';
+import { Form } from "react-bootstrap";
 
 import 'bootstrap/dist/css/bootstrap.min.css'; // Every page will use bootstrap
 import 'bootstrap/dist/js/bootstrap.min.js'; // TEMP - fine for V1
 import './assets/dashboard.scss';
 import './assets/greenfinch.scss';
-
-import ButtonDefault from './components/a_atoms/ButtonDefault';
-import Status from './components/a_organisms/Header';
-import Artboard from './components/a_templates/Artboard';
-
-
-// import CompToast from "./components/compToast";
 
 // Actual
 // import { getAccountInformation, loadWallet, newWallet } from "./manager/manager.js"
@@ -19,9 +13,13 @@ import Artboard from './components/a_templates/Artboard';
 // Mocker
 import { getAccountInformation, loadWallet, newWallet } from "./mocker/manager.js"
 
-import CompProgress from "./components/compProgress";
-import CompModalBrand from "./components/compModals/compModalBrand";
-import {Form} from "react-bootstrap";
+// Components
+import ButtonDefault from './components/atoms/ButtonDefault';
+import ProgressBar from "./components/molecules/ProgressBar";
+// import ToastMessage from "./components/molecules/Toast";
+import Status from './components/organisms/Header';
+import CompModalBrand from "./components/organisms/Modal/ModalBrand";
+import Artboard from './components/templates/Artboard';
 
 function prepareWalletData(account) {
     console.log("props.account", account)
@@ -126,7 +124,7 @@ class App extends React.Component {
                     </div>
                 </div>
                 {/*
-                    <CompToast autoDelete={true} autoDeleteTime={3000}></CompToast>
+                    <ToastMessage autoDelete={true} autoDeleteTime={3000}></ToastMessage>
                 */}
             </div>)
         }
@@ -142,9 +140,9 @@ class App extends React.Component {
                         <Artboard account={this.state.account} refreshAccount={this.setStatusAccount}></Artboard>
                     </section>
                     {/*
-                        <CompToast autoDelete={true} autoDeleteTime={3000}></CompToast>
+                        <ToastMessage autoDelete={true} autoDeleteTime={3000}></ToastMessage>
                     */}
-                    <CompProgress></CompProgress>
+                    <ProgressBar></ProgressBar>
                 </div>
             </>
         );

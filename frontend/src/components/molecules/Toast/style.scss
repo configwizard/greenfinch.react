@@ -1,0 +1,114 @@
+@import "../../../assets/dashboard-variables.scss";
+@import "../../../assets/greenfinch-variables.scss";
+
+/* Component: Toast
+- - - - - - - - - - - - - - - - - - */
+.toast-container {
+    transition: transform .6s ease-in-out;
+    animation: toast-in-right .7s;
+}
+
+@keyframes toast-in-right {
+	from {
+	  transform: translateX(100%);
+	}
+	to {
+	  transform: translateX(0);
+	}
+}
+
+.toast-wrapper {
+    position: fixed;
+    top: 40px;
+    right: 40px;
+    margin: 0 auto;
+    width: 350px;
+    min-height: 70px;
+    z-index: 20000;
+    & .toast-inner {
+        min-height: 70px;
+        width: 100%;
+        & .toast-icon {
+            min-height: 70px;
+            width: 60px;
+        }
+        & .toast-content {
+            min-height: 70px;
+            width: 100%;
+            padding: $paddingSmall;
+            & span.atmToastTitle {
+                margin-bottom: 7px;
+            }
+            & i.fa-times { // close button
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                cursor: pointer;
+            }
+        }
+    }
+}
+
+/* Component: Toast
+- - - - - - - - - - - - - - - - - - */
+.toast-wrapper {
+    font-family: $brandFontSemi;
+    background: $brandColorWhite;
+    box-shadow: $brandBoxShadow;
+    & .toast-inner {
+        & .toast-icon {
+            & i {
+                font-size: 1.6rem;
+                color: rgba(255,255,255,0.7);
+            }
+        }
+        & .toast-content {
+            background-color: $brandColorWhite;
+            & span.atmToastTitle {
+                letter-spacing: $brandLetterSpacing;
+                font-size: 0.8rem;
+                line-height: 1.2;
+                text-transform: uppercase;
+                font-family: $brandFontBold;
+            }
+            & span.atmToastMessage {
+                color: $toastColorBody;
+                font-size: 0.8rem;
+                line-height: 1.2;
+                font-family: $brandFontSemi;
+            }
+            & i.fa-times { // close button
+                transition: $brandTransitionSpeed;
+                color: rgba($brandColorDark, 0.5);
+                font-size: 1.1rem;
+                &:hover {
+                    color: rgba($brandColorDark, 0.8);
+                }
+            }
+        }
+    }
+    &.success {
+        background-color: $toastColorSuccess;
+        & span.atmToastTitle {
+            color: $toastColorSuccess;
+        }
+    }
+    &.error {
+        background-color: $toastColorError;
+        & span.atmToastTitle  {
+            color: $toastColorError;
+        }
+    }
+    &.warning {
+        background-color: $toastColorWarning;
+        & span.atmToastTitle  {
+            color: $toastColorWarning;
+        }
+    }
+    &.info {
+        background-color: $toastColorInfo;
+        & span.atmToastTitle  {
+            color: $toastColorInfo;
+        }
+    }
+}

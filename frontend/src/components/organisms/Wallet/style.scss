@@ -1,0 +1,66 @@
+@import "../../../assets/dashboard-variables.scss";
+@import "../../../assets/greenfinch-variables.scss";
+
+.org-wallet {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    z-index: 300;
+    min-width: 320px;
+    min-height: 420px;
+    cursor: default;
+    text-align: left;
+    background-color: $brandColorLight;
+    color: $brandColorDark;
+    box-shadow: $brandBoxShadow;
+    & .wallet-header {
+        padding: $paddingXSmall;
+        background-color: darken($brandColorLight,5%);
+    }
+    & .wallet-body {
+        padding: $paddingXSmall;
+        padding-top: $paddingMedium;
+        background-color: $brandColorLight;
+    }
+    & .wallet-footer {
+        padding: $paddingXSmall;
+        border-top: 2px solid darken($brandColorLight,5%);
+        background-color: $brandColorLight;
+    }
+}
+
+// To organise
+.org-wallet {
+    & .atmButtonIconClean {
+        @include ButtonIconSimple(15px,$brandColorDark);
+    }
+    & h4.atmWalletTitle {
+        @include titleStyle(0.9rem);
+        color: $brandColorDark;
+    }
+    h6 {
+        @include titleStyle(0.6rem);
+        color: $brandColorSecondary-dark;
+    }
+    & span.atmWalletAddress {
+        font-size: 0.8rem;
+        line-height: 1.4;
+    }
+    & span.atmWalletNumber {
+        line-height: 1;
+    }
+    & span.atmWalletNumber, span.atmWalletAddress {
+        display:block;
+    }
+    & h6 {
+        margin-bottom: 3px;
+    }
+    & span.atmWalletAddress {
+        margin-top: 2px;
+    }
+}
+
+.molWalletOption {
+    margin-bottom: $marginSmall;
+}
+

@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { ModalProvider } from './components/compModals/compModalContext'
+import { ModalProvider } from './components/organisms/Modal/ModalContext';
 
 ReactDOM.render(
     <React.StrictMode>
