@@ -29,7 +29,7 @@ function NewWalletModal(props) {
                             <ButtonDefault
                                 buttonClass={"atmButtonDefault"}
                                 iconIncluded={true}
-                                iconClasses={"fas fa-star-shooting"} 
+                                faClass={"fas fa-star-shooting"} 
                                 text={"Create new wallet"}
                                 onClick={async () => {await newWallet("password"); unSetModal()}} 
                             />

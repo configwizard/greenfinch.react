@@ -1,0 +1,17 @@
+@import "../../../assets/dashboard-variables.scss";
+@import "../../../assets/greenfinch-variables.scss";
+
+.org-navbar-side {
+    background-color: $brandColorDark;
+    height: 100%;
+    width: 60px;
+    overflow: auto;
+    & ul {
+        width: 60px;
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: auto;
+      }
+}

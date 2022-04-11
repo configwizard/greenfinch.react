@@ -33,13 +33,13 @@ function ControlBar({containers, selectedContainer, onSelected, changeView, view
                         <ButtonDefault
                             buttonClass={"atmButtonDefault"}
                             iconIncluded={true}
-                            iconClasses={"fas fa-plus-circle"} 
+                            faClass={"fas fa-plus-circle"} 
                             text={"New container"}
                             onClick={() => {
                                 setModal(
                                 <CompModalStandard
                                     title={"Add a new container"}
-                                    buttonTextPrimary={"Send"}
+                                    buttonTextPrimary={"Add"}
                                     buttonTextSecondary={"Cancel"}
                                     primaryClicked={async () => {await createContainer(document.getElementById("containerName").value); unSetModal()}}
                                     secondaryClicked={async () => unSetModal()}>
@@ -51,23 +51,23 @@ function ControlBar({containers, selectedContainer, onSelected, changeView, view
                     <div className="molButtonGroup">
                         <ButtonIcon
                             hasBackground={true}
-                            buttonSize={"small"}
-                            buttonClasses={selectedContainer ? "utActive" : "utInactive"}
-                            iconClasses={"fas fa-arrow-alt-to-left"}
+                            buttonSize={"medium"}
+                            buttonClass={selectedContainer ? "utActive" : "utInactive"}
+                            faClass={"fas fa-arrow-alt-to-left"}
                             onClick={()=>{resetBreadcrumb()}} />
                     </div>
                     <div className="molButtonGroup">
                         <ButtonIcon
                             hasBackground={true}
                             buttonSize={"medium"}
-                            buttonClasses={viewMode === 'grid' ? "utLive" : "utReady"}
-                            iconClasses={"fas fa-th-large"}
+                            buttonClass={viewMode === 'grid' ? "utLive" : "utReady"}
+                            faClass={"fas fa-th-large"}
                             onClick={()=>{changeView("grid")}} />
                         <ButtonIcon
                             hasBackground={true}
-                            buttonSize={"large"}
-                            buttonClasses={viewMode === 'grid' ? "utReady" : "utLive"}
-                            iconClasses={"fas fa-list"}
+                            buttonSize={"medium"}
+                            buttonClass={viewMode === 'grid' ? "utReady" : "utLive"}
+                            faClass={"fas fa-list"}
                             onClick={()=>{changeView("list")}} />
                     </div>
                 </div>

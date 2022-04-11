@@ -19,6 +19,7 @@ import ProgressBar from "./components/molecules/ProgressBar";
 import ToastMessage from "./components/molecules/Toast";
 import Status from './components/organisms/Header';
 import CompModalBrand from "./components/organisms/Modal/ModalBrand";
+import NavbarSide from './components/organisms/NavbarSide';
 import Artboard from './components/templates/Artboard';
 
 function prepareWalletData(account) {
@@ -99,7 +100,7 @@ class App extends React.Component {
                                 <ButtonDefault
                                     buttonClass={"atmButtonDefault"}
                                     iconIncluded={true}
-                                    iconClasses={"fas fa-star-shooting"} 
+                                    faClass={"fas fa-star-shooting"} 
                                     text={"Create new wallet"}
                                     onClick={async () => {await newWallet(document.getElementById("walletPassword").value)}} 
                                 />
@@ -119,18 +120,27 @@ class App extends React.Component {
         }
         return (
             <>
-                <section className="orgHeaderStatus">
-                    <div className="molHeaderContent">
-                        <Status account={this.state.account}></Status>
+                <div className="d-flex flex-column">
+                    <div>
+                        <div className="container-fluid">
+                            <Status account={this.state.account}></Status>
+                        </div>
                     </div>
-                </section>
-                <div className="container-fluid">
-                    <section className="orgMainJSON">
-                        <Artboard account={this.state.account} refreshAccount={this.setStatusAccount}></Artboard>
-                    </section>
-                    <ToastMessage autoDelete={true} autoDeleteTime={3000}></ToastMessage>
-                    <ProgressBar></ProgressBar>
+                    <div className="flex-grow-1">
+                        <div className="container-fluid d-flex flex-row">
+                            <div className="flex-shrink-1">
+                                <NavbarSide/>
+                            </div>
+                            {/*
+                            <div className="orgMainJSON w-100">
+                                <Artboard account={this.state.account} refreshAccount={this.setStatusAccount}></Artboard>
+                            </div>
+                            */}
+                        </div>
+                    </div>
                 </div>
+                <ToastMessage autoDelete={true} autoDeleteTime={3000}></ToastMessage>
+                <ProgressBar></ProgressBar>
             </>
         );
     }

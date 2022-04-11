@@ -10,7 +10,7 @@ import './style.scss';
 // import Typography from 'components/atoms/Typography';
 // constantas = themes
 
-const ButtonDefault = ({ buttonClass, disabled, onClick, iconIncluded, iconClasses, text }) => {
+const ButtonDefault = ({ buttonClass, disabled, onClick, iconIncluded, faClass, text }) => {
   return (
     <button
         type="button"
@@ -19,7 +19,7 @@ const ButtonDefault = ({ buttonClass, disabled, onClick, iconIncluded, iconClass
         onClick={onClick} >
             {
                 iconIncluded && (
-                    <i className={iconClasses} />
+                    <i className={faClass} />
                 )
             }
             {text}
@@ -34,7 +34,7 @@ ButtonDefault.propTypes = {
     disabled: PropTypes.bool,
     onClick: PropTypes.func,
     iconIncluded: PropTypes.bool,
-    iconClasses: PropTypes.string,
+    faClass: PropTypes.string,
     text: PropTypes.string  
 };
 
@@ -42,6 +42,6 @@ ButtonDefault.defaultProps = {
     buttonClass: "atmButtonDefault",
     disabled: false,
     iconIncluded: false,
-    iconClasses: "fas fa-flag",
+    faClass: "fas fa-flag",
     text: "button text"
 };                            

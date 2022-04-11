@@ -35,30 +35,27 @@ function BreadCrumb(props) {
                 <ButtonIcon 
                     hasBackground={false}
                     buttonSize={"large"}
-                    buttonClasses={"utButtonWallet"}
                     onClick={() => setShow(true)}
-                    iconClasses={"far fa-wallet"} />
+                    buttonClass={"utButtonWallet"}
+                    faClass={"far fa-wallet"} />
                     {/* How to work this as originally wrapped in <button> tag */}
                     <Wallet onClose={() => setShow(false)} show={show} account={props.account} topUpWallet={topUpWallet}></Wallet>
                 <ButtonIcon 
                     hasBackground={false}
-                    buttonSize={"medium"}
-                    buttonClasses={"utButtonWallet"}
-                    iconClasses={"far fa-bell"} />
+                    buttonSize={"large"}
+                    faClass={"far fa-bell"} />
                 <ButtonIcon 
                     hasBackground={false}
-                    buttonSize={"small"}
-                    buttonClasses={"utButtonWallet"}
-                    iconClasses={"far fa-cog"} />   
+                    buttonSize={"large"}
+                    faClass={"far fa-cog"} />   
                     {/*
                         <button type="button" className="atmButtonIconClean" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"><i className="far fa-cog" /></button>
                     */}
                 <ButtonIcon 
                     hasBackground={false}
                     buttonSize={"large"}
-                    buttonClasses={"utButtonWallet"}
                     onClick={props.onRefresh}
-                    iconClasses={"far fa-sync-alt"} />
+                    faClass={"far fa-sync-alt"} />
 
                 {/* Offcanvas right: need to do classes and text */}
                     <div className="offcanvas offcanvas-end" tabIndex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">

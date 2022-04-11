@@ -1,25 +1,7 @@
 @import "./dashboard-variables.scss";
 
-/* Reset
-- - - - - - - - - - - - - - - - - - */
-body {
-    height: 100vh;
-}
-
-span {
-    display: inline-block;
-}
-
-.container, .container-fluid {
-    padding-left: $paddingLarge;
-    padding-right: $paddingLarge;
-}
-
 /* Elements: Buttons
 - - - - - - - - - - - - - - - - - - */
-
-// can we make buttons a mixin, to add border radius...etc, work out what is required from a button - starting point and to build upon.
-
 // Make mixin
 .atmButtonBase {
     &.nav-link {
@@ -231,21 +213,11 @@ input:checked + .slider:before {
 /* Styles: General
 - - - - - - - - - - - - - - - - - - */
 
-.orgHeaderStatus {
-    min-height: 72px;
-    & .molHeaderContent {
-        padding: $paddingSmall;
-    }
-    & .atmStatus {
-        margin-right: $marginSmall;
-    }
-}
-
 .orgMainJSON { //change this name
-    margin-top: $marginSmall;
-    margin-bottom: $marginSmall;
+    //margin-top: $marginSmall;
+    //margin-bottom: $marginSmall;
     & .molViewJSON {
-        height: 500px;
+        height: 100%;
     }
     .orgBlockData {
         height: 120px;
@@ -262,9 +234,10 @@ input:checked + .slider:before {
         }
     }
     .orgContainersGrid {
-        padding: 0 $paddingSmall;
-        height: 400px;
         margin-top: $marginSmall;
+        padding: 0 $paddingSmall;
+        height: 100%;
+        
         overflow-x: hidden;
         overflow-y: scroll;
         & .molButtonGrid {
@@ -359,12 +332,6 @@ input:checked + .slider:before {
             cursor: pointer;
         }
     }
-    & i {
-        margin-right: $marginXSmall;
-    }
-    & .ms-auto i {
-        margin-right: 0;
-    }
 }
 
 .orgWalletFooter { // short-term option as being over-run below
@@ -376,9 +343,6 @@ input:checked + .slider:before {
 
 /* Component: Wallet
 - - - - - - - - - - - - - - - - - - */
-.utButtonWallet {
-    position: relative;
-}
 
 /* View: Options
 - - - - - - - - - - - - - - - - - - */

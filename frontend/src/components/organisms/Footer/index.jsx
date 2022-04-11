@@ -16,7 +16,7 @@ export default function Footer({fireToast, percentage}) {
                 <ButtonDefault
                     buttonClass={"atmButtonDefault"}
                     iconIncluded={true}
-                    iconClasses={"fas fa-hand-point-right"}
+                    faClass={"fas fa-hand-point-right"}
                     text={"Click me for modal"}
                     onClick={() => {
                         setModal(
@@ -32,14 +32,14 @@ export default function Footer({fireToast, percentage}) {
                 <ButtonDefault
                     buttonClass={"atmButtonDefault"}
                     iconIncluded={true}
-                    iconClasses={"fas fa-hand-point-right"}
+                    faClass={"fas fa-hand-point-right"}
                     text={"Click me for progress"}
                     onClick={() => setShow(true)}
                 />
                 <ButtonDefault
                     buttonClass={"atmButtonDefault"}
                     iconIncluded={true}
-                    iconClasses={"fas fa-hand-point-right"}
+                    faClas={"fas fa-hand-point-right"}
                     text={"Click me for toast"}
                     onClick={() => {fireToast({Title: "clicked", Type:"success", Description:"Toast launched."})}}
                 />

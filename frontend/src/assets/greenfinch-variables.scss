@@ -51,6 +51,14 @@ $brandTransitionSpeed: 0.3s;
 $brandDarkenValue: 12%;
 $brandBoxShadow: 0 0 10px rgba(0,0,0,0.3);
 
+/* Base: Buttons
+- - - - - - - - - - - - - - - - - - */
+button[class^="atmButton"] {
+    transition: $brandTransitionSpeed;
+    border: none;
+    font-family: $brandFontBold;
+    border-radius: none;
+}
 
 /* Mixins
 - - - - - - - - - - - - - - - - - - */

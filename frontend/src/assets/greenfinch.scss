@@ -1,9 +1,5 @@
 @import "./greenfinch-variables.scss";
 
-
-
-
-
 /* Styles: Base
 - - - - - - - - - - - - - - - - - - */
 body {
@@ -13,21 +9,11 @@ body {
 
 /* Elements: Buttons
 - - - - - - - - - - - - - - - - - - */
-
-// cover off all, buttons for all states, active/inactive, activated/live/ready (better name needed), becomes a mixin???
-// Make mixin
-button[class^="atmButton"] {
-    transition: $brandTransitionSpeed;
-    border: none;
-    font-family: $brandFontBold;
-    border-radius: none;
-}
-
 // Make mixin
 .atmButtonBase {
     transition: $brandTransitionSpeed;
     border-radius: none;
-    background: none;
+    background: transparent;
     &.nav-link {
         font-family: $brandFontSemi;
         text-align: left;
@@ -46,8 +32,6 @@ button[class^="atmButton"] {
     }
 }
 
-
-
 .atmButtonText {
     color: $brandColorDark;
     background: none;
@@ -55,8 +39,6 @@ button[class^="atmButton"] {
         text-decoration: underline;
     }
 }
-
-
 
 .molModalBody {
     & .atmButtonText {
@@ -94,15 +76,6 @@ button[class^="atmButton"] {
         background-color: rgba(255,255,255,0.8);
     }
 }
-
-/* #uncontrolled-tab-example-tab-encrypt {
-    color: black!important;
-} */
-
-/* #uncontrolled-tab-example-tab-decrypt {
-    color: black!important;
-} */
-
 
 /* Element: Toggle switch
 - - - - - - - - - - - - - - - - - - */
@@ -278,22 +251,7 @@ span.utUCSmall {
     @include titleStyle (0.7rem);
 }
 
-.orgHeaderStatus {
-    box-shadow: 0 0 15px rgba($brandColorDark, 0.6);
-    background-color: $brandColorDark;
-    color: $brandColorPrimary;
-    & .atmStatus {
-        font-size: 0.9rem;
-        letter-spacing: 0.07em;
-        font-family: $brandFontSemi;
-        &:last-child {
-            text-align: right;
-        }
-    }
-    & .utUCSmall {
-        color: $brandColorSecondary;
-    }
-}
+
 
 .orgMainJSON { //change this name
     background-color: $brandColorWhite;

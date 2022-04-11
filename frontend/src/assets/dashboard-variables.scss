@@ -13,3 +13,23 @@ $marginXSmall: $baseSizing*0.5;
 $marginSmall: $baseSizing;
 $marginMedium: $baseSizing *1.5;
 $marginLarge: $baseSizing *2;
+
+/* Reset
+- - - - - - - - - - - - - - - - - - */
+body {
+    height: 100vh;
+}
+
+span {
+    display: inline-block;
+}
+
+.container {
+    padding-left: $paddingLarge;
+    padding-right: $paddingLarge;
+}
+
+.container-fluid {
+    padding-left: 0;
+    padding-right: 0;
+}

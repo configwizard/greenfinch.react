@@ -1,20 +1,7 @@
 @import "../../../assets/dashboard-variables.scss";
 @import "../../../assets/greenfinch-variables.scss";
 
-// And to do spacing... width vs height
-.atmButtonSmall {
-    font-size: 0.8rem;
-}
-
-.atmButtonMedium {
-    font-size: 1.2rem;
-}
-
-.atmButtonLarge {
-    font-size: 1.6rem;
-}
-
-// To Sort
+// Icon button, incl. background-color
 .atmButtonIcon {
     color: $brandColorWhite;
     background-color: $brandColorDark;
@@ -23,6 +10,49 @@
         color: $brandColorPrimary;
         background-color: $brandColorDark; 
     }
+    &.atmButtonSmall {
+        font-size: 0.8rem;
+        min-width: 0.8rem;
+        padding: 4px 8px;
+    }
+    &.atmButtonMedium {
+        font-size: 1rem;
+        min-width: 1rem;
+        padding: 4px 8px;
+    }
+    &.atmButtonLarge {
+        font-size: 1.2rem;
+        min-width: 1.2rem;
+        padding: 5px 10px;
+    }
+}
+
+// Icon button, not incl. background-color
+// TO SORT: @include ButtonIconSimple(28px, $brandColorDark); To sort mixin
+.atmButtonIconClean {
+    background-color: transparent;
+    color: $brandColorDark;
+    &:hover {
+        background-color: transparent;
+        color: $brandColorPrimary;
+    }
+    &.atmButtonSmall {
+        font-size: 1rem;
+        padding: 4px 0;
+    }
+    &.atmButtonMedium {
+        font-size: 1.2rem;
+        padding: 5px 0;
+    }
+    &.atmButtonLarge {
+        font-size: 1.4rem;
+        min-width: 1.4rem;
+        padding: 6px 0;
+    }
+}
+
+// TO SORT
+.atmButtonIcon {
     &.utLive {
         cursor: default!important;
         background-color: $brandColorPrimary;
@@ -43,19 +73,9 @@
 }
 
 .atmButtonIconClean {
-    // @include ButtonIconSimple(28px, $brandColorDark); To sort mixin
-    &:hover {
-        color: $brandColorPrimary;
-    }
     &.active {
         cursor: default;
     }
-}
-
-
-.atmButtonIcon {
-    padding: 5px 8px;
-    min-width: 30px; 
 }
 
 .me-auto {
@@ -68,8 +88,4 @@
     & .atmButtonIcon, & .atmButtonIconClean {
         margin-left: $marginSmall; //temporary
     }
-}
-
-.atmButtonIconClean {
-    padding: 0;
 }

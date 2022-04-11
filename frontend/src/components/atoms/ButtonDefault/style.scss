@@ -2,13 +2,18 @@
 @import "../../../assets/greenfinch-variables.scss";
 
 .atmButtonDefault {
+    padding: 5px 12px;
     font-size: 0.9rem;
     color: $brandColorWhite;
     background-color: $brandColorDark;
     border-radius: $brandBorderRadius;
+    
     &:hover {
         color: $brandColorPrimary;
         background-color: $brandColorDark;
+    }
+    & i {
+        margin-right: 7px;
     }
     &.utInactive {
         cursor: not-allowed!important;
@@ -20,40 +25,15 @@
     }
 }
 
-.atmButtonDefault {
-    font-size: 1.1rem;
-}
-
-.atmButtonDefault {
-    padding: 5px 12px;
-    & i {
-        margin-right: 7px;
-    }
-}
-
-.me-auto {
+// TO SORT
+/* .me-auto {
     & .atmButtonDefault { 
-        margin-right: $marginSmall; //temporary
+        margin-right: $marginSmall;
     }
 }
 
 .ms-auto {
     & .atmButtonDefault {
-        margin-left: $marginSmall; //temporary
+         margin-left: $marginSmall;
     }
-}
-
-.atmButtonDefault {
-    margin-top: $marginXSmall;
-    margin-bottom: $marginXSmall;
-}
-
-// This shouldn't happen as governed elsewhere, short-term option as being over-run below
-.orgWalletFooter { 
-    & .atmButtonDefault {
-        margin-left: 0;
-        & i {
-            margin-right: 7px;
-        }
-    }
-}
+} */

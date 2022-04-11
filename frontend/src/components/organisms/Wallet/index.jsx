@@ -55,7 +55,7 @@ const Wallet = props => {
                         <ButtonDefault 
                             buttonClass={"atmButtonDefault"}
                             iconIncluded={true}
-                            iconClasses={"fas fa-chart-line"}
+                            faClass={"fas fa-chart-line"}
                             text={"Top-up"}
                             onClick={(amount) => {console.log("topping up"); props.topUpWallet(document.getElementById("topUpAmount").value)}} />
                     </section>

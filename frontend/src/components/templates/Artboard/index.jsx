@@ -56,8 +56,8 @@ class Artboard extends React.Component {
     onRefresh = async() => {
         await this.props.refreshAccount()
         console.log("onRefresh, objects", this.state.objectList)
-        //ROBIN!! -- uncomment this following line if you want to really refresh the app.
-        // window.location.reload(false); //disable this
+        //Refresh button (dev) -- uncomment this following line if you want to really refresh the app.
+        window.location.reload(false); //disable this
         await this.setState(this.setState({...this.state, containerList: [], objectList: []}))
         await listContainers()
         if (this.state.selectedContainer == null) {
@@ -158,7 +158,6 @@ class Artboard extends React.Component {
     }
     render() {
         console.log("props/state account", this.props.account, this.state.account)
-
         return (
             <section className="orgViewVisual">
                 <div className="row">

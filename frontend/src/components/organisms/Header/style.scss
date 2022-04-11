@@ -1,2 +1,29 @@
 @import "../../../assets/dashboard-variables.scss";
 @import "../../../assets/greenfinch-variables.scss";
+
+header {
+    background-color: $brandColorDark;
+    color: $brandColorPrimary;
+    width: 100%;
+    min-height: 72px;
+    border-bottom: 4px solid darken($brandColorDark, 5%);
+    & .header-content {
+        padding: $paddingSmall;
+    }
+    & .atmStatus {
+        margin-right: $marginSmall;
+        font-size: 0.9rem;
+        letter-spacing: 0.07em;
+        font-family: $brandFontSemi;
+        &:last-child {
+            text-align: right;
+        }
+    }
+}
+
+// TO SORT
+.orgHeaderStatus {
+    & .utUCSmall {
+        color: $brandColorSecondary;
+    }
+}

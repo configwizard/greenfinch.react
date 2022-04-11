@@ -26,17 +26,19 @@ class Status extends React.Component {
 
         return (
             <>
-                <div className="d-flex">
-                    <div className="atmStatus">
-                        <span className="utUCSmall d-block">Net</span> Testnet
+                <header>
+                    <div className="header-content d-flex">
+                        <div className="atmStatus">
+                            <span className="utUCSmall d-block">Net</span> Testnet
+                        </div>
+                        <div className="atmStatus">
+                            <span className="utUCSmall d-block">Wallet</span> {this.props.account.address}
+                        </div>
+                        <div className="atmStatus ms-auto">
+                            <span className="utUCSmall d-block">NeoFS</span><span style={{"color": this.props.account.neoFSBalance < 5 ? this.props.account.neoFSBalance < 2 ? "red": "orange" : null}}>{this.props.account.neoFSBalance}</span>
+                        </div>
                     </div>
-                    <div className="atmStatus">
-                        <span className="utUCSmall d-block">Wallet</span> {this.props.account.address}
-                    </div>
-                    <div className="atmStatus ms-auto">
-                        <span className="utUCSmall d-block">NeoFS</span><span style={{"color": this.props.account.neoFSBalance < 5 ? this.props.account.neoFSBalance < 2 ? "red": "orange" : null}}>{this.props.account.neoFSBalance}</span>
-                    </div>
-                </div>
+                </header>
             </>
         );
     }
