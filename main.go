@@ -122,7 +122,7 @@ func main() {
 	//} else {
 	//	fmt.Printf("balance: %d, precision %d\r\n", balance.NeoFS.Balance, balance.NeoFS.Precision)
 	//}
-	mocker := mocker.Mocker{BasePath: path.Join("frontend", "src")} //mocker for frontend
+	//mocker := mocker.Mocker{BasePath: path.Join("frontend", "src")} //mocker for frontend
 
 	//manager.PopToast()
 	// Create application with options
@@ -147,7 +147,7 @@ func main() {
 		OnShutdown:        manager.Shutdown,
 		Bind: []interface{}{
 			manager,
-			&mocker,
+			//&mocker,
 		},
 		// Windows platform specific options
 		Windows: &windows.Options{

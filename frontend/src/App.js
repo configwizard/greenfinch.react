@@ -8,15 +8,15 @@ import './assets/dashboard.scss';
 import './assets/greenfinch.scss';
 
 // Actual
-// import { getAccountInformation, loadWallet, newWallet } from "./manager/manager.js"
+import { getAccountInformation, loadWallet, newWallet } from "./manager/manager.js"
 
 // Mocker
-import { getAccountInformation, loadWallet, newWallet } from "./mocker/manager.js"
+// import { getAccountInformation, loadWallet, newWallet } from "./mocker/manager.js"
 
 // Components
 import ButtonDefault from './components/atoms/ButtonDefault';
 import ProgressBar from "./components/molecules/ProgressBar";
-// import ToastMessage from "./components/molecules/Toast";
+import ToastMessage from "./components/molecules/Toast";
 import Status from './components/organisms/Header';
 import CompModalBrand from "./components/organisms/Modal/ModalBrand";
 import Artboard from './components/templates/Artboard';
@@ -62,14 +62,6 @@ class App extends React.Component {
         this.state = {account: null};
     }
     async componentDidMount() {
-        const account = {
-            address: 'WalletMocker',
-            neoFSBalance: 4.3556,
-            gasBalance: 8.8777,
-            neoBalance: 15
-        }
-        await this.setState({account})
-        /* 
         window.runtime.EventsOn("fresh_wallet", async (newAccount) => {
             console.log("fresh_wallet response", newAccount)
             const walletData  = await getAccountInformation()
@@ -77,7 +69,6 @@ class App extends React.Component {
             console.log("setting wallet details to ", account)
             await this.setState({account})
         })
-        */
         await this.setStatusAccount()
     }
 
@@ -103,7 +94,7 @@ class App extends React.Component {
                             title={"Get started"}>
                             <div className="d-flex flex-column align-items-center">
                                 <p>Welcome to Greenfinch, to get started you will need a wallet.</p>
-                                <p><strong>Please first, enter the password you would like to use for the wallet</strong></p>
+                                <p><strong>Please first, enter the password you would like to use for the wallet.</strong></p>
                                 <Form.Control id="walletPassword" type="password" placeholder="strong-password" />
                                 <ButtonDefault
                                     buttonClass={"atmButtonDefault"}
@@ -123,9 +114,7 @@ class App extends React.Component {
                         {/*<NewWalletModal requestNewWallet={this.state.requestNewWallet} containerList={this.state.containerList} onDelete={this.onContainerDelete} viewMode={this.state.viewMode} onContainerSelection={this.onContainerSelection}></NewWalletModal>*/}
                     </div>
                 </div>
-                {/*
-                    <ToastMessage autoDelete={true} autoDeleteTime={3000}></ToastMessage>
-                */}
+                <ToastMessage autoDelete={true} autoDeleteTime={3000}></ToastMessage>
             </div>)
         }
         return (
@@ -139,9 +128,7 @@ class App extends React.Component {
                     <section className="orgMainJSON">
                         <Artboard account={this.state.account} refreshAccount={this.setStatusAccount}></Artboard>
                     </section>
-                    {/*
-                        <ToastMessage autoDelete={true} autoDeleteTime={3000}></ToastMessage>
-                    */}
+                    <ToastMessage autoDelete={true} autoDeleteTime={3000}></ToastMessage>
                     <ProgressBar></ProgressBar>
                 </div>
             </>

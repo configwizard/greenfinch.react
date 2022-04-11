@@ -1,10 +1,10 @@
 import React from "react";
 
 // Actual
-// import { loadWallet, newWallet } from "../../../manager/manager.js";
+import { loadWallet, newWallet } from "../../../manager/manager.js";
 
 // Mocker 
-import { loadWallet, newWallet } from "../../../mocker/manager.js";
+// import { loadWallet, newWallet } from "../../../mocker/manager.js";
 
 // Context
 import { useModal } from "../ModalContext";

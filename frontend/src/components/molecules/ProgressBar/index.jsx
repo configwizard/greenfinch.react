@@ -20,7 +20,7 @@ export default class ProgressBar extends React.Component {
     /* One to check: https://getbootstrap.com/docs/5.0/components/progress/ */
      async componentDidMount () {
         console.log("percentage ready")
-        /* 
+
         window.runtime.EventsOn(name, async (progressMessage) => {
             console.log("progressMessage", {progressMessage})
             //add a property as to whether to automatically close the progress bar
@@ -32,7 +32,7 @@ export default class ProgressBar extends React.Component {
                 await this.setState({...this.state, show: true})
             }
         })
-        */
+
     }
     render() {
         if (!this.state.show) {

@@ -1,12 +1,12 @@
 import React from 'react';
 
 // Actual
-// import { deleteContainer, listContainers} from '../../../manager/containers.js';
-// import { deleteObject, getObject, listObjects, uploadObject } from '../../../manager/objects.js';
+import { deleteContainer, listContainers} from '../../../manager/containers.js';
+import { deleteObject, getObject, listObjects, uploadObject } from '../../../manager/objects.js';
 
 // Mocker
-import { deleteContainer, listContainers} from '../../../mocker/containers.js';
-import { deleteObject, getObject, listObjects, uploadObject } from '../../../mocker/objects.js';
+// import { deleteContainer, listContainers} from '../../../mocker/containers.js';
+// import { deleteObject, getObject, listObjects, uploadObject } from '../../../mocker/objects.js';
 
 // Components
 import ControlBar from '../../molecules/ControlBar';
@@ -28,7 +28,7 @@ class Artboard extends React.Component {
         // await this.props.setStatusAccount(account)
         // // await this.setState({...this.state, account})
 
-        /*
+
         window.runtime.EventsOn("appendContainer", async (container) => {
             let containerList = this.state.containerList
             console.log("new container added", container)
@@ -48,7 +48,7 @@ class Artboard extends React.Component {
             const objectList = await listObjects(this.state.selectedContainer.containerID) || []//list contents of a container
             await this.setState({...this.state, objectList})
         })
-        */
+
         console.log("received wallet", this.props.account)
         await listContainers()
         console.log("componentDidMount, objects", this.state.objectList)
