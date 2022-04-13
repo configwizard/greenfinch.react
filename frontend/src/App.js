@@ -14,10 +14,11 @@ import { getAccountInformation, loadWallet, newWallet } from "./manager/manager.
 // import { getAccountInformation, loadWallet, newWallet } from "./mocker/manager.js"
 
 // Components
-import ButtonDefault from './components/atoms/ButtonDefault';
+import ButtonText from './components/atoms/ButtonText';
 import ProgressBar from "./components/molecules/ProgressBar";
 import ToastMessage from "./components/molecules/Toast";
-import Status from './components/organisms/Header';
+import Footer from './components/organisms/Footer';
+import Header from './components/organisms/Header';
 import CompModalBrand from "./components/organisms/Modal/ModalBrand";
 import NavbarSide from './components/organisms/NavbarSide';
 import Artboard from './components/templates/Artboard';
@@ -89,54 +90,50 @@ class App extends React.Component {
         if (!this.state.account || this.state.account.address === "") { // if true then show the selection page
             return (
                 <div className="col-12">
-                <div className="orgContainersGrid">
-                    <div className="row">
-                        <CompModalBrand
-                            title={"Get started"}>
-                            <div className="d-flex flex-column align-items-center">
-                                <p>Welcome to Greenfinch, to get started you will need a wallet.</p>
-                                <p><strong>Please first, enter the password you would like to use for the wallet.</strong></p>
-                                <Form.Control id="walletPassword" type="password" placeholder="strong-password" />
-                                <ButtonDefault
-                                    buttonClass={"atmButtonDefault"}
-                                    iconIncluded={true}
-                                    faClass={"fas fa-star-shooting"} 
-                                    text={"Create new wallet"}
-                                    onClick={async () => {await newWallet(document.getElementById("walletPassword").value)}} 
-                                />
-                                <button
-                                    type="button"
-                                    className="atmButtonText"
-                                    onClick={async () => {await loadWallet(document.getElementById("walletPassword").value)}}>
-                                    <i className="fas fa-upload"/>Load existing wallet
-                                </button>
-                            </div>
-                        </CompModalBrand>
-                        {/*<NewWalletModal requestNewWallet={this.state.requestNewWallet} containerList={this.state.containerList} onDelete={this.onContainerDelete} viewMode={this.state.viewMode} onContainerSelection={this.onContainerSelection}></NewWalletModal>*/}
+                    <div className="orgContainersGrid">
+                        <div className="row">
+                            <CompModalBrand
+                                title={"Get started"}>
+                                <div className="d-flex flex-column align-items-center">
+                                    <p>Welcome to Greenfinch, to get started you will need a wallet.</p>
+                                    <p><strong>Please first, enter the password you would like to use for the wallet.</strong></p>
+                                    <Form.Control id="walletPassword" type="password" placeholder="strong-password" />
+                                    <ButtonText
+                                        buttonClass={"atmButtonText"}
+                                        hasIcon={true}
+                                        faClass={"fas fa-star-shooting"} 
+                                        text={"Create new wallet"}
+                                        onClick={async () => {await newWallet(document.getElementById("walletPassword").value)}} 
+                                    />
+                                    <button
+                                        type="button"
+                                        className="atmButtonText"
+                                        onClick={async () => {await loadWallet(document.getElementById("walletPassword").value)}}>
+                                        <i className="fas fa-upload"/>Load existing wallet
+                                    </button>
+                                </div>
+                            </CompModalBrand>
+                            {/*<NewWalletModal requestNewWallet={this.state.requestNewWallet} containerList={this.state.containerList} onDelete={this.onContainerDelete} viewMode={this.state.viewMode} onContainerSelection={this.onContainerSelection}></NewWalletModal>*/}
+                        </div>
                     </div>
+                    <ToastMessage autoDelete={true} autoDeleteTime={3000}></ToastMessage>
                 </div>
-                <ToastMessage autoDelete={true} autoDeleteTime={3000}></ToastMessage>
-            </div>)
+            )
         }
         return (
             <>
                 <div className="d-flex flex-column">
-                    <div>
-                        <div className="container-fluid">
-                            <Status account={this.state.account}></Status>
-                        </div>
-                    </div>
-                    <div className="flex-grow-1">
-                        <div className="container-fluid d-flex flex-row">
+                    <div className="container-fluid">
+                        <Header account={this.state.account}></Header>
+                        <div className="templ-shell d-flex flex-row">
                             <div className="flex-shrink-1">
                                 <NavbarSide/>
                             </div>
-                            {/*
                             <div className="orgMainJSON w-100">
                                 <Artboard account={this.state.account} refreshAccount={this.setStatusAccount}></Artboard>
                             </div>
-                            */}
                         </div>
+                        <Footer></Footer>
                     </div>
                 </div>
                 <ToastMessage autoDelete={true} autoDeleteTime={3000}></ToastMessage>

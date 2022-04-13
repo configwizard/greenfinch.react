@@ -279,14 +279,6 @@ span.utUCSmall {
         font-size: 0.75rem;
         font-family: $brandFontSemi;
         color: $brandColorSecondary;
-        & span.atmBreadCrumb, & span.utBreadLive {
-            transition: $brandTransitionSpeed;
-            &:hover {
-                color: $brandColorDark;
-                text-decoration: underline;
-                cursor: pointer;
-            }
-        }
         & .atmBlockBread i {
             color: $brandColorDark;
             &.fa-home {

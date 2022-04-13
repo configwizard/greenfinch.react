@@ -28,32 +28,28 @@ function BreadCrumb(props) {
     return (
         <div className="molBlockBread d-flex align-items-center">
             <div className="atmBlockBread">
-                {/*<span className="atmBreadWallet"><i className="fas fa-lg fa-wallet"/>{props.walletAddress}</span>*/}
-                <span className="atmBreadCrumb"><i className="fas fa-home"/></span><span className="utBreadLive" onClick={props.resetBreadcrumb}>Containers</span><i className="fas fa-lg fa-caret-right"/><span className="utBreadLive">{selectedContainer}</span><i className="fas fa-lg fa-caret-right"/><span className="atmBreadCrumb">{selectedObject}</span>
+                <span className="bread-home" onClick={props.resetBreadcrumb}>Containers</span>{selectedContainer ? <span className="bread-container">{selectedContainer}</span> : ''}{selectedObject ? <span className="bread-object">{selectedObject}</span> : ''}
+                {/* <span className="atmBreadCrumb"><i className="fas fa-home"/></span><span className="utBreadLive" onClick={props.resetBreadcrumb}>Containers</span><i className="fas fa-lg fa-caret-right"/><span className="utBreadLive">{selectedContainer}</span><i className="fas fa-lg fa-caret-right"/><span className="atmBreadCrumb">{selectedObject}</span> */}
             </div>
             <div className="ms-auto">
                 <ButtonIcon 
-                    hasBackground={false}
-                    buttonSize={"large"}
+                    type={"clean"}
+                    size={"large"}
                     onClick={() => setShow(true)}
                     buttonClass={"utButtonWallet"}
                     faClass={"far fa-wallet"} />
                     {/* How to work this as originally wrapped in <button> tag */}
                     <Wallet onClose={() => setShow(false)} show={show} account={props.account} topUpWallet={topUpWallet}></Wallet>
                 <ButtonIcon 
-                    hasBackground={false}
-                    buttonSize={"large"}
-                    faClass={"far fa-bell"} />
-                <ButtonIcon 
-                    hasBackground={false}
-                    buttonSize={"large"}
+                    type={"clean"}
+                    size={"large"}
                     faClass={"far fa-cog"} />   
                     {/*
                         <button type="button" className="atmButtonIconClean" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"><i className="far fa-cog" /></button>
                     */}
-                <ButtonIcon 
-                    hasBackground={false}
-                    buttonSize={"large"}
+                <ButtonIcon
+                    type={"clean"}
+                    size={"large"}
                     onClick={props.onRefresh}
                     faClass={"far fa-sync-alt"} />
 

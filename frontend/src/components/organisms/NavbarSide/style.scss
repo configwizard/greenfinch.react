@@ -3,15 +3,15 @@
 
 .org-navbar-side {
     background-color: $brandColorDark;
-    height: 100%;
+    height: calc(100% - $heightFooter);
     width: 60px;
-    overflow: auto;
+    overflow: visible;
     & ul {
         width: 60px;
         list-style-type: none;
         margin: 0;
         padding: 0;
         height: 100%;
-        overflow: auto;
+        overflow: visible;
       }
 }

@@ -2,11 +2,13 @@
 @import "../../../assets/greenfinch-variables.scss";
 
 header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    min-height: $heightHeader;
     background-color: $brandColorDark;
     color: $brandColorPrimary;
-    width: 100%;
-    min-height: 72px;
-    border-bottom: 4px solid darken($brandColorDark, 5%);
+    border-bottom: 3px solid darken($brandColorDark, 5%);
     & .header-content {
         padding: $paddingSmall;
     }

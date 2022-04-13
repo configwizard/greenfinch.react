@@ -13,29 +13,41 @@ export default function NavbarSide() {
                 <ul className="d-flex flex-column justify-content-center">
                     <Tooltip content="Home" direction="right">
                         <NavlinkSide
-                            id={"item01"}
+                            id={"navLinkHome"}
                             faClass={"fal fa-home"}
                             label={"Home"} />
                     </Tooltip>
-                    <Tooltip content="Search" direction="top">
+                    <Tooltip content="Containers" direction="right">
                         <NavlinkSide
-                            id={"item01"}
-                            faClass={"fal fa-search"}
-                            label={"Search"} />
-                    </Tooltip>
-                    <Tooltip content="Containers" direction="bottom">
-                        <NavlinkSide
-                            id={"item01"}
+                            id={"navLinkContainers"}
                             faClass={"fal fa-copy"}
                             label={"Containers"} />
+                    </Tooltip>
+                    <Tooltip content="Websites" direction="right">
+                        <NavlinkSide
+                            id={"navLinkWebsites"}
+                            faClass={"fal fa-globe"}
+                            label={"Search"} />
                     </Tooltip>
                 </ul>
             </div>
             <div>
                 <ul className="d-flex flex-column justify-content-center">
-                    <Tooltip content="Settings" direction="left">
+                    <Tooltip content="Notifications" direction="right">
                         <NavlinkSide
-                            id={"item01"}
+                            id={"navLinkNotifications"}
+                            faClass={"fal fa-bell"}
+                            label={"Notifications"} />
+                    </Tooltip>
+                    <Tooltip content="Wallet" direction="right">
+                        <NavlinkSide
+                            id={"navLinkWallet"}
+                            faClass={"fal fa-wallet"}
+                            label={"Wallet"} />
+                    </Tooltip>
+                    <Tooltip content="Settings" direction="right">
+                        <NavlinkSide
+                            id={"navLinkSettings"}
                             faClass={"fal fa-cog"}
                             label={"Settings"} />
                     </Tooltip>

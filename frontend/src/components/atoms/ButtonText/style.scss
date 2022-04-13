@@ -1,0 +1,61 @@
+@import "../../../assets/dashboard-variables.scss";
+@import "../../../assets/greenfinch-variables.scss";
+
+.buttonText {
+    border-radius: $brandBorderRadius;
+    &.small {
+        font-size: 0.75rem;
+        padding: 4px 8px;
+    }
+    &.medium {
+        font-size: 0.9rem;
+        padding: 5px 10px;
+    }
+    &.large {
+        font-size: 1.1rem;
+        padding: 6px 12px;
+    }
+    &.default, &.primary {
+        color: $brandColorWhite;
+        background-color: $brandColorDark;
+        &:hover {
+            text-decoration: none;
+            color: $brandColorPrimary;
+            background-color: $brandColorDark;
+        }
+        & i {
+            margin-right: 7px;
+        }
+    }
+    &.clean, &.secondary {
+        background-color: transparent;
+        &:hover {
+            color: $brandColorDark;
+            background-color: rgba(0,0,0,0.1);
+        }
+    }
+}
+
+// TO SORT
+.utInactive {
+    cursor: not-allowed!important;
+    opacity: 0.1;
+    &:hover {
+        background-color: $brandColorDark;
+        color: $brandColorWhite;
+    }
+}
+
+
+// TO SORT
+.me-auto {
+    & button.default, & button.primary & button.clean, & button.secondary {
+        margin-right: $marginSmall; //temporary
+    }
+}
+
+.ms-auto {
+    & button.default, & button.primary & button.clean, & button.secondary {
+        margin-left: $marginSmall; //temporary
+    }
+}

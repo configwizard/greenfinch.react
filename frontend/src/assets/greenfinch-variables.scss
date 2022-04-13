@@ -53,7 +53,7 @@ $brandBoxShadow: 0 0 10px rgba(0,0,0,0.3);
 
 /* Base: Buttons
 - - - - - - - - - - - - - - - - - - */
-button[class^="atmButton"] {
+button {
     transition: $brandTransitionSpeed;
     border: none;
     font-family: $brandFontBold;

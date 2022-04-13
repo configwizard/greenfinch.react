@@ -10,7 +10,7 @@ import { loadWallet, newWallet } from "../../../manager/manager.js";
 import { useModal } from "../ModalContext";
 
 // Components
-import ButtonDefault from "../atoms/ButtonDefault";
+import ButtonText from "../atoms/ButtonText";
 import CompModalBrand from "../ModalBrand";
 
 function NewWalletModal(props) {
@@ -19,16 +19,16 @@ function NewWalletModal(props) {
         <div className="ms-auto molButtonGroup">
             <button
                 type="button"
-                className={`atmButtonDefault`}
+                className={`atmButtonText`}
                 onClick={() => {
                     setModal(<CompModalBrand
                         title={"Get started"}
                         secondaryClicked={unSetModal}>
                         <div className="d-flex flex-column align-items-center">
                             <p>Welcome to Greenfinch, to get started you will need a wallet.</p>
-                            <ButtonDefault
-                                buttonClass={"atmButtonDefault"}
-                                iconIncluded={true}
+                            <ButtonText
+                                buttonClass={"atmButtonText"}
+                                hasIcon={true}
                                 faClass={"fas fa-star-shooting"} 
                                 text={"Create new wallet"}
                                 onClick={async () => {await newWallet("password"); unSetModal()}} 

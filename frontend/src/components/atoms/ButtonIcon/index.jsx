@@ -3,82 +3,44 @@ import PropTypes from 'prop-types';
 
 import './style.scss';
 
-const ButtonIcon = ({ buttonClass, buttonSize, hasBackground, disabled, onClick, faClass }) => {
-  return (
-        <>
-            { buttonSize === "small" && (
-                hasBackground ?
-                <button
-                    type="button"
-                    className={`atmButtonIcon atmButtonSmall ${buttonClass}`}
-                    disabled={disabled} 
-                    onClick={onClick}>
-                        <i className={faClass} />
-                </button>
-                : 
-                <button
-                    type="button"
-                    className={`atmButtonIconClean atmButtonSmall ${buttonClass}`}
-                    disabled={disabled} 
-                    onClick={onClick}>
-                        <i className={faClass} />
-                </button>
-            )}
-            { buttonSize === "medium" && (
-                hasBackground ?
-                <button
-                    type="button"
-                    className={`atmButtonIcon atmButtonMedium ${buttonClass}`}
-                    disabled={disabled} 
-                    onClick={onClick}>
-                        <i className={faClass} />
-                </button>
-                : 
-                <button
-                    type="button"
-                    className={`atmButtonIconClean atmButtonMedium ${buttonClass}`}
-                    disabled={disabled} 
-                    onClick={onClick}>
-                        <i className={faClass} />
-                </button> 
-            )}
-            { buttonSize === "large" && (
-                hasBackground ?
-                <button
-                    type="button"
-                    className={`atmButtonIcon atmButtonLarge ${buttonClass}`}
-                    disabled={disabled} 
-                    onClick={onClick}>
-                        <i className={faClass} />
-                </button>
-                : 
-                <button
-                    type="button"
-                    className={`atmButtonIconClean atmButtonLarge ${buttonClass}`}
-                    disabled={disabled} 
-                    onClick={onClick}>
-                        <i className={faClass} />
-                </button> 
-            )}
-        </>
+export const ButtonSize = {
+    SMALL: 'small',
+    MEDIUM: 'medium',
+    LARGE: 'large',
+}
+
+export const ButtonType = {
+    DEFAULT: 'default', 
+    CLEAN: 'clean',
+}
+
+const ButtonIcon = ({ type, size, buttonClass, disabled, onClick, faClass }) => {
+    return (
+        <button
+            type="button"
+            className={`buttonIcon ${[type]} ${[size]} ${buttonClass}`}
+            disabled={disabled} 
+            onClick={onClick}>
+                <i className={faClass} />
+        </button>
     )
 };
 
 export default ButtonIcon;
 
 ButtonIcon.propTypes = {
+    type: PropTypes.oneOf(Object.keys(ButtonType)),
+    size: PropTypes.oneOf(Object.keys(ButtonSize)),
     buttonClass: PropTypes.string,
-    buttonSize: PropTypes.string,
-    hasBackground: PropTypes.bool,
     disabled: PropTypes.bool,
     onClick: PropTypes.func,
     faClass: PropTypes.string
 };
 
 ButtonIcon.defaultProps = {
-    buttonClass: "atmButtonIcon",
-    buttonSize: "medium",
-    hasBackground: true,
+    type: ButtonType.DEFAULT,
+    size: ButtonSize.MEDIUM,
+    buttonClass: '',
     disabled: false,
     faClass: "fas fa-flag"
 };                            

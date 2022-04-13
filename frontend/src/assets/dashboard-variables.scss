@@ -14,10 +14,13 @@ $marginSmall: $baseSizing;
 $marginMedium: $baseSizing *1.5;
 $marginLarge: $baseSizing *2;
 
+$heightHeader: 72px;
+$heightFooter: 15px;
+
 /* Reset
 - - - - - - - - - - - - - - - - - - */
 body {
-    height: 100vh;
+    min-height: 100vh;
 }
 
 span {

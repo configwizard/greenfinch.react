@@ -1,7 +1,7 @@
 import React from 'react';
 
 // Components
-import ButtonDefault from '../../../atoms/ButtonDefault';
+import ButtonText from '../../../atoms/ButtonText';
 
 const CompModalStandard = props => {
     return (
@@ -14,14 +14,14 @@ const CompModalStandard = props => {
             </div>
             <div className="molModalFooter d-flex">
                 <div className="ms-auto molButtonGroup">
-                    <ButtonDefault
-                        buttonClass={"atmButtonDefault"}
-                        iconIncluded={false}
+                    <ButtonText
+                        buttonClass={"atmButtonText"}
+                        hasIcon={false}
                         text={props.buttonTextSecondary}
                         onClick={() => {props.secondaryClicked()}} />
-                    <ButtonDefault
-                        buttonClass={"atmButtonDefault"}
-                        iconIncluded={false}
+                    <ButtonText
+                        buttonClass={"atmButtonText"}
+                        hasIcon={false}
                         text={props.buttonTextPrimary}
                         onClick={() => {props.primaryClicked()}} />
                 </div>

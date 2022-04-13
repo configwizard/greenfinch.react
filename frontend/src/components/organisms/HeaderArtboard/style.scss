@@ -1,2 +1,39 @@
 @import "../../../assets/dashboard-variables.scss";
 @import "../../../assets/greenfinch-variables.scss";
+
+[class^="bread"] {
+    transition: $brandTransitionSpeed;
+    border-radius: 2px;
+    padding: 2px 6px;
+    max-width: 170px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    &:hover {
+        background-color: rgba(0,0,0,0.05);
+        cursor: pointer;
+    }
+}
+
+.bread-home {
+    &:before {
+        font-family: "Font Awesome 5 Pro";
+        font-weight: 900;
+        margin: 0 0.5em 0 0;
+        content: '\f015';
+    }
+    &:hover {
+        background-color: rgba(0,0,0,0.05);
+        cursor: pointer;
+    }
+}
+
+.bread-container, .bread-object {
+    margin-left: 0.4em;
+    &:before {
+        font-family: "Font Awesome 5 Pro";
+        font-weight: 900;
+        margin: 0 0.5em 0 0;
+        content: '\f0da';
+    }
+}

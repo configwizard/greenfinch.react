@@ -2,7 +2,7 @@ import React from 'react';
 import { Form } from 'react-bootstrap';
 
 // Components
-import ButtonDefault from '../../atoms/ButtonDefault';
+import ButtonText from '../../atoms/ButtonText';
 import HeadingGeneral from '../../atoms/HeadingGeneral';
 import RowWallet from '../../atoms/RowWallet';
 
@@ -52,9 +52,9 @@ const Wallet = props => {
                             isUppercase={true}
                             children={"Top-up NeoFS GAS Balance"} />
                         <Form.Control type="number" placeholder="GAS amount" id={"topUpAmount"}/>
-                        <ButtonDefault 
-                            buttonClass={"atmButtonDefault"}
-                            iconIncluded={true}
+                        <ButtonText 
+                            buttonClass={"atmButtonText"}
+                            hasIcon={true}
                             faClass={"fas fa-chart-line"}
                             text={"Top-up"}
                             onClick={(amount) => {console.log("topping up"); props.topUpWallet(document.getElementById("topUpAmount").value)}} />

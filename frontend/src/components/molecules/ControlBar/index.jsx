@@ -8,7 +8,7 @@ import { createContainer } from '../../../manager/containers.js';
 // import { createContainer } from '../../../mocker/containers.js'
 
 // Components
-import ButtonDefault from '../../atoms/ButtonDefault';
+import ButtonText from '../../atoms/ButtonText';
 import ButtonIcon from '../../atoms/ButtonIcon';
 import { useModal } from '../../organisms/Modal/ModalContext';
 import CompModalStandard from '../../organisms/Modal/ModalStandard';
@@ -30,9 +30,9 @@ function ControlBar({containers, selectedContainer, onSelected, changeView, view
                     </div>
                     {/* Implement button disable attribute or :disabled */}
                     <div className="ms-auto molButtonGroup">
-                        <ButtonDefault
-                            buttonClass={"atmButtonDefault"}
-                            iconIncluded={true}
+                        <ButtonText
+                            buttonClass={"atmButtonText"}
+                            hasIcon={true}
                             faClass={"fas fa-plus-circle"} 
                             text={"New container"}
                             onClick={() => {
@@ -50,22 +50,22 @@ function ControlBar({containers, selectedContainer, onSelected, changeView, view
                     </div>
                     <div className="molButtonGroup">
                         <ButtonIcon
-                            hasBackground={true}
-                            buttonSize={"medium"}
+                            type={"default"}
+                            size={"medium"}
                             buttonClass={selectedContainer ? "utActive" : "utInactive"}
                             faClass={"fas fa-arrow-alt-to-left"}
                             onClick={()=>{resetBreadcrumb()}} />
                     </div>
                     <div className="molButtonGroup">
                         <ButtonIcon
-                            hasBackground={true}
-                            buttonSize={"medium"}
+                            type={"default"}
+                            size={"medium"}
                             buttonClass={viewMode === 'grid' ? "utLive" : "utReady"}
                             faClass={"fas fa-th-large"}
                             onClick={()=>{changeView("grid")}} />
                         <ButtonIcon
-                            hasBackground={true}
-                            buttonSize={"medium"}
+                            type={"default"}
+                            size={"medium"}
                             buttonClass={viewMode === 'grid' ? "utReady" : "utLive"}
                             faClass={"fas fa-list"}
                             onClick={()=>{changeView("list")}} />

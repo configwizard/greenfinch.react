@@ -1,91 +1,93 @@
 @import "../../../assets/dashboard-variables.scss";
 @import "../../../assets/greenfinch-variables.scss";
 
-// Icon button, incl. background-color
-.atmButtonIcon {
-    color: $brandColorWhite;
-    background-color: $brandColorDark;
-    border-radius: $brandBorderRadius;
-    &:hover {
-        color: $brandColorPrimary;
-        background-color: $brandColorDark; 
-    }
-    &.atmButtonSmall {
-        font-size: 0.8rem;
-        min-width: 0.8rem;
-        padding: 4px 8px;
-    }
-    &.atmButtonMedium {
-        font-size: 1rem;
-        min-width: 1rem;
-        padding: 4px 8px;
-    }
-    &.atmButtonLarge {
-        font-size: 1.2rem;
-        min-width: 1.2rem;
-        padding: 5px 10px;
-    }
-}
-
-// Icon button, not incl. background-color
-// TO SORT: @include ButtonIconSimple(28px, $brandColorDark); To sort mixin
-.atmButtonIconClean {
-    background-color: transparent;
-    color: $brandColorDark;
-    &:hover {
-        background-color: transparent;
-        color: $brandColorPrimary;
-    }
-    &.atmButtonSmall {
-        font-size: 1rem;
-        padding: 4px 0;
-    }
-    &.atmButtonMedium {
-        font-size: 1.2rem;
-        padding: 5px 0;
-    }
-    &.atmButtonLarge {
-        font-size: 1.4rem;
-        min-width: 1.4rem;
-        padding: 6px 0;
-    }
-}
-
-// TO SORT
-.atmButtonIcon {
-    &.utLive {
-        cursor: default!important;
-        background-color: $brandColorPrimary;
+.buttonIcon {
+    &.default {
         color: $brandColorWhite;
+        background-color: $brandColorDark;
+        border-radius: $brandBorderRadius;
         &:hover {
+            color: $brandColorPrimary;
+            background-color: $brandColorDark; 
+        }
+        &.small {
+            font-size: 0.8rem;
+            min-width: 0.8rem;
+            padding: 4px 8px;
+        }
+        &.medium {
+            font-size: 1rem;
+            min-width: 1rem;
+            padding: 4px 8px;
+        }
+        &.large {
+            font-size: 1.2rem;
+            min-width: 1.2rem;
+            padding: 5px 10px;
+        }
+    }
+    &.clean {
+        color: $brandColorDark;
+        background-color: transparent;
+        &:hover {
+            background-color: transparent;
+            color: $brandColorPrimary;
+        }
+        &.small {
+            font-size: 1rem;
+            min-width: 1rem;
+            padding: 4px 0;
+        }
+        &.medium {
+            font-size: 1.2rem;
+            min-width: 1.2rem;
+            padding: 5px 0;
+        }
+        &.large {
+            font-size: 1.4rem;
+            min-width: 1.4rem;
+            padding: 6px 0;
+        }
+    }
+}
+
+// TO SORT : what are the specific classes for active, inactive, live...etc.
+.buttonIcon {
+    &.default {
+        &.utLive { //temporary
+            cursor: default!important;
             background-color: $brandColorPrimary;
             color: $brandColorWhite;
+            &:hover {
+                background-color: $brandColorPrimary;
+                color: $brandColorWhite;
+            }
         }
-    }
-    &.utInactive {
-        cursor: not-allowed!important;
-        opacity: 0.1;
-        &:hover {
-            background-color: $brandColorDark;
-            color: $brandColorWhite;
+        &.utInactive { //temporary
+            cursor: not-allowed!important;
+            opacity: 0.1;
+            &:hover {
+                background-color: $brandColorDark;
+                color: $brandColorWhite;
+            }
         }
     }
 }
 
-.atmButtonIconClean {
+.buttonIcon.clean {
     &.active {
-        cursor: default;
+        cursor: default; //temporary
     }
 }
 
 .me-auto {
-    & .atmButtonIcon, & .atmButtonIconClean {
+    & button.default, & button.clean {
         margin-right: $marginSmall; //temporary
     }
 }
 
 .ms-auto {
-    & .atmButtonIcon, & .atmButtonIconClean {
+    & button.default, & button.clean {
         margin-left: $marginSmall; //temporary
     }
 }
