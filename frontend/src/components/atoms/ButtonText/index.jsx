@@ -14,7 +14,7 @@ export const ButtonSize = {
     LARGE: 'large',
 }
 
-export const ButtonType = {
+export const ButtonType = { 
     DEFAULT: 'default', 
     CLEAN: 'clean',
     PRIMARY: 'primary',
