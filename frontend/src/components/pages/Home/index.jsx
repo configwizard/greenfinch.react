@@ -66,12 +66,10 @@ class Home extends React.Component {
         })
         await this.setStatusAccount()
     }
-
     fireToast(message) {
         console.log("making toast with ", message)
         window.go.manager.Manager.MakeToast(message)
     }
-
     setStatusAccount = async () => {
         const walletData  = await getAccountInformation()
         const account = prepareWalletData(walletData)
