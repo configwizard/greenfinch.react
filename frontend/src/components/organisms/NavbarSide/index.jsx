@@ -1,5 +1,5 @@
 import React from 'react';
-import {Link, Route, useRouteMatch} from 'react-router-dom';
+// import {Link, Route, useRouteMatch} from 'react-router-dom';
 
 // Components
 import NavlinkSide from '../../atoms/NavlinkSide';
@@ -14,18 +14,21 @@ export default function NavbarSide() {
                 <ul className="d-flex flex-column justify-content-center">
                     <Tooltip content="Home" direction="right">
                         <NavlinkSide
+                            linkDestination={"/"}
                             id={"navLinkHome"}
                             faClass={"fal fa-home"}
                             label={"Home"} />
                     </Tooltip>
                     <Tooltip content="Containers" direction="right">
                         <NavlinkSide
+                            linkDestination={"/containers"}
                             id={"navLinkContainers"}
                             faClass={"fal fa-copy"}
                             label={"Containers"} />
                     </Tooltip>
                     <Tooltip content="Websites" direction="right">
                         <NavlinkSide
+                            linkDestination={"/websites"}
                             id={"navLinkWebsites"}
                             faClass={"fal fa-globe"}
                             label={"Search"} />

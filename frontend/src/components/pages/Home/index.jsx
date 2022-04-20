@@ -51,7 +51,7 @@ function prepareWalletData(account) {
     }
     return cleanBalances
 }
-class Home extends React.Component {
+class PageHome extends React.Component {
     constructor(props) {
         super(props);
         this.state = {account: null};
@@ -120,4 +120,4 @@ class Home extends React.Component {
         );
     }
 }
-export default Home;
+export default PageHome;
