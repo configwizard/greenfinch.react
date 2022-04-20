@@ -1,5 +1,4 @@
 // YourComponent.stories.js|jsx
-
 import React from 'react';
 import ButtonText from './index';
 
