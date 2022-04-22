@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/amlwwalker/greenfinch.react/pkg/manager"
+	"github.com/amlwwalker/greenfinch.react/pkg/plugins/localserve"
 	"github.com/configwizard/gaspump-api/pkg/wallet"
 	"github.com/nspcc-dev/neo-go/pkg/core/native/nativenames"
 	client2 "github.com/nspcc-dev/neo-go/pkg/rpc/client"
@@ -124,6 +125,7 @@ func main() {
 	//}
 	//mocker := mocker.Mocker{BasePath: path.Join("frontend", "src")} //mocker for frontend
 
+	go localserve.SetupServer(manager)
 	//manager.PopToast()
 	// Create application with options
 	err = wails.Run(&options.App{

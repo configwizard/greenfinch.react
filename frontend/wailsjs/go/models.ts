@@ -132,11 +132,11 @@ export class Container {
 
     }
 }
-export class ObjectHeadRes {
+export class Object {
 
 
     static createFrom(source: any = {}) {
-        return new ObjectHeadRes(source);
+        return new Object(source);
     }
 
     constructor(source: any = {}) {
@@ -190,6 +190,30 @@ export class ToastMessage {
 
     static createFrom(source: any = {}) {
         return new ToastMessage(source);
+    }
+
+    constructor(source: any = {}) {
+        if ('string' === typeof source) source = JSON.parse(source);
+
+    }
+}
+export class BearerToken {
+
+
+    static createFrom(source: any = {}) {
+        return new BearerToken(source);
+    }
+
+    constructor(source: any = {}) {
+        if ('string' === typeof source) source = JSON.parse(source);
+
+    }
+}
+export class Token {
+
+
+    static createFrom(source: any = {}) {
+        return new Token(source);
     }
 
     constructor(source: any = {}) {

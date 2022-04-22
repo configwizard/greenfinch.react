@@ -2,6 +2,12 @@
 USERNAME ?= amlwwalker
 ACCESS_TOKEN ?= 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
 
+
+.PHONY: docs
+docs:
+	swag init -g "main.go" && cp docs/swagger.json ./swagger
+
+
 .PHONY: set-reg
 set-reg:
 	go env -w GOPRIVATE=github.com/configwizard/gaspump-api

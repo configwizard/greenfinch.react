@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta
+          name="description"
+          content="SwaggerIU"
+  />
+  <title>SwaggerUI</title>
+  <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui.css" />
+</head>
+<body>
+<div id="swagger-ui"></div>
+<script src="https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui-bundle.js" crossorigin></script>
+<script src="https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui-standalone-preset.js" crossorigin></script>
+<script>
+  window.onload = () => {
+    window.ui = SwaggerUIBundle({
+      url: 'http://localhost:43520/swagger/docs/swagger.json',
+      dom_id: '#swagger-ui',
+      presets: [
+        SwaggerUIBundle.presets.apis,
+        SwaggerUIStandalonePreset
+      ],
+      layout: "StandaloneLayout",
+    });
+  };
+</script>
+</body>
+</html>
+
+
+<!--<!DOCTYPE html>-->
+<!--<html>-->
+<!--<head>-->
+<!--  <title>Redoc</title>-->
+<!--  &lt;!&ndash; needed for adaptive design &ndash;&gt;-->
+<!--  <meta charset="utf-8"/>-->
+<!--  <meta name="viewport" content="width=device-width, initial-scale=1">-->
+<!--  <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">-->
+
+<!--  &lt;!&ndash;-->
+<!--  Redoc doesn't change outer page styles-->
+<!--  &ndash;&gt;-->
+<!--  <style>-->
+<!--    body {-->
+<!--      margin: 0;-->
+<!--      padding: 0;-->
+<!--    }-->
+<!--  </style>-->
+<!--</head>-->
+<!--<body>-->
+<!--<redoc spec-url='http://localhost:9000/docs/swagger.json'></redoc>-->
+<!--<script src="https://cdn.jsdelivr.net/npm/redoc@latest/bundles/redoc.standalone.js"> </script>-->
+<!--</body>-->
+<!--</html>-->
