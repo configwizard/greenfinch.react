@@ -2,13 +2,16 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
+import { HashRouter } from 'react-router-dom'; 
 import reportWebVitals from './reportWebVitals';
 import { ModalProvider } from './components/organisms/Modal/ModalContext';
 
 ReactDOM.render(
     <React.StrictMode>
         <ModalProvider>
-            <App />
+            <HashRouter>
+                <App />
+            </HashRouter>
         </ModalProvider>
     </React.StrictMode>,
     document.getElementById('root')

@@ -14,24 +14,33 @@ export default function NavbarSide() {
                 <ul className="d-flex flex-column justify-content-center">
                     <Tooltip content="Home" direction="right">
                         <NavlinkSide
-                            linkDestination={"/"}
-                            id={"navLinkHome"}
+                            to={"/"}
                             faClass={"fal fa-home"}
                             label={"Home"} />
                     </Tooltip>
+                    <Tooltip content="Test" direction="right">
+                        <NavlinkSide
+                            to={"/test"}
+                            faClass={"fas fa-vial"}
+                            label={"Test"} />
+                    </Tooltip>
                     <Tooltip content="Containers" direction="right">
                         <NavlinkSide
-                            linkDestination={"/containers"}
-                            id={"navLinkContainers"}
+                            to={"/containers"}
                             faClass={"fal fa-copy"}
                             label={"Containers"} />
                     </Tooltip>
                     <Tooltip content="Websites" direction="right">
                         <NavlinkSide
-                            linkDestination={"/websites"}
-                            id={"navLinkWebsites"}
+                            to={"/websites"}
                             faClass={"fal fa-globe"}
-                            label={"Search"} />
+                            label={"Websites"} />
+                    </Tooltip>
+                    <Tooltip content="Contacts" direction="right">
+                        <NavlinkSide
+                            to={"/contacts"}
+                            faClass={"fal fa-address-book"}
+                            label={"Contacts"} />
                     </Tooltip>
                 </ul>
             </div>
@@ -39,19 +48,19 @@ export default function NavbarSide() {
                 <ul className="d-flex flex-column justify-content-center">
                     <Tooltip content="Notifications" direction="right">
                         <NavlinkSide
-                            id={"navLinkNotifications"}
+                            to={"/toassign01"}
                             faClass={"fal fa-bell"}
                             label={"Notifications"} />
                     </Tooltip>
                     <Tooltip content="Wallet" direction="right">
                         <NavlinkSide
-                            id={"navLinkWallet"}
+                            to={"/toassign02"}
                             faClass={"fal fa-wallet"}
                             label={"Wallet"} />
                     </Tooltip>
                     <Tooltip content="Settings" direction="right">
                         <NavlinkSide
-                            id={"navLinkSettings"}
+                            to={"/toassign03"}
                             faClass={"fal fa-cog"}
                             label={"Settings"} />
                     </Tooltip>

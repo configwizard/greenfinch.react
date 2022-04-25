@@ -17,9 +17,10 @@ $marginLarge: $baseSizing *2;
 $heightHeader: 72px;
 $heightFooter: 15px;
 
-/* Reset
+/* Reset + Base
 - - - - - - - - - - - - - - - - - - */
 body {
+    overflow-x: hidden !important;
     min-height: 100vh;
 }
 
@@ -27,12 +28,27 @@ span {
     display: inline-block;
 }
 
-.container {
-    padding-left: $paddingLarge;
-    padding-right: $paddingLarge;
-}
-
 .container-fluid {
+    overflow-x: hidden !important;
     padding-left: 0;
     padding-right: 0;
+}
+
+.container {
+    overflow-x: hidden !important;
+}
+
+.templ-shell {
+    padding-top: $heightHeader;
+    height: 100vh;
+    overflow-x: hidden;
+}
+
+.templ-section {
+    height: calc(100vh - $heightHeader - $heightFooter);
+    overflow-y: auto;
+}
+
+.templ-page {
+    padding: $paddingXSmall;
 }

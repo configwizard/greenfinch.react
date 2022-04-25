@@ -1,5 +1,5 @@
 import React from 'react';
-import { MemoryRouter, Routes, Route } from 'react-router-dom';
+import { useLocation, Routes, Route } from 'react-router-dom';
 
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css'; // Every page will use bootstrap
@@ -8,50 +8,45 @@ import './assets/dashboard.scss';
 import './assets/greenfinch.scss';
 
 // Components
-import PageHome from './components/pages/Home';
-import PageContainers from './components/pages/Containers';
-import PageWebsites from './components/pages/Websites';
+import PageHome from './pages/Home';
+import PageTest from './pages/Test';
+import PageContainers from './pages/Containers';
+import PageWebsites from './pages/Websites';
+import PageContacts from './pages/Contacts';
 
 import Footer from './components/organisms/Footer';
-import Header from './components/organisms/Header';
+//import Header from './components/organisms/Header';
 import NavbarSide from './components/organisms/NavbarSide';
 
 // Try this: https://v5.reactrouter.com/web/example/basic
 
 const App = () => {
+    const location = useLocation();
+    console.log(location)
+
     return (
-        <MemoryRouter>
-            <div className="d-flex flex-column">
-                <div className="container-fluid">
-                    {/* // This is where the issue arises
-                        <Header account={this.state.account}></Header>
-                    */}
-                    <div className="templ-shell d-flex flex-row">
-                        <div className="flex-shrink-1">
-                            <NavbarSide/>
-                            {/* Move router in here... and move 'Routes' in here too 
-                                https://stackoverflow.com/questions/32128978/react-router-no-not-found-route*/}
-                        </div>
-                        <div className="orgMainJSON w-100">
-                            <Routes>
-                                <Route path="/home" exact component={<PageHome/>} />
-                                <Route path="/containers" component={<PageContainers/>} />
-                                <Route path="/websites" component={<PageWebsites/>} />
-                                <Route render={() => 
-                                    <>
-                                        <div>
-                                            <h1>404, page not found.</h1>
-                                            <p>Please try again.</p>
-                                        </div>
-                                    </>
-                                } />
-                            </Routes>
-                        </div>
+        <div className="d-flex flex-column">
+            <div className="container-fluid">
+                {/* // This is where the issue arises
+                    <Header account={this.state.account}></Header>
+                */}
+                <div className="templ-shell d-flex flex-row">
+                    <div className="flex-shrink-1">
+                        <NavbarSide/>
                     </div>
-                    <Footer></Footer>
+                    <div className="orgMainJSON w-100">
+                        <Routes>
+                            <Route path="/" exact element={<PageHome/>} />
+                            <Route path="/test" exact element={<PageTest/>} />
+                            <Route path="/containers" exact element={<PageContainers/>} />
+                            <Route path="/websites" exact element={<PageWebsites/>} />
+                            <Route path="/contacts" exact element={<PageContacts/>} />
+                        </Routes>
+                    </div>
                 </div>
+                <Footer></Footer>
             </div>
-        </MemoryRouter>
+        </div>
     );
 };
 

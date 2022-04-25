@@ -51,6 +51,7 @@ $brandTransitionSpeed: 0.3s;
 $brandDarkenValue: 12%;
 $brandBoxShadow: 0 0 10px rgba(0,0,0,0.3);
 
+
 /* Base: Buttons
 - - - - - - - - - - - - - - - - - - */
 button {
@@ -59,6 +60,16 @@ button {
     font-family: $brandFontBold;
     border-radius: none;
 }
+
+
+/* Reset + Base
+- - - - - - - - - - - - - - - - - - */
+.templ-section {
+    background-color: $brandColorLight;
+}
+
+
+
 
 /* Mixins
 - - - - - - - - - - - - - - - - - - */

@@ -18,5 +18,9 @@ li.navlink-side {
         & i {
             font-size: 1.3rem;
         }
+        &.active {
+            color: rgba($brandColorWhite,1);
+            background-color: rgba(0,0,0,0.2);
+        }
     }
 }

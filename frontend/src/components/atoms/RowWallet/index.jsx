@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import './style.scss';
 
-const RowWallet = ({ type, title, children,  }) => {
+const RowWallet = ({ type, title, children }) => {
   return (
     <div className="molWalletOption">
         {

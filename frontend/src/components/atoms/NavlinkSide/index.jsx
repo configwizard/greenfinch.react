@@ -1,27 +1,27 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import { NavLink } from 'react-router-dom'; 
+
 import './style.scss';
 
-const NavlinkSide = ({ id, linkDestination, label, faClass, disabled }) => {
+const NavlinkSide = ({ to, label, faClass, disabled }) => {
     return (
         <li className="navlink-side d-flex">
-            <a
-            id={id}
-            href={linkDestination}
-            className={"align-self-center"}
-            label={label}
-            disabled={disabled}>
-                <i className={faClass} />
-            </a>
+            <NavLink
+                to={to}
+                className={({ isActive }) => (isActive ? 'active' : 'inactive')}
+                label={label}
+                disabled={disabled}>
+                    <i className={faClass} />
+            </NavLink>
         </li>
         )
     };
 export default NavlinkSide;
 
 NavlinkSide.propTypes = {
-    id: PropTypes.string,
-    linkDestination: PropTypes.string.isRequired,
+    to: PropTypes.string.isRequired,
     label: PropTypes.string,
     faClass: PropTypes.string
 };

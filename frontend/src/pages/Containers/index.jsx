@@ -1,20 +1,19 @@
 import React from 'react';
-import './style.scss';
 
 import { Form } from 'react-bootstrap';
 
 // Actual
-import { getAccountInformation, loadWallet, newWallet } from '../../../manager/manager.js'
+import { getAccountInformation, loadWallet, newWallet } from '../../manager/manager.js'
 
 // Mocker
-// import { getAccountInformation, loadWallet, newWallet } from '../../../mocker/manager.js'
+// import { getAccountInformation, loadWallet, newWallet } from '../../mocker/manager.js'
 
 // Components
-import ButtonText from '../../atoms/ButtonText';
-import ProgressBar from '../../molecules/ProgressBar';
-import ToastMessage from '../../molecules/Toast';
-import CompModalBrand from '../../organisms/Modal/ModalBrand';
-import Artboard from '../../templates/Artboard';
+import ButtonText from '../../components/atoms/ButtonText';
+import ProgressBar from '../../components/molecules/ProgressBar';
+import ToastMessage from '../../components/molecules/Toast';
+import CompModalBrand from '../../components/organisms/Modal/ModalBrand';
+import Artboard from '../../components/templates/Artboard';
 
 function prepareWalletData(account) {
     console.log("props.account", account)
@@ -51,7 +50,7 @@ function prepareWalletData(account) {
     }
     return cleanBalances
 }
-class PageHome extends React.Component {
+class PageContainers extends React.Component {
     constructor(props) {
         super(props);
         this.state = {account: null};
@@ -113,11 +112,11 @@ class PageHome extends React.Component {
         }
         return (
             <>
-            <Artboard account={this.state.account} refreshAccount={this.setStatusAccount}></Artboard>
-            <ToastMessage autoDelete={true} autoDeleteTime={3000}></ToastMessage>
-            <ProgressBar></ProgressBar>
+                <Artboard account={this.state.account} refreshAccount={this.setStatusAccount}></Artboard>
+                <ToastMessage autoDelete={true} autoDeleteTime={3000}></ToastMessage>
+                <ProgressBar></ProgressBar>
             </>
         );
     }
 }
-export default PageHome;
+export default PageContainers;
