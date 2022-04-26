@@ -1,18 +1,19 @@
 import React from 'react';
 
 // Components
+import HeaderPage from '../../organisms/HeaderPage';
 import AddressBook from '../../organisms/AddressBook';
 
 import './style.scss';
 
 const TemplateContacts = () => {
     return (
-        <div class="templ-page">
+        <div class="templatePage d-flex flex-column flex-grow-1">
             <div class="row">
                 <div className="col-12">
-                    <section className="templ-section scroll-y">
-                        <AddressBook/>
-                    </section>
+                    <HeaderPage 
+                        pageTitle={"Greenfinch contacts"} />
+                    <AddressBook/>
                 </div>
             </div>
         </div>

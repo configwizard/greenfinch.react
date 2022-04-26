@@ -161,7 +161,7 @@ func main() {
 				HideTitle:                  false,
 				HideTitleBar:               false,
 				FullSizeContent:            false,
-				UseToolbar:                 true,
+				UseToolbar:                 false,
 				HideToolbarSeparator:       true,
 			},
 			//TitleBar:             mac.TitleBarHiddenInset(),

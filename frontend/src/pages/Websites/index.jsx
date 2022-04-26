@@ -1,8 +1,14 @@
 import React from 'react';
 
+// Components
+import TemplateWebsites from '../../components/templates/Websites';
+
 function PageWebsites() {
     return (
-        <div>This page is for websites.</div>
+        <>
+            {/* Loader */}
+            <TemplateWebsites />
+        </>
     )
 };
 

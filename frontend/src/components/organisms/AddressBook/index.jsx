@@ -7,8 +7,23 @@ import './style.scss';
 
 export default function AddressBook() {
     return (
-        <div className="orgAddressBook d-flex flex-column">
-            <div>
+        <div className="addressBookContainer">
+            <div className="addressBook">
+                <RowAddress></RowAddress>
+                <RowAddress></RowAddress>
+                <RowAddress></RowAddress>
+                <RowAddress></RowAddress>
+                <RowAddress></RowAddress>
+                <RowAddress></RowAddress>
+                <RowAddress></RowAddress>
+                <RowAddress></RowAddress>
+                <RowAddress></RowAddress>
+                <RowAddress></RowAddress>
+                <RowAddress></RowAddress>
+                <RowAddress></RowAddress>
+                <RowAddress></RowAddress>
+                <RowAddress></RowAddress>
+                <RowAddress></RowAddress>
                 <RowAddress></RowAddress>
                 <RowAddress></RowAddress>
             </div>

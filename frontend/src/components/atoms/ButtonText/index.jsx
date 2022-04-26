@@ -56,7 +56,7 @@ ButtonText.defaultProps = {
     size: ButtonSize.MEDIUM,
     buttonClass: "atmButtonText",
     disabled: false,
-    hasIcon: false,
+    hasIcon: true,
     faClass: "fas fa-flag",
-    text: "button text"
+    text: "lipsum vie"
 };                            

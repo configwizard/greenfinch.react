@@ -30,11 +30,11 @@ const App = () => {
                 {/* // This is where the issue arises
                     <Header account={this.state.account}></Header>
                 */}
-                <div className="templ-shell d-flex flex-row">
+                <div className="templateShell d-flex flex-row">
                     <div className="flex-shrink-1">
                         <NavbarSide/>
                     </div>
-                    <div className="orgMainJSON w-100">
+                    <div className="w-100">
                         <Routes>
                             <Route path="/" exact element={<PageHome/>} />
                             <Route path="/test" exact element={<PageTest/>} />
@@ -44,7 +44,7 @@ const App = () => {
                         </Routes>
                     </div>
                 </div>
-                <Footer></Footer>
+                <Footer/>
             </div>
         </div>
     );

@@ -5,7 +5,10 @@ import TemplateContacts from '../../components/templates/Contacts';
 
 const PageContacts = () => {
     return (
-        <TemplateContacts />
+        <>
+            {/* Loader */}
+            <TemplateContacts />
+        </>
     )
 }
 

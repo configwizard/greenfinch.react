@@ -2,22 +2,24 @@ import React from 'react';
 
 // Components
 import HeaderPage from '../../organisms/HeaderPage';
-import HomePage from '../../organisms/HomePage';
 
 import './style.scss';
 
-const TemplateHome = () => {
+const TemplateWebsites = () => {
     return (
         <div class="templatePage d-flex flex-column flex-grow-1">
             <div class="row">
                 <div className="col-12">
                     <HeaderPage 
-                        pageTitle={"Greenfinch"} />
-                    <HomePage/>
+                        pageTitle={"Containers as websites"} 
+                        hasButton={true} />
+                    <div>
+                        List of website containers here.
+                    </div>
                 </div>
             </div>
         </div>
     );
 }
 
-export default TemplateHome;
+export default TemplateWebsites;

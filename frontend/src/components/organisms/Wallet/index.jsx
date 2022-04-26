@@ -21,7 +21,7 @@ const Wallet = props => {
                             <HeadingGeneral 
                                 level={"h4"}
                                 isUppercase={true}
-                                children={"Wallet"} />
+                                text={"Wallet"} />
                         </div>
                         <div className="ms-auto">
                             <i className="far fa-times" onClick={props.onClose}/>
@@ -50,7 +50,7 @@ const Wallet = props => {
                         <HeadingGeneral 
                             level={"h6"}
                             isUppercase={true}
-                            children={"Top-up NeoFS GAS Balance"} />
+                            text={"Top-up NeoFS GAS Balance"} />
                         <Form.Control type="number" placeholder="GAS amount" id={"topUpAmount"}/>
                         <ButtonText 
                             buttonClass={"atmButtonText"}

@@ -20,7 +20,6 @@ $heightFooter: 15px;
 /* Reset + Base
 - - - - - - - - - - - - - - - - - - */
 body {
-    overflow-x: hidden !important;
     min-height: 100vh;
 }
 
@@ -29,26 +28,24 @@ span {
 }
 
 .container-fluid {
-    overflow-x: hidden !important;
     padding-left: 0;
     padding-right: 0;
 }
 
-.container {
-    overflow-x: hidden !important;
-}
-
-.templ-shell {
+.templateShell {
     padding-top: $heightHeader;
     height: 100vh;
-    overflow-x: hidden;
 }
 
-.templ-section {
-    height: calc(100vh - $heightHeader - $heightFooter);
-    overflow-y: auto;
-}
-
-.templ-page {
+// https://jsfiddle.net/rsL8nc9q/
+// https://stackoverflow.com/questions/57828410/css-flexbox-vertical-scroll-not-working-reactjs-app
+.templatePage {
     padding: $paddingXSmall;
+    height: calc(100% - $heightFooter);
+    background-color: rgba(255,0,0,0.1);
 }
+
+// .templateSection {
+    // height: calc(100vh - $heightHeader - $heightFooter);
+    // overflow-y: auto;
+// }
