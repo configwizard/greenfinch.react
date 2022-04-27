@@ -3,6 +3,9 @@ package manager
 import (
 	"errors"
 	"fmt"
+	client2 "github.com/configwizard/gaspump-api/pkg/client"
+	"github.com/nspcc-dev/neofs-sdk-go/session"
+	"github.com/nspcc-dev/neofs-sdk-go/token"
 	"path"
 
 	"github.com/configwizard/gaspump-api/pkg/filesystem"
@@ -127,7 +130,7 @@ func (m *Manager) Download(filename, objectID, containerID string) error {
 	}
 	w := progress.NewWriter(f)
 	go func() {
-		progressChan := progress.NewTicker(m.ctx, w, int64(metaData.Object().PayloadSize()), 250*time.Millisecond)
+		progressChan := progress.NewTicker(m.ctx, w, int64(metaData.PayloadSize()), 250*time.Millisecond)
 		for p := range progressChan {
 			fmt.Printf("\r%v remaining...", p.Remaining().Round(250*time.Millisecond))
 			tmp := NewProgressMessage(&ProgressMessage{
@@ -163,63 +166,49 @@ func (m *Manager) Download(filename, objectID, containerID string) error {
 	}
 	return err
 }
-func (m *Manager) DeleteObject(objectID, containerID string) error {
-	err := m.Delete(objectID, containerID)
-	if err != nil {
-		tmp := NewToastMessage(&UXMessage{
-			Title:       "Error deleting object",
-			Type:        "error",
-			Description: "Deleting object failed: " + err.Error(),
-		})
-		m.MakeToast(tmp)
-		return err
-	}
-	tmp := NewToastMessage(&UXMessage{
-		Title:       "Object deleted",
-		Type:        "error",
-		Description: "This can take time to propogate",
-	})
-	m.MakeToast(tmp)
-	return nil
-}
-func (m Manager) RetrieveFileSystem() ([]filesystem.Element, error) {
-	tmpWallet, err := m.retrieveWallet()
-	if err != nil {
-		return []filesystem.Element{}, err
-	}
-	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
-	fsCli, err := m.Client()
-	if err != nil {
-		return []filesystem.Element{}, err
-	}
-	el, err := filesystem.GenerateFileSystem(m.ctx, fsCli, &tmpKey)
-	if err != nil {
-		tmp := NewToastMessage(&UXMessage{
-			Title:       "Error updating filesystem",
-			Type:        "error",
-			Description: "Updating latest filesystem failed: " + err.Error(),
-		})
-		m.MakeToast(tmp)
-	} else {
-		m.c.Set(CACHE_FILE_SYSTEM, el, cache.NoExpiration)
-	}
-	return el, err
-}
-func (m Manager) RetrieveContainerFileSystem(containerID string) (filesystem.Element, error) {
-	tmpWallet, err := m.retrieveWallet()
-	if err != nil {
-		return filesystem.Element{}, err
-	}
-	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
-	fsCli, err := m.Client()
-	if err != nil {
-		return filesystem.Element{}, err
-	}
-	contID := cid.New()
-	contID.Parse(containerID)
-	fs := filesystem.GenerateFileSystemFromContainer(m.ctx, fsCli, &tmpKey, contID)
-	if m.DEBUG {
-		DebugSaveJson("RetrieveContainerFileSystem.json", fs)
-	}
-	return fs, nil
-}
+
+//func (m Manager) RetrieveFileSystem() ([]filesystem.Element, error) {
+//	tmpWallet, err := m.retrieveWallet()
+//	if err != nil {
+//		return []filesystem.Element{}, err
+//	}
+//	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
+//	fsCli, err := m.Client()
+//	if err != nil {
+//		return []filesystem.Element{}, err
+//	}
+//	sessionToken, err := client2.CreateSession(m.ctx, fsCli, client2.DEFAULT_EXPIRATION, &tmpKey)
+//	if err != nil {
+//		return nil, err
+//	}
+//	el, err := filesystem.GenerateFileSystem(m.ctx, fsCli, &tmpKey, nil, sessionToken)
+//	if err != nil {
+//		tmp := NewToastMessage(&UXMessage{
+//			Title:       "Error updating filesystem",
+//			Type:        "error",
+//			Description: "Updating latest filesystem failed: " + err.Error(),
+//		})
+//		m.MakeToast(tmp)
+//	} else {
+//		m.c.Set(CACHE_FILE_SYSTEM, el, cache.NoExpiration)
+//	}
+//	return el, err
+//}
+//func (m Manager) RetrieveContainerFileSystem(containerID string, token *token.BearerToken, session *session.Token) (filesystem.Element, error) {
+//	//tmpWallet, err := m.retrieveWallet()
+//	//if err != nil {
+//	//	return filesystem.Element{}, err
+//	//}
+//	//tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
+//	fsCli, err := m.Client()
+//	if err != nil {
+//		return filesystem.Element{}, err
+//	}
+//	contID := cid.ID{}
+//	contID.Parse(containerID)
+//	fs := filesystem.GenerateFileSystemFromContainer(m.ctx, fsCli, contID, token, session)
+//	if m.DEBUG {
+//		DebugSaveJson("RetrieveContainerFileSystem.json", fs)
+//	}
+//	return fs, nil
+//}

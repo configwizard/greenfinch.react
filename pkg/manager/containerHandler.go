@@ -12,7 +12,6 @@ import (
 	"strconv"
 	"time"
 
-	obj "github.com/nspcc-dev/neofs-sdk-go/object"
 	client2 "github.com/configwizard/gaspump-api/pkg/client"
 	container2 "github.com/configwizard/gaspump-api/pkg/container"
 	"github.com/configwizard/gaspump-api/pkg/eacl"
@@ -60,63 +59,99 @@ func (m *Manager) ListContainerIDs() ([]string, error) {
 	return stringIds, err
 }
 
-func (m *Manager) ListReadOnlyContainersContents(since int64) ([]filesystem.Element, error) {
-	tmpWallet, err := m.retrieveWallet()
+// NewListReadOnlyContainerContents lists from cache
+func (m *Manager) NewListReadOnlyContainerContents(since int64) ([]filesystem.Element, error) {
+	//list the containers
+	containers, err := m.ListContainers()
 	if err != nil {
-		return []filesystem.Element{}, err
+		return nil, err
 	}
-	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
-	c, err := m.Client()
-	if err != nil {
-		return []filesystem.Element{}, err
-	}
-	sessionToken, err := client2.CreateSession(m.ctx, c, client2.DEFAULT_EXPIRATION, &tmpKey)
-	if err != nil {
-		return []filesystem.Element{}, err
-	}
-	ids, err := m.listContainerIDs()
-	if err != nil {
-		return []filesystem.Element{}, err
-	}
-	var containers []filesystem.Element
 	resultCounter := 0
-	for _, v := range ids {
-		tmpContainer := filesystem.PopulateContainerList(m.ctx, c, *v)
-		fmt.Printf("container eacl for %s: %s ?= %s\r\n", v.String(), tmpContainer.BasicAcl, acl.EACLReadOnlyBasicRule)
-		if tmpContainer.BasicAcl != acl.BasicACL(0x0FFFCFFF) { //acl.EACLReadOnlyBasicRule
+	var validContainers []filesystem.Element
+	//now for each container, we want to check the basic ACL
+	for _, v := range containers {
+		if v.BasicAcl != acl.BasicACL(0x0FFFCFFF) { //acl.EACLReadOnlyBasicRule
 			continue
 		}
-		var filters = obj.SearchFilters{}
-		filters.AddRootFilter()
-		list, err := object.QueryObjects(m.ctx, c, *v, filters, nil, sessionToken)
+		//now we need the metadata for the objects in this container.
+		objects, err := m.ListContainerObjects(v.ID)
 		if err != nil {
-			tmpContainer.Errors = append(tmpContainer.Errors, err)
-			continue
+			return nil, err
 		}
-		//is this inefficient? the expensive part is the request, but we are throwing away the whole object
-		_, els := filesystem.GenerateObjectStruct(m.ctx, c, list, *v, nil, sessionToken)
-		var filteredElements []filesystem.Element
-		for _, el := range els {
+		var pendingContainer filesystem.Element
+		for _, el := range objects {
 			//filteredElements = append(filteredElements, el)
 			unixString, ok := el.Attributes[obj.AttributeTimestamp];
 			unixTime, err := strconv.ParseInt(unixString, 10, 64);
 			if ok && err == nil && unixTime > since {
 				//its a good object
-				filteredElements = append(filteredElements, el)
+				pendingContainer.Children = append(pendingContainer.Children, el)
 			}
 		}
-		resultCounter += len(filteredElements)
-		if len(filteredElements) > 0 {
-			tmpContainer.Children = filteredElements
-			containers = append(containers, tmpContainer)
+		resultCounter += len(pendingContainer.Children)
+		if len(pendingContainer.Children) > 0 {
+			validContainers = append(containers, pendingContainer)
 		}
 	}
-	if m.DEBUG {
-		DebugSaveJson("ListContainers.json", containers)
-	}
-	fmt.Println("for ", since, " there are ", resultCounter, " objects")
-	return containers, nil
+	return validContainers, nil
 }
+//func (m *Manager) ListReadOnlyContainersContents(since int64) ([]filesystem.Element, error) {
+//	tmpWallet, err := m.retrieveWallet()
+//	if err != nil {
+//		return []filesystem.Element{}, err
+//	}
+//	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
+//	c, err := m.Client()
+//	if err != nil {
+//		return []filesystem.Element{}, err
+//	}
+//	sessionToken, err := client2.CreateSession(m.ctx, c, client2.DEFAULT_EXPIRATION, &tmpKey)
+//	if err != nil {
+//		return []filesystem.Element{}, err
+//	}
+//	ids, err := m.listContainerIDs()
+//	if err != nil {
+//		return []filesystem.Element{}, err
+//	}
+//	var containers []filesystem.Element
+//	resultCounter := 0
+//	for _, v := range ids {
+//		tmpContainer := filesystem.PopulateContainerList(m.ctx, c, *v)
+//		fmt.Printf("container eacl for %s: %s ?= %s\r\n", v.String(), tmpContainer.BasicAcl, acl.EACLReadOnlyBasicRule)
+//		if tmpContainer.BasicAcl != acl.BasicACL(0x0FFFCFFF) { //acl.EACLReadOnlyBasicRule
+//			continue
+//		}
+//		var filters = obj.SearchFilters{}
+//		filters.AddRootFilter()
+//		list, err := object.QueryObjects(m.ctx, c, *v, filters, nil, sessionToken)
+//		if err != nil {
+//			tmpContainer.Errors = append(tmpContainer.Errors, err)
+//			continue
+//		}
+//		//is this inefficient? the expensive part is the request, but we are throwing away the whole object
+//		_, els := filesystem.GenerateObjectStruct(m.ctx, c, list, *v, nil, sessionToken)
+//		var filteredElements []filesystem.Element
+//		for _, el := range els {
+//			//filteredElements = append(filteredElements, el)
+//			unixString, ok := el.Attributes[obj.AttributeTimestamp];
+//			unixTime, err := strconv.ParseInt(unixString, 10, 64);
+//			if ok && err == nil && unixTime > since {
+//				//its a good object
+//				filteredElements = append(filteredElements, el)
+//			}
+//		}
+//		resultCounter += len(filteredElements)
+//		if len(filteredElements) > 0 {
+//			tmpContainer.Children = filteredElements
+//			containers = append(containers, tmpContainer)
+//		}
+//	}
+//	if m.DEBUG {
+//		DebugSaveJson("ListContainers.json", containers)
+//	}
+//	fmt.Println("for ", since, " there are ", resultCounter, " objects")
+//	return containers, nil
+//}
 
 //ListContainersAsync should be purely used to refresh the database cache
 //todo: this needs to clean out the database as its a refresh of everything
@@ -150,9 +185,6 @@ func (m *Manager) ListContainersAsync() error {
 			//store in database
 			if err = cache.StoreContainer(tmpContainer.ID, str); err != nil {
 				fmt.Println("MASSIVE ERROR could not store container in database", err)
-			} else {
-				fmt.Println("refresh == ", string(str))
-				runtime.EventsEmit(m.ctx, "appendContainer", tmpContainer) //this is not good as will not have order
 			}
 		}(*v)
 	}
@@ -161,6 +193,28 @@ func (m *Manager) ListContainersAsync() error {
 	}
 	return nil
 }
+
+// prepareAndAppendContainer only used to update cache. Never as part of cache
+func (m *Manager) prepareAndAppendContainer(vID cid.ID, sessionToken *session.Token) (filesystem.Element, error) {
+	c, err := m.Client()
+	if err != nil {
+		log.Fatal("SERIOUS ERROR , could not retrieve client - in Go routine", err)
+		return filesystem.Element{}, err
+	}
+	tmpContainer := filesystem.PopulateContainerList(m.ctx, c, vID)
+	var filters = obj.SearchFilters{}
+	filters.AddRootFilter()
+	list, err := object.QueryObjects(m.ctx, c, vID, filters, nil, sessionToken)
+	if err != nil {
+		tmpContainer.Errors = append(tmpContainer.Errors, err)
+		return filesystem.Element{}, err
+	}
+	//is this inefficient? the expensive part is the request, but we are throwing away the whole object
+	size, _ := filesystem.GenerateObjectStruct(m.ctx, c, list, vID, nil, sessionToken)
+	tmpContainer.Size = size
+	return tmpContainer, nil
+}
+
 
 // ListContainers populates from cache
 func (m *Manager) ListContainers() ([]filesystem.Element, error) {
@@ -195,26 +249,6 @@ func (m *Manager) ListContainers() ([]filesystem.Element, error) {
 	return containers, nil
 }
 
-func (m *Manager) prepareAndAppendContainer(vID cid.ID, sessionToken *session.Token) (filesystem.Element, error) {
-	c, err := m.Client()
-	if err != nil {
-		log.Fatal("SERIOUS ERROR , could not retrieve client - in Go routine", err)
-		return filesystem.Element{}, err
-	}
-	tmpContainer := filesystem.PopulateContainerList(m.ctx, c, vID)
-	var filters = obj.SearchFilters{}
-	filters.AddRootFilter()
-	list, err := object.QueryObjects(m.ctx, c, vID, filters, nil, sessionToken)
-	if err != nil {
-		tmpContainer.Errors = append(tmpContainer.Errors, err)
-		return filesystem.Element{}, err
-	}
-	//is this inefficient? the expensive part is the request, but we are throwing away the whole object
-	size, _ := filesystem.GenerateObjectStruct(m.ctx, c, list, vID, nil, sessionToken)
-	tmpContainer.Size = size
-	return tmpContainer, nil
-}
-
 // DeleteContainer must mark the container in the cache as deleted
 // and delete it from neoFS
 func (m *Manager) DeleteContainer(id string) ([]filesystem.Element, error) {
@@ -243,8 +277,7 @@ func (m *Manager) DeleteContainer(id string) ([]filesystem.Element, error) {
 	if err != nil {
 		return []filesystem.Element{}, err
 	}
-	resp, err := container2.Delete(m.ctx, fsCli, c, sessionToken)
-	fmt.Printf("resp %+v\r\n", resp.Status())
+	_, err = container2.Delete(m.ctx, fsCli, c, sessionToken)
 	if err != nil {
 		tmp := UXMessage{
 			Title:       "Container Error",
