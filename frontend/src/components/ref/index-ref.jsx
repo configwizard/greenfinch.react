@@ -1,3 +1,5 @@
+// This is the minimum required to get Alex up and running.
+
 import React from 'react';
 import { Form } from 'react-bootstrap';
 
@@ -10,12 +12,11 @@ import CompModalStandard from '../../organisms/Modal/ModalStandard';
 
 import './style.scss';
 
-// Old time:
+// Old time
 // function hello(a) {}
 
-// Modern way (to use):
+// Modern (use),
 // const hello = (a, b) => {}
-// all functions to become consts.
 
 const createContact = async (contactName, contactAddress) => {
     console.log(contactName, contactAddress);
@@ -28,8 +29,7 @@ const TemplateContacts = () => {
             <div class="row">
                 <div className="col-12">
                     <HeaderPage 
-                        pageTitle={"Greenfinch contacts"}
-                        hasButton={true}
+                        pageTitle={"Greenfinch contacts"} 
                         buttonText={"Add contact"}
                         buttonAction={
                             () => {
@@ -44,7 +44,8 @@ const TemplateContacts = () => {
                                     <Form.Control id="contactName" type="text" placeholder="e.g. Alex Walker" />
                                     <Form.Control id="contactAddress" type="text" placeholder="Starting with 'n'... " />
                             </CompModalStandard>)
-                        }}/>
+                        }}
+                        hasButton={true}/>
                     <AddressBook/>
                 </div>
             </div>

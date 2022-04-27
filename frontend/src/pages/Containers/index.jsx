@@ -15,69 +15,16 @@ import ToastMessage from '../../components/molecules/Toast';
 import CompModalBrand from '../../components/organisms/Modal/ModalBrand';
 import Containers from '../../components/templates/Containers';
 
-function prepareWalletData(account) {
-    console.log("props.account", account)
-    let clean = {
-        neofs: {
-            balance: account.neofs !== undefined ? account.neofs.balance : 0,
-            precision: account.neofs !== undefined ? account.neofs.precision : 0
-        },
-        nep17: {
-            GAS: {
-                amount: account.nep17 !== undefined ? account.nep17.GAS.amount : 0,
-                meta: {
-                    decimals: account.nep17 !== undefined ? account.nep17.GAS.meta.decimals : 0,
-                }
-            },
-            NEO: {
-                amount: account.nep17 !== undefined  ? account.nep17.NEO.amount : 0
-            }
-        }
-    }
-    let b = clean.neofs.balance
-    let p = clean.neofs.precision;
-    let m = Math.pow(10,p);
-
-    let gs = clean.nep17.GAS.amount
-    let dp = clean.nep17.GAS.meta.decimals
-    let ms = Math.pow(10,dp);
-
-    let cleanBalances = {
-        address: account.address,
-        neoFSBalance: Number(b/m).toFixed(4),
-        gasBalance: Number(gs/ms).toFixed(4),
-        neoBalance: clean.nep17.NEO.amount
-    }
-    return cleanBalances
-}
 class PageContainers extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {account: null};
-    }
-    async componentDidMount() {
-        window.runtime.EventsOn("fresh_wallet", async (newAccount) => {
-            console.log("fresh_wallet response", newAccount)
-            const walletData  = await getAccountInformation()
-            const account = prepareWalletData(walletData)
-            console.log("setting wallet details to ", account)
-            await this.setState({account})
-        })
-        await this.setStatusAccount()
-    }
+
     fireToast(message) {
         console.log("making toast with ", message)
         window.go.manager.Manager.MakeToast(message)
     }
-    setStatusAccount = async () => {
-        const walletData  = await getAccountInformation()
-        const account = prepareWalletData(walletData)
-        console.log("setting wallet details to ", account)
-        await this.setState({account})
-    }
+    
     render() {
-        console.log("propogating wallet", this.state.account)
-        if (!this.state.account || this.state.account.address === "") { // if true then show the selection page
+        console.log("propogating wallet", this.props.account)
+        if (!this.props.account || this.props.account.address === "") { // if true then show the selection page
             return (
                 <div className="col-12">
                     <div className="orgContainersGrid">
@@ -112,7 +59,7 @@ class PageContainers extends React.Component {
         }
         return (
             <>
-                <Containers account={this.state.account} refreshAccount={this.setStatusAccount}></Containers>
+                <Containers account={this.props.account} refreshAccount={this.props.setStatusAccount}></Containers>
                 <ToastMessage autoDelete={true} autoDeleteTime={3000}></ToastMessage>
                 <ProgressBar></ProgressBar>
             </>

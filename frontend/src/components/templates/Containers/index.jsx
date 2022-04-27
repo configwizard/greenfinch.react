@@ -130,21 +130,30 @@ class Containers extends React.Component {
     retrieveCorrectComponent() {
         if (this.state.selectedContainer == null) {
             return (
-                <div className="col-12">
-                    <div className="orgContainersGrid">
-                        <div className="row">
-                            <ViewContainers containerList={this.state.containerList} onDelete={this.onContainerDelete} viewMode={this.state.viewMode} onContainerSelection={this.onContainerSelection}></ViewContainers>
+                <>
+                    <div className="col-3">
+                        <p>Wallet details here. i.e these are the containers created with this wallet.</p>
+                    </div>
+                    <div className="col-9">
+                        <div className="orgContainersGrid">
+                            <div className="row">
+                                <ViewContainers containerList={this.state.containerList} onDelete={this.onContainerDelete} viewMode={this.state.viewMode} onContainerSelection={this.onContainerSelection}></ViewContainers>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </>
             )
         } else {
             return (
                 <>
-                    <div className="col-12">
+                    <div className="col-3">
+                        <i className="fas fa-4x fa-folder"/>
+                        <h4>{this.state.selectedContainer.containerName}</h4>
+                        <p style={{fontSize:9}}>{this.state.selectedContainer.containerID}</p>
+                        <hr/>
                         <FileUpload onObjectUpload={this.onObjectUpload}></FileUpload>
                     </div>
-                    <div className="col-12">
+                    <div className="col-9">
                         <div className="orgContainersGrid">
                             <div className="row">
                                 <ViewObjects objectsLoaded={this.state.objectsLoaded} onDelete={this.onObjectDelete} objectList={this.state.objectList} viewMode={this.state.viewMode} onObjectSelection={this.onObjectSelection}></ViewObjects>

@@ -12,7 +12,8 @@ const TemplateHome = () => {
             <div class="row">
                 <div className="col-12">
                     <HeaderPage 
-                        pageTitle={"Greenfinch"} />
+                        pageTitle={"Greenfinch"} 
+                        hasButton={false}/>
                         <PlaceholderHP />
                 </div>
             </div>

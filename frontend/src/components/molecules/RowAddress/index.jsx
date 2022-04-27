@@ -29,12 +29,6 @@ const RowAddress = () => {
                     size={"small"}
                     type={"clean"}
                     hasIcon={true}
-                    faClass={"fas fa-pencil"}
-                    text={"Edit"} />
-                <ButtonText
-                    size={"small"}
-                    type={"clean"}
-                    hasIcon={true}
                     faClass={"fas fa-trash-alt"}
                     text={"Delete"} />
                 <ButtonText
