@@ -3,27 +3,19 @@ package manager
 import (
 	"errors"
 	"fmt"
-	client2 "github.com/configwizard/gaspump-api/pkg/client"
-	"github.com/nspcc-dev/neofs-sdk-go/session"
-	"github.com/nspcc-dev/neofs-sdk-go/token"
+	"github.com/machinebox/progress"
 	"path"
 
 	"github.com/configwizard/gaspump-api/pkg/filesystem"
-	"github.com/patrickmn/go-cache"
-
-	//"github.com/configwizard/gaspump-api/pkg/object"
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"io"
 	"os"
 	"time"
-
-	"github.com/machinebox/progress"
-	cid "github.com/nspcc-dev/neofs-sdk-go/container/id"
-	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 //Upload will put an object in NeoFS. You can access publically available files at
 //https://http.testnet.fs.neo.org/<containerID>/<objectID>
-func (m *Manager) Upload(containerID string, attributes map[string]string) (string, error) {
+func (m *Manager) Upload(containerID string, attributes map[string]string) ([]filesystem.Element, error) {
 	homeDir, err := os.UserHomeDir()
 	filepath, err := runtime.OpenFileDialog(m.ctx, runtime.OpenDialogOptions{
 		DefaultDirectory:           homeDir,
@@ -35,16 +27,16 @@ func (m *Manager) Upload(containerID string, attributes map[string]string) (stri
 		TreatPackagesAsDirectories: false,
 	})
 	if err != nil {
-		return "", err
+		return []filesystem.Element{}, err
 	}
 	f, err := os.Open(filepath)
 	defer f.Close()
 	if err != nil {
-		return "", err
+		return []filesystem.Element{}, err
 	}
 	fs, err := f.Stat()
 	if err != nil {
-		return "", err
+		return []filesystem.Element{}, err
 	}
 	r := progress.NewReader(f)
 	go func() {
@@ -76,7 +68,7 @@ func (m *Manager) Upload(containerID string, attributes map[string]string) (stri
 	}()
 	rr := (io.Reader)(r)
 
-	objectID, err := m.UploadObject(containerID, filepath, int(fs.Size()), attributes, &rr)
+	objects, err := m.UploadObject(containerID, filepath, int(fs.Size()), attributes, &rr)
 	if err != nil {
 		end := NewProgressMessage(&ProgressMessage{
 			Title: "Uploading object",
@@ -90,13 +82,8 @@ func (m *Manager) Upload(containerID string, attributes map[string]string) (stri
 			Description: "Uploading " + path.Base(filepath) + " failed: " + err.Error(),
 		})
 		m.MakeToast(tmp)
-
-	} else {
-		m.RetrieveFileSystem()
 	}
-
-
-	return objectID, err
+	return objects, nil
 }
 
 //Upload will put an object in NeoFS. You can access publically available files at

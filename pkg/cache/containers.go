@@ -31,6 +31,13 @@ func PendContainerDeleted(id string, container []byte) error {
 		return err
 	})
 }
+func DeleteContainer(id string) error {
+	return db.Update(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(container_bucket))
+		err := b.Delete([]byte(id))
+		return err
+	})
+}
 func RetrieveContainers() (map[string][]byte, error) {
 	containers := make(map[string][]byte)
 	err := db.View(func(tx *bolt.Tx) error {

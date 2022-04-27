@@ -10,8 +10,14 @@ import (
 	"github.com/configwizard/gaspump-api/pkg/wallet"
 	"github.com/nspcc-dev/neo-go/pkg/core/native/nativenames"
 	client2 "github.com/nspcc-dev/neo-go/pkg/rpc/client"
+	"github.com/wailsapp/wails/v2"
+	"github.com/wailsapp/wails/v2/pkg/logger"
+	"github.com/wailsapp/wails/v2/pkg/options"
+	"github.com/wailsapp/wails/v2/pkg/options/mac"
+	"github.com/wailsapp/wails/v2/pkg/options/windows"
 	"log"
 	"os"
+	"path/filepath"
 )
 
 //go:embed frontend/build
@@ -107,10 +113,16 @@ func main() {
 	}
 //https://http.testnet.fs.neo.org/CONTAINER_ID/OBJECT_ID
 	//createContainerOnStart
-	manager, err := manager.NewFileSystemManager(version, false)
+	databaseLocation, err := os.UserHomeDir()
+	if err != nil {
+		log.Fatal("could not get home directory", err)
+	}
+
+	manager, err := manager.NewFileSystemManager(version, filepath.Join(databaseLocation, "greenfinch.db"), false)
 	if err != nil {
 		log.Fatal("can't create a manager", err)
 	}
+	//manager.SetWalletDebugging(*walletPath, "password") //debugging
 	//balance, err := manager.GetAccountInformation()
 	//if err != nil {
 	//	fmt.Println("error retrieving neo fs balance", err)
@@ -122,25 +134,26 @@ func main() {
 	go localserve.SetupServer(manager)
 	//manager.PopToast()
 	// Create application with options
+	//here ---
 	err = wails.Run(&options.App{
 		// Title:  "Greenfinch",
-		Width:  			1280,
-		Height: 			960,
-		MinWidth:			960,
-		MinHeight:			660,
-		// MaxWidth:		1280,
-		// MaxHeight:		740,
-		DisableResize:		false,
-		Fullscreen:			false,
-		Frameless:			false,
-		StartHidden:		false,
-		HideWindowOnClose:	false,
-		RGBA:				&options.RGBA{255, 255, 255, 255},
-		Assets:				assets,
-		LogLevel:			logger.DEBUG,
-		OnStartup:			manager.Startup, //todo update these to the manager scripts
-		OnDomReady:			manager.DomReady,
-		OnShutdown:			manager.Shutdown,
+		Width:  1024,
+		Height: 768,
+		// MinWidth:          720,
+		// MinHeight:         570,
+		// MaxWidth:          1280,
+		// MaxHeight:         740,
+		DisableResize:     false,
+		Fullscreen:        false,
+		Frameless:         false,
+		StartHidden:       false,
+		HideWindowOnClose: false,
+		RGBA:              &options.RGBA{255, 255, 255, 255},
+		Assets:            assets,
+		LogLevel:          logger.DEBUG,
+		OnStartup:         manager.Startup, //todo update these to the manager scripts
+		OnDomReady:        manager.DomReady,
+		OnShutdown:        manager.Shutdown,
 		Bind: []interface{}{
 			manager,
 			//&mocker,
@@ -170,7 +183,7 @@ func main() {
 			},
 		},
 	})
-
+	//
 	if err != nil {
 		log.Fatal(err)
 	}

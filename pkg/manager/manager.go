@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/amlwwalker/greenfinch.react/pkg/cache"
 	"github.com/blang/semver/v4"
 	"github.com/configwizard/gaspump-api/pkg/client"
 	"io/ioutil"
@@ -14,12 +15,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/configwizard/gaspump-api/pkg/filesystem"
 	"github.com/configwizard/gaspump-api/pkg/wallet"
 	wal "github.com/nspcc-dev/neo-go/pkg/wallet"
 	neofscli "github.com/nspcc-dev/neofs-sdk-go/client"
-	obj "github.com/nspcc-dev/neofs-sdk-go/object"
-	"github.com/patrickmn/go-cache"
+	//"github.com/patrickmn/go-cache"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
@@ -54,7 +53,7 @@ type Manager struct {
 	fsCli                  *neofscli.Client
 	//key                    *ecdsa.PrivateKey
 	version string
-	c                      *cache.Cache
+	//c                      *cache.Cache
 	ctx                    context.Context
 	wallet 				*wal.Wallet
 	password			string //warning this is not a good idea
@@ -159,31 +158,32 @@ func (m *Manager) SendSignal(signalName string, signalValue interface{}) {
 func (m *Manager) Shutdown(ctx context.Context) {
 	// Perform your teardown here
 }
-func (m *Manager) Search(search string) ([]filesystem.Element, error) {
-	tmpFS, found := m.c.Get(CACHE_FILE_SYSTEM)
-	if !found {
-		return []filesystem.Element{}, errors.New("no filesystem in cache")
-	}
-	var results []filesystem.Element
-	//now search the filesystem for a string comparison
-	for _, v := range tmpFS.([]filesystem.Element) {
-		if fnAttr, ok := v.Attributes[obj.AttributeFileName]; ok {
-			if strings.Contains(fnAttr, search) {
-				results = append(results, v)
-			}
-		}
-	}
-	return results, nil
-}
-func NewFileSystemManager(version string, DEBUG bool) (*Manager, error) {
+//func (m *Manager) Search(search string) ([]filesystem.Element, error) {
+//	tmpFS, found := m.c.Get(CACHE_FILE_SYSTEM)
+//	if !found {
+//		return []filesystem.Element{}, errors.New("no filesystem in cache")
+//	}
+//	var results []filesystem.Element
+//	//now search the filesystem for a string comparison
+//	for _, v := range tmpFS.([]filesystem.Element) {
+//		if fnAttr, ok := v.Attributes[obj.AttributeFileName]; ok {
+//			if strings.Contains(fnAttr, search) {
+//				results = append(results, v)
+//			}
+//		}
+//	}
+//	return results, nil
+//}
+func NewFileSystemManager(version string, dbLocation string, DEBUG bool) (*Manager, error) {
 
+	cache.DB(dbLocation)
 	return &Manager{
 		//walletPath: walletPath,
 		//walletAddr: walletAddr,
 		version: version,
 		fsCli:      nil,
 		//key:        key, //this is holding the private key in memory - not good?
-		c:          cache.New(1*time.Minute, 10*time.Minute),
+		//c:          cache.New(1*time.Minute, 10*time.Minute),
 		ctx:        nil,
 		DEBUG:      DEBUG,
 	}, nil

@@ -14,32 +14,21 @@ export class Client {
 
     }
 }
-export class Token {
-    name: string;
-    script_hash: number[];
-    decimals: number;
-    symbol: string;
-    standard: string;
+export class Element {
+
 
     static createFrom(source: any = {}) {
-        return new Token(source);
+        return new Element(source);
     }
 
     constructor(source: any = {}) {
         if ('string' === typeof source) source = JSON.parse(source);
-        this.name = source["name"];
-        this.script_hash = source["script_hash"];
-        this.decimals = source["decimals"];
-        this.symbol = source["symbol"];
-        this.standard = source["standard"];
+
     }
 }
+
 export class Nep17Tokens {
-    asset: number[];
-    amount: number;
-    symbol: string;
-    meta: Token;
-    error: any;
+
 
     static createFrom(source: any = {}) {
         return new Nep17Tokens(source);
@@ -47,30 +36,8 @@ export class Nep17Tokens {
 
     constructor(source: any = {}) {
         if ('string' === typeof source) source = JSON.parse(source);
-        this.asset = source["asset"];
-        this.amount = source["amount"];
-        this.symbol = source["symbol"];
-        this.meta = this.convertValues(source["meta"], Token);
-        this.error = source["error"];
-    }
 
-	convertValues(a: any, classs: any, asMap: boolean = false): any {
-	    if (!a) {
-	        return a;
-	    }
-	    if (a.slice) {
-	        return (a as any[]).map(elem => this.convertValues(elem, classs));
-	    } else if ("object" === typeof a) {
-	        if (asMap) {
-	            for (const key of Object.keys(a)) {
-	                a[key] = new classs(a[key]);
-	            }
-	            return a;
-	        }
-	        return new classs(a);
-	    }
-	    return a;
-	}
+    }
 }
 export class  {
     balance: number;
@@ -120,18 +87,6 @@ export class Account {
 	    return a;
 	}
 }
-export class Container {
-
-
-    static createFrom(source: any = {}) {
-        return new Container(source);
-    }
-
-    constructor(source: any = {}) {
-        if ('string' === typeof source) source = JSON.parse(source);
-
-    }
-}
 export class Object {
 
 
@@ -144,52 +99,13 @@ export class Object {
 
     }
 }
-export class Element {
-    id: string;
-    type: string;
-    size: number;
-    attributes: {[key: string]: string};
-    errors: any[];
-    children: Element[];
 
-    static createFrom(source: any = {}) {
-        return new Element(source);
-    }
 
-    constructor(source: any = {}) {
-        if ('string' === typeof source) source = JSON.parse(source);
-        this.id = source["id"];
-        this.type = source["type"];
-        this.size = source["size"];
-        this.attributes = source["attributes"];
-        this.errors = source["errors"];
-        this.children = this.convertValues(source["children"], Element);
-    }
-
-	convertValues(a: any, classs: any, asMap: boolean = false): any {
-	    if (!a) {
-	        return a;
-	    }
-	    if (a.slice) {
-	        return (a as any[]).map(elem => this.convertValues(elem, classs));
-	    } else if ("object" === typeof a) {
-	        if (asMap) {
-	            for (const key of Object.keys(a)) {
-	                a[key] = new classs(a[key]);
-	            }
-	            return a;
-	        }
-	        return new classs(a);
-	    }
-	    return a;
-	}
-}
-
-export class ToastMessage {
+export class UXMessage {
 
 
     static createFrom(source: any = {}) {
-        return new ToastMessage(source);
+        return new UXMessage(source);
     }
 
     constructor(source: any = {}) {
@@ -197,31 +113,6 @@ export class ToastMessage {
 
     }
 }
-export class BearerToken {
-
-
-    static createFrom(source: any = {}) {
-        return new BearerToken(source);
-    }
-
-    constructor(source: any = {}) {
-        if ('string' === typeof source) source = JSON.parse(source);
-
-    }
-}
-export class Token {
-
-
-    static createFrom(source: any = {}) {
-        return new Token(source);
-    }
-
-    constructor(source: any = {}) {
-        if ('string' === typeof source) source = JSON.parse(source);
-
-    }
-}
-
 
 
 export class ProgressMessage {
@@ -236,3 +127,4 @@ export class ProgressMessage {
 
     }
 }
+

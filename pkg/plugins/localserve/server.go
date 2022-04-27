@@ -61,7 +61,7 @@ func retrieveReadOnlySinceObjectMetaData(m *manager.Manager) http.HandlerFunc {
 			3. return the filesystem for those
 			4. create list
 		*/
-		containers, err := m.ListReadOnlyContainersContents(unixTime)
+		containers, err := m.NewListReadOnlyContainerContents(unixTime)
 		if err != nil {
 			http.Error(w, "issue listing read only containers "+err.Error(), http.StatusInternalServerError)
 			return

@@ -23,13 +23,13 @@ import (
 
 
 
-func (m *Manager) UploadObject(containerID, filepath string, fileSize int, attributes map[string]string, ioReader *io.Reader) (string, error) {
+func (m *Manager) UploadObject(containerID, filepath string, fileSize int, attributes map[string]string, ioReader *io.Reader) ([]filesystem.Element, error) {
 	var attr []*obj.Attribute
 	for k, v := range attributes {
 		tmp := obj.Attribute{}
 		tmp.SetKey(k)
 		if v == "" {
-			return "", errors.New("cannot have empty attribute values")
+			return []filesystem.Element{}, errors.New("cannot have empty attribute values")
 		}
 		tmp.SetValue(v)
 		attr = append(attr, &tmp)
@@ -56,28 +56,57 @@ func (m *Manager) UploadObject(containerID, filepath string, fileSize int, attri
 
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
-		return "", err
+		return []filesystem.Element{}, err
 	}
 	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
 	c, err := m.Client()
 	if err != nil {
-		return "", err
+		return []filesystem.Element{}, err
 	}
 	sessionToken, err := client2.CreateSession( m.ctx, c, client2.DEFAULT_EXPIRATION, &tmpKey)
 	if err != nil {
-		return "", err
+		return []filesystem.Element{}, err
 	}
 	ownerID, err := wallet.OwnerIDFromPrivateKey(&tmpKey)
 	if err != nil {
-		return "", err
+		return []filesystem.Element{}, err
 	}
 	cntId := cid.ID{}
 	cntId.Parse(containerID)
 	id, err := object.UploadObject(m.ctx, c, fileSize, cntId, ownerID, attr, nil, sessionToken, ioReader)
 	if err != nil {
 		fmt.Println("error attempting to upload", err)
+		return []filesystem.Element{}, err
 	}
-	return id.String(), err
+	//now get the object metadata to create an entry
+	objMetaData, err := m.GetObjectMetaData(id.String(), containerID)
+	if err != nil {
+		return []filesystem.Element{}, err
+	}
+	el := filesystem.Element{
+		ID:             id.String(),
+		Type:           "object",
+		Size:           objMetaData.PayloadSize(),
+		ParentID:       containerID,
+	}
+	for _, a := range objMetaData.Attributes() {
+		el.Attributes[a.Key()] = a.Value()
+	}
+	data, err := json.Marshal(el)
+	if err != nil {
+		return []filesystem.Element{}, err
+	}
+
+	if err := cache.StoreObject(id.String(), data); err != nil {
+		return []filesystem.Element{}, err
+	}
+	t := UXMessage{
+		Title:       "Object Created",
+		Type:        "success",
+		Description: "Object successfully deleted",
+	}
+	m.MakeToast(NewToastMessage(&t))
+	return m.ListContainerObjects(containerID)
 }
 
 // GetObjectMetaData is live not cached
@@ -162,10 +191,7 @@ func (m *Manager) ListObjectsAsync(containerID string) error {
 				Type: "object",
 				ID:         v.String(),
 				Attributes: make(map[string]string),
-				Parent: filesystem.Element{
-					ID:             containerID,
-					Type:           "container",
-				},
+				ParentID: containerID,
 			}
 			head, err := object.GetObjectMetaData(m.ctx, m.fsCli, v, cntID, nil, sessionToken)
 			if err != nil {
@@ -207,7 +233,7 @@ func (m *Manager) ListContainerObjects(containerID string) ([]filesystem.Element
 			fmt.Println("warning - could not unmarshal container", k)
 			continue
 		}
-		if !tmp.PendingDeleted && tmp.Parent.ID == containerID { //don't return deleted containers
+		if !tmp.PendingDeleted && tmp.ParentID == containerID { //don't return deleted containers
 			unsortedObjects[tmp.Attributes[obj.AttributeFileName]] = tmp
 		}
 	}
@@ -253,7 +279,6 @@ func (m *Manager) DeleteObject(objectID, containerID string) ([]filesystem.Eleme
 		m.MakeToast(NewToastMessage(&tmp))
 		fmt.Println("error deleting object ", err)
 	} else {
-		//now mark deleted
 		//now mark deleted
 		cacheObject, err := cache.RetrieveObject(objectID)
 		if err != nil {

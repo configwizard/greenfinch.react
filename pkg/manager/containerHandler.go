@@ -450,7 +450,23 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 					Type:        "success",
 					Description: "Container '" + name + "' created",
 				}
-
+				el := filesystem.Element{
+					ID:             id.String(),
+					Type:           "container",
+					Size:           0,
+				}
+				for _, a := range attributes {
+					el.Attributes[a.Key()] = a.Value()
+				}
+				marshal, err := json.Marshal(el)
+				if err != nil {
+					return
+				}
+				err = cache.StoreContainer(id.String(), marshal)
+				if err != nil {
+					return 
+				}
+				//update the database cache
 				m.prepareAndAppendContainer(*id, sessionToken)
 				m.MakeToast(NewToastMessage(&tmp))
 				return

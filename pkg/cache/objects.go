@@ -45,3 +45,10 @@ func PendObjectDeleted(id string, object []byte) error {
 		return err
 	})
 }
+func DeleteObject(id string) error {
+	return db.Update(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(object_bucket))
+		err := b.Delete([]byte(id))
+		return err
+	})
+}
