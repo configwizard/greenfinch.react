@@ -13,24 +13,18 @@ require (
 	github.com/nspcc-dev/neofs-sdk-go v1.0.0-rc.2
 	github.com/swaggo/swag v1.8.1
 	github.com/wailsapp/wails/v2 v2.0.0-beta.33
-	github.com/yuin/goldmark v1.4.6
-	github.com/yuin/goldmark-highlighting v0.0.0-20220208100518-594be1970594
-	github.com/yuin/goldmark-meta v1.1.0
-	gopkg.in/yaml.v2 v2.4.0
 )
 
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/PuerkitoBio/purell v1.1.1 // indirect
 	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
-	github.com/alecthomas/chroma v0.10.0 // indirect
 	github.com/andybalholm/brotli v1.0.2 // indirect
 	github.com/antlr/antlr4/runtime/Go/antlr v0.0.0-20210521073959-f0d4d129b7f1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/btcsuite/btcd v0.22.0-beta // indirect
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d // indirect
-	github.com/dlclark/regexp2 v1.4.0 // indirect
 	github.com/fasthttp/websocket v0.0.0-20200320073529-1554a54587ab // indirect
 	github.com/gabriel-vasile/mimetype v1.3.1 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
@@ -95,6 +89,7 @@ require (
 	google.golang.org/grpc v1.41.0 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 
 replace github.com/configwizard/gaspump-api => /Users/alex.walker/go/src/github.com/configwizard/gaspump-api
