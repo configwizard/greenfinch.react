@@ -1,5 +1,4 @@
 import React from 'react';
-// import {Link, Route, useRouteMatch} from 'react-router-dom';
 
 // Components
 import NavlinkSide from '../../atoms/NavlinkSide';
@@ -18,12 +17,6 @@ export default function NavbarSide() {
                             faClass={"fal fa-home"}
                             label={"Home"} />
                     </Tooltip>
-                    <Tooltip content="Test" direction="right">
-                        <NavlinkSide
-                            to={"/test"}
-                            faClass={"fas fa-vial"}
-                            label={"Test"} />
-                    </Tooltip>
                     <Tooltip content="Containers" direction="right">
                         <NavlinkSide
                             to={"/containers"}
@@ -41,6 +34,12 @@ export default function NavbarSide() {
                             to={"/contacts"}
                             faClass={"fal fa-address-book"}
                             label={"Contacts"} />
+                    </Tooltip>
+                    <Tooltip content="Test" direction="right">
+                        <NavlinkSide
+                            to={"/test"}
+                            faClass={"fas fa-vial"}
+                            label={"Test"} />
                     </Tooltip>
                 </ul>
             </div>

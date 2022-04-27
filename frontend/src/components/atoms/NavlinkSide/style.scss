@@ -19,7 +19,7 @@ li.navlink-side {
             font-size: 1.3rem;
         }
         &.active {
-            color: rgba($brandColorWhite,1);
+            color: $brandColorPrimary;
             background-color: rgba(0,0,0,0.2);
         }
     }

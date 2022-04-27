@@ -3,7 +3,7 @@ import { ContainerGrid, ContainerRow } from './Container';
 
 import './style.scss';
 
-class ContainerView extends React.Component {
+class ViewContainers extends React.Component {
     constructor(props) {
         super(props);
         this.state = {}
@@ -38,4 +38,4 @@ class ContainerView extends React.Component {
     }
 }
 
-export default ContainerView;
+export default ViewContainers;

@@ -11,12 +11,12 @@ import { deleteObject, getObject, listObjects, uploadObject } from '../../../man
 // Components
 import ControlBar from '../../molecules/ControlBar';
 import BreadCrumb from '../../organisms/HeaderArtboard';
-import ContainerView from '../../organisms/ViewContainers';
-import ObjectView, { FileUpload } from '../../organisms/ViewObjects';
+import ViewContainers from '../../organisms/ViewContainers';
+import ViewObjects, { FileUpload } from '../../organisms/ViewObjects';
 
 import './style.scss';
 
-class Artboard extends React.Component {
+class Containers extends React.Component {
     constructor(props) {
         super(props);
         this.state = {containerList: [], objectList: [], selectedObject: null, selectedContainer: null, viewMode: "grid", objectsLoaded: false, requestNewWallet: false};
@@ -27,7 +27,6 @@ class Artboard extends React.Component {
         // // console.log("now have wallet ", this.props.account)
         // await this.props.setStatusAccount(account)
         // // await this.setState({...this.state, account})
-
 
         window.runtime.EventsOn("appendContainer", async (container) => {
             let containerList = this.state.containerList
@@ -134,7 +133,7 @@ class Artboard extends React.Component {
                 <div className="col-12">
                     <div className="orgContainersGrid">
                         <div className="row">
-                            <ContainerView containerList={this.state.containerList} onDelete={this.onContainerDelete} viewMode={this.state.viewMode} onContainerSelection={this.onContainerSelection}></ContainerView>
+                            <ViewContainers containerList={this.state.containerList} onDelete={this.onContainerDelete} viewMode={this.state.viewMode} onContainerSelection={this.onContainerSelection}></ViewContainers>
                         </div>
                     </div>
                 </div>
@@ -148,7 +147,7 @@ class Artboard extends React.Component {
                     <div className="col-12">
                         <div className="orgContainersGrid">
                             <div className="row">
-                                <ObjectView objectsLoaded={this.state.objectsLoaded} onDelete={this.onObjectDelete} objectList={this.state.objectList} viewMode={this.state.viewMode} onObjectSelection={this.onObjectSelection}></ObjectView>
+                                <ViewObjects objectsLoaded={this.state.objectsLoaded} onDelete={this.onObjectDelete} objectList={this.state.objectList} viewMode={this.state.viewMode} onObjectSelection={this.onObjectSelection}></ViewObjects>
                             </div>
                         </div>
                     </div>
@@ -178,4 +177,4 @@ class Artboard extends React.Component {
     }
 }
 
-export default Artboard;
+export default Containers;

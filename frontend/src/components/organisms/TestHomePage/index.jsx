@@ -6,20 +6,18 @@ import ButtonText from '../../atoms/ButtonText';
 
 import './style.scss';
 
-export default function AddressBook() {
+export default function PlaceholderHP() {
     return (
         <div class="row">
             <div class="col-6">
-                <div className="HomePageContainer">
+                <div className="HomePageContainer"> 
                     <div className="HomePageBook">
                         <div>
                             <HeadingGeneral
                                 level={"h1"}
                                 text={"Welcome to Greenfinch"}>
                             </HeadingGeneral>
-                            <p>
-                                This bringing in atoms, when it should be bringing in molecules/organisms. A bit like the start-for-10 organism that combines... password..etc.
-                            </p>
+                            <p>This is now an Organism, that in turn will pull in a atoms/molecules. This page shoudl be built up of them both. And it can scroll.</p>
                             <ButtonText
                                 type={"default"}
                                 size={"small"}
@@ -32,9 +30,7 @@ export default function AddressBook() {
                                 level={"h1"}
                                 text={"Welcome to Greenfinch"}>
                             </HeadingGeneral>
-                            <p>
-                                This bringing in atoms, when it should be bringing in molecules/organisms. A bit like the start-for-10 organism that combines... password..etc.
-                            </p>
+                            <p>This is now an Organism, that in turn will pull in a atoms/molecules. This page shoudl be built up of them both. And it can scroll.</p>
                             <ButtonText
                                 type={"default"}
                                 size={"small"}
@@ -47,9 +43,7 @@ export default function AddressBook() {
                                 level={"h1"}
                                 text={"Welcome to Greenfinch"}>
                             </HeadingGeneral>
-                            <p>
-                                This bringing in atoms, when it should be bringing in molecules/organisms. A bit like the start-for-10 organism that combines... password..etc.
-                            </p>
+                            <p>This is now an Organism, that in turn will pull in a atoms/molecules. This page shoudl be built up of them both. And it can scroll.</p>
                             <ButtonText
                                 type={"default"}
                                 size={"small"}
@@ -62,9 +56,7 @@ export default function AddressBook() {
                                 level={"h1"}
                                 text={"Welcome to Greenfinch"}>
                             </HeadingGeneral>
-                            <p>
-                                This bringing in atoms, when it should be bringing in molecules/organisms. A bit like the start-for-10 organism that combines... password..etc.
-                            </p>
+                            <p>This is now an Organism, that in turn will pull in a atoms/molecules. This page shoudl be built up of them both. And it can scroll.</p>
                             <ButtonText
                                 type={"default"}
                                 size={"small"}
@@ -77,9 +69,7 @@ export default function AddressBook() {
                                 level={"h1"}
                                 text={"Welcome to Greenfinch"}>
                             </HeadingGeneral>
-                            <p>
-                                This bringing in atoms, when it should be bringing in molecules/organisms. A bit like the start-for-10 organism that combines... password..etc.
-                            </p>
+                            <p>This is now an Organism, that in turn will pull in a atoms/molecules. This page shoudl be built up of them both. And it can scroll.</p>
                             <ButtonText
                                 type={"default"}
                                 size={"small"}
@@ -92,9 +82,7 @@ export default function AddressBook() {
                                 level={"h1"}
                                 text={"Welcome to Greenfinch"}>
                             </HeadingGeneral>
-                            <p>
-                                This bringing in atoms, when it should be bringing in molecules/organisms. A bit like the start-for-10 organism that combines... password..etc.
-                            </p>
+                            <p>This is now an Organism, that in turn will pull in a atoms/molecules. This page shoudl be built up of them both. And it can scroll.</p>
                             <ButtonText
                                 type={"default"}
                                 size={"small"}
@@ -113,9 +101,7 @@ export default function AddressBook() {
                                 level={"h1"}
                                 text={"Welcome to Greenfinch"}>
                             </HeadingGeneral>
-                            <p>
-                                This bringing in atoms, when it should be bringing in molecules/organisms. A bit like the start-for-10 organism that combines... password..etc.
-                            </p>
+                            <p>This is now an Organism, that in turn will pull in a atoms/molecules. This page shoudl be built up of them both. And it can scroll.</p>
                             <ButtonText
                                 type={"default"}
                                 size={"small"}
@@ -128,9 +114,7 @@ export default function AddressBook() {
                                 level={"h1"}
                                 text={"Welcome to Greenfinch"}>
                             </HeadingGeneral>
-                            <p>
-                                This bringing in atoms, when it should be bringing in molecules/organisms. A bit like the start-for-10 organism that combines... password..etc.
-                            </p>
+                            <p>This is now an Organism, that in turn will pull in a atoms/molecules. This page shoudl be built up of them both. And it can scroll.</p>
                             <ButtonText
                                 type={"default"}
                                 size={"small"}
@@ -143,9 +127,7 @@ export default function AddressBook() {
                                 level={"h1"}
                                 text={"Welcome to Greenfinch"}>
                             </HeadingGeneral>
-                            <p>
-                                This bringing in atoms, when it should be bringing in molecules/organisms. A bit like the start-for-10 organism that combines... password..etc.
-                            </p>
+                            <p>This is now an Organism, that in turn will pull in a atoms/molecules. This page shoudl be built up of them both. And it can scroll.</p>
                             <ButtonText
                                 type={"default"}
                                 size={"small"}
@@ -158,9 +140,7 @@ export default function AddressBook() {
                                 level={"h1"}
                                 text={"Welcome to Greenfinch"}>
                             </HeadingGeneral>
-                            <p>
-                                This bringing in atoms, when it should be bringing in molecules/organisms. A bit like the start-for-10 organism that combines... password..etc.
-                            </p>
+                            <p>This is now an Organism, that in turn will pull in a atoms/molecules. This page shoudl be built up of them both. And it can scroll.</p>
                             <ButtonText
                                 type={"default"}
                                 size={"small"}
@@ -173,9 +153,7 @@ export default function AddressBook() {
                                 level={"h1"}
                                 text={"Welcome to Greenfinch"}>
                             </HeadingGeneral>
-                            <p>
-                                This bringing in atoms, when it should be bringing in molecules/organisms. A bit like the start-for-10 organism that combines... password..etc.
-                            </p>
+                            <p>This is now an Organism, that in turn will pull in a atoms/molecules. This page shoudl be built up of them both. And it can scroll.</p>
                             <ButtonText
                                 type={"default"}
                                 size={"small"}
@@ -188,9 +166,7 @@ export default function AddressBook() {
                                 level={"h1"}
                                 text={"Welcome to Greenfinch"}>
                             </HeadingGeneral>
-                            <p>
-                                This bringing in atoms, when it should be bringing in molecules/organisms. A bit like the start-for-10 organism that combines... password..etc.
-                            </p>
+                            <p>This is now an Organism, that in turn will pull in a atoms/molecules. This page shoudl be built up of them both. And it can scroll.</p>
                             <ButtonText
                                 type={"default"}
                                 size={"small"}

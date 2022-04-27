@@ -1,8 +1,14 @@
 import React from 'react';
 
+// Components
+import TemplateTest from '../../components/templates/Test';
+
 function PageTest() {
     return (
-        <div>This page is for testing purposes.</div>
+        <>
+            {/* Loader */}
+            <TemplateTest />
+        </>
     )
 };
 

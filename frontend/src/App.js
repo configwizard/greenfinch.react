@@ -37,10 +37,10 @@ const App = () => {
                     <div className="w-100">
                         <Routes>
                             <Route path="/" exact element={<PageHome/>} />
-                            <Route path="/test" exact element={<PageTest/>} />
                             <Route path="/containers" exact element={<PageContainers/>} />
                             <Route path="/websites" exact element={<PageWebsites/>} />
                             <Route path="/contacts" exact element={<PageContacts/>} />
+                            <Route path="/test" exact element={<PageTest/>} />
                         </Routes>
                     </div>
                 </div>

@@ -13,7 +13,7 @@ import ButtonText from '../../components/atoms/ButtonText';
 import ProgressBar from '../../components/molecules/ProgressBar';
 import ToastMessage from '../../components/molecules/Toast';
 import CompModalBrand from '../../components/organisms/Modal/ModalBrand';
-import Artboard from '../../components/templates/Artboard';
+import Containers from '../../components/templates/Containers';
 
 function prepareWalletData(account) {
     console.log("props.account", account)
@@ -112,7 +112,7 @@ class PageContainers extends React.Component {
         }
         return (
             <>
-                <Artboard account={this.state.account} refreshAccount={this.setStatusAccount}></Artboard>
+                <Containers account={this.state.account} refreshAccount={this.setStatusAccount}></Containers>
                 <ToastMessage autoDelete={true} autoDeleteTime={3000}></ToastMessage>
                 <ProgressBar></ProgressBar>
             </>

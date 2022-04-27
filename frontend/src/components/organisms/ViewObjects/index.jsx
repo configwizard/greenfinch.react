@@ -4,7 +4,7 @@ import { ObjectGrid, ObjectRow } from './Object';
 
 import './style.scss';
 
-function ObjectView({onDelete, objectList, onObjectSelection, objectsLoaded, viewMode}) {
+function ViewObjects({onDelete, objectList, onObjectSelection, objectsLoaded, viewMode}) {
     console.log("objectList", objectList)
 
     if (viewMode === "grid") {
@@ -52,4 +52,4 @@ export function FileUpload({onObjectUpload}) {
     )
 } 
 
-export default ObjectView;
+export default ViewObjects;

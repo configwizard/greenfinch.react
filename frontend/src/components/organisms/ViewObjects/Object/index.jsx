@@ -22,7 +22,7 @@ export function ObjectGrid({onDelete, onObjectSelection, item}) {
                 type="button"
                 className="atmButtonGridContent d-flex flex-column align-items-center justify-content-between"
                 onClick={() => onObjectSelection(item.id, item.attributes.FileName)}>
-                   <div className="file-icon file-icon-lg" data-type={item.attributes.X_EXT}></div>
+                    <div className="file-icon file-icon-lg" data-type={item.attributes.X_EXT}></div>
                     <span className="atmButtonGridName">{item.attributes.FileName}</span>
             </button>
         </>

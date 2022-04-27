@@ -2,22 +2,24 @@ import React from 'react';
 
 // Components
 import HeaderPage from '../../organisms/HeaderPage';
-import PlaceholderHP from '../../organisms/TestHomePage';
 
 import './style.scss';
 
-const TemplateHome = () => {
+const TemplateTest = () => {
     return (
         <div class="templatePage d-flex flex-column flex-grow-1">
             <div class="row">
                 <div className="col-12">
                     <HeaderPage 
-                        pageTitle={"Greenfinch"} />
-                        <PlaceholderHP />
+                        pageTitle={"Test Page"} 
+                        hasButton={false} />
+                    <div>
+                        A page to test components + design.
+                    </div>
                 </div>
             </div>
         </div>
     );
 }
 
-export default TemplateHome;
+export default TemplateTest;
