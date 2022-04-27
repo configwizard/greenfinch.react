@@ -36,14 +36,15 @@ func NewProgressMessage(p *ProgressMessage) ProgressMessage {
 	return *p
 }
 
-type ToastMessage struct {
+type UXMessage struct {
 	Id          int
 	Title       string
 	Type        string
 	Description string
+	Closure bool
 }
 
-func NewToastMessage(t *ToastMessage) ToastMessage {
+func NewToastMessage(t *UXMessage) UXMessage {
 	t.Id = rand.Intn(101-1) + 1
 	return *t
 }
@@ -78,7 +79,7 @@ func (m *Manager) Startup(ctx context.Context) {
 func (m *Manager) DomReady(ctx context.Context) {
 	m.checkForVersion()
 	if m.wallet == nil {
-		tmp := NewToastMessage(&ToastMessage{
+		tmp := NewToastMessage(&UXMessage{
 			Title:       "Lets get started",
 			Type:        "info",
 			Description: "Please select a wallet",
@@ -116,7 +117,7 @@ func (m *Manager) checkForVersion() {
 			v, err := semver.Parse(tmpVersion)
 			if err != nil {
 				log.Println("error with versioning. Not Semantic", err)
-				tmp := NewToastMessage(&ToastMessage{
+				tmp := NewToastMessage(&UXMessage{
 					Title:       "Error checking for update",
 					Type:        "warning",
 					Description: "error with versioning " + err.Error() + " " + m.version + " - " + tmpVersion,
@@ -127,7 +128,7 @@ func (m *Manager) checkForVersion() {
 
 			log.Printf("version %s", v)
 			if v.Compare(remoteVersion) < 0 {
-				tmp := NewToastMessage(&ToastMessage{
+				tmp := NewToastMessage(&UXMessage{
 					Title:       "Update Available",
 					Type:        "info",
 					Description: "Please visit greenfinch.app to download version " + remoteVersion.String(),
@@ -138,8 +139,12 @@ func (m *Manager) checkForVersion() {
 		}
 	}()
 }
-func (m *Manager) MakeToast(message ToastMessage) {
+func (m *Manager) MakeToast(message UXMessage) {
 	runtime.EventsEmit(m.ctx, "freshtoast", message)
+}
+
+func (m *Manager) MakeNotification(message UXMessage) {
+	runtime.EventsEmit(m.ctx, "freshnotification", message)
 }
 
 func (m *Manager) SetProgressPercentage(progressMessage ProgressMessage) {
@@ -188,7 +193,7 @@ func (m *Manager) SetWalletDebugging(walletPath, password string) error {
 	m.walletPath = walletPath
 	w, err := wal.NewWalletFromFile(walletPath)
 	if err != nil {
-		tmp := ToastMessage{
+		tmp := UXMessage{
 			Title:       "Error reading wallet",
 			Type:        "error",
 			Description: err.Error(),
@@ -232,7 +237,7 @@ type Account struct {
 var NotFound = errors.New("wallet not found")
 func (m *Manager) retrieveWallet() (*wal.Wallet, error) {
 	if m.wallet == nil {
-		//tmp := NewToastMessage(&ToastMessage{
+		//tmp := NewToastMessage(&UXMessage{
 		//	Title:       "Lets get started",
 		//	Type:        "info",
 		//	Description: "Please select a wallet",

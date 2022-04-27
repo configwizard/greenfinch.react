@@ -61,7 +61,7 @@ func (m *Manager) Upload(containerID string, attributes map[string]string) (stri
 		})
 		//auto close the progress bar
 		m.SetProgressPercentage(end)
-		tmp := NewToastMessage(&ToastMessage{
+		tmp := NewToastMessage(&UXMessage{
 			Title:       "Uploading complete",
 			Type:        "success",
 			Description: "Uploading " + path.Base(filepath) + " complete",
@@ -81,7 +81,7 @@ func (m *Manager) Upload(containerID string, attributes map[string]string) (stri
 		})
 		//auto close the progress bar
 		m.SetProgressPercentage(end)
-		tmp := NewToastMessage(&ToastMessage{
+		tmp := NewToastMessage(&UXMessage{
 			Title:       "Error uploading",
 			Type:        "error",
 			Description: "Uploading " + path.Base(filepath) + " failed: " + err.Error(),
@@ -137,7 +137,7 @@ func (m *Manager) Download(filename, objectID, containerID string) error {
 			})
 			m.SetProgressPercentage(tmp)
 		}
-		tmp := NewToastMessage(&ToastMessage{
+		tmp := NewToastMessage(&UXMessage{
 			Title:       "Download complete",
 			Type:        "success",
 			Description: "Downloading " + path.Base(filepath) + " complete",
@@ -154,7 +154,7 @@ func (m *Manager) Download(filename, objectID, containerID string) error {
 	WW := (io.Writer)(w)
 	_, err = m.Get(objectID, containerID, int(metaData.PayloadSize()), &WW)
 	if err != nil {
-		tmp := NewToastMessage(&ToastMessage{
+		tmp := NewToastMessage(&UXMessage{
 			Title:       "Error downloading",
 			Type:        "error",
 			Description: "Downloading " + path.Base(filepath) + " failed: " + err.Error(),
@@ -166,7 +166,7 @@ func (m *Manager) Download(filename, objectID, containerID string) error {
 func (m *Manager) DeleteObject(objectID, containerID string) error {
 	err := m.Delete(objectID, containerID)
 	if err != nil {
-		tmp := NewToastMessage(&ToastMessage{
+		tmp := NewToastMessage(&UXMessage{
 			Title:       "Error deleting object",
 			Type:        "error",
 			Description: "Deleting object failed: " + err.Error(),
@@ -174,7 +174,7 @@ func (m *Manager) DeleteObject(objectID, containerID string) error {
 		m.MakeToast(tmp)
 		return err
 	}
-	tmp := NewToastMessage(&ToastMessage{
+	tmp := NewToastMessage(&UXMessage{
 		Title:       "Object deleted",
 		Type:        "error",
 		Description: "This can take time to propogate",
@@ -194,7 +194,7 @@ func (m Manager) RetrieveFileSystem() ([]filesystem.Element, error) {
 	}
 	el, err := filesystem.GenerateFileSystem(m.ctx, fsCli, &tmpKey)
 	if err != nil {
-		tmp := NewToastMessage(&ToastMessage{
+		tmp := NewToastMessage(&UXMessage{
 			Title:       "Error updating filesystem",
 			Type:        "error",
 			Description: "Updating latest filesystem failed: " + err.Error(),

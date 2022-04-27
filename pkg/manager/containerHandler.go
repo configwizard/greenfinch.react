@@ -4,12 +4,15 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/amlwwalker/greenfinch.react/pkg/cache"
 	"github.com/nspcc-dev/neo-go/pkg/crypto/keys"
 	"github.com/nspcc-dev/neofs-sdk-go/client"
 	"log"
+	"sort"
 	"strconv"
 	"time"
 
+	obj "github.com/nspcc-dev/neofs-sdk-go/object"
 	client2 "github.com/configwizard/gaspump-api/pkg/client"
 	container2 "github.com/configwizard/gaspump-api/pkg/container"
 	"github.com/configwizard/gaspump-api/pkg/eacl"
@@ -114,6 +117,9 @@ func (m *Manager) ListReadOnlyContainersContents(since int64) ([]filesystem.Elem
 	fmt.Println("for ", since, " there are ", resultCounter, " objects")
 	return containers, nil
 }
+
+//ListContainersAsync should be purely used to refresh the database cache
+//todo: this needs to clean out the database as its a refresh of everything
 func (m *Manager) ListContainersAsync() error {
 	var containers []filesystem.Element
 	runtime.EventsEmit(m.ctx, "clearContainer", nil)
@@ -134,10 +140,20 @@ func (m *Manager) ListContainersAsync() error {
 	if err != nil {
 		return err
 	}
-
 	for _, v := range ids {
 		go func(vID cid.ID) {
-			m.prepareAndAppendContainer(vID, sessionToken)
+			tmpContainer, err := m.prepareAndAppendContainer(vID, sessionToken)
+			str, err := json.MarshalIndent(tmpContainer, "", "  ")
+			if err != nil {
+				fmt.Println(err)
+			}
+			//store in database
+			if err = cache.StoreContainer(tmpContainer.ID, str); err != nil {
+				fmt.Println("MASSIVE ERROR could not store container in database", err)
+			} else {
+				fmt.Println("refresh == ", string(str))
+				runtime.EventsEmit(m.ctx, "appendContainer", tmpContainer) //this is not good as will not have order
+			}
 		}(*v)
 	}
 	if m.DEBUG {
@@ -146,11 +162,44 @@ func (m *Manager) ListContainersAsync() error {
 	return nil
 }
 
-func (m *Manager) prepareAndAppendContainer(vID cid.ID, sessionToken *session.Token) {
+// ListContainers populates from cache
+func (m *Manager) ListContainers() ([]filesystem.Element, error) {
+	tmpContainers, err := cache.RetrieveContainers()
+	if err != nil {
+		return nil, err
+	}
+	unsortedContainers := make(map[string]filesystem.Element)
+	//now convert to the elements
+	for k, v := range tmpContainers {
+		tmp := filesystem.Element{}
+		err := json.Unmarshal(v, &tmp)
+		if err != nil {
+			fmt.Println("warning - could not unmarshal container", k)
+			continue
+		}
+		if !tmp.PendingDeleted { //don't return deleted containers
+			unsortedContainers[tmp.Attributes[obj.AttributeFileName]] = tmp
+		}
+	}
+	//sort keys
+	keys := make([]string, 0, len(unsortedContainers))
+	for k := range unsortedContainers {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	//append to array in alphabetical order by key
+	var containers []filesystem.Element
+	for _, k := range keys {
+		containers = append(containers, unsortedContainers[k])
+	}
+	return containers, nil
+}
+
+func (m *Manager) prepareAndAppendContainer(vID cid.ID, sessionToken *session.Token) (filesystem.Element, error) {
 	c, err := m.Client()
 	if err != nil {
 		log.Fatal("SERIOUS ERROR , could not retrieve client - in Go routine", err)
-		return
+		return filesystem.Element{}, err
 	}
 	tmpContainer := filesystem.PopulateContainerList(m.ctx, c, vID)
 	var filters = obj.SearchFilters{}
@@ -158,79 +207,81 @@ func (m *Manager) prepareAndAppendContainer(vID cid.ID, sessionToken *session.To
 	list, err := object.QueryObjects(m.ctx, c, vID, filters, nil, sessionToken)
 	if err != nil {
 		tmpContainer.Errors = append(tmpContainer.Errors, err)
-		return
+		return filesystem.Element{}, err
 	}
 	//is this inefficient? the expensive part is the request, but we are throwing away the whole object
 	size, _ := filesystem.GenerateObjectStruct(m.ctx, c, list, vID, nil, sessionToken)
 	tmpContainer.Size = size
-	str, err := json.MarshalIndent(tmpContainer, "", "  ")
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(string(str))
-	runtime.EventsEmit(m.ctx, "appendContainer", tmpContainer)
+	return tmpContainer, nil
 }
-func (m *Manager) GetContainer(id string) (*container.Container, error) {
-	c := cid.ID{}
-	err := c.Parse(id)
-	if err != nil {
-		fmt.Println("error parsing id", err)
-		return nil, err
-	}
-	fcCli, err := m.Client()
-	if err != nil {
-		return nil, err
-	}
-	cont, err := container2.Get(m.ctx, fcCli, c)
-	if m.DEBUG {
-		DebugSaveJson("GetContainer.json", cont)
-	}
-	return cont, err
-}
-func (m *Manager) DeleteContainer(id string) error {
+
+// DeleteContainer must mark the container in the cache as deleted
+// and delete it from neoFS
+func (m *Manager) DeleteContainer(id string) ([]filesystem.Element, error) {
 	fmt.Println("deleting container ", id)
 	c := cid.ID{}
 	err := c.Parse(id)
 	if err != nil {
-		tmp := ToastMessage{
+		tmp := UXMessage{
 			Title:       "Container Error",
 			Type:        "error",
 			Description: "Container does not exist " + err.Error(),
 		}
 		m.MakeToast(NewToastMessage(&tmp))
-		return err
+		return []filesystem.Element{}, err
 	}
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
-		return err
+		return []filesystem.Element{}, err
 	}
 	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
 	fsCli, err := m.Client()
 	if err != nil {
-		return err
+		return []filesystem.Element{}, err
 	}
 	sessionToken, err := client2.CreateSession(m.ctx, fsCli, client2.DEFAULT_EXPIRATION, &tmpKey)
 	if err != nil {
-		return err
+		return []filesystem.Element{}, err
 	}
 	resp, err := container2.Delete(m.ctx, fsCli, c, sessionToken)
 	fmt.Printf("resp %+v\r\n", resp.Status())
 	if err != nil {
-		tmp := ToastMessage{
+		tmp := UXMessage{
 			Title:       "Container Error",
 			Type:        "error",
 			Description: "Container could not be deleted " + err.Error(),
 		}
 		m.MakeToast(NewToastMessage(&tmp))
 	} else {
-		tmp := ToastMessage{
+		//now mark deleted
+		cacheContainer, err := cache.RetrieveContainer(id)
+		if err != nil {
+			fmt.Println("error retrieving container??", err)
+			return []filesystem.Element{}, err
+		}
+		if cacheContainer == nil {
+			//there is no container
+		}
+		tmp := filesystem.Element{}
+		if err := json.Unmarshal(cacheContainer, &tmp); err != nil {
+			return []filesystem.Element{}, err
+		}
+		tmp.PendingDeleted = true
+		del, err := json.Marshal(tmp)
+		if err := json.Unmarshal(cacheContainer, &tmp); err != nil {
+			return []filesystem.Element{}, err
+		}
+		if err := cache.PendContainerDeleted(id, del); err != nil {
+			return []filesystem.Element{}, err
+		}
+		t := UXMessage{
 			Title:       "Container Deleted",
 			Type:        "success",
 			Description: "Container successfully deleted",
 		}
-		m.MakeToast(NewToastMessage(&tmp))
+		m.MakeToast(NewToastMessage(&t))
 	}
-	return err
+	return m.ListContainers()
 }
 
 //ultimately, you want to do this with containers that can be restricted (i.e eaclpublic)
@@ -248,7 +299,7 @@ func (m *Manager) RestrictContainer(id string, publicKey string) error {
 	c := cid.ID{}
 	err := c.Parse(id)
 	if err != nil {
-		tmp := ToastMessage{
+		tmp := UXMessage{
 			Title:       "Container Error",
 			Type:        "error",
 			Description: "Container does not exist " + err.Error(),
@@ -280,7 +331,7 @@ func (m *Manager) RestrictContainer(id string, publicKey string) error {
 		return bytes.Equal(expected, got)
 	})
 	if err != nil {
-		tmp := ToastMessage{
+		tmp := UXMessage{
 			Title:       "Container Error",
 			Type:        "error",
 			Description: "failed to restrict container" + err.Error(),
@@ -334,7 +385,7 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 			return
 		}
 		if err != nil {
-			tmp := ToastMessage{
+			tmp := UXMessage{
 				Title:       "Container Error",
 				Type:        "error",
 				Description: "Container '" + name + "' failed " + err.Error(),
@@ -342,7 +393,7 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 			m.MakeToast(NewToastMessage(&tmp))
 			return
 		}
-		tmp := ToastMessage{
+		tmp := UXMessage{
 			Title:       "Container " + name + " initialised",
 			Type:        "info",
 			Description: "Please wait up to 1 minute",
@@ -351,7 +402,7 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 		for i := 0; i <= 60; i++ {
 			if i == 60 {
 				log.Printf("Timeout, containers %s was not persisted in side chain\n", id)
-				tmp := ToastMessage{
+				tmp := UXMessage{
 					Title:       "Container Error",
 					Type:        "error",
 					Description: "Container '" + name + "' failed. Timeout",
@@ -361,15 +412,13 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 			}
 			_, err := container2.Get(m.ctx, fsCli, *id)
 			if err == nil {
-				tmp := ToastMessage{
+				tmp := UXMessage{
 					Title:       "Container Created",
 					Type:        "success",
 					Description: "Container '" + name + "' created",
 				}
 
 				m.prepareAndAppendContainer(*id, sessionToken)
-				//m.SendSignal("appendContainer", newContainer)
-				//m.SendSignal("freshUpload", o)
 				m.MakeToast(NewToastMessage(&tmp))
 				return
 			}

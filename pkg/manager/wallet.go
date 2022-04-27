@@ -22,7 +22,7 @@ func (m *Manager) TopUpNeoWallet(amount float64) (string, error){
 		return "", err
 	}
 	if err := m.UnlockWallet(); err != nil {
-		tmp := ToastMessage{
+		tmp := UXMessage{
 			Title:       "Error unlocking wallet",
 			Type:        "error",
 			Description: err.Error(),
@@ -47,7 +47,7 @@ func (m *Manager) TopUpNeoWallet(amount float64) (string, error){
 	//neoFSWallet := ""
 	token, err := wallet.TransferToken(w.Accounts[0], int64(amount), "NadZ8YfvkddivcFFkztZgfwxZyKf1acpRF", gasToken, wallet.RPC_TESTNET)
 	if err != nil {
-		tmp := ToastMessage{
+		tmp := UXMessage{
 			Title:       "Transfer failed",
 			Type:        "error",
 			Description: err.Error(),
@@ -55,7 +55,7 @@ func (m *Manager) TopUpNeoWallet(amount float64) (string, error){
 		m.MakeToast(NewToastMessage(&tmp))
 		return "", err
 	}
-	tmp := ToastMessage{
+	tmp := UXMessage{
 		Title:       "Transfer successful",
 		Type:        "success",
 		Description: "TxID: " + token,
@@ -84,7 +84,7 @@ func (m *Manager) NewWallet(password string) error {
 	}
 	w, err := wallet.GenerateNewSecureWallet(filepath, "", password)
 	if err != nil {
-		tmp := ToastMessage{
+		tmp := UXMessage{
 			Title:       "Error creating wallet",
 			Type:        "error",
 			Description: err.Error(),
@@ -94,7 +94,7 @@ func (m *Manager) NewWallet(password string) error {
 	}
 	m.password = password
 	m.wallet = w
-	tmp := ToastMessage{
+	tmp := UXMessage{
 		Title:       "Success creating wallet: " + w.Accounts[0].Address,
 		Type:        "success",
 		Description: "You will need to transfer the wallet some gas. Then you will need to transfer to NeoFS. Your wallet",
@@ -121,7 +121,7 @@ func (m *Manager) LoadWallet(password string) error {
 		TreatPackagesAsDirectories: false,
 	})
 	if err != nil {
-		tmp := ToastMessage{
+		tmp := UXMessage{
 			Title:       "Error finding wallet",
 			Type:        "error",
 			Description: err.Error(),
@@ -131,7 +131,7 @@ func (m *Manager) LoadWallet(password string) error {
 	}
 	w, err := wal.NewWalletFromFile(filepath)
 	if err != nil {
-		tmp := ToastMessage{
+		tmp := UXMessage{
 			Title:       "Error reading wallet",
 			Type:        "error",
 			Description: err.Error(),
@@ -141,7 +141,7 @@ func (m *Manager) LoadWallet(password string) error {
 	}
 	err = w.Accounts[0].Decrypt(password, w.Scrypt)
 	if err != nil {
-		tmp := ToastMessage{
+		tmp := UXMessage{
 			Title:       "Error unlocking wallet",
 			Type:        "error",
 			Description: err.Error(),
@@ -151,7 +151,7 @@ func (m *Manager) LoadWallet(password string) error {
 	}
 	m.password = password
 	m.wallet = w
-	tmp := ToastMessage{
+	tmp := UXMessage{
 		Title:       "Success reading wallet",
 		Type:        "success",
 		Description: "Using wallet "  + w.Accounts[0].Address,
@@ -159,7 +159,7 @@ func (m *Manager) LoadWallet(password string) error {
 	m.MakeToast(NewToastMessage(&tmp))
 
 	if _, err = m.Client(); err != nil {
-		tmp := ToastMessage{
+		tmp := UXMessage{
 			Title:       "error retrieving clien",
 			Type:        err.Error(),
 			Description: err.Error(),
