@@ -20,62 +20,69 @@ func dateFormat(layout string, intTime int64) time.Time {
 	return t
 }
 
-// SetupServer godoc
-// @BasePath  /api/v1
-// GetObjectHead godoc
-// @Summary      Get object metadata
-// @Description  Returns the metadata/HEAD of an object in a container
-// @Tags         objects
-// @Param        containerId   path      string  true  "The ID of the container to get the object metadata from"
-// @Param        objectId   path      string  true  "The ID of the object to get the metadata of"
-// @Param       publicKey header string true "Public Key"
-// @Param       X-r header string true "The bigInt r, that makes up part of the signature"
-// @Param       X-s header string true "The bigInt s, that makes up part of the signature"
-// @Success      200
-// @Failure      400  {object}  HTTPClientError
-// @Failure      502  {object}  HTTPServerError
-// @Router       /object/{containerId}/{objectId} [head]
-// @response     default
-// @Header       200              {string}  NEOFS-META  "The base64 encoded version of the binary bearer token ready for signing"
-func SetupServer(m manager.Manager) {
+
+func SetupServer(m *manager.Manager) {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Route("/api/v1/", func(r chi.Router) {
 		//ok so this endpoint is requesting a new bearer token to sign
-		r.Get("/readonly", func(w http.ResponseWriter, r *http.Request) {
-			sinceTimeQuery := r.URL.Query().Get("since")
-			unixTime, err := strconv.ParseInt(sinceTimeQuery, 10, 64)
-			if err != nil {
-				http.Error(w, "bad unix time", http.StatusBadRequest)
-				return
-			}
-			//unixTimeToDate := dateFormat("", unixTime)
-			/*
-					1. get all containers with public read basic permissions (and no restrictions on the eacl table?)
-					2. request head for all objects
-					3. return the filesystem for those
-					4. create list
-			 */
-			containers, err := m.ListReadOnlyContainers(unixTime)
-			if err != nil {
-				http.Error(w, "issue listing read only containers " + err.Error(), http.StatusInternalServerError)
-				return
-			}
-			containerData, err := json.Marshal(containers)
-			if err != nil {
-				http.Error(w, "issue marshalling read only containers " + err.Error(), http.StatusInternalServerError)
-				return
-			}
-			w.Write(containerData)
-		})
+		r.Get("/readonly", retrieveReadOnlySinceObjectMetaData(m))
 	})
 	swaggerFs := http.FileServer(http.Dir("swagger"))
 	r.Handle("/swagger/", http.StripPrefix("/swagger/", swaggerFs))
-	clientFs := http.FileServer(http.Dir("client"))
-	r.Handle("/*", clientFs)
-	log.Println("about to listen and server")
 	err := http.ListenAndServe(":43520", r)
 	if err != nil {
 		log.Fatal("error ", err)
 	}
+}
+
+// retrieveReadOnlySinceObjectMetaData godoc
+// @BasePath  /api/v1/readonly
+// GetObjectHead godoc
+// @Summary      Get object data locally
+// @Description  Returns the metadata/HEAD of the objects that have been created since a certain time
+// @Tags         objects
+// @Param        since   query      string  true  "The unix time since all objects returned should have been created after"
+// @Success      200
+// @Failure      400  {object}  HTTPClientError
+// @Failure      502  {object}  HTTPServerError
+func retrieveReadOnlySinceObjectMetaData(m *manager.Manager) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		sinceTimeQuery := r.URL.Query().Get("since")
+		unixTime, err := strconv.ParseInt(sinceTimeQuery, 10, 64)
+		if err != nil {
+			http.Error(w, "bad unix time", http.StatusBadRequest)
+			return
+		}
+		//unixTimeToDate := dateFormat("", unixTime)
+		/*
+			1. get all containers with public read basic permissions (and no restrictions on the eacl table?)
+			2. request head for all objects
+			3. return the filesystem for those
+			4. create list
+		*/
+		containers, err := m.ListReadOnlyContainersContents(unixTime)
+		if err != nil {
+			http.Error(w, "issue listing read only containers "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		containerData, err := json.Marshal(containers)
+		if err != nil {
+			http.Error(w, "issue marshalling read only containers "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Write(containerData)
+	}
+}
+
+// HTTPClientError returned when a client error occurs
+type HTTPClientError struct {
+	Code    int    `json:"code" example:"400"`
+	Message string `json:"message" example:"status bad request"`
+}
+
+// HTTPServerError returned when a server error occurs
+type HTTPServerError struct {
+	Code    int    `json:"code" example:"502"`
+	Message string `json:"message" example:"status server error"`
 }

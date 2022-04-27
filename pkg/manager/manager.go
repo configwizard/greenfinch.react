@@ -49,7 +49,7 @@ func NewToastMessage(t *ToastMessage) ToastMessage {
 }
 
 type Manager struct {
-	//walletPath, walletAddr string
+	walletPath, walletAddr string
 	fsCli                  *neofscli.Client
 	//key                    *ecdsa.PrivateKey
 	version string
@@ -182,6 +182,28 @@ func NewFileSystemManager(version string, DEBUG bool) (*Manager, error) {
 		ctx:        nil,
 		DEBUG:      DEBUG,
 	}, nil
+}
+
+func (m *Manager) SetWalletDebugging(walletPath, password string) error {
+	m.walletPath = walletPath
+	w, err := wal.NewWalletFromFile(walletPath)
+	if err != nil {
+		tmp := ToastMessage{
+			Title:       "Error reading wallet",
+			Type:        "error",
+			Description: err.Error(),
+		}
+		m.MakeToast(NewToastMessage(&tmp))
+		return err
+	}
+	m.wallet = w
+	err = m.wallet.Accounts[0].Decrypt(password, w.Scrypt)
+	if err != nil {
+		return err
+	}
+	m.ctx = context.Background()
+	_, err = m.Client()
+	return err
 }
 
 // todo we will want to have things dependent on the wallet controlled elsewhere with singletons and no other way of getting the value

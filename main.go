@@ -12,13 +12,6 @@ import (
 	client2 "github.com/nspcc-dev/neo-go/pkg/rpc/client"
 	"log"
 	"os"
-
-	"github.com/wailsapp/wails/v2/pkg/options/mac"
-
-	"github.com/wailsapp/wails/v2"
-	"github.com/wailsapp/wails/v2/pkg/logger"
-	"github.com/wailsapp/wails/v2/pkg/options"
-	"github.com/wailsapp/wails/v2/pkg/options/windows"
 )
 
 //go:embed frontend/build
@@ -38,6 +31,7 @@ var (
 	walletPath = flag.String("wallet", "", "path to JSON wallet file")
 	walletAddr = flag.String("address", "", "wallet address")
 	transferAmount = flag.Int64("amount", 1_00_000_000, "amount to transfer (precision is 8) default 1 GAS")
+	//password = flag.String("password", "", "wallet password")
 	//not used:
 	createContainerOnStart = flag.Bool("container", false, "should create a container on start")
 )

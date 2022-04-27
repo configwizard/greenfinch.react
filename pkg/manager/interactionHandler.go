@@ -73,7 +73,7 @@ func (m *Manager) Upload(containerID string, attributes map[string]string) (stri
 	}()
 	rr := (io.Reader)(r)
 
-	objectID, err := m.UploadObject(containerID, filepath, attributes, &rr)
+	objectID, err := m.UploadObject(containerID, filepath, int(fs.Size()), attributes, &rr)
 	if err != nil {
 		end := NewProgressMessage(&ProgressMessage{
 			Title: "Uploading object",
@@ -152,7 +152,7 @@ func (m *Manager) Download(filename, objectID, containerID string) error {
 		fmt.Println("\rdownload is completed")
 	}()
 	WW := (io.Writer)(w)
-	_, err = m.Get(objectID, containerID, &WW)
+	_, err = m.Get(objectID, containerID, int(metaData.PayloadSize()), &WW)
 	if err != nil {
 		tmp := NewToastMessage(&ToastMessage{
 			Title:       "Error downloading",

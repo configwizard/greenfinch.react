@@ -1,6 +1,8 @@
 package manager
 
 import (
+	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -8,10 +10,15 @@ import (
 	"github.com/configwizard/gaspump-api/pkg/filesystem"
 	"github.com/configwizard/gaspump-api/pkg/object"
 	"github.com/configwizard/gaspump-api/pkg/wallet"
-	"github.com/nspcc-dev/neofs-sdk-go/client"
+	"github.com/disintegration/imaging"
 	cid "github.com/nspcc-dev/neofs-sdk-go/container/id"
 	obj "github.com/nspcc-dev/neofs-sdk-go/object"
+	oid "github.com/nspcc-dev/neofs-sdk-go/object/id"
+	"image"
+	"image/jpeg"
+	"image/png"
 	"io"
+	"io/ioutil"
 	"path"
 	"strconv"
 	"time"
@@ -21,19 +28,63 @@ const (
 	TIMESTAMP_FORMAT string = "2006.01.02 15:04:05"
 )
 
-func getObjectAddress(objectID, containerID string) *obj.Address {
-	contID := cid.New()
-	contID.Parse(containerID)
-	objID := obj.NewID()
-	objID.Parse(objectID)
-	objAddress := obj.NewAddress()
-	objAddress.SetObjectID(objID)
-	objAddress.SetContainerID(contID)
-	return objAddress
+func thumbnail(ioReader *io.Reader) ([]byte, error) {
+
+	var img image.Image
+	//Read the content - need to check if this errors what happens to the reader
+	rawBody, err := ioutil.ReadAll(*ioReader)
+	if err != nil {
+		return []byte{}, err
+	}
+	// Restore the io.ReadCloser to it's original state
+	*ioReader = (io.Reader)(ioutil.NopCloser(bytes.NewBuffer(rawBody)))
+	srcImage, format, err := image.Decode(bytes.NewReader(rawBody))
+	if err != nil {
+		return []byte{}, err
+	}
+	fmt.Println("format detected", format)
+	bounds := srcImage.Bounds()
+	point := bounds.Size()
+	width := float64(point.Y)
+	height := float64(point.X)
+	var ratio float64
+	fixedSize := 80.
+	if width > height {
+		fmt.Println("width > height")
+		ratio = fixedSize/width
+		fmt.Println("ratio", ratio)
+		width = height * ratio
+		height = fixedSize
+		fmt.Println("new height", height)
+	} else {
+		fmt.Println("height > width", height, width)
+		ratio = fixedSize/height
+		fmt.Println("ratio", ratio)
+		height = width * ratio
+		width = fixedSize
+		fmt.Println("new width", width)
+	}
+	img = imaging.Thumbnail(srcImage, int(width), int(height), imaging.CatmullRom)
+	//now convert to bytes based on type of image
+	buf := new(bytes.Buffer)
+	if format == "jpeg" {
+		err := jpeg.Encode(buf, img, nil)
+		if err != nil {
+			return []byte{}, err
+		}
+	} else if format == "png" {
+		err = png.Encode(buf, img)
+		if err != nil {
+			return []byte{}, err
+		}
+	} else {
+		return []byte{}, errors.New("unknown format")
+	}
+	return buf.Bytes(), nil
 }
 
-func (m *Manager) UploadObject(containerID, filepath string, attributes map[string]string, ioReader *io.Reader) (string, error) {
 
+func (m *Manager) UploadObject(containerID, filepath string, fileSize int, attributes map[string]string, ioReader *io.Reader) (string, error) {
 	var attr []*obj.Attribute
 	for k, v := range attributes {
 		tmp := obj.Attribute{}
@@ -53,8 +104,16 @@ func (m *Manager) UploadObject(containerID, filepath string, attributes map[stri
 	fileNameAttr := new(obj.Attribute)
 	fileNameAttr.SetKey(obj.AttributeFileName)
 	fileNameAttr.SetValue(path.Base(filepath))
-
 	attr = append(attr, []*obj.Attribute{timeStampAttr, fileNameAttr}...)
+	//now we check if we can create a thumbnail
+	thumbnailData, err := thumbnail(ioReader)
+	if err == nil {
+		sEnc := base64.StdEncoding.EncodeToString(thumbnailData)
+		thumbNailAttr := new(obj.Attribute)
+		thumbNailAttr.SetKey("Thumbnail")
+		thumbNailAttr.SetValue(sEnc)
+		attr = append(attr, thumbNailAttr)
+	}
 
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
@@ -65,7 +124,7 @@ func (m *Manager) UploadObject(containerID, filepath string, attributes map[stri
 	if err != nil {
 		return "", err
 	}
-	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, c, &tmpKey)
+	sessionToken, err := client2.CreateSession( m.ctx, c, client2.DEFAULT_EXPIRATION, &tmpKey)
 	if err != nil {
 		return "", err
 	}
@@ -73,16 +132,16 @@ func (m *Manager) UploadObject(containerID, filepath string, attributes map[stri
 	if err != nil {
 		return "", err
 	}
-	cntId := new(cid.ID)
+	cntId := cid.ID{}
 	cntId.Parse(containerID)
-	id, err := object.UploadObject(m.ctx, c, cntId, ownerID, attr, nil, sessionToken, ioReader)
+	id, err := object.UploadObject(m.ctx, c, fileSize, cntId, ownerID, attr, nil, sessionToken, ioReader)
 	if err != nil {
 		fmt.Println("error attempting to upload", err)
 	}
 	return id.String(), err
 }
 
-func (m *Manager) GetObjectMetaData(objectID, containerID string) (*client.ObjectHeadRes, error){
+func (m *Manager) GetObjectMetaData(objectID, containerID string) (*obj.Object, error){
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
 		return nil, err
@@ -92,18 +151,21 @@ func (m *Manager) GetObjectMetaData(objectID, containerID string) (*client.Objec
 	if err != nil {
 		return nil, err
 	}
-	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, c, &tmpKey)
+	sessionToken, err := client2.CreateSession(m.ctx, c, client2.DEFAULT_EXPIRATION, &tmpKey)
 	if err != nil {
-		return &client.ObjectHeadRes{}, err
+		return nil, err
 	}
-	objAddress := getObjectAddress(objectID, containerID)
-	head, err := object.GetObjectMetaData(m.ctx, c, objAddress, nil, sessionToken)
+	objID := oid.ID{}
+	objID.Parse(objectID)
+	cntID := cid.ID{}
+	cntID.Parse(containerID)
+	head, err := object.GetObjectMetaData(m.ctx, c, objID, cntID, nil, sessionToken)
 	if m.DEBUG {
 		DebugSaveJson("GetObjectMetaData.json", head)
 	}
 	return head, err
 }
-func (m *Manager) Get(objectID, containerID string, writer *io.Writer) ([]byte, error){
+func (m *Manager) Get(objectID, containerID string, payloadSize int, writer *io.Writer) ([]byte, error){
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
 		return []byte{}, err
@@ -113,16 +175,19 @@ func (m *Manager) Get(objectID, containerID string, writer *io.Writer) ([]byte, 
 	if err != nil {
 		return nil, err
 	}
-	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, c, &tmpKey)
+	sessionToken, err := client2.CreateSession(m.ctx, c, client2.DEFAULT_EXPIRATION, &tmpKey)
 	if err != nil {
 		return []byte{}, err
 	}
-	objAddress := getObjectAddress(objectID, containerID)
-	o, err := object.GetObject(m.ctx, c, objAddress, nil, sessionToken, writer)
+	objID := oid.ID{}
+	objID.Parse(objectID)
+	cntID := cid.ID{}
+	cntID.Parse(containerID)
+	o, err := object.GetObject(m.ctx, c, payloadSize, objID, cntID, nil, sessionToken, writer)
 	if m.DEBUG {
 		DebugSaveJson("GetObject.json", o)
 	}
-	return o, err
+	return o.Payload(), err
 }
 
 func (m *Manager) ListContainerObjectIDs(containerID string) ([]string, error) {
@@ -136,17 +201,19 @@ func (m *Manager) ListContainerObjectIDs(containerID string) ([]string, error) {
 		return nil, err
 	}
 	var stringIds []string
-	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, c, &tmpKey)
+	sessionToken, err := client2.CreateSession(m.ctx, c, client2.DEFAULT_EXPIRATION, &tmpKey)
 	if err != nil {
 		return stringIds, err
 	}
-	cntID := new(cid.ID)
+	cntID := cid.ID{}
 	cntID.Parse(containerID)
-	list, err := object.ListObjects(m.ctx, c, cntID, nil, sessionToken)
+	var filters = obj.SearchFilters{}
+	filters.AddRootFilter()
+	list, err := object.QueryObjects(m.ctx, c, cntID, filters, nil, sessionToken)
 	if err != nil {
 		return stringIds, err
 	}
-	filesystem.GenerateObjectStruct(m.ctx, c, nil, sessionToken, list, cntID)
+	filesystem.GenerateObjectStruct(m.ctx, c, list, cntID, nil, sessionToken)
 	for _, v := range list {
 		stringIds = append(stringIds, v.String())
 	}
@@ -169,14 +236,16 @@ func (m *Manager) ListObjectsAsync(containerID string) error {
 	if err != nil {
 		return err
 	}
-	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, c, &tmpKey)
+	sessionToken, err := client2.CreateSession(m.ctx, c, client2.DEFAULT_EXPIRATION, &tmpKey)
 	if err != nil {
 		return  err
 	}
-	cntID := new(cid.ID)
+	cntID := cid.ID{}
 	cntID.Parse(containerID)
-	list, err := object.ListObjects(m.ctx, m.fsCli, cntID, nil, sessionToken)
-	_, objects := filesystem.GenerateObjectStruct(m.ctx, c, nil, sessionToken, list, cntID)
+	var filters = obj.SearchFilters{}
+	filters.AddRootFilter()
+	list, err := object.QueryObjects(m.ctx, m.fsCli, cntID, filters, nil, sessionToken)
+	_, objects := filesystem.GenerateObjectStruct(m.ctx, c, list, cntID, nil, sessionToken)
 	str, err := json.MarshalIndent(objects, "", "  ")
 	if err != nil {
 		fmt.Println(err)
@@ -197,17 +266,19 @@ func (m *Manager) ListContainerPopulatedObjects(containerID string) ([]filesyste
 	if err != nil {
 		return nil, err
 	}
-	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, c, &tmpKey)
+	sessionToken, err := client2.CreateSession( m.ctx, c, client2.DEFAULT_EXPIRATION,&tmpKey)
 	if err != nil {
 		return []filesystem.Element{}, err
 	}
-	cntID := new(cid.ID)
+	cntID := cid.ID{}
 	cntID.Parse(containerID)
-	list, err := object.ListObjects(m.ctx, c, cntID, nil, sessionToken)
+	var filters = obj.SearchFilters{}
+	filters.AddRootFilter()
+	list, err := object.QueryObjects(m.ctx, c, cntID, filters, nil, sessionToken)
 	if err != nil {
 		return []filesystem.Element{}, err
 	}
-	_, objects := filesystem.GenerateObjectStruct(m.ctx, c, nil, sessionToken, list, cntID)
+	_, objects := filesystem.GenerateObjectStruct(m.ctx, c, list, cntID, nil, sessionToken)
 	str, err := json.MarshalIndent(objects, "", "  ")
 	if err != nil {
 		fmt.Println(err)
@@ -228,13 +299,16 @@ func (m *Manager) Delete(objectID, containerID string) error {
 	if err != nil {
 		return err
 	}
-	sessionToken, err := client2.CreateSession(client2.DEFAULT_EXPIRATION, m.ctx, c, &tmpKey)
+	sessionToken, err := client2.CreateSession(m.ctx, c, client2.DEFAULT_EXPIRATION, &tmpKey)
 	if err != nil {
 		fmt.Println("error getting session key", err)
 		return err
 	}
-	objAddress := getObjectAddress(objectID, containerID)
-	err = object.DeleteObject(m.ctx, c, objAddress, nil, sessionToken)
+	objID := oid.ID{}
+	objID.Parse(objectID)
+	cntID := cid.ID{}
+	cntID.Parse(containerID)
+	_, err = object.DeleteObject(m.ctx, c, objID, cntID, nil, sessionToken)
 	if err != nil {
 		fmt.Println("error deleting object ", err)
 	}
