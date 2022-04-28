@@ -3,7 +3,8 @@ import React from 'react';
 // Components
 import HeaderPage from '../../organisms/HeaderPage';
 
-import './style.scss';
+// Central style sheet for templates
+import '../_settings/style.scss';
 
 function TestButtonAction() {
     console.log("Button clicked, website page")
@@ -15,13 +16,23 @@ const TemplateWebsites = () => {
             <div class="row">
                 <div className="col-12">
                     <HeaderPage 
-                        pageTitle={"Containers as websites"} 
+                        pageTitle={"Containers as website"}
                         hasButton={true}
-                        buttonText={"Add website"}
+                        hasIcon={true}
+                        faClass={"fas fa-plus-circle"}
+                        buttonText={"Add new website"}
                         buttonAction={TestButtonAction} />
-                    <div>
-                        List of website containers here.
+                        
+                    <div class="row">
+                        <div class="col-12">
+                            <div className="templateWrapper">
+                                <div className="templateContainer">
+                                    <p>List of website containers here.</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                
                 </div>
             </div>
         </div>

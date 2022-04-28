@@ -32,20 +32,10 @@ span {
     padding-right: 0;
 }
 
-.templateShell {
-    padding-top: $heightHeader;
-    height: 100vh;
+.form-div {
+    margin-bottom: $marginXSmall;
 }
 
-// https://jsfiddle.net/rsL8nc9q/
-// https://stackoverflow.com/questions/57828410/css-flexbox-vertical-scroll-not-working-reactjs-app
-.templatePage {
-    padding: $paddingXSmall;
-    height: calc(100% - $heightFooter);
-    background-color: rgba(255,0,0,0.1);
+.form-label {
+    margin-bottom: $marginXSmall/2;
 }
-
-// .templateSection {
-    // height: calc(100vh - $heightHeader - $heightFooter);
-    // overflow-y: auto;
-// }

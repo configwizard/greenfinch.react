@@ -24,7 +24,14 @@ $brandFontBold: 'AvertaStdPE-Bold', Arial, Helvetica, sans-serif;
 
 /* Variables: Font Sizes
 - - - - - - - - - - - - - - - - - - */
+h1 {
+    font-family: $brandFontBold;
+    font-size: 2rem;
+}
 
+h6 {
+    font-size: 0.65rem;
+}
 
 /* Variables: Color
 - - - - - - - - - - - - - - - - - - */
@@ -60,15 +67,6 @@ button {
     font-family: $brandFontBold;
     border-radius: none;
 }
-
-
-/* Reset + Base
-- - - - - - - - - - - - - - - - - - */
-.templateSection {
-    background-color: $brandColorLight;
-}
-
-
 
 
 /* Mixins

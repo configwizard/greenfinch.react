@@ -26,6 +26,11 @@ header {
 // TO SORT
 .orgHeaderStatus {
     & .utUCSmall {
+        @include titleStyle (0.7rem);
         color: $brandColorSecondary;
     }
+}
+
+.utTemp {
+    color: rgba($brandColorPrimary, 0.3);
 }

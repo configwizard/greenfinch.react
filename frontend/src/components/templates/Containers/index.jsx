@@ -9,12 +9,14 @@ import { deleteObject, getObject, listObjects, uploadObject } from '../../../man
 // import { deleteObject, getObject, listObjects, uploadObject } from '../../../mocker/objects.js';
 
 // Components
+import HeadingGeneral from '../../atoms/HeadingGeneral';
 import ControlBar from '../../molecules/ControlBar';
 import BreadCrumb from '../../organisms/HeaderArtboard';
 import ViewContainers from '../../organisms/ViewContainers';
 import ViewObjects, { FileUpload } from '../../organisms/ViewObjects';
 
-import './style.scss';
+// Central style sheet for templates
+import '../_settings/style.scss';
 
 class Containers extends React.Component {
     constructor(props) {
@@ -122,7 +124,6 @@ class Containers extends React.Component {
         console.log("deleting object ", objectId, containerId, response)
 
     }
-
     resetBreadcrumb = async () => {
         let state = this.state
         await this.setState({...state, objectList: [], selectedObject: null, selectedContainer: null})
@@ -149,7 +150,21 @@ class Containers extends React.Component {
                     <div className="col-3">
                         <i className="fas fa-4x fa-folder"/>
                         <h4>{this.state.selectedContainer.containerName}</h4>
+                        <HeadingGeneral 
+                            level={"h6"}
+                            isUppercase={true}
+                            text={"Container ID"}/>
                         <p style={{fontSize:9}}>{this.state.selectedContainer.containerID}</p>
+                        <HeadingGeneral 
+                            level={"h6"}
+                            isUppercase={true}
+                            text={"Container created"}/>
+                        <p style={{fontSize:9}}>Add date (state, not props)</p>
+                        <HeadingGeneral 
+                            level={"h6"}
+                            isUppercase={true}
+                            text={"Container size"}/>
+                        <p style={{fontSize:9}}>Add size (state, not props)</p>
                         <hr/>
                         <FileUpload onObjectUpload={this.onObjectUpload}></FileUpload>
                     </div>

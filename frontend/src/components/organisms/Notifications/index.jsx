@@ -5,7 +5,7 @@ import CardNotification from '../../atoms/CardNotification';
 
 import './style.scss';
 
-export default function Notifications() {
+const Notifications = () => {
     return (
         <div className="org-notifications d-flex flex-column">
             <div>
@@ -18,3 +18,5 @@ export default function Notifications() {
         </div>
     );
 }
+
+export default Notifications;

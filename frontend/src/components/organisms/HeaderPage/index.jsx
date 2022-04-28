@@ -7,7 +7,7 @@ import ButtonText from '../../atoms/ButtonText';
 
 import './style.scss';
 
-const HeaderPage = ({ pageTitle, hasButton, buttonText, buttonAction }) => {
+const HeaderPage = ({ pageTitle, hasButton, hasIcon, faClass, buttonText, buttonAction }) => {
     return (
         <div className="HeaderPageWrapper">
             <div className="HeaderPage d-flex align-items-center">
@@ -19,12 +19,14 @@ const HeaderPage = ({ pageTitle, hasButton, buttonText, buttonAction }) => {
                     />
                 </div>
                 <div className="ms-auto">
-                    { hasButton ? <ButtonText
+                    { hasButton ? 
+                    <ButtonText
                         size={"medium"}
                         type={"default"}
+                        hasIcon={hasIcon}
+                        faClass={faClass}
                         text={buttonText}
                         onClick={buttonAction}
-                        hasIcon={true}
                     /> : null }
                 </div>
             </div>
@@ -43,9 +45,12 @@ HeadingGeneral.defaultProps = {
 };
 
 ButtonText.propTypes = {
-    hasButton: PropTypes.bool
+    hasButton: PropTypes.bool,
+    hasIcon: PropTypes.bool,
+    iconClass: PropTypes.string,
 };
 
 ButtonText.defaultProps = {
-    hasButton: true
+    hasButton: true,
+    hasIcon: true
 }

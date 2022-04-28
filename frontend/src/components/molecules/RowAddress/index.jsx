@@ -36,7 +36,7 @@ const RowAddress = () => {
                     type={"clean"}
                     hasIcon={true}
                     faClass={"fas fa-paper-plane"}
-                    text={"Send"} />
+                    text={"Send GAS"} />
             </div>
         </div>
     )

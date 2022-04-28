@@ -1,0 +1,8 @@
+@import "../../../assets/dashboard-variables.scss";
+@import "../../../assets/greenfinch-variables.scss";
+
+.section-wallet {
+    background-color: rgba(255,0,0,0.1);
+    padding: $paddingMedium;
+    margin-bottom: $marginLarge;
+}

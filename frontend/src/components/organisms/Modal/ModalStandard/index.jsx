@@ -15,12 +15,14 @@ const CompModalStandard = props => {
             <div className="molModalFooter d-flex">
                 <div className="ms-auto molButtonGroup">
                     <ButtonText
-                        buttonClass={"atmButtonText"}
+                        type="secondary"
+                        size="medium"
                         hasIcon={false}
                         text={props.buttonTextSecondary}
                         onClick={() => {props.secondaryClicked()}} />
                     <ButtonText
-                        buttonClass={"atmButtonText"}
+                        type="primary"
+                        size="medium"
                         hasIcon={false}
                         text={props.buttonTextPrimary}
                         onClick={() => {props.primaryClicked()}} />

@@ -5,7 +5,7 @@ import RowAddress from '../../molecules/RowAddress';
 
 import './style.scss';
 
-export default function AddressBook() {
+const AddressBook = () => {
     return (
         <div className="addressBookContainer">
             <div className="addressBook">
@@ -30,3 +30,5 @@ export default function AddressBook() {
         </div>
     );
 }
+
+export default AddressBook;

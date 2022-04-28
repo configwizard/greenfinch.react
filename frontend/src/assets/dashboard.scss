@@ -80,20 +80,7 @@ input:checked + .slider:before {
 
 /* Component: Modal
 - - - - - - - - - - - - - - - - - - */
-.orgModal {
-    & label {
-        display: block;
-    }
-    .form-label {
-        margin-bottom: 0!important;
-    }
-    .form-text {
-        margin-top: 0!important;
-    }
-    & .form-control {
-        margin-top: $marginSmall;
-    }
-}
+
 
 // Modal styles from demo (stackoverflow: )
 .orgModal {

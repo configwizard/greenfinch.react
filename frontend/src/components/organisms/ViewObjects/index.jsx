@@ -1,4 +1,5 @@
 import React from 'react';
+import ButtonText from '../../atoms/ButtonText';
 
 import { ObjectGrid, ObjectRow } from './Object';
 
@@ -40,13 +41,13 @@ export function FileUpload({onObjectUpload}) {
         <div className="molBlockUpload d-flex align-items-center justify-content-center">
             <div className="atmBlockUpload d-flex flex-column align-items-center justify-content-center">
                 {/* <i className="fas fa-upload"/> */}
-                <button 
-                    type="button" 
-                    className="atmButtonText" 
-                    title="Upload a file" 
-                    onClick={onObjectUpload}>
-                        Upload a file
-                </button>
+                <ButtonText
+                    type={"default"}
+                    size={"medium"}
+                    hasIcon={true}
+                    faClass={"fas fa-upload"}
+                    onClick={onObjectUpload}
+                    text={"Upload to this container"}/>
             </div>
         </div>
     )

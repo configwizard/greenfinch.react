@@ -15,7 +15,7 @@ import CompModalStandard from '../../organisms/Modal/ModalStandard';
 
 import './style.scss';
 
-function ControlBar({containers, selectedContainer, onSelected, changeView, viewMode, resetBreadcrumb}) {
+const ControlBar = ({containers, selectedContainer, onSelected, changeView, viewMode, resetBreadcrumb}) => {
     // console.log("containerList", containers)
     const { setModal, unSetModal } = useModal()
 
@@ -31,20 +31,33 @@ function ControlBar({containers, selectedContainer, onSelected, changeView, view
                     {/* Implement button disable attribute or :disabled */}
                     <div className="ms-auto molButtonGroup">
                         <ButtonText
-                            buttonClass={"atmButtonText"}
+                            type="default"
+                            size="medium"
                             hasIcon={true}
                             faClass={"fas fa-plus-circle"} 
-                            text={"New container"}
+                            text={"Create new container"}
                             onClick={() => {
                                 setModal(
                                 <CompModalStandard
-                                    title={"Add a new container"}
-                                    buttonTextPrimary={"Add"}
+                                    title={"Create new container"}
+                                    buttonTextPrimary={"Create"}
                                     buttonTextSecondary={"Cancel"}
-                                    primaryClicked={async () => {await createContainer(document.getElementById("containerName").value); unSetModal()}}
+                                    primaryClicked={async () => {await createContainer(document.getElementById("containerName").value, document.getElementById("containerPermission").value); unSetModal()}}
                                     secondaryClicked={async () => unSetModal()}>
-                                        <p>Choose a name for the container. (N.B. this cannot be changed)</p>
-                                        <Form.Control id="containerName" type="text" placeholder="e.g. holiday photos" />
+                                        <Form.Group className="form-div">
+                                            <Form.Label>Container name</Form.Label>
+                                            <Form.Control id="containerName" type="text" />
+                                            <Form.Text muted>NB. This cannot be changed</Form.Text>
+                                        </Form.Group>
+                                        <Form.Group>
+                                            <Form.Label>Container permissions</Form.Label>
+                                            <Form.Select id="containerPermission" aria-label="select">
+                                                <option>Select container permissions...</option>
+                                                <option value="public_readonly">Public Read Only</option>
+                                                <option value="public_readwrite">Public Read/Write</option>
+                                                <option value="public_private">Private</option>
+                                            </Form.Select>
+                                        </Form.Group>
                                 </CompModalStandard>)
                             }} />
                     </div>

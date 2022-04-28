@@ -8,7 +8,7 @@ import CompModalStandard from "../Modal/ModalStandard";
 
 import './style.scss';
 
-export default function Footer({fireToast, percentage}) {
+const Footer = ({fireToast, percentage}) => {
     const [show, setShow] = useState(false)
     const { setModal, unSetModal } = useModal()
     return (
@@ -53,3 +53,5 @@ export default function Footer({fireToast, percentage}) {
         </footer>
     );
 }
+
+export default Footer;

@@ -2,9 +2,12 @@ import React from 'react';
 
 // Components
 import HeaderPage from '../../organisms/HeaderPage';
-import PlaceholderHP from '../../organisms/TestHomePage';
 
-import './style.scss';
+import LoadWallet from '../../organisms/LoadWallet';
+import SectionHomepage from '../../organisms/SectionHomepage';
+
+// Central style sheet for templates
+import '../_settings/style.scss';
 
 const TemplateHome = () => {
     return (
@@ -12,9 +15,33 @@ const TemplateHome = () => {
             <div class="row">
                 <div className="col-12">
                     <HeaderPage 
-                        pageTitle={"Greenfinch"} 
+                        pageTitle={"Welcome to Greenfinch"} 
                         hasButton={false}/>
-                        <PlaceholderHP />
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div className="templateWrapper">
+                                <div className="templateContainer">
+                                    <SectionHomepage 
+                                        sectionTitle={"Get started"}
+                                        />
+                                    <SectionHomepage 
+                                        sectionTitle={"Recent"}
+                                        />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div className="templateWrapper">
+                                <div className="templateContainer">
+                                    <LoadWallet 
+                                        sectiontitle={"Recent"}
+                                        />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                        
                 </div>
             </div>
         </div>

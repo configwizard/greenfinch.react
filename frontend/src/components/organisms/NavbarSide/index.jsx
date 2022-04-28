@@ -6,7 +6,7 @@ import Tooltip from '../../atoms/Tooltip';
 
 import './style.scss';
 
-export default function NavbarSide() {
+const NavbarSide = () => {
     return (
         <div className="org-navbar-side d-flex flex-column align-items-start">
             <div className="mb-auto">
@@ -66,6 +66,7 @@ export default function NavbarSide() {
                 </ul>
             </div>
         </div>
-
     );
 }
+
+export default NavbarSide;

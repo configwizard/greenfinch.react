@@ -1,0 +1,26 @@
+@import "../../../assets/dashboard-variables.scss";
+@import "../../../assets/greenfinch-variables.scss";
+
+.templateShell {
+    padding-top: $heightHeader;
+    height: 100vh;
+}
+
+.templatePage {
+    background-color: $brandColorLight;
+    padding: $paddingMedium;
+    height: calc(100% - $heightFooter);
+}
+ 
+.templateWrapper {
+    display: flex;
+    flex-flow: column;
+    height: 100%; // Has to be 100% otherwise it's 90% of available div
+}
+
+.templateContainer {
+    padding-right: $paddingSmall;
+    min-height: 0; // without min-height/height:0 flex:1 doesn't works
+	flex: 1;
+	overflow: auto;
+}

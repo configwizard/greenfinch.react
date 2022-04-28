@@ -4,21 +4,14 @@ import { Form } from 'react-bootstrap';
 // Components
 import AddressBook from '../../organisms/AddressBook';
 import HeaderPage from '../../organisms/HeaderPage';
-
 import { useModal } from '../../organisms/Modal/ModalContext';
 import CompModalStandard from '../../organisms/Modal/ModalStandard';
 
-import './style.scss';
+// Central style sheet for templates
+import '../_settings/style.scss';
 
-// Old time:
-// function hello(a) {}
-
-// Modern way (to use):
-// const hello = (a, b) => {}
-// all functions to become consts.
-
-const createContact = async (contactName, contactAddress) => {
-    console.log(contactName, contactAddress);
+const createContact = async (contactFirstName, contactLastName, contactAddress) => {
+    console.log(contactFirstName, contactLastName, contactAddress);
 }
 
 const TemplateContacts = () => {
@@ -30,22 +23,44 @@ const TemplateContacts = () => {
                     <HeaderPage 
                         pageTitle={"Greenfinch contacts"}
                         hasButton={true}
-                        buttonText={"Add contact"}
+                        hasIcon={true}
+                        faClass={"fas fa-plus-circle"}
+                        buttonText={"Add new contact"}
                         buttonAction={
                             () => {
                             setModal(
                             <CompModalStandard
-                                title={"Add a new contact"}
+                                title={"Add new contact"}
                                 buttonTextPrimary={"Add"}
                                 buttonTextSecondary={"Cancel"}
-                                primaryClicked={async () => {await createContact(document.getElementById("contactName").value, document.getElementById("contactAddress").value); unSetModal()}}
+                                primaryClicked={async () => {await createContact(document.getElementById("contactFirstName").value, document.getElementById("contactLastName").value, document.getElementById("contactAddress").value); unSetModal()}}
                                 secondaryClicked={async () => unSetModal()}>
-                                    <p>Give your contact a name, and a wallet address.</p>
-                                    <Form.Control id="contactName" type="text" placeholder="e.g. Alex Walker" />
-                                    <Form.Control id="contactAddress" type="text" placeholder="Starting with 'n'... " />
+                                    <Form.Group className="form-div">
+                                        <Form.Label>First name of contact</Form.Label>
+                                        <Form.Control id="contactFirstName" type="text" />
+                                    </Form.Group>
+                                    <Form.Group className="form-div">
+                                        <Form.Label>Last name of contact</Form.Label>
+                                        <Form.Control id="contactLastName" type="text" />
+                                    </Form.Group>
+                                    <Form.Group>
+                                        <Form.Label>Wallet address</Form.Label>
+                                        <Form.Control id="contactAddress" type="text" />
+                                        <Form.Text muted>Neo N3 wallet addresses start with 'N'</Form.Text>
+                                    </Form.Group>
                             </CompModalStandard>)
                         }}/>
-                    <AddressBook/>
+                   
+                    <div class="row">
+                        <div class="col-12">
+                            <div className="templateWrapper">
+                                <div className="templateContainer">
+                                    <AddressBook/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>

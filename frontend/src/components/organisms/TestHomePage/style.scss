@@ -1,15 +1,2 @@
 @import "../../../assets/dashboard-variables.scss";
 @import "../../../assets/greenfinch-variables.scss";
-
-.HomePageContainer {
-    display: flex;
-    flex-flow: column;
-    height: calc(90%);
-}
-
-.HomePageBook {
-    padding-right: $paddingSmall;
-    min-height: 0; /* without min-height/height:0 flex:1 doesn't work */
-	flex: 1;
-	overflow: auto;
-}
