@@ -32,37 +32,41 @@ class Containers extends React.Component {
         // await this.props.setStatusAccount(account)
         // // await this.setState({...this.state, account})
 
-        window.runtime.EventsOn("appendContainer", async (container) => {
-            let containerList = this.state.containerList
-            console.log("new container added", container)
-            containerList.push(container)
-            await this.setState({...this.state, containerList})
-        })
-        window.runtime.EventsOn("appendObject", async (object) => {
-            let objectList = this.state.objectList
-            objectList.push(object)
-            await this.setState({...this.state, objectList})
-        })
-        window.runtime.EventsOn("clearContainer", async () => {
-            await this.setState(this.setState({...this.state, containerList: []}))
-        })
-        window.runtime.EventsOn("freshUpload", async (value) => {
-            console.log("fresh objects made", value)
-            const objectList = await listObjects(this.state.selectedContainer.containerID) || []//list contents of a container
-            await this.setState({...this.state, objectList})
-        })
-
+        // window.runtime.EventsOn("appendContainer", async (container) => {
+        //     let containerList = this.state.containerList
+        //     console.log("new container added", container)
+        //     containerList.push(container)
+        //     await this.setState({...this.state, containerList})
+        // })
+        // window.runtime.EventsOn("appendObject", async (object) => {
+        //     let objectList = this.state.objectList
+        //     objectList.push(object)
+        //     await this.setState({...this.state, objectList})
+        // })
+        //
+        // window.runtime.EventsOn("clearContainer", async () => {
+        //     await this.setState(this.setState({...this.state, containerList: []}))
+        // })
+        // window.runtime.EventsOn("freshUpload", async (value) => {
+        //     console.log("fresh objects made", value)
+        //     const objectList = await listObjects(this.state.selectedContainer.containerID) || []//list contents of a container
+        //     await this.setState({...this.state, objectList})
+        // })
         console.log("received wallet", this.props.account)
-        await listContainers()
+        const containers = await listContainers()
+        console.log("listing containers 1", containers)
+        await this.setState(this.setState({...this.state, containerList: containers, objectList: []}))
         console.log("componentDidMount, objects", this.state.objectList)
     }
     onRefresh = async() => {
         await this.props.refreshAccount()
         console.log("onRefresh, objects", this.state.objectList)
-        //Refresh button (dev) -- uncomment this following line if you want to really refresh the app.
-        window.location.reload(false); //disable this
+        //ROBIN!! -- uncomment this following line if you want to really refresh the app.
+        // window.location.reload(false); //disable this
         await this.setState(this.setState({...this.state, containerList: [], objectList: []}))
-        await listContainers()
+        const containers = await listContainers()
+        console.log("listing containers 2", containers)
+        await this.setState(this.setState({...this.state, containerList: containers, objectList: []}))
         if (this.state.selectedContainer == null) {
             return
         }
@@ -85,7 +89,8 @@ class Containers extends React.Component {
         let state = this.state
 
         this.setState({...state, selectedContainer, objectsLoaded: false})
-        const objectList = await listObjects(containerID) || []//list contents of a container
+        const objectList = await listObjects(containerID)
+        console.log("container selected object list", objectList)
         this.setState({...state, selectedContainer, objectList, objectsLoaded: true})
     }
     onObjectSelection = async (objectID, objectName) => {
@@ -152,22 +157,22 @@ class Containers extends React.Component {
                     <div className="col-3">
                         <i className="fas fa-4x fa-folder"/>
                         <h4>{this.state.selectedContainer.containerName}</h4>
-                        <HeadingGeneral 
+                        <HeadingGeneral
                             level={"h6"}
                             isUppercase={true}
                             text={"Container ID"}/>
                         <p style={{fontSize:9}}>{this.state.selectedContainer.containerID}</p>
-                        <HeadingGeneral 
+                        <HeadingGeneral
                             level={"h6"}
                             isUppercase={true}
                             text={"Container permission"}/>
                         <p style={{fontSize:9}}>Add permission </p>
-                        <HeadingGeneral 
+                        <HeadingGeneral
                             level={"h6"}
                             isUppercase={true}
                             text={"Container created"}/>
                         <p style={{fontSize:9}}>Add date (state, not props)</p>
-                        <HeadingGeneral 
+                        <HeadingGeneral
                             level={"h6"}
                             isUppercase={true}
                             text={"Container size"}/>

@@ -1,8 +1,11 @@
 const listContainers = async () => {
     try {
-        await window.go.manager.Manager.ListContainersAsync()
+        const containers = await window.go.manager.Manager.ListContainers(false)
+        console.log("received containers ", containers)
+        return containers
     }catch (e) {
         console.log("error listing containers", e)
+        return []
     }
 }
 const getContainer = async (containerID) => {

@@ -10,6 +10,7 @@ class ViewContainers extends React.Component {
     }
     render() {
         const {containerList, onContainerSelection, viewMode} = this.props
+        console.log("containerList", containerList)
         if (viewMode === "grid") {
         return (
             <div className="row">

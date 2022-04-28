@@ -18,6 +18,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strconv"
+	"sync"
 	"time"
 )
 
@@ -106,7 +107,7 @@ func (m *Manager) UploadObject(containerID, filepath string, fileSize int, attri
 		Description: "Object successfully deleted",
 	}
 	m.MakeToast(NewToastMessage(&t))
-	return m.ListContainerObjects(containerID)
+	return m.ListContainerObjects(containerID, false)
 }
 
 // GetObjectMetaData is live not cached
@@ -165,35 +166,39 @@ type TmpObjectMeta struct {
 	Objects []filesystem.Element
 }
 
-//ListObjectsAsync update object in database with metadata
-func (m *Manager) ListObjectsAsync(containerID string) error {
+//listObjectsAsync update object in database with metadata
+func (m *Manager) listObjectsAsync(containerID string) ([]filesystem.Element, error) {
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
-		return err
+		return []filesystem.Element{}, err
 	}
 	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
 	c, err := m.Client()
 	if err != nil {
-		return err
+		return []filesystem.Element{}, err
 	}
 	sessionToken, err := client2.CreateSession(m.ctx, c, client2.DEFAULT_EXPIRATION, &tmpKey)
 	if err != nil {
-		return  err
+		return []filesystem.Element{}, err
 	}
 	cntID := cid.ID{}
 	cntID.Parse(containerID)
 	var filters = obj.SearchFilters{}
 	filters.AddRootFilter()
-	ids, err := object.QueryObjects(m.ctx, m.fsCli, cntID, filters, nil, sessionToken)
+	ids, err := object.QueryObjects(m.ctx, c, cntID, filters, nil, sessionToken)
+	wg := sync.WaitGroup{}
 	for _, v := range ids {
+		wg.Add(1)
 		go func(vID oid.ID) {
+			defer wg.Done()
+			fmt.Println("processing object with id", v.String())
 			tmp := filesystem.Element{
 				Type: "object",
 				ID:         v.String(),
 				Attributes: make(map[string]string),
 				ParentID: containerID,
 			}
-			head, err := object.GetObjectMetaData(m.ctx, m.fsCli, v, cntID, nil, sessionToken)
+			head, err := object.GetObjectMetaData(m.ctx, c, v, cntID, nil, sessionToken)
 			if err != nil {
 				tmp.Errors = append(tmp.Errors, err)
 			}
@@ -216,16 +221,30 @@ func (m *Manager) ListObjectsAsync(containerID string) error {
 			}
 		}(v)
 	}
-	return nil
+	fmt.Println("length of ids", len(ids))
+	if len(ids) > 0 {
+		wg.Wait()
+	}
+	objectList, err := m.ListContainerObjects(containerID, true)
+	fmt.Println("async returning", objectList)
+	return objectList, err
 }
 
 //ListContainerObjects ets from cache
-func (m *Manager) ListContainerObjects(containerID string) ([]filesystem.Element, error) {
+func (m *Manager) ListContainerObjects(containerID string, synchronised bool) ([]filesystem.Element, error) {
 	tmpObjects, err := cache.RetrieveObjects()
 	if err != nil {
 		return nil, err
 	}
+	if len(tmpObjects) == 0 {
+		//we need to check there aren't any on the network
+		//todo notify frontend of database sync
+		return m.listObjectsAsync(containerID)
+	}
+	fmt.Println("len unsorted", len(tmpObjects))
+	//filter for this container
 	unsortedObjects := make(map[string]filesystem.Element)
+	fmt.Println("processinb ojects for", containerID)
 	for k, v := range tmpObjects {
 		tmp := filesystem.Element{}
 		err := json.Unmarshal(v, &tmp)
@@ -233,10 +252,18 @@ func (m *Manager) ListContainerObjects(containerID string) ([]filesystem.Element
 			fmt.Println("warning - could not unmarshal container", k)
 			continue
 		}
+		fmt.Println("object ", tmp.PendingDeleted, tmp.ParentID)
 		if !tmp.PendingDeleted && tmp.ParentID == containerID { //don't return deleted containers
 			unsortedObjects[tmp.Attributes[obj.AttributeFileName]] = tmp
 		}
 	}
+	//filter for the objects specifically for this container
+	if len(unsortedObjects) == 0 && !synchronised {
+		//we need to check there aren't any on the network
+		//todo notify frontend of database sync
+		return m.listObjectsAsync(containerID)
+	}
+	fmt.Println("len unsorted", len(unsortedObjects))
 	//sort keys
 	keys := make([]string, 0, len(unsortedObjects))
 	for k := range unsortedObjects {
@@ -308,5 +335,5 @@ func (m *Manager) DeleteObject(objectID, containerID string) ([]filesystem.Eleme
 		}
 		m.MakeToast(NewToastMessage(&t))
 	}
-	return m.ListContainerObjects(containerID)
+	return m.ListContainerObjects(containerID, false)
 }

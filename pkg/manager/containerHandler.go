@@ -10,6 +10,7 @@ import (
 	"log"
 	"sort"
 	"strconv"
+	"sync"
 	"time"
 
 	client2 "github.com/configwizard/gaspump-api/pkg/client"
@@ -62,7 +63,7 @@ func (m *Manager) ListContainerIDs() ([]string, error) {
 // NewListReadOnlyContainerContents lists from cache
 func (m *Manager) NewListReadOnlyContainerContents(since int64) ([]filesystem.Element, error) {
 	//list the containers
-	containers, err := m.ListContainers()
+	containers, err := m.ListContainers(false)
 	if err != nil {
 		return nil, err
 	}
@@ -74,7 +75,7 @@ func (m *Manager) NewListReadOnlyContainerContents(since int64) ([]filesystem.El
 			continue
 		}
 		//now we need the metadata for the objects in this container.
-		objects, err := m.ListContainerObjects(v.ID)
+		objects, err := m.ListContainerObjects(v.ID, false)
 		if err != nil {
 			return nil, err
 		}
@@ -153,45 +154,52 @@ func (m *Manager) NewListReadOnlyContainerContents(since int64) ([]filesystem.El
 //	return containers, nil
 //}
 
-//ListContainersAsync should be purely used to refresh the database cache
+//listContainersAsync should be purely used to refresh the database cache
 //todo: this needs to clean out the database as its a refresh of everything
-func (m *Manager) ListContainersAsync() error {
+func (m *Manager) listContainersAsync() ([]filesystem.Element, error) {
 	var containers []filesystem.Element
 	runtime.EventsEmit(m.ctx, "clearContainer", nil)
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
-		return err
+		return []filesystem.Element{}, err
 	}
 	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
 	c, err := m.Client()
 	if err != nil {
-		return err
+		return []filesystem.Element{}, err
 	}
 	sessionToken, err := client2.CreateSession(m.ctx, c, client2.DEFAULT_EXPIRATION, &tmpKey)
 	if err != nil {
-		return err
+		return []filesystem.Element{}, err
 	}
 	ids, err := m.listContainerIDs()
 	if err != nil {
-		return err
+		return []filesystem.Element{}, err
 	}
+	wg := sync.WaitGroup{}
 	for _, v := range ids {
+		wg.Add(1)
 		go func(vID cid.ID) {
+			defer wg.Done()
 			tmpContainer, err := m.prepareAndAppendContainer(vID, sessionToken)
 			str, err := json.MarshalIndent(tmpContainer, "", "  ")
 			if err != nil {
 				fmt.Println(err)
 			}
+			fmt.Println("retrieved containers", tmpContainer)
 			//store in database
 			if err = cache.StoreContainer(tmpContainer.ID, str); err != nil {
 				fmt.Println("MASSIVE ERROR could not store container in database", err)
 			}
 		}(*v)
 	}
+	wg.Wait()
 	if m.DEBUG {
 		DebugSaveJson("ListContainers.json", containers)
 	}
-	return nil
+	containerList, err := m.ListContainers(true)
+	fmt.Println("async returning", containerList)
+	return containerList, err
 }
 
 // prepareAndAppendContainer only used to update cache. Never as part of cache
@@ -217,10 +225,15 @@ func (m *Manager) prepareAndAppendContainer(vID cid.ID, sessionToken *session.To
 
 
 // ListContainers populates from cache
-func (m *Manager) ListContainers() ([]filesystem.Element, error) {
+func (m *Manager) ListContainers(synchronised bool) ([]filesystem.Element, error) {
 	tmpContainers, err := cache.RetrieveContainers()
 	if err != nil {
 		return nil, err
+	}
+	if len(tmpContainers) == 0 {
+		//we need to check there aren't any on the network
+		//todo notify frontend of database sync
+		return m.listContainersAsync()
 	}
 	unsortedContainers := make(map[string]filesystem.Element)
 	//now convert to the elements
@@ -314,7 +327,7 @@ func (m *Manager) DeleteContainer(id string) ([]filesystem.Element, error) {
 		}
 		m.MakeToast(NewToastMessage(&t))
 	}
-	return m.ListContainers()
+	return m.ListContainers(false)
 }
 
 //ultimately, you want to do this with containers that can be restricted (i.e eaclpublic)
