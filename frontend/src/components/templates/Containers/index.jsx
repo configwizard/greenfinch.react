@@ -9,11 +9,13 @@ import { deleteObject, getObject, listObjects, uploadObject } from '../../../man
 // import { deleteObject, getObject, listObjects, uploadObject } from '../../../mocker/objects.js';
 
 // Components
+import ButtonText from '../../atoms/ButtonText';
 import HeadingGeneral from '../../atoms/HeadingGeneral';
 import ControlBar from '../../molecules/ControlBar';
 import BreadCrumb from '../../organisms/HeaderArtboard';
 import ViewContainers from '../../organisms/ViewContainers';
 import ViewObjects, { FileUpload } from '../../organisms/ViewObjects';
+import ContainerShare from '../../organisms/ContainerShare';
 
 // Central style sheet for templates
 import '../_settings/style.scss';
@@ -158,6 +160,11 @@ class Containers extends React.Component {
                         <HeadingGeneral 
                             level={"h6"}
                             isUppercase={true}
+                            text={"Container permission"}/>
+                        <p style={{fontSize:9}}>Add permission </p>
+                        <HeadingGeneral 
+                            level={"h6"}
+                            isUppercase={true}
                             text={"Container created"}/>
                         <p style={{fontSize:9}}>Add date (state, not props)</p>
                         <HeadingGeneral 
@@ -167,6 +174,7 @@ class Containers extends React.Component {
                         <p style={{fontSize:9}}>Add size (state, not props)</p>
                         <hr/>
                         <FileUpload onObjectUpload={this.onObjectUpload}></FileUpload>
+                        <ContainerShare/>
                     </div>
                     <div className="col-9">
                         <div className="orgContainersGrid">
