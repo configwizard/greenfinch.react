@@ -1,5 +1,3 @@
-// Brand stylesheet
-
 /* Variables: Fonts
 - - - - - - - - - - - - - - - - - - */
 // Myfonts.com - use the 'Webfont Kit Download' configuration
@@ -24,14 +22,53 @@ $brandFontBold: 'AvertaStdPE-Bold', Arial, Helvetica, sans-serif;
 
 /* Variables: Font Sizes
 - - - - - - - - - - - - - - - - - - */
-h1 {
+/* Body font size. By default 16px, based on 16px as 'root em' */
+$brandFontSize: 1rem;
+
+/* Major second scale progression - see https://type-scale.com/ */
+$brandHeaderScale: 1.125;
+
+/* Line height is set to the "Golden ratio" for optimal legibility */
+$brandLineHeight: 1.618;
+
+body {
+    line-height: $brandLineHeight;
+}
+
+h1, h2, h4, h4, h5, h6 {
     font-family: $brandFontBold;
-    font-size: 2rem;
+}
+
+h1 {
+    font-size: $brandFontSize * $brandHeaderScale * $brandHeaderScale * $brandHeaderScale * $brandHeaderScale;
+    //margin-bottom: $brandLineHeight * 1.5rem;
+}
+
+h2 {
+    font-size: $brandFontSize * $brandHeaderScale * $brandHeaderScale * $brandHeaderScale;
+    //margin-bottom: $brandLineHeight * 1.5rem;
+}
+
+h3 {
+    font-size: $brandFontSize * $brandHeaderScale * $brandHeaderScale;
+    //margin-bottom: $brandLineHeight * 1.5rem;
+}
+
+h4 {
+    font-size: $brandFontSize * $brandHeaderScale;
+    //margin-bottom: $brandLineHeight * 1.5rem;
+}
+
+h5 {
+    font-size: $brandFontSize;
+    //margin-bottom: $brandLineHeight * 1.5rem;
 }
 
 h6 {
-    font-size: 0.65rem;
+    font-size: $brandFontSize / $brandHeaderScale;
+    //margin-bottom: $brandLineHeight * 1.5rem;
 }
+
 
 /* Variables: Color
 - - - - - - - - - - - - - - - - - - */

@@ -2,7 +2,14 @@
 @import "../../../assets/greenfinch-variables.scss";
 
 .section-wallet {
-    background-color: rgba(255,0,0,0.1);
+    background-color: rgba(0,0,0,0.05);
     padding: $paddingMedium;
     margin-bottom: $marginLarge;
+    & i {
+        color: rgba(0,0,0,0.2);
+    }
+    & p {
+        font-size: 1rem;
+        font-family: $brandFontSemi
+    }
 }

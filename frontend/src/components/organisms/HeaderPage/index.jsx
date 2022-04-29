@@ -21,7 +21,7 @@ const HeaderPage = ({ pageTitle, hasButton, hasIcon, faClass, buttonText, button
                 <div className="ms-auto">
                     { hasButton ? 
                     <ButtonText
-                        size={"medium"}
+                        size={"small"}
                         type={"default"}
                         hasIcon={hasIcon}
                         faClass={faClass}

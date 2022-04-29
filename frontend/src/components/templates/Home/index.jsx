@@ -1,8 +1,9 @@
 import React from 'react';
 
 // Components
+import ButtonText from '../../atoms/ButtonText';
+import HeadingGeneral from '../../atoms/HeadingGeneral';
 import HeaderPage from '../../organisms/HeaderPage';
-
 import LoadWallet from '../../organisms/LoadWallet';
 import SectionHomepage from '../../organisms/SectionHomepage';
 
@@ -23,17 +24,31 @@ const TemplateHome = () => {
                             <div className="templateWrapper">
                                 <div className="templateContainer">
                                     <SectionHomepage 
-                                        sectionTitle={"Get started"}
-                                        />
+                                        sectionTitle={"Get started"} />
                                     <SectionHomepage 
-                                        sectionTitle={"Recent"}
-                                        />
+                                        sectionTitle={"Recent"} />
                                 </div>
                             </div>
                         </div>
                         <div class="col-6">
                             <div className="templateWrapper">
                                 <div className="templateContainer">
+                                    <div className="d-flex">
+                                        <div>
+                                            <HeadingGeneral 
+                                                level={"h3"}
+                                                isUppercase={false}
+                                                text={"Wallet management"} />
+                                        </div>
+                                        <div className="ms-auto">
+                                            <ButtonText 
+                                                type={"Default"}
+                                                size={"small"}
+                                                text={"Add new wallet"}
+                                                disabled={true}
+                                                hasIcon={false} />
+                                        </div>
+                                    </div>   
                                     <LoadWallet 
                                         sectiontitle={"Recent"}
                                         />
