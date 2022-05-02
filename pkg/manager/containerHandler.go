@@ -23,7 +23,6 @@ import (
 	cid "github.com/nspcc-dev/neofs-sdk-go/container/id"
 	obj "github.com/nspcc-dev/neofs-sdk-go/object"
 	"github.com/nspcc-dev/neofs-sdk-go/session"
-	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 type Container struct {
@@ -70,30 +69,44 @@ func (m *Manager) NewListReadOnlyContainerContents(since int64) ([]filesystem.El
 	resultCounter := 0
 	var validContainers []filesystem.Element
 	//now for each container, we want to check the basic ACL
-	for _, v := range containers {
-		if v.BasicAcl != acl.BasicACL(0x0FFFCFFF) { //acl.EACLReadOnlyBasicRule
-			continue
-		}
-		//now we need the metadata for the objects in this container.
-		objects, err := m.ListContainerObjects(v.ID, false)
-		if err != nil {
-			return nil, err
-		}
-		var pendingContainer filesystem.Element
-		for _, el := range objects {
-			//filteredElements = append(filteredElements, el)
-			unixString, ok := el.Attributes[obj.AttributeTimestamp];
-			unixTime, err := strconv.ParseInt(unixString, 10, 64);
-			if ok && err == nil && unixTime > since {
-				//its a good object
-				pendingContainer.Children = append(pendingContainer.Children, el)
+	wg := sync.WaitGroup{}
+	var mu       sync.Mutex
+	for _, cnt := range containers {
+		wg.Add(1)
+		go func(v filesystem.Element) {
+			defer wg.Done()
+			fmt.Println("serving container", v.ID, v.BasicAcl, acl.BasicACL(0x0FFFCFFF))
+			if v.BasicAcl != acl.BasicACL(0x0FFFCFFF) { //acl.EACLReadOnlyBasicRule
+				return
 			}
-		}
-		resultCounter += len(pendingContainer.Children)
-		if len(pendingContainer.Children) > 0 {
-			validContainers = append(containers, pendingContainer)
-		}
+			//now we need the metadata for the objects in this container.
+			objects, err := m.ListContainerObjects(v.ID, false)
+			if err != nil {
+				fmt.Println("failed to process container ", v.ID)
+				return
+			}
+			fmt.Println("number of objects in container ", v.ID, len(objects))
+			var pendingContainer filesystem.Element
+			for _, el := range objects {
+				//filteredElements = append(filteredElements, el)
+				unixString, ok := el.Attributes[obj.AttributeTimestamp];
+				unixTime, err := strconv.ParseInt(unixString, 10, 64);
+				fmt.Println(" processing ", el.ID, unixTime, since, unixTime > since)
+				if ok && err == nil && unixTime > since {
+					//its a good object
+					pendingContainer.Children = append(pendingContainer.Children, el)
+				}
+			}
+			resultCounter += len(pendingContainer.Children)
+			if len(pendingContainer.Children) > 0 {
+				mu.Lock()
+				validContainers = append(validContainers, pendingContainer)
+				mu.Unlock()
+			}
+		}(cnt)
 	}
+	wg.Wait()
+	fmt.Println("resulting in ", resultCounter)
 	return validContainers, nil
 }
 //func (m *Manager) ListReadOnlyContainersContents(since int64) ([]filesystem.Element, error) {
@@ -153,12 +166,18 @@ func (m *Manager) NewListReadOnlyContainerContents(since int64) ([]filesystem.El
 //	fmt.Println("for ", since, " there are ", resultCounter, " objects")
 //	return containers, nil
 //}
+func (m *Manager) ForceSync() {
+	fmt.Println("force syncing")
+	if _, err := m.listContainersAsync(); err != nil {
+		fmt.Println("force sync error ", err)
+	}
 
+}
 //listContainersAsync should be purely used to refresh the database cache
 //todo: this needs to clean out the database as its a refresh of everything
 func (m *Manager) listContainersAsync() ([]filesystem.Element, error) {
 	var containers []filesystem.Element
-	runtime.EventsEmit(m.ctx, "clearContainer", nil)
+	//runtime.EventsEmit(m.ctx, "clearContainer", nil)
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
 		return []filesystem.Element{}, err
@@ -168,7 +187,7 @@ func (m *Manager) listContainersAsync() ([]filesystem.Element, error) {
 	if err != nil {
 		return []filesystem.Element{}, err
 	}
-	sessionToken, err := client2.CreateSession(m.ctx, c, client2.DEFAULT_EXPIRATION, &tmpKey)
+	sessionToken, err := client2.CreateSessionForContainerList(m.ctx, c, client2.DEFAULT_EXPIRATION, &tmpKey)
 	if err != nil {
 		return []filesystem.Element{}, err
 	}
@@ -176,6 +195,7 @@ func (m *Manager) listContainersAsync() ([]filesystem.Element, error) {
 	if err != nil {
 		return []filesystem.Element{}, err
 	}
+	fmt.Println("container ids,", len(ids), ids)
 	wg := sync.WaitGroup{}
 	for _, v := range ids {
 		wg.Add(1)
@@ -188,7 +208,8 @@ func (m *Manager) listContainersAsync() ([]filesystem.Element, error) {
 			}
 			fmt.Println("retrieved containers", tmpContainer)
 			//store in database
-			if err = cache.StoreContainer(tmpContainer.ID, str); err != nil {
+			fmt.Println("storing container", tmpContainer.ID)
+			if err = cache.StoreContainer(tmpWallet.Accounts[0].Address, tmpContainer.ID, str); err != nil {
 				fmt.Println("MASSIVE ERROR could not store container in database", err)
 			}
 		}(*v)
@@ -226,7 +247,11 @@ func (m *Manager) prepareAndAppendContainer(vID cid.ID, sessionToken *session.To
 
 // ListContainers populates from cache
 func (m *Manager) ListContainers(synchronised bool) ([]filesystem.Element, error) {
-	tmpContainers, err := cache.RetrieveContainers()
+	tmpWallet, err := m.retrieveWallet()
+	if err != nil {
+		return []filesystem.Element{}, err
+	}
+	tmpContainers, err := cache.RetrieveContainers(tmpWallet.Accounts[0].Address)
 	if err != nil {
 		return nil, err
 	}
@@ -235,8 +260,9 @@ func (m *Manager) ListContainers(synchronised bool) ([]filesystem.Element, error
 		//todo notify frontend of database sync
 		return m.listContainersAsync()
 	}
-	unsortedContainers := make(map[string]filesystem.Element)
+	var unsortedContainers []filesystem.Element
 	//now convert to the elements
+	fmt.Println("listing ", len(tmpContainers))
 	for k, v := range tmpContainers {
 		tmp := filesystem.Element{}
 		err := json.Unmarshal(v, &tmp)
@@ -244,21 +270,34 @@ func (m *Manager) ListContainers(synchronised bool) ([]filesystem.Element, error
 			fmt.Println("warning - could not unmarshal container", k)
 			continue
 		}
+		fmt.Println("checking", tmp.ID, tmp.PendingDeleted)
 		if !tmp.PendingDeleted { //don't return deleted containers
-			unsortedContainers[tmp.Attributes[obj.AttributeFileName]] = tmp
+			fmt.Println("adding ", tmp.ID)
+			unsortedContainers = append(unsortedContainers, tmp)
+
+		} else {
+			fmt.Println("not adding ", tmp.ID)
 		}
 	}
+	fmt.Println("ended up with", len(unsortedContainers))
 	//sort keys
 	keys := make([]string, 0, len(unsortedContainers))
-	for k := range unsortedContainers {
-		keys = append(keys, k)
+	for _, v := range unsortedContainers {
+		keys = append(keys, v.Attributes[obj.AttributeFileName])
 	}
 	sort.Strings(keys)
 	//append to array in alphabetical order by key
 	var containers []filesystem.Element
 	for _, k := range keys {
-		containers = append(containers, unsortedContainers[k])
+		for _, v := range unsortedContainers {
+			if v.Attributes[obj.AttributeFileName] == k {
+				containers = append(containers, v)
+				break
+			}
+		}
 	}
+
+	fmt.Println("finally", len(unsortedContainers))
 	return containers, nil
 }
 
@@ -286,12 +325,13 @@ func (m *Manager) DeleteContainer(id string) ([]filesystem.Element, error) {
 	if err != nil {
 		return []filesystem.Element{}, err
 	}
-	sessionToken, err := client2.CreateSession(m.ctx, fsCli, client2.DEFAULT_EXPIRATION, &tmpKey)
+	sessionToken, err := client2.CreateSessionWithContainerDeleteContext(m.ctx, fsCli, nil, c, client2.DEFAULT_EXPIRATION, &tmpKey)
 	if err != nil {
 		return []filesystem.Element{}, err
 	}
 	_, err = container2.Delete(m.ctx, fsCli, c, sessionToken)
 	if err != nil {
+		fmt.Println("error deleting container", err)
 		tmp := UXMessage{
 			Title:       "Container Error",
 			Type:        "error",
@@ -300,7 +340,7 @@ func (m *Manager) DeleteContainer(id string) ([]filesystem.Element, error) {
 		m.MakeToast(NewToastMessage(&tmp))
 	} else {
 		//now mark deleted
-		cacheContainer, err := cache.RetrieveContainer(id)
+		cacheContainer, err := cache.RetrieveContainer(tmpWallet.Accounts[0].Address, id)
 		if err != nil {
 			fmt.Println("error retrieving container??", err)
 			return []filesystem.Element{}, err
@@ -317,7 +357,7 @@ func (m *Manager) DeleteContainer(id string) ([]filesystem.Element, error) {
 		if err := json.Unmarshal(cacheContainer, &tmp); err != nil {
 			return []filesystem.Element{}, err
 		}
-		if err := cache.PendContainerDeleted(id, del); err != nil {
+		if err := cache.PendContainerDeleted(tmpWallet.Accounts[0].Address, id, del); err != nil {
 			return []filesystem.Element{}, err
 		}
 		t := UXMessage{
@@ -422,14 +462,14 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 		case "PUBLICBASIC":
 			customAcl = acl.EACLPublicBasicRule
 		default:
-			customAcl = acl.EACLReadOnlyBasicRule
+			customAcl = acl.BasicACL(0x0FFFCFFF)
 		}
 		id, err := container2.Create(m.ctx, fsCli, &tmpKey, placementPolicy, customAcl, attributes)
-		sessionToken, err := client2.CreateSession(m.ctx, fsCli, client2.DEFAULT_EXPIRATION, &tmpKey)
-		if err != nil {
-			fmt.Println("could not create session token")
-			return
-		}
+		//sessionToken, err := client2.CreateSession(m.ctx, fsCli, client2.DEFAULT_EXPIRATION, &tmpKey)
+		//if err != nil {
+		//	fmt.Println("could not create session token")
+		//	return
+		//}
 		if err != nil {
 			tmp := UXMessage{
 				Title:       "Container Error",
@@ -445,7 +485,7 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 			Description: "Please wait up to 1 minute",
 		}
 		m.MakeToast(NewToastMessage(&tmp))
-		for i := 0; i <= 60; i++ {
+		for i := 0; i <= 180; i++ {
 			if i == 60 {
 				log.Printf("Timeout, containers %s was not persisted in side chain\n", id)
 				tmp := UXMessage{
@@ -467,6 +507,7 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 					ID:             id.String(),
 					Type:           "container",
 					Size:           0,
+					Attributes: make(map[string]string),
 				}
 				for _, a := range attributes {
 					el.Attributes[a.Key()] = a.Value()
@@ -475,12 +516,12 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 				if err != nil {
 					return
 				}
-				err = cache.StoreContainer(id.String(), marshal)
+				err = cache.StoreContainer(tmpWallet.Accounts[0].Address, id.String(), marshal)
 				if err != nil {
 					return 
 				}
 				//update the database cache
-				m.prepareAndAppendContainer(*id, sessionToken)
+				//m.prepareAndAppendContainer(*id, sessionToken)
 				m.MakeToast(NewToastMessage(&tmp))
 				return
 			}

@@ -6,43 +6,47 @@ import (
 )
 
 const container_bucket = "containers"
-func StoreContainer(id string, container []byte) error {
+func StoreContainer(wallet, id string, container []byte) error {
 	return db.Update(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte(container_bucket))
+		ub := tx.Bucket([]byte(wallet))
+		b := ub.Bucket([]byte(container_bucket))
 		err := b.Put([]byte(id), container)
 		return err
 	})
 }
 
-func RetrieveContainer(id string) ([]byte, error) {
+func RetrieveContainer(wallet, id string) ([]byte, error) {
 	var container []byte
 	err := db.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte(container_bucket))
+		ub := tx.Bucket([]byte(wallet))
+		b := ub.Bucket([]byte(container_bucket))
 		container = b.Get([]byte(id))
 		return nil
 	})
 	return container, err
 }
 
-func PendContainerDeleted(id string, container []byte) error {
+func PendContainerDeleted(wallet, id string, container []byte) error {
 	return db.Update(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte(container_bucket))
+		ub := tx.Bucket([]byte(wallet))
+		b := ub.Bucket([]byte(container_bucket))
 		err := b.Put([]byte(id), container)
 		return err
 	})
 }
-func DeleteContainer(id string) error {
+func DeleteContainer(wallet, id string) error {
 	return db.Update(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte(container_bucket))
+		ub := tx.Bucket([]byte(wallet))
+		b := ub.Bucket([]byte(container_bucket))
 		err := b.Delete([]byte(id))
 		return err
 	})
 }
-func RetrieveContainers() (map[string][]byte, error) {
+func RetrieveContainers(wallet string) (map[string][]byte, error) {
 	containers := make(map[string][]byte)
 	err := db.View(func(tx *bolt.Tx) error {
-		// Assume bucket exists and has keys
-		b := tx.Bucket([]byte(container_bucket))
+		ub := tx.Bucket([]byte(wallet))
+		b := ub.Bucket([]byte(container_bucket))
 		c := b.Cursor()
 
 		for k, v := c.First(); k != nil; k, v = c.Next() {

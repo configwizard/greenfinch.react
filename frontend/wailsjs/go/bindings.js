@@ -56,6 +56,13 @@ const go = {
         return window.go.manager.Manager.Download(arg1, arg2, arg3);
       },
       /**
+       * ForceSync
+       * @returns {Promise<void>} 
+       */
+      "ForceSync": () => {
+        return window.go.manager.Manager.ForceSync();
+      },
+      /**
        * Get
        * @param {string} arg1 - Go Type: string
        * @param {string} arg2 - Go Type: string

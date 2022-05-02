@@ -25,6 +25,8 @@ import (
 
 
 func (m *Manager) UploadObject(containerID, filepath string, fileSize int, attributes map[string]string, ioReader *io.Reader) ([]filesystem.Element, error) {
+	cntID := cid.ID{}
+	cntID.Parse(containerID)
 	var attr []*obj.Attribute
 	for k, v := range attributes {
 		tmp := obj.Attribute{}
@@ -64,7 +66,7 @@ func (m *Manager) UploadObject(containerID, filepath string, fileSize int, attri
 	if err != nil {
 		return []filesystem.Element{}, err
 	}
-	sessionToken, err := client2.CreateSession( m.ctx, c, client2.DEFAULT_EXPIRATION, &tmpKey)
+	sessionToken, err := client2.CreateSessionWithObjectPutContext(m.ctx, c, nil, &cntID, client2.DEFAULT_EXPIRATION, &tmpKey)
 	if err != nil {
 		return []filesystem.Element{}, err
 	}
@@ -72,9 +74,8 @@ func (m *Manager) UploadObject(containerID, filepath string, fileSize int, attri
 	if err != nil {
 		return []filesystem.Element{}, err
 	}
-	cntId := cid.ID{}
-	cntId.Parse(containerID)
-	id, err := object.UploadObject(m.ctx, c, fileSize, cntId, ownerID, attr, nil, sessionToken, ioReader)
+
+	id, err := object.UploadObject(m.ctx, c, fileSize, cntID, ownerID, attr, nil, sessionToken, ioReader)
 	if err != nil {
 		fmt.Println("error attempting to upload", err)
 		return []filesystem.Element{}, err
@@ -89,6 +90,7 @@ func (m *Manager) UploadObject(containerID, filepath string, fileSize int, attri
 		Type:           "object",
 		Size:           objMetaData.PayloadSize(),
 		ParentID:       containerID,
+		Attributes: make(map[string]string),
 	}
 	for _, a := range objMetaData.Attributes() {
 		el.Attributes[a.Key()] = a.Value()
@@ -98,13 +100,13 @@ func (m *Manager) UploadObject(containerID, filepath string, fileSize int, attri
 		return []filesystem.Element{}, err
 	}
 
-	if err := cache.StoreObject(id.String(), data); err != nil {
+	if err := cache.StoreObject(tmpWallet.Accounts[0].Address, id.String(), data); err != nil {
 		return []filesystem.Element{}, err
 	}
 	t := UXMessage{
 		Title:       "Object Created",
 		Type:        "success",
-		Description: "Object successfully deleted",
+		Description: "Object successfully created",
 	}
 	m.MakeToast(NewToastMessage(&t))
 	return m.ListContainerObjects(containerID, false)
@@ -112,6 +114,10 @@ func (m *Manager) UploadObject(containerID, filepath string, fileSize int, attri
 
 // GetObjectMetaData is live not cached
 func (m *Manager) GetObjectMetaData(objectID, containerID string) (*obj.Object, error) {
+	objID := oid.ID{}
+	objID.Parse(objectID)
+	cntID := cid.ID{}
+	cntID.Parse(containerID)
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
 		return nil, err
@@ -121,14 +127,10 @@ func (m *Manager) GetObjectMetaData(objectID, containerID string) (*obj.Object, 
 	if err != nil {
 		return nil, err
 	}
-	sessionToken, err := client2.CreateSession(m.ctx, c, client2.DEFAULT_EXPIRATION, &tmpKey)
+	sessionToken, err := client2.CreateSessionWithObjectGetContext(m.ctx, c, nil, &cntID, client2.DEFAULT_EXPIRATION, &tmpKey)
 	if err != nil {
 		return nil, err
 	}
-	objID := oid.ID{}
-	objID.Parse(objectID)
-	cntID := cid.ID{}
-	cntID.Parse(containerID)
 	head, err := object.GetObjectMetaData(m.ctx, c, objID, cntID, nil, sessionToken)
 	if m.DEBUG {
 		DebugSaveJson("GetObjectMetaData.json", head)
@@ -137,6 +139,10 @@ func (m *Manager) GetObjectMetaData(objectID, containerID string) (*obj.Object, 
 }
 
 func (m *Manager) Get(objectID, containerID string, payloadSize int, writer *io.Writer) ([]byte, error){
+	objID := oid.ID{}
+	objID.Parse(objectID)
+	cntID := cid.ID{}
+	cntID.Parse(containerID)
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
 		return []byte{}, err
@@ -146,14 +152,11 @@ func (m *Manager) Get(objectID, containerID string, payloadSize int, writer *io.
 	if err != nil {
 		return nil, err
 	}
-	sessionToken, err := client2.CreateSession(m.ctx, c, client2.DEFAULT_EXPIRATION, &tmpKey)
+	sessionToken, err := client2.CreateSessionWithObjectGetContext(m.ctx, c, nil, &cntID, client2.DEFAULT_EXPIRATION, &tmpKey)
 	if err != nil {
 		return []byte{}, err
 	}
-	objID := oid.ID{}
-	objID.Parse(objectID)
-	cntID := cid.ID{}
-	cntID.Parse(containerID)
+
 	o, err := object.GetObject(m.ctx, c, payloadSize, objID, cntID, nil, sessionToken, writer)
 	if m.DEBUG {
 		DebugSaveJson("GetObject.json", o)
@@ -168,6 +171,8 @@ type TmpObjectMeta struct {
 
 //listObjectsAsync update object in database with metadata
 func (m *Manager) listObjectsAsync(containerID string) ([]filesystem.Element, error) {
+	cntID := cid.ID{}
+	cntID.Parse(containerID)
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
 		return []filesystem.Element{}, err
@@ -177,28 +182,29 @@ func (m *Manager) listObjectsAsync(containerID string) ([]filesystem.Element, er
 	if err != nil {
 		return []filesystem.Element{}, err
 	}
-	sessionToken, err := client2.CreateSession(m.ctx, c, client2.DEFAULT_EXPIRATION, &tmpKey)
+	sessionToken, err := client2.CreateSessionWithObjectGetContext(m.ctx, c, nil, &cntID, client2.DEFAULT_EXPIRATION, &tmpKey)
 	if err != nil {
 		return []filesystem.Element{}, err
 	}
-	cntID := cid.ID{}
-	cntID.Parse(containerID)
+
 	var filters = obj.SearchFilters{}
 	filters.AddRootFilter()
 	ids, err := object.QueryObjects(m.ctx, c, cntID, filters, nil, sessionToken)
+	fmt.Println("ids for container,", containerID, " ids ", len(ids))
 	wg := sync.WaitGroup{}
 	for _, v := range ids {
+		fmt.Println("looping", v.String())
 		wg.Add(1)
 		go func(vID oid.ID) {
 			defer wg.Done()
-			fmt.Println("processing object with id", v.String())
+			fmt.Println("processing object with id", vID.String())
 			tmp := filesystem.Element{
 				Type: "object",
-				ID:         v.String(),
+				ID:         vID.String(),
 				Attributes: make(map[string]string),
 				ParentID: containerID,
 			}
-			head, err := object.GetObjectMetaData(m.ctx, c, v, cntID, nil, sessionToken)
+			head, err := object.GetObjectMetaData(m.ctx, c, vID, cntID, nil, sessionToken)
 			if err != nil {
 				tmp.Errors = append(tmp.Errors, err)
 			}
@@ -216,7 +222,7 @@ func (m *Manager) listObjectsAsync(containerID string) ([]filesystem.Element, er
 				fmt.Println(err)
 			}
 			//store in database
-			if err = cache.StoreObject(v.String(), str); err != nil {
+			if err = cache.StoreObject(tmpWallet.Accounts[0].Address, vID.String(), str); err != nil {
 				fmt.Println("MASSIVE ERROR could not store container in database", err)
 			}
 		}(v)
@@ -232,18 +238,22 @@ func (m *Manager) listObjectsAsync(containerID string) ([]filesystem.Element, er
 
 //ListContainerObjects ets from cache
 func (m *Manager) ListContainerObjects(containerID string, synchronised bool) ([]filesystem.Element, error) {
-	tmpObjects, err := cache.RetrieveObjects()
+	tmpWallet, err := m.retrieveWallet()
+	if err != nil {
+		return []filesystem.Element{}, err
+	}
+	tmpObjects, err := cache.RetrieveObjects(tmpWallet.Accounts[0].Address)
 	if err != nil {
 		return nil, err
 	}
-	if len(tmpObjects) == 0 {
+	if len(tmpObjects) == 0 && !synchronised {
 		//we need to check there aren't any on the network
 		//todo notify frontend of database sync
 		return m.listObjectsAsync(containerID)
 	}
 	fmt.Println("len unsorted", len(tmpObjects))
 	//filter for this container
-	unsortedObjects := make(map[string]filesystem.Element)
+	var unsortedObjects []filesystem.Element //make(map[string]filesystem.Element)
 	fmt.Println("processinb ojects for", containerID)
 	for k, v := range tmpObjects {
 		tmp := filesystem.Element{}
@@ -252,9 +262,16 @@ func (m *Manager) ListContainerObjects(containerID string, synchronised bool) ([
 			fmt.Println("warning - could not unmarshal container", k)
 			continue
 		}
-		fmt.Println("object ", tmp.PendingDeleted, tmp.ParentID)
+		//fmt.Println("object ", tmp.ID, tmp.PendingDeleted, tmp.ParentID)
+
+		//ok this needs to be an array to add the correct ones, not a map other wise we lose duplicates quickly
 		if !tmp.PendingDeleted && tmp.ParentID == containerID { //don't return deleted containers
-			unsortedObjects[tmp.Attributes[obj.AttributeFileName]] = tmp
+			unsortedObjects = append(unsortedObjects, tmp)
+			//if name, ok := tmp.Attributes[obj.AttributeFileName]; ok && name != "" {
+			//	unsortedObjects[tmp.Attributes[obj.AttributeFileName]] = tmp
+			//} else {
+			//	unsortedObjects[tmp.ID] = tmp
+			//}
 		}
 	}
 	//filter for the objects specifically for this container
@@ -265,19 +282,41 @@ func (m *Manager) ListContainerObjects(containerID string, synchronised bool) ([
 	}
 	fmt.Println("len unsorted", len(unsortedObjects))
 	//sort keys
+	//the way to do this is seperate the objects without names
+	//then only sort the ones with names
+	//then attach the others on the end as miscs...
 	keys := make([]string, 0, len(unsortedObjects))
-	for k := range unsortedObjects {
-		keys = append(keys, k)
+	for _, v := range unsortedObjects {
+		if name, ok := v.Attributes[obj.AttributeFileName]; ok && name != "" {
+			keys = append(keys, v.Attributes[obj.AttributeFileName])
+		} else {
+			keys = append(keys, v.ID)
+		}
 	}
 	sort.Strings(keys)
+	//sorting harder than i thought when no name is possilbe on an object
 	//append to array in alphabetical order by key
-	var objects []filesystem.Element
-	for _, k := range keys {
-		objects = append(objects, unsortedObjects[k])
-	}
-	return objects, nil
+	//var objects []filesystem.Element
+	//var unnamed []filesystem.Element
+	//for _, k := range keys {
+	//	for _, v := range unsortedObjects {
+	//		if name, ok := v.Attributes[obj.AttributeFileName]; ok && name != "" && name == k {
+	//			objects = append(objects, v)
+	//			break
+	//		}
+	//		if name, ok := v.Attributes[obj.AttributeFileName]; ok || name != "" {
+	//			unnamed = append(unnamed, v)
+	//		}
+	//
+	//	}
+	//}
+	return unsortedObjects, nil
 }
 func (m *Manager) DeleteObject(objectID, containerID string) ([]filesystem.Element, error) {
+	objID := oid.ID{}
+	objID.Parse(objectID)
+	cntID := cid.ID{}
+	cntID.Parse(containerID)
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
 		return []filesystem.Element{}, err
@@ -287,15 +326,12 @@ func (m *Manager) DeleteObject(objectID, containerID string) ([]filesystem.Eleme
 	if err != nil {
 		return []filesystem.Element{}, err
 	}
-	sessionToken, err := client2.CreateSession(m.ctx, c, client2.DEFAULT_EXPIRATION, &tmpKey)
+	sessionToken, err := client2.CreateSessionWithObjectDeleteContext(m.ctx, c, nil, objID, cntID, client2.DEFAULT_EXPIRATION, &tmpKey)
 	if err != nil {
 		fmt.Println("error getting session key", err)
 		return []filesystem.Element{}, err
 	}
-	objID := oid.ID{}
-	objID.Parse(objectID)
-	cntID := cid.ID{}
-	cntID.Parse(containerID)
+
 	_, err = object.DeleteObject(m.ctx, c, objID, cntID, nil, sessionToken)
 	if err != nil {
 		tmp := UXMessage{
@@ -307,7 +343,7 @@ func (m *Manager) DeleteObject(objectID, containerID string) ([]filesystem.Eleme
 		fmt.Println("error deleting object ", err)
 	} else {
 		//now mark deleted
-		cacheObject, err := cache.RetrieveObject(objectID)
+		cacheObject, err := cache.RetrieveObject(tmpWallet.Accounts[0].Address, objectID)
 		if err != nil {
 			fmt.Println("error retrieving container??", err)
 			return []filesystem.Element{}, err
@@ -325,7 +361,7 @@ func (m *Manager) DeleteObject(objectID, containerID string) ([]filesystem.Eleme
 		if err := json.Unmarshal(cacheObject, &tmp); err != nil {
 			return []filesystem.Element{}, err
 		}
-		if err := cache.PendObjectDeleted(objectID, del); err != nil {
+		if err := cache.PendObjectDeleted(tmpWallet.Accounts[0].Address, objectID, del); err != nil {
 			return []filesystem.Element{}, err
 		}
 		t := UXMessage{

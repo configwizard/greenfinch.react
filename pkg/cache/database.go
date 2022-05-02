@@ -16,19 +16,31 @@ func DB(dbPath string) *bolt.DB {
 		if err != nil {
 			log.Fatal(err)
 		}
-		db.Update(func(tx *bolt.Tx) error {
-			_, err := tx.CreateBucketIfNotExists([]byte("containers"))
-			if err != nil {
-				return fmt.Errorf("creating bucket failed: %s", err)
-			}
-			_, err = tx.CreateBucketIfNotExists([]byte("objects"))
-			if err != nil {
-				return fmt.Errorf("creating bucket failed: %s", err)
-			}
-			return nil
-		})
 	})
 	return db
+}
+
+func CreateWalletBucket(wallet string) error {
+	return db.Update(func(tx *bolt.Tx) error {
+		userBucket, err := tx.CreateBucketIfNotExists([]byte(wallet))
+		if err != nil {
+			return err
+		}
+		_, err = userBucket.CreateBucketIfNotExists([]byte("containers"))
+		if err != nil {
+			return fmt.Errorf("creating bucket failed: %s", err)
+		}
+		_, err = userBucket.CreateBucketIfNotExists([]byte("objects"))
+		if err != nil {
+			return fmt.Errorf("creating bucket failed: %s", err)
+		}
+		_, err = userBucket.CreateBucketIfNotExists([]byte("address_book"))
+		if err != nil {
+			return fmt.Errorf("creating bucket failed: %s", err)
+		}
+		return nil
+		return err
+	})
 }
 
 func GracefulShutdown() {

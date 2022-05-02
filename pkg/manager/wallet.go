@@ -2,6 +2,7 @@ package manager
 
 import (
 	"fmt"
+	"github.com/amlwwalker/greenfinch.react/pkg/cache"
 	"github.com/configwizard/gaspump-api/pkg/wallet"
 	"github.com/nspcc-dev/neo-go/pkg/core/native/nativenames"
 	walletClient "github.com/nspcc-dev/neo-go/pkg/rpc/client"
@@ -94,6 +95,15 @@ func (m *Manager) NewWallet(password string) error {
 	}
 	m.password = password
 	m.wallet = w
+	if err := cache.CreateWalletBucket(m.wallet.Accounts[0].Address); err != nil {
+		tmp := UXMessage{
+			Title:       "Error setting wallet database",
+			Type:        "error",
+			Description: err.Error(),
+		}
+		m.MakeToast(NewToastMessage(&tmp))
+		return err
+	}
 	tmp := UXMessage{
 		Title:       "Success creating wallet: " + w.Accounts[0].Address,
 		Type:        "success",
@@ -151,6 +161,16 @@ func (m *Manager) LoadWallet(password string) error {
 	}
 	m.password = password
 	m.wallet = w
+
+	if err := cache.CreateWalletBucket(m.wallet.Accounts[0].Address); err != nil {
+		tmp := UXMessage{
+			Title:       "Error setting wallet database",
+			Type:        "error",
+			Description: err.Error(),
+		}
+		m.MakeToast(NewToastMessage(&tmp))
+		return err
+	}
 	tmp := UXMessage{
 		Title:       "Success reading wallet",
 		Type:        "success",

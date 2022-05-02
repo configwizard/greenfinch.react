@@ -36,6 +36,10 @@ dev:
 prod:
 	wails build -f ${LDFLAGS}
 
+.PHONY: win
+win:
+	wails build -f ${LDFLAGS} -platform windows
+
 # instructions on manually signing, in order are below
 # now for the bit where an app is signed, notorized and stapled
 #https://lessons.livecode.com/m/4071/l/1122100-codesigning-and-notarizing-your-lc-standalone-for-distribution-outside-the-mac-appstore

@@ -130,7 +130,6 @@ func main() {
 	//	fmt.Printf("balance: %d, precision %d\r\n", balance.NeoFS.Balance, balance.NeoFS.Precision)
 	//}
 	//mocker := mocker.Mocker{BasePath: path.Join("frontend", "src")} //mocker for frontend
-
 	go localserve.SetupServer(manager)
 	//manager.PopToast()
 	// Create application with options
