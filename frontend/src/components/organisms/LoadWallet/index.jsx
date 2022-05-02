@@ -1,18 +1,20 @@
 import React from 'react';
-
+import { useModal } from '../../organisms/Modal/ModalContext';
 // Actual
-import { loadWallet, newWallet } from '../../../manager/manager.js'
+import { loadWallet, newWallet} from '../../../manager/manager.js'
 
 // Components
 import ButtonText from '../../atoms/ButtonText';
 import HeadingGeneral from '../../atoms/HeadingGeneral';
 
 import './style.scss';
+import CompModalStandard from "../Modal/ModalStandard";
+import {Form} from "react-bootstrap";
 
 
-class LoadWallet extends React.Component {
-    render() {
-        console.log("propogating wallet", this.props.account)
+const LoadWallet = ({account, recentWallets}) => {
+        const { setModal, unSetModal } = useModal()
+        console.log("propogating wallet", account, recentWallets)
         return (
             <div className="section-wallet">
                 <div className="row">
@@ -33,14 +35,51 @@ class LoadWallet extends React.Component {
                                     size={"medium"}
                                     hasIcon={false}
                                     text={"Load wallet"}
-                                    onClick={async () => {await loadWallet(document.getElementById("walletPassword").value)}} />
-                                <ButtonText 
+                                    onClick={
+                                        () => {
+                                            setModal(
+                                                <CompModalStandard
+                                                    title={"Wallet Password"}
+                                                    buttonTextPrimary={"Unlock"}
+                                                    buttonTextSecondary={"Cancel"}
+                                                    primaryClicked={async () => {await loadWallet(document.getElementById("loadWalletPassword").value); unSetModal()}}
+                                                    secondaryClicked={async () => unSetModal()}>
+                                                    <Form.Group className="form-div">
+                                                        <Form.Label>Password</Form.Label>
+                                                        <Form.Control id="loadWalletPassword" type="password" />
+                                                    </Form.Group>
+                                                </CompModalStandard>)
+                                        }}/>
+                                <ButtonText
                                     type={"default"}
                                     size={"medium"}
                                     hasIcon={false}
                                     text={"Create new wallet"}
-                                    onClick={async () => {await newWallet(document.getElementById("walletPassword").value)}} />
-                            </div>
+                                    onClick={
+                                        () => {
+                                            setModal(
+                                                <CompModalStandard
+                                                    title={"Wallet Password"}
+                                                    buttonTextPrimary={"Create"}
+                                                    buttonTextSecondary={"Cancel"}
+                                                    primaryClicked={async () => {
+                                                        if (document.getElementById("createWalletPassword").value == document.getElementById("createWalletPasswordMatch").value) {
+                                                            await newWallet(document.getElementById("createWalletPassword").value)
+                                                        }
+                                                        unSetModal()
+                                                    }
+                                                    }
+                                                    secondaryClicked={async () => unSetModal()}>
+                                                    <Form.Group className="form-div">
+                                                        <Form.Label>Password</Form.Label>
+                                                        <Form.Control id="createWalletPassword" type="password" />
+                                                    </Form.Group>
+                                                    <Form.Group className="form-div">
+                                                        <Form.Label>Password</Form.Label>
+                                                        <Form.Control id="createWalletPasswordMatch" type="password" />
+                                                    </Form.Group>
+                                                </CompModalStandard>)
+                                        }}/>                            </div>
                         </div>
                     </div>
                 </div>
@@ -48,7 +87,6 @@ class LoadWallet extends React.Component {
                 
             </div>
         );
-    }
 }
 
 export default LoadWallet;

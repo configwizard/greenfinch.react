@@ -8,20 +8,21 @@ import Tooltip from '../../atoms/Tooltip';
 
 import './style.scss';
 
-const RowAddress = () => {
+const RowAddress = ({contact}) => {
+    console.log("row address ", contact)
     return (
         <div className="rowAddress d-flex flex-row align-items-center">
             <div>
                 <RowElement
                     size={"small"}
                     isUppercase={false}
-                    text={"Alex Walker"} />
+                    text={contact.firstName + " " + contact.lastName} />
                 <Tooltip content="Copy wallet address" direction="top">
                     <ButtonText
                         size={"small"}
                         type={"clean"}
                         hasIcon={false}
-                        text={"n89kygydnhr4672533jdhfx"} />
+                        text={contact.walletAddress} />
                 </Tooltip>
             </div>
             <div className="ms-auto">

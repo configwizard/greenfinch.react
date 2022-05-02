@@ -5,27 +5,15 @@ import RowAddress from '../../molecules/RowAddress';
 
 import './style.scss';
 
-const AddressBook = () => {
+const AddressBook = ({contacts}) => {
+    console.log("AddressBook ", contacts)
     return (
         <div className="addressBookContainer">
             <div className="addressBook">
-                <RowAddress></RowAddress>
-                <RowAddress></RowAddress>
-                <RowAddress></RowAddress>
-                <RowAddress></RowAddress>
-                <RowAddress></RowAddress>
-                <RowAddress></RowAddress>
-                <RowAddress></RowAddress>
-                <RowAddress></RowAddress>
-                <RowAddress></RowAddress>
-                <RowAddress></RowAddress>
-                <RowAddress></RowAddress>
-                <RowAddress></RowAddress>
-                <RowAddress></RowAddress>
-                <RowAddress></RowAddress>
-                <RowAddress></RowAddress>
-                <RowAddress></RowAddress>
-                <RowAddress></RowAddress>
+                {contacts.map(c => {
+                    return <RowAddress contact={c}/>
+                })
+                }
             </div>
         </div>
     );

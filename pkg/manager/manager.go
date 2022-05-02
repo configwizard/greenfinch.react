@@ -262,6 +262,7 @@ func (m *Manager) GetAccountInformation() (Account, error) {
 	if err != nil {
 		return Account{}, err
 	}
+	fmt.Printf("retrieved balances %+v\r\n", balances)
 	//Now the neo fs gas balance
 	id, err := wallet.OwnerIDFromPrivateKey(&m.wallet.Accounts[0].PrivateKey().PrivateKey)
 	if err != nil {

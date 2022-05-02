@@ -19,6 +19,9 @@ import Header from './components/organisms/Header';
 import NavbarSide from './components/organisms/NavbarSide';
 
 import { getAccountInformation } from './manager/manager.js';
+import ToastMessage from "./components/molecules/Toast";
+import ProgressBar from "./components/molecules/ProgressBar";
+import { retrieveRecentWallets } from "./manager/manager.js";
 //import { getAccountInformation } from './mocker/manager.js';
 
 // Try this: https://v5.reactrouter.com/web/example/basic
@@ -67,9 +70,11 @@ class App extends React.Component {
             neoFSBalance: 0,
             gasBalance: 0,
             neoBalance: 0
-        }};
+        },
+        recentWallets: []};
     }
     componentDidMount = async() => {
+
         window.runtime.EventsOn("fresh_wallet", async (newAccount) => {
             console.log("fresh_wallet response", newAccount)
             const walletData  = await getAccountInformation()
@@ -77,6 +82,9 @@ class App extends React.Component {
             console.log("setting wallet details to ", account)
             await this.setState({account})
         })
+        const recentWallets = await retrieveRecentWallets()
+        this.setState({...this.state, recentWallets})
+        console.log(recentWallets)
         //FAKER remove in reality
         // const account = prepareWalletData({})
         // await this.setState({account})
@@ -93,6 +101,7 @@ class App extends React.Component {
     // console.log(location)
 
         return (
+        <>
             <div className="d-flex flex-column">
                 <div className="container-fluid">
                     <Header account={this.state.account}></Header>
@@ -102,7 +111,7 @@ class App extends React.Component {
                         </div>
                         <div className="w-100">
                             <Routes>
-                                <Route path="/" exact element={<PageHome/>} />
+                                <Route path="/" exact element={<PageHome recentWallets={this.state.recentWallets}/>} />
                                 <Route path="/containers" exact element={<PageContainers setStatusAccount={this.setStatusAccount} account={this.state.account}/>} />
                                 <Route path="/websites" exact element={<PageWebsites/>} />
                                 <Route path="/contacts" exact element={<PageContacts/>} />
@@ -113,6 +122,9 @@ class App extends React.Component {
                     <Footer/>
                 </div>
             </div>
+            <ToastMessage autoDelete={true} autoDeleteTime={3000}></ToastMessage>
+            <ProgressBar></ProgressBar>
+        </>
         );
     }
 };

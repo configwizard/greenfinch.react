@@ -24,6 +24,7 @@ const topUpNeoFS = async (amount) => {
 const newWallet = async (password) => {
     try {
         let t = await window.go.manager.Manager.NewWallet(password)
+        // return t
     } catch(e) {
         console.log("error creating new wallet", e)
     }
@@ -32,12 +33,23 @@ const newWallet = async (password) => {
 const loadWallet = async (password) => {
     try {
         let t = await window.go.manager.Manager.LoadWallet(password)
+        // return t
     } catch(e) {
         console.log("error loading wallet", e)
     }
 }
 
+const retrieveRecentWallets = async() => {
+    try {
+        let wallets = await window.go.manager.Manager.RecentWallets()
+        console.log("recent wallets", wallets)
+        return wallets
+    } catch(e) {
+        console.log("error loading wallet", e)
+    }
+}
 export {
+    retrieveRecentWallets,
     getAccountInformation,
     topUpNeoFS,
     newWallet,

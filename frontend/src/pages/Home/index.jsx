@@ -3,9 +3,9 @@ import React from 'react';
 // Components
 import TemplateHome from '../../components/templates/Home';
 
-const PageHome = () => {
+const PageHome = ({recentWallets}) => {
     return (
-        <TemplateHome />
+        <TemplateHome recentWallets={recentWallets}/>
     )
 }
 

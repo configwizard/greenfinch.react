@@ -12,6 +12,10 @@ import (
 	"os"
 )
 
+
+func (m *Manager) RecentWallets() (map[string]string, error){
+	return cache.RecentWallets()
+}
 func (m *Manager) TopUpNeoWallet(amount float64) (string, error){
 	if amount == 0 {
 		amount = 1_00_000_000 // 1 GAS
@@ -95,7 +99,7 @@ func (m *Manager) NewWallet(password string) error {
 	}
 	m.password = password
 	m.wallet = w
-	if err := cache.CreateWalletBucket(m.wallet.Accounts[0].Address); err != nil {
+	if err := cache.CreateWalletBucket(m.wallet.Accounts[0].Address, filepath); err != nil {
 		tmp := UXMessage{
 			Title:       "Error setting wallet database",
 			Type:        "error",
@@ -162,7 +166,7 @@ func (m *Manager) LoadWallet(password string) error {
 	m.password = password
 	m.wallet = w
 
-	if err := cache.CreateWalletBucket(m.wallet.Accounts[0].Address); err != nil {
+	if err := cache.CreateWalletBucket(m.wallet.Accounts[0].Address, filepath); err != nil {
 		tmp := UXMessage{
 			Title:       "Error setting wallet database",
 			Type:        "error",
@@ -181,14 +185,25 @@ func (m *Manager) LoadWallet(password string) error {
 	if _, err = m.Client(); err != nil {
 		tmp := UXMessage{
 			Title:       "error retrieving clien",
-			Type:        err.Error(),
+			Type:        "error",
 			Description: err.Error(),
 		}
 		m.MakeToast(NewToastMessage(&tmp))
 		fmt.Println("error retrieving client: ", err)
 		return err
 	}
-	runtime.EventsEmit(m.ctx, "fresh_wallet", w.Accounts[0])
+	vanityWallet, err := m.GetAccountInformation()
+	if err != nil {
+		tmp := UXMessage{
+			Title:       "error opening wallet",
+			Type:        "error",
+			Description: err.Error(),
+		}
+		m.MakeToast(NewToastMessage(&tmp))
+		return err
+	}
+	fmt.Printf("setting vanity wallet %+v\r\n", vanityWallet)
+	runtime.EventsEmit(m.ctx, "fresh_wallet", vanityWallet)
 	runtime.EventsEmit(m.ctx, "select_wallet", false)
 	return nil
 }

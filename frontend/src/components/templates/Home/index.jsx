@@ -10,7 +10,7 @@ import SectionHomepage from '../../organisms/SectionHomepage';
 // Central style sheet for templates
 import '../_settings/style.scss';
 
-const TemplateHome = () => {
+const TemplateHome = (recentWallets) => {
     return (
         <div class="templatePage d-flex flex-column flex-grow-1">
             <div class="row">
@@ -49,7 +49,8 @@ const TemplateHome = () => {
                                                 hasIcon={false} />
                                         </div>
                                     </div>   
-                                    <LoadWallet 
+                                    <LoadWallet
+                                        recentWallets={recentWallets}
                                         sectiontitle={"Recent"}
                                         />
                                 </div>

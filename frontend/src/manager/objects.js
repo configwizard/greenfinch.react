@@ -2,7 +2,7 @@ const listObjects = async (containerID) => {
     try {
         let objects = await window.go.manager.Manager.ListContainerObjects(containerID, false)
         console.log("objects", objects)
-        return objects
+        return objects || []
     } catch(e) {
         console.log("error listing objects in containers", e)
     }

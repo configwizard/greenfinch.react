@@ -1,36 +1,36 @@
-import * as models from './models';
-
 export interface go {
   "manager": {
     "Manager": {
-		Client():Promise<models.Client|Error>
-		CreateContainer(arg1:string):Promise<Error>
-		Delete(arg1:string,arg2:string):Promise<Error>
-		DeleteContainer(arg1:string):Promise<Error>
-		DeleteObject(arg1:string,arg2:string):Promise<Error>
+		AddContact(arg1:string,arg2:string,arg3:string):Promise<Error>
+		Client():Promise<Client|Error>
+		CreateContainer(arg1:string,arg2:string,arg3:boolean):Promise<Error>
+		DeleteContact(arg1:string):Promise<Error>
+		DeleteContainer(arg1:string):Promise<Array<Element>|Error>
+		DeleteObject(arg1:string,arg2:string):Promise<Array<Element>|Error>
 		Download(arg1:string,arg2:string,arg3:string):Promise<Error>
-		Get(arg1:string,arg2:string,arg3:models.Writer):Promise<Array<number>|Error>
-		GetAccountInformation():Promise<models.Account|Error>
-		GetContainer(arg1:string):Promise<models.Container|Error>
-		GetObjectMetaData(arg1:string,arg2:string):Promise<models.ObjectHeadRes|Error>
+		ForceSync():Promise<void>
+		Get(arg1:string,arg2:string,arg3:number,arg4:Writer):Promise<Array<number>|Error>
+		GetAccountInformation():Promise<Account|Error>
+		GetObjectMetaData(arg1:string,arg2:string):Promise<Object|Error>
 		ListContainerIDs():Promise<Array<string>|Error>
-		ListContainerObjectIDs(arg1:string):Promise<Array<string>|Error>
-		ListContainerPopulatedObjects(arg1:string):Promise<Array<models.Element>|Error>
-		ListContainers():Promise<Array<models.Element>|Error>
-		ListContainersAsync():Promise<Error>
-		ListObjectsAsync(arg1:string):Promise<Error>
+		ListContainerObjects(arg1:string,arg2:boolean):Promise<Array<Element>|Error>
+		ListContainers(arg1:boolean):Promise<Array<Element>|Error>
 		LoadWallet(arg1:string):Promise<Error>
-		MakeToast(arg1:models.ToastMessage):Promise<void>
+		MakeNotification(arg1:UXMessage):Promise<void>
+		MakeToast(arg1:UXMessage):Promise<void>
+		NewListReadOnlyContainerContents(arg1:number):Promise<Array<Element>|Error>
 		NewWallet(arg1:string):Promise<Error>
-		RetrieveContainerFileSystem(arg1:string):Promise<models.Element|Error>
-		RetrieveFileSystem():Promise<Array<models.Element>|Error>
-		Search(arg1:string):Promise<Array<models.Element>|Error>
+		RecentWallets():Promise<any|Error>
+		RestrictContainer(arg1:string,arg2:string):Promise<Error>
+		RetrieveContactByWalletAddress(arg1:string):Promise<contact|Error>
+		RetrieveContacts():Promise<Array<contact>|Error>
 		SendSignal(arg1:string,arg2:number):Promise<void>
-		SetProgressPercentage(arg1:models.ProgressMessage):Promise<void>
+		SetProgressPercentage(arg1:ProgressMessage):Promise<void>
+		SetWalletDebugging(arg1:string,arg2:string):Promise<Error>
 		TopUpNeoWallet(arg1:number):Promise<string|Error>
 		UnlockWallet():Promise<Error>
-		Upload(arg1:string,arg2:any):Promise<string|Error>
-		UploadObject(arg1:string,arg2:string,arg3:any,arg4:models.Reader):Promise<string|Error>
+		Upload(arg1:string,arg2:any):Promise<Array<Element>|Error>
+		UploadObject(arg1:string,arg2:string,arg3:number,arg4:any,arg5:Reader):Promise<Array<Element>|Error>
     },
   }
 

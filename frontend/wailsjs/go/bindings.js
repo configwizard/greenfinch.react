@@ -5,8 +5,18 @@ const go = {
   "manager": {
     "Manager": {
       /**
+       * AddContact
+       * @param {string} arg1 - Go Type: string
+       * @param {string} arg2 - Go Type: string
+       * @param {string} arg3 - Go Type: string
+       * @returns {Promise<Error>}  - Go Type: error
+       */
+      "AddContact": (arg1, arg2, arg3) => {
+        return window.go.manager.Manager.AddContact(arg1, arg2, arg3);
+      },
+      /**
        * Client
-       * @returns {Promise<models.Client|Error>}  - Go Type: *client.Client
+       * @returns {Promise<Client|Error>}  - Go Type: *client.Client
        */
       "Client": () => {
         return window.go.manager.Manager.Client();
@@ -14,24 +24,25 @@ const go = {
       /**
        * CreateContainer
        * @param {string} arg1 - Go Type: string
+       * @param {string} arg2 - Go Type: string
+       * @param {boolean} arg3 - Go Type: bool
        * @returns {Promise<Error>}  - Go Type: error
        */
-      "CreateContainer": (arg1) => {
-        return window.go.manager.Manager.CreateContainer(arg1);
+      "CreateContainer": (arg1, arg2, arg3) => {
+        return window.go.manager.Manager.CreateContainer(arg1, arg2, arg3);
       },
       /**
-       * Delete
+       * DeleteContact
        * @param {string} arg1 - Go Type: string
-       * @param {string} arg2 - Go Type: string
        * @returns {Promise<Error>}  - Go Type: error
        */
-      "Delete": (arg1, arg2) => {
-        return window.go.manager.Manager.Delete(arg1, arg2);
+      "DeleteContact": (arg1) => {
+        return window.go.manager.Manager.DeleteContact(arg1);
       },
       /**
        * DeleteContainer
        * @param {string} arg1 - Go Type: string
-       * @returns {Promise<Error>}  - Go Type: error
+       * @returns {Promise<Array<Element>|Error>}  - Go Type: []filesystem.Element
        */
       "DeleteContainer": (arg1) => {
         return window.go.manager.Manager.DeleteContainer(arg1);
@@ -40,7 +51,7 @@ const go = {
        * DeleteObject
        * @param {string} arg1 - Go Type: string
        * @param {string} arg2 - Go Type: string
-       * @returns {Promise<Error>}  - Go Type: error
+       * @returns {Promise<Array<Element>|Error>}  - Go Type: []filesystem.Element
        */
       "DeleteObject": (arg1, arg2) => {
         return window.go.manager.Manager.DeleteObject(arg1, arg2);
@@ -66,32 +77,25 @@ const go = {
        * Get
        * @param {string} arg1 - Go Type: string
        * @param {string} arg2 - Go Type: string
-       * @param {models.Writer} arg3 - Go Type: *io.Writer
+       * @param {number} arg3 - Go Type: int
+       * @param {Writer} arg4 - Go Type: *io.Writer
        * @returns {Promise<Array<number>|Error>}  - Go Type: []uint8
        */
-      "Get": (arg1, arg2, arg3) => {
-        return window.go.manager.Manager.Get(arg1, arg2, arg3);
+      "Get": (arg1, arg2, arg3, arg4) => {
+        return window.go.manager.Manager.Get(arg1, arg2, arg3, arg4);
       },
       /**
        * GetAccountInformation
-       * @returns {Promise<models.Account|Error>}  - Go Type: manager.Account
+       * @returns {Promise<Account|Error>}  - Go Type: manager.Account
        */
       "GetAccountInformation": () => {
         return window.go.manager.Manager.GetAccountInformation();
       },
       /**
-       * GetContainer
-       * @param {string} arg1 - Go Type: string
-       * @returns {Promise<models.Container|Error>}  - Go Type: *container.Container
-       */
-      "GetContainer": (arg1) => {
-        return window.go.manager.Manager.GetContainer(arg1);
-      },
-      /**
        * GetObjectMetaData
        * @param {string} arg1 - Go Type: string
        * @param {string} arg2 - Go Type: string
-       * @returns {Promise<models.ObjectHeadRes|Error>}  - Go Type: *client.ObjectHeadRes
+       * @returns {Promise<Object|Error>}  - Go Type: *object.Object
        */
       "GetObjectMetaData": (arg1, arg2) => {
         return window.go.manager.Manager.GetObjectMetaData(arg1, arg2);
@@ -104,42 +108,21 @@ const go = {
         return window.go.manager.Manager.ListContainerIDs();
       },
       /**
-       * ListContainerObjectIDs
+       * ListContainerObjects
        * @param {string} arg1 - Go Type: string
-       * @returns {Promise<Array<string>|Error>}  - Go Type: []string
+       * @param {boolean} arg2 - Go Type: bool
+       * @returns {Promise<Array<Element>|Error>}  - Go Type: []filesystem.Element
        */
-      "ListContainerObjectIDs": (arg1) => {
-        return window.go.manager.Manager.ListContainerObjectIDs(arg1);
-      },
-      /**
-       * ListContainerPopulatedObjects
-       * @param {string} arg1 - Go Type: string
-       * @returns {Promise<Array<models.Element>|Error>}  - Go Type: []filesystem.Element
-       */
-      "ListContainerPopulatedObjects": (arg1) => {
-        return window.go.manager.Manager.ListContainerPopulatedObjects(arg1);
+      "ListContainerObjects": (arg1, arg2) => {
+        return window.go.manager.Manager.ListContainerObjects(arg1, arg2);
       },
       /**
        * ListContainers
-       * @returns {Promise<Array<models.Element>|Error>}  - Go Type: []filesystem.Element
+       * @param {boolean} arg1 - Go Type: bool
+       * @returns {Promise<Array<Element>|Error>}  - Go Type: []filesystem.Element
        */
-      "ListContainers": () => {
-        return window.go.manager.Manager.ListContainers();
-      },
-      /**
-       * ListContainersAsync
-       * @returns {Promise<Error>}  - Go Type: error
-       */
-      "ListContainersAsync": () => {
-        return window.go.manager.Manager.ListContainersAsync();
-      },
-      /**
-       * ListObjectsAsync
-       * @param {string} arg1 - Go Type: string
-       * @returns {Promise<Error>}  - Go Type: error
-       */
-      "ListObjectsAsync": (arg1) => {
-        return window.go.manager.Manager.ListObjectsAsync(arg1);
+      "ListContainers": (arg1) => {
+        return window.go.manager.Manager.ListContainers(arg1);
       },
       /**
        * LoadWallet
@@ -150,12 +133,28 @@ const go = {
         return window.go.manager.Manager.LoadWallet(arg1);
       },
       /**
+       * MakeNotification
+       * @param {UXMessage} arg1 - Go Type: manager.UXMessage
+       * @returns {Promise<void>} 
+       */
+      "MakeNotification": (arg1) => {
+        return window.go.manager.Manager.MakeNotification(arg1);
+      },
+      /**
        * MakeToast
-       * @param {models.ToastMessage} arg1 - Go Type: manager.ToastMessage
+       * @param {UXMessage} arg1 - Go Type: manager.UXMessage
        * @returns {Promise<void>} 
        */
       "MakeToast": (arg1) => {
         return window.go.manager.Manager.MakeToast(arg1);
+      },
+      /**
+       * NewListReadOnlyContainerContents
+       * @param {number} arg1 - Go Type: int64
+       * @returns {Promise<Array<Element>|Error>}  - Go Type: []filesystem.Element
+       */
+      "NewListReadOnlyContainerContents": (arg1) => {
+        return window.go.manager.Manager.NewListReadOnlyContainerContents(arg1);
       },
       /**
        * NewWallet
@@ -166,27 +165,35 @@ const go = {
         return window.go.manager.Manager.NewWallet(arg1);
       },
       /**
-       * RetrieveContainerFileSystem
-       * @param {string} arg1 - Go Type: string
-       * @returns {Promise<models.Element|Error>}  - Go Type: filesystem.Element
+       * RecentWallets
+       * @returns {Promise<any|Error>}  - Go Type: map[string]string
        */
-      "RetrieveContainerFileSystem": (arg1) => {
-        return window.go.manager.Manager.RetrieveContainerFileSystem(arg1);
+      "RecentWallets": () => {
+        return window.go.manager.Manager.RecentWallets();
       },
       /**
-       * RetrieveFileSystem
-       * @returns {Promise<Array<models.Element>|Error>}  - Go Type: []filesystem.Element
+       * RestrictContainer
+       * @param {string} arg1 - Go Type: string
+       * @param {string} arg2 - Go Type: string
+       * @returns {Promise<Error>}  - Go Type: error
        */
-      "RetrieveFileSystem": () => {
-        return window.go.manager.Manager.RetrieveFileSystem();
+      "RestrictContainer": (arg1, arg2) => {
+        return window.go.manager.Manager.RestrictContainer(arg1, arg2);
       },
       /**
-       * Search
+       * RetrieveContactByWalletAddress
        * @param {string} arg1 - Go Type: string
-       * @returns {Promise<Array<models.Element>|Error>}  - Go Type: []filesystem.Element
+       * @returns {Promise<contact|Error>}  - Go Type: manager.contact
        */
-      "Search": (arg1) => {
-        return window.go.manager.Manager.Search(arg1);
+      "RetrieveContactByWalletAddress": (arg1) => {
+        return window.go.manager.Manager.RetrieveContactByWalletAddress(arg1);
+      },
+      /**
+       * RetrieveContacts
+       * @returns {Promise<Array<contact>|Error>}  - Go Type: []manager.contact
+       */
+      "RetrieveContacts": () => {
+        return window.go.manager.Manager.RetrieveContacts();
       },
       /**
        * SendSignal
@@ -199,11 +206,20 @@ const go = {
       },
       /**
        * SetProgressPercentage
-       * @param {models.ProgressMessage} arg1 - Go Type: manager.ProgressMessage
+       * @param {ProgressMessage} arg1 - Go Type: manager.ProgressMessage
        * @returns {Promise<void>} 
        */
       "SetProgressPercentage": (arg1) => {
         return window.go.manager.Manager.SetProgressPercentage(arg1);
+      },
+      /**
+       * SetWalletDebugging
+       * @param {string} arg1 - Go Type: string
+       * @param {string} arg2 - Go Type: string
+       * @returns {Promise<Error>}  - Go Type: error
+       */
+      "SetWalletDebugging": (arg1, arg2) => {
+        return window.go.manager.Manager.SetWalletDebugging(arg1, arg2);
       },
       /**
        * TopUpNeoWallet
@@ -224,7 +240,7 @@ const go = {
        * Upload
        * @param {string} arg1 - Go Type: string
        * @param {any} arg2 - Go Type: map[string]string
-       * @returns {Promise<string|Error>}  - Go Type: string
+       * @returns {Promise<Array<Element>|Error>}  - Go Type: []filesystem.Element
        */
       "Upload": (arg1, arg2) => {
         return window.go.manager.Manager.Upload(arg1, arg2);
@@ -233,12 +249,13 @@ const go = {
        * UploadObject
        * @param {string} arg1 - Go Type: string
        * @param {string} arg2 - Go Type: string
-       * @param {any} arg3 - Go Type: map[string]string
-       * @param {models.Reader} arg4 - Go Type: *io.Reader
-       * @returns {Promise<string|Error>}  - Go Type: string
+       * @param {number} arg3 - Go Type: int
+       * @param {any} arg4 - Go Type: map[string]string
+       * @param {Reader} arg5 - Go Type: *io.Reader
+       * @returns {Promise<Array<Element>|Error>}  - Go Type: []filesystem.Element
        */
-      "UploadObject": (arg1, arg2, arg3, arg4) => {
-        return window.go.manager.Manager.UploadObject(arg1, arg2, arg3, arg4);
+      "UploadObject": (arg1, arg2, arg3, arg4, arg5) => {
+        return window.go.manager.Manager.UploadObject(arg1, arg2, arg3, arg4, arg5);
       },
     },
   },

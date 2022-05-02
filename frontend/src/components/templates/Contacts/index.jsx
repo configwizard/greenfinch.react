@@ -10,11 +10,7 @@ import CompModalStandard from '../../organisms/Modal/ModalStandard';
 // Central style sheet for templates
 import '../_settings/style.scss';
 
-const createContact = async (contactFirstName, contactLastName, contactAddress) => {
-    console.log(contactFirstName, contactLastName, contactAddress);
-}
-
-const TemplateContacts = () => {
+const TemplateContacts = ({contacts,createContact}) => {
     const { setModal, unSetModal } = useModal()
     return (
         <div class="templatePage d-flex flex-column flex-grow-1">
@@ -55,7 +51,7 @@ const TemplateContacts = () => {
                         <div class="col-12">
                             <div className="templateWrapper">
                                 <div className="templateContainer">
-                                    <AddressBook/>
+                                    <AddressBook contacts={contacts}/>
                                 </div>
                             </div>
                         </div>
