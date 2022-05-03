@@ -224,31 +224,10 @@ input:checked + .slider:before {
         margin-top: $marginSmall;
         padding: 0 $paddingSmall;
         height: 100%;
-        
         overflow-x: hidden;
         overflow-y: scroll;
         & .molButtonGrid {
             margin-bottom: 14px;
-            & .atmButtonGridHeader, .atmButtonGridContent {
-                width: 100%;
-            }
-            & .atmButtonGridHeader {
-                padding: 0;
-                margin: 0;
-            }
-            & .atmButtonGridContent {
-                width: 100%;
-                padding-top: 32px;
-                padding-bottom: 16px;
-                & .atmButtonGridName {
-                    margin-top: 2px;
-                    margin-bottom: 2px;
-                    max-width: 160px;
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                }
-            }
             & .atmButtonOptions {
                 position: relative;
                 padding: 0 5px;

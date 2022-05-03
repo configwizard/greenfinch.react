@@ -65,7 +65,7 @@ h5 {
 }
 
 h6 {
-    font-size: $brandFontSize / $brandHeaderScale;
+    font-size: calc($brandFontSize / $brandHeaderScale);
     //margin-bottom: $brandLineHeight * 1.5rem;
 }
 
