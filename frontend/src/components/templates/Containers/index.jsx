@@ -9,7 +9,6 @@ import { deleteObject, getObject, listObjects, uploadObject } from '../../../man
 // import { deleteObject, getObject, listObjects, uploadObject } from '../../../mocker/objects.js';
 
 // Components
-import ButtonText from '../../atoms/ButtonText';
 import HeadingGeneral from '../../atoms/HeadingGeneral';
 import ControlBar from '../../molecules/ControlBar';
 import BreadCrumb from '../../organisms/HeaderArtboard';

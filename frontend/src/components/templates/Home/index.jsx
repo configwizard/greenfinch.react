@@ -18,15 +18,13 @@ const TemplateHome = (recentWallets) => {
                     <HeaderPage 
                         pageTitle={"Welcome to Greenfinch"} 
                         hasButton={false}/>
-
                     <div class="row">
                         <div class="col-6">
                             <div className="templateWrapper">
                                 <div className="templateContainer">
-                                    <SectionHomepage 
+                                    <SectionHomepage
+                                        titleLevel={"h3"}
                                         sectionTitle={"Get started"} />
-                                    <SectionHomepage 
-                                        sectionTitle={"Recent"} />
                                 </div>
                             </div>
                         </div>

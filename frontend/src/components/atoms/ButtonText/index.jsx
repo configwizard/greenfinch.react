@@ -48,13 +48,12 @@ ButtonText.propTypes = {
     onClick: PropTypes.func,
     hasIcon: PropTypes.bool,
     faClass: PropTypes.string,
-    text: PropTypes.string  
+    text: PropTypes.string
 };
 
 ButtonText.defaultProps = {
     type: ButtonType.DEFAULT,
     size: ButtonSize.MEDIUM,
-    buttonClass: "atmButtonText",
     disabled: false,
     hasIcon: true,
     faClass: "fas fa-flag",

@@ -2,10 +2,32 @@
 @import "../../../assets/greenfinch-variables.scss";
 
 .section-homepage {
-    background-color: rgba(0,0,0,0.05);
-    padding: $paddingMedium;
-    margin-bottom: $marginLarge;
+    margin: $marginMedium;
     &:last-child {
         margin-bottom: 0;
+    }
+    & ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        & li.navlink-homepage {
+            & a {
+                font-family: $brandFontSemi;
+                transition: $brandTransitionSpeed;
+                background-color: rgba(0,0,0,0);
+                width: 100%;
+                padding: 0 $paddingXSmall;
+                color: $brandColorDark;
+                margin-bottom: $marginXSmall;
+                text-decoration: none;
+                &:hover {
+                    cursor: pointer;
+                    color: $brandColorSecondary;
+                }
+                & i {
+                    margin-right: $marginSmall;
+                }
+            }
+        }
     }
 }

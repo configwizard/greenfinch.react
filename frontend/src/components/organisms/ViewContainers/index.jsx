@@ -15,7 +15,7 @@ class ViewContainers extends React.Component {
         return (
             <div className="row">
                 {containerList.map((item, i) =>
-                    <div className="col-6 col-lg-3 col-xl-3" key={i}>
+                    <div className="col-6 col-lg-3" key={i}>
                         <div className="molButtonGrid">
                             <ContainerGrid onDelete={() => {this.props.onDelete(item.id)}} onContainerSelection={this.props.onContainerSelection} item={item}></ContainerGrid>
                         </div>

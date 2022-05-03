@@ -2,10 +2,6 @@
 
 /* Styles: Base
 - - - - - - - - - - - - - - - - - - */
-body {
-    font-family: $brandFontReg;
-    background-color: $brandColorLight;
-}
 
 /* Elements: Buttons
 - - - - - - - - - - - - - - - - - - */
@@ -40,12 +36,6 @@ body {
     }
 }
 
-.molModalBody {
-    & .atmButtonText {
-        font-size: 0.8rem;
-    }
-}
-
 /* Element: Tabs
 - - - - - - - - - - - - - - - - - - */
 .orgTabsView {
@@ -77,114 +67,8 @@ body {
     }
 }
 
-/* Element: Toggle switch
-- - - - - - - - - - - - - - - - - - */
-.switch input { 
-    opacity: 0;
-}
-
-.slider {
-    cursor: pointer;
-    background-color: $brandColorDark;
-    transition: $brandTransitionSpeed;
-    &:before {
-        background-color: $brandColorWhite;
-        transition: $brandTransitionSpeed;
-    }
-    &.round {
-        border-radius: 34px;
-        &:before {
-            border-radius: 50%;
-        }
-    }
-}
-
-input:checked + .slider {
-    background-color: $brandColorPrimary;
-}
-
-/* input:focus + .slider {
-    box-shadow: 0 0 1px $brandColorDark;
-} */
-
-/* Component: Modal
-- - - - - - - - - - - - - - - - - - */
-// Need to sort modal widths (as per Bootstrap)
-.orgModal {
-    & .molModalWrapper {
-        background: rgba(0,0,0, 0.6);
-        border: none;
-        cursor: default;
-    } 
-    & .molModalContainer {
-        border-radius: 5px;
-        border: 1px solid rgba($brandColorDark, 0.1);
-        background-color: #ffffff;
-        box-shadow: 0px 20px 32px -8px rgba(0,0,0, 0.25);
-        & .modal__close-btn {
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            & i {
-                transition: $brandTransitionSpeed;
-                color: $brandColorDark;
-                opacity: 0.2;
-                &:hover {
-                    opacity: 1;
-                }
-            }
-        }
-    }   
-}
-
-.molModalHeader {
-    background-color: darken($brandColorLight,0.2);
-    & h2 {
-        @include titleStyle(1rem);
-        color: $brandColorDark;
-    }
-}
-
-.molModalBody {
-    & h3 {
-        color: $brandColorDark;
-        font-size: 1.6rem;
-        font-family: $brandFontBold;
-    }
-    & h4 {
-        color: $brandColorDark;
-        font-size: 1.3rem;
-        font-family: $brandFontSemi;
-    }
-    & .form-label {
-        color: $brandColorDark;
-        font-family: $brandFontSemi;
-        font-size: 0.9rem;
-    }
-    & .form-text {
-        color: $brandColorDark;
-        font-family: $brandFontReg;
-        font-size: 0.7rem;
-    }
-}
-
-.molModalFooter {
-    background-color: $brandColorLight;
-}
-
-.orgModalBrand {
-    & p {
-        font-size: 1.2rem;
-        font-family: $brandFontSemi;
-    }
-}
-
-
-
-
 /* Styles: General
 - - - - - - - - - - - - - - - - - - */
-
 
 .orgMainJSON { //change this name
     background-color: $brandColorWhite;
@@ -271,30 +155,6 @@ input:checked + .slider {
     } 
 }
 .molButtonRow {
-    background-color: rgba($brandColorSecondary, 0.03);
-    border: 1px solid $brandColorWhite;
-    &:hover {
-        background-color: rgba($brandColorSecondary, 0.05);
-        border: 1px solid $brandColorPrimary;
-    }
-    & .atmButtonRowContent {
-        border-radius: 0;
-        background: none;
-        &:hover {
-            cursor: default;
-        }
-        & i {
-            color: $brandColorPrimary;
-        }
-        & .atmButtonRowName {
-            font-family: $brandFontSemi;
-            color: $brandColorSecondary-dark;
-            font-size: 0.75rem;
-            &:hover {
-                cursor: pointer;
-            }
-        }   
-    }
     & .atmRowList {
         font-family: $brandFontSemi;
         color: $brandColorDark;
@@ -324,29 +184,6 @@ input:checked + .slider {
 }
 
 
-.orgFooterAction {
-    box-shadow: 0 0 15px rgba($brandColorDark, 0.3);
-    background-color: rgba(255, 255, 255, 0.8);
-}
-
-/* Styles: Offcanvas Right
-- - - - - - - - - - - - - - - - - - */
-#offcanvasRight {
-    background-color: $brandColorLight;
-    .atmSwitchContent p {
-        font-family: $brandFontReg;
-        color: $brandColorDark;
-        font-size: 0.8rem;
-        line-height: 1.25;
-    }
-    & h4 {
-        @include titleStyle(0.9rem);
-        color: $brandColorSecondary-dark;
-    }
-    & .atmButtonIconClean i {
-        color: $brandColorSecondary-dark;
-    }
-}
 
 
 /* Styles: Typography
