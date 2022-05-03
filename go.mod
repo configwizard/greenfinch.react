@@ -8,6 +8,7 @@ require (
 	github.com/configwizard/gaspump-api v0.3.5
 	github.com/disintegration/imaging v1.6.2
 	github.com/go-chi/chi/v5 v5.0.7
+	github.com/go-chi/cors v1.2.0
 	github.com/machinebox/progress v0.2.0
 	github.com/nspcc-dev/neo-go v0.98.1
 	github.com/nspcc-dev/neofs-sdk-go v1.0.0-rc.2

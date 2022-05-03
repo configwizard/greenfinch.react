@@ -6,6 +6,7 @@ import (
 	"github.com/amlwwalker/greenfinch.react/pkg/manager"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 	"log"
 	"net/http"
 	"strconv"
@@ -24,6 +25,12 @@ func dateFormat(layout string, intTime int64) time.Time {
 func SetupServer(m *manager.Manager) {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
+	r.Use(cors.Handler(cors.Options{
+		AllowedOrigins: []string{"*"},
+		AllowedMethods: []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowedHeaders: []string{"*"},
+		MaxAge:         300, // Maximum value not ignored by any of major browsers
+	}))
 	r.Route("/api/v1/", func(r chi.Router) {
 		//ok so this endpoint is requesting a new bearer token to sign
 		r.Get("/readonly", retrieveReadOnlySinceObjectMetaData(m))
