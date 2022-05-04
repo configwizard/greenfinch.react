@@ -5,16 +5,36 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/atotto/clipboard"
 	"github.com/disintegration/imaging"
 	"image"
 	"image/jpeg"
 	"image/png"
 	"io"
 	"io/ioutil"
+	"os/exec"
 	"path"
+	"runtime"
 	"time"
 )
-
+func (m Manager) OpenInDefaultBrowser(txt string) error {
+	var err error
+	switch runtime.GOOS {
+	case "linux":
+		err = exec.Command("xdg-open", txt).Start()
+	case "windows":
+		err = exec.Command("rundll32", "url.dll,FileProtocolHandler", txt).Start()
+	case "darwin":
+		err = exec.Command("open", txt).Start()
+	default:
+		err = fmt.Errorf("unsupported platform")
+	}
+	return err
+}
+func (m Manager) CopyToClipboard(txt string) error {
+	err := clipboard.WriteAll(txt)
+	return err
+}
 func DebugSaveJson(filename string, data interface{}) error {
 	file, _ := json.MarshalIndent(data, "", " ")
 	filepath := path.Join("frontend/src/dbg_data_structures", filename)

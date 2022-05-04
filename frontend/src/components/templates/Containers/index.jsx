@@ -20,6 +20,7 @@ import ContainerShare from '../../organisms/ContainerShare';
 import '../_settings/style.scss';
 import {fileSize} from "humanize-plus";
 import Moment from "react-moment";
+import {listContacts} from "../../../manager/contacts";
 
 
 const selectPermission = (rawPermission) => {
@@ -39,7 +40,7 @@ const selectPermission = (rawPermission) => {
 class Containers extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {containerList: [], objectList: [], selectedObject: null, selectedContainer: null, viewMode: "grid", objectsLoaded: false, requestNewWallet: false};
+        this.state = {contacts: [], containerList: [], objectList: [], selectedObject: null, selectedContainer: null, viewMode: "grid", objectsLoaded: false, requestNewWallet: false};
     }
     async componentDidMount() {
 
@@ -68,18 +69,22 @@ class Containers extends React.Component {
         //     const objectList = await listObjects(this.state.selectedContainer.containerID) || []//list contents of a container
         //     await this.setState({...this.state, objectList})
         // })
+        const contacts = await listContacts()
+        console.log("share contacts", contacts)
         console.log("received wallet", this.props.account)
         const containers = await listContainers()
         console.log("listing containers 1", containers)
-        await this.setState(this.setState({...this.state, containerList: containers, objectList: []}))
+        await this.setState(this.setState({...this.state, contacts: contacts, containerList: containers, objectList: []}))
         console.log("componentDidMount, objects", this.state.objectList)
     }
     onRefresh = async() => {
         await this.props.refreshAccount()
         console.log("onRefresh, objects", this.state.objectList)
+        const contacts = await listContacts()
+        console.log("share contacts", contacts)
         //ROBIN!! -- uncomment this following line if you want to really refresh the app.
         // window.location.reload(false); //disable this
-        await this.setState(this.setState({...this.state, containerList: [], objectList: []}))
+        await this.setState(this.setState({...this.state, contacts: [], containerList: [], objectList: []}))
         const containers = await listContainers()
         console.log("listing containers 2", containers)
         await this.setState(this.setState({...this.state, containerList: containers, objectList: []}))
@@ -203,7 +208,7 @@ class Containers extends React.Component {
                         <p style={{fontSize:9}}>{fileSize(this.state.selectedContainer.size)}</p>
                         <hr/>
                         <FileUpload onObjectUpload={this.onObjectUpload}></FileUpload>
-                        <ContainerShare/>
+                        <ContainerShare containerId={this.state.selectedContainer.containerID} contacts={this.state.contacts}/>
                     </div>
                     <div className="col-9">
                         <div className="orgContainersGrid">

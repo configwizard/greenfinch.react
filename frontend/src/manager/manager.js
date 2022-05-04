@@ -38,6 +38,15 @@ const loadWallet = async (password) => {
         console.log("error loading wallet", e)
     }
 }
+const loadWalletWithPath = async (password, path) => {
+    try {
+        let t = await window.go.manager.Manager.LoadWalletWithPath(password, path)
+        // return t
+    } catch(e) {
+        console.log("error loading wallet", e)
+    }
+}
+
 
 const retrieveRecentWallets = async() => {
     try {
@@ -48,10 +57,29 @@ const retrieveRecentWallets = async() => {
         console.log("error loading wallet", e)
     }
 }
+
+const openInDefaultBrowser = async(txt) => {
+    try {
+        await window.go.manager.Manager.OpenInDefaultBrowser(txt)
+    } catch(e) {
+        console.log("error loading wallet", e)
+    }
+}
+const copyTextToClipboard = async(txt) => {
+    try {
+        await window.go.manager.Manager.CopyToClipboard(txt)
+    } catch(e) {
+        console.log("error loading wallet", e)
+    }
+}
 export {
+
+    copyTextToClipboard,
+    openInDefaultBrowser,
     retrieveRecentWallets,
     getAccountInformation,
     topUpNeoFS,
     newWallet,
-    loadWallet
+    loadWallet,
+    loadWalletWithPath
 }

@@ -9,6 +9,14 @@ const listContacts = async () => {
     }
 }
 
+const shareContainerWithContact = async(containerId, publicKey) => {
+    try {
+        await window.go.manager.Manager.RestrictContainer(containerId, publicKey)
+    } catch(e) {
+        console.log("error retrieving contact", e)
+    }
+}
+
 const createContact = async (firstName, lastName, walletAddress, publicKey) => {
     try {
         console.log(firstName, lastName, walletAddress)
@@ -30,5 +38,6 @@ const deleteContact = async (walletAddress) => {
 export {
     listContacts,
     createContact,
-    deleteContact
+    deleteContact,
+    shareContainerWithContact
 }

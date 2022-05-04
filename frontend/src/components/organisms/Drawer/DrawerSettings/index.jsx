@@ -1,4 +1,5 @@
 import React from 'react';
+import {openInDefaultBrowser} from "../../../../manager/manager"
 
 // Components
 
@@ -48,7 +49,7 @@ const DrawerSettings = () => {
                     <div className="molBlockSwitch d-flex">
                         <div className="atmSwitchContent">
                             <h5>Local server API</h5>
-                            <p>Expose locally public read containers content. This allows other applications to access your public objects.<br />To access it, visit <b>http://localhost:43520/api/v1/readonly?since=1651657433</b>,<br />where <pre>since=1651657433</pre> can be used to filter objects by a unix timestamp (in seconds)</p>
+                            <p>Expose locally public read containers content. This allows other applications to access your public objects.<br />To access it, visit <b onClick={() => openInDefaultBrowser("http://localhost:43520/api/v1/readonly?since=0")}>http://localhost:43520/api/v1/readonly?since=0</b>,<br />where <pre>since=...</pre> can be used to filter objects by a unix timestamp (in seconds)</p>
                         </div>
                         <div className="atmSwitchToggle ms-auto">
                             <label className="switch">

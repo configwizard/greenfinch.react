@@ -1,7 +1,7 @@
 import React from 'react';
 import { useModal } from '../../organisms/Modal/ModalContext';
 // Actual
-import { loadWallet, newWallet} from '../../../manager/manager.js'
+import { loadWallet, loadWalletWithPath, newWallet} from '../../../manager/manager.js'
 
 // Components
 import ButtonText from '../../atoms/ButtonText';
@@ -96,7 +96,7 @@ const LoadWallet = ({account, recentWallets}) => {
                              <HeadingGeneral 
                                 level={"h5"}
                                 isUppercase={true}
-                                text={"Recent wallets"} />            
+                                text={"Recent wallets"} />
                             {
                                 Object.keys(recentWallets.recentWallets).map(function(obj, ) {
                                     console.log("RECENT", obj, recentWallets.recentWallets[obj])
@@ -117,13 +117,23 @@ const LoadWallet = ({account, recentWallets}) => {
                                                         setModal(
                                                             <CompModalStandard
                                                                 title={"Wallet Password"}
-                                                                buttonTextPrimary={"Upload JSON"}
+                                                                buttonTextPrimary={"Create"}
                                                                 buttonTextSecondary={"Cancel"}
-                                                                primaryClicked={async () => {await loadWallet(document.getElementById("loadWalletPassword").value); unSetModal()}}
+                                                                primaryClicked={async () => {
+                                                                    if (document.getElementById("createWalletPassword").value == document.getElementById("createWalletPasswordMatch").value) {
+                                                                        await newWallet(document.getElementById("createWalletPassword").value)
+                                                                    }
+                                                                    unSetModal()
+                                                                }
+                                                                }
                                                                 secondaryClicked={async () => unSetModal()}>
                                                                 <Form.Group className="form-div">
                                                                     <Form.Label>Password</Form.Label>
-                                                                    <Form.Control id="loadWalletPassword" type="password" />
+                                                                    <Form.Control id="createWalletPassword" type="password" />
+                                                                </Form.Group>
+                                                                <Form.Group className="form-div">
+                                                                    <Form.Label>Password</Form.Label>
+                                                                    <Form.Control id="createWalletPasswordMatch" type="password" />
                                                                 </Form.Group>
                                                             </CompModalStandard>)
                                                     }}

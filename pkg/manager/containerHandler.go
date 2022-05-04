@@ -414,7 +414,16 @@ func (m *Manager) RestrictContainer(id string, publicKey string) error {
 		}
 		expected, _ := table.Marshal()
 		got, _ := r.Table().Marshal()
-		return bytes.Equal(expected, got)
+		res := bytes.Equal(expected, got)
+		if res {
+			tmp := UXMessage{
+				Title:       "Sharing successful",
+				Type:        "success",
+				Description: "successfully shared container",
+			}
+			m.MakeToast(NewToastMessage(&tmp))
+		}
+		return res
 	})
 	if err != nil {
 		tmp := UXMessage{

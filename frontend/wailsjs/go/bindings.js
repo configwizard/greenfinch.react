@@ -23,6 +23,14 @@ const go = {
         return window.go.manager.Manager.Client();
       },
       /**
+       * CopyToClipboard
+       * @param {string} arg1 - Go Type: string
+       * @returns {Promise<Error>}  - Go Type: error
+       */
+      "CopyToClipboard": (arg1) => {
+        return window.go.manager.Manager.CopyToClipboard(arg1);
+      },
+      /**
        * CreateContainer
        * @param {string} arg1 - Go Type: string
        * @param {string} arg2 - Go Type: string
@@ -134,6 +142,15 @@ const go = {
         return window.go.manager.Manager.LoadWallet(arg1);
       },
       /**
+       * LoadWalletWithPath
+       * @param {string} arg1 - Go Type: string
+       * @param {string} arg2 - Go Type: string
+       * @returns {Promise<Error>}  - Go Type: error
+       */
+      "LoadWalletWithPath": (arg1, arg2) => {
+        return window.go.manager.Manager.LoadWalletWithPath(arg1, arg2);
+      },
+      /**
        * MakeNotification
        * @param {models.UXMessage} arg1 - Go Type: manager.UXMessage
        * @returns {Promise<void>} 
@@ -164,6 +181,14 @@ const go = {
        */
       "NewWallet": (arg1) => {
         return window.go.manager.Manager.NewWallet(arg1);
+      },
+      /**
+       * OpenInDefaultBrowser
+       * @param {string} arg1 - Go Type: string
+       * @returns {Promise<Error>}  - Go Type: error
+       */
+      "OpenInDefaultBrowser": (arg1) => {
+        return window.go.manager.Manager.OpenInDefaultBrowser(arg1);
       },
       /**
        * RecentWallets

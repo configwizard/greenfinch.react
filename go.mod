@@ -3,6 +3,7 @@ module github.com/amlwwalker/greenfinch.react
 go 1.18
 
 require (
+	github.com/atotto/clipboard v0.1.4
 	github.com/blang/semver/v4 v4.0.0
 	github.com/boltdb/bolt v1.3.1
 	github.com/configwizard/gaspump-api v0.3.5

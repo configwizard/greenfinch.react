@@ -33,7 +33,7 @@ func (m *Manager) RetrieveContacts() ([]contact, error) {
 	return c, nil
 }
 
-func (m *Manager) RetrieveContactByWalletAddress(walletAddress string) (contact, error) {
+func (m *Manager) RetrieveContactByWalletAddress(walletAddress string) (contact,error) {
 	if m.wallet == nil {
 		return contact{}, errors.New("no wallet loaded")
 	}

@@ -1,5 +1,5 @@
 import React from 'react';
-
+import {copyTextToClipboard} from "../../../../manager/manager"
 // Components
 
 // Central style sheet for templates
@@ -8,6 +8,7 @@ import HeadingGeneral from "../../../atoms/HeadingGeneral";
 import RowWallet from "../../../atoms/RowWallet";
 import {Form} from "react-bootstrap";
 import ButtonText from "../../../atoms/ButtonText";
+import Tooltip from "../../../atoms/Tooltip";
 
 const DrawerWallet = (props) => {
     console.log("drawer wallet props ", props.account)
@@ -20,10 +21,17 @@ const DrawerWallet = (props) => {
             </div>
             <div className="offcanvas-body">
                 <section className="wallet-body">
-                    <RowWallet
-                        type={"address"}
-                        title={"Wallet address"}
-                        children={props.account.address} />
+                    {/*<RowWallet*/}
+                    {/*    type={"address"}*/}
+                    {/*    title={"Wallet address"}*/}
+                    {/*    children={props.account.address} />*/}
+                    <Tooltip content="Copy your wallet address" direction="bottom">
+                        <RowWallet
+                            type={"number"}
+                            title={"NeoFS GAS balance"}
+                            text={props.account.address}
+                            onClick={() => {copyTextToClipboard(props.account.address)}}/>
+                    </Tooltip>
                     <RowWallet
                         type={"number"}
                         title={"NeoFS GAS balance"}
@@ -53,10 +61,13 @@ const DrawerWallet = (props) => {
                         onClick={(amount) => {console.log("topping up"); props.topUpWallet(document.getElementById("topUpAmount").value)}} />
                 </section>
                 <section>
-                    <RowWallet
-                        type={"address"}
-                        title={"Public Key"}
-                        children={props.account.publicKey} />
+                    <Tooltip content="Copy your public key" direction="top">
+                        <RowWallet
+                            type={"number"}
+                            title={"NeoFS GAS balance"}
+                            text={props.account.publicKey}
+                            onClick={() => {copyTextToClipboard(props.account.publicKey)}}/>
+                    </Tooltip>
                 </section>
             </div>
         </div>

@@ -123,26 +123,8 @@ func (m *Manager) NewWallet(password string) error {
 
 	return nil
 }
-func (m *Manager) LoadWallet(password string) error {
-	homeDir, err := os.UserHomeDir()
-	filepath, err := runtime.OpenFileDialog(m.ctx, runtime.OpenDialogOptions{
-		DefaultDirectory:           homeDir,
-		Title:                      "Choose a wallet",
-		Filters:                    nil,
-		ShowHiddenFiles:            false,
-		CanCreateDirectories:       false,
-		ResolvesAliases:            true,
-		TreatPackagesAsDirectories: false,
-	})
-	if err != nil {
-		tmp := UXMessage{
-			Title:       "Error finding wallet",
-			Type:        "error",
-			Description: err.Error(),
-		}
-		m.MakeToast(NewToastMessage(&tmp))
-		return err
-	}
+
+func (m *Manager) LoadWalletWithPath(password, filepath string) error {
 	w, err := wal.NewWalletFromFile(filepath)
 	if err != nil {
 		tmp := UXMessage{
@@ -206,4 +188,26 @@ func (m *Manager) LoadWallet(password string) error {
 	runtime.EventsEmit(m.ctx, "fresh_wallet", vanityWallet)
 	runtime.EventsEmit(m.ctx, "select_wallet", false)
 	return nil
+}
+func (m *Manager) LoadWallet(password string) error {
+	homeDir, err := os.UserHomeDir()
+	filepath, err := runtime.OpenFileDialog(m.ctx, runtime.OpenDialogOptions{
+		DefaultDirectory:           homeDir,
+		Title:                      "Choose a wallet",
+		Filters:                    nil,
+		ShowHiddenFiles:            false,
+		CanCreateDirectories:       false,
+		ResolvesAliases:            true,
+		TreatPackagesAsDirectories: false,
+	})
+	if err != nil {
+		tmp := UXMessage{
+			Title:       "Error finding wallet",
+			Type:        "error",
+			Description: err.Error(),
+		}
+		m.MakeToast(NewToastMessage(&tmp))
+		return err
+	}
+	return m.LoadWalletWithPath(password, filepath)
 }

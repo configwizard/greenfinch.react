@@ -10,8 +10,8 @@ const AddressBook = ({contacts}) => {
     return (
         <div className="addressBookContainer">
             <div className="addressBook">
-                {contacts.map(c => {
-                    return <RowAddress contact={c}/>
+                {contacts.map((c, i) => {
+                    return <RowAddress key={i} first={i == 0 ? true:false} contact={c}/>
                 })
                 }
             </div>

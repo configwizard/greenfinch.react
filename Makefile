@@ -38,7 +38,7 @@ prod:
 
 .PHONY: win
 win:
-	wails build -nsis -f ${LDFLAGS} -platform windows/amd64 -platform windows/arm64
+	wails build -nsis -f ${LDFLAGS} -platform windows/arm64,windows/amd64
 
 # instructions on manually signing, in order are below
 # now for the bit where an app is signed, notorized and stapled
