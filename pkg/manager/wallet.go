@@ -160,13 +160,13 @@ func (m *Manager) LoadWalletWithPath(password, filepath string) error {
 	tmp := UXMessage{
 		Title:       "Success reading wallet",
 		Type:        "success",
-		Description: "Using wallet "  + w.Accounts[0].Address,
+		Description: "Using wallet: "  + w.Accounts[0].Address,
 	}
 	m.MakeToast(NewToastMessage(&tmp))
 
 	if _, err = m.Client(); err != nil {
 		tmp := UXMessage{
-			Title:       "error retrieving clien",
+			Title:       "Error retrieving client",
 			Type:        "error",
 			Description: err.Error(),
 		}
@@ -177,7 +177,7 @@ func (m *Manager) LoadWalletWithPath(password, filepath string) error {
 	vanityWallet, err := m.GetAccountInformation()
 	if err != nil {
 		tmp := UXMessage{
-			Title:       "error opening wallet",
+			Title:       "Error opening wallet",
 			Type:        "error",
 			Description: err.Error(),
 		}

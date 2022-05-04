@@ -45,12 +45,12 @@ const TemplateContacts = ({contacts, createContact }) => {
                                     <Form.Group>
                                         <Form.Label>Wallet address</Form.Label>
                                         <Form.Control id="contactAddress" type="text" />
-                                        <Form.Text muted>Neo N3 wallet addresses start with 'N'</Form.Text>
+                                        <Form.Text muted>N.B. Neo N3 wallet addresses start with 'N'</Form.Text>
                                     </Form.Group>
                                 <Form.Group>
                                     <Form.Label>Public Key</Form.Label>
                                     <Form.Control id="contactPublicKey" type="text" />
-                                    <Form.Text muted>Contact's public key</Form.Text>
+                                    <Form.Text muted>N.B. A contact's public key is required to share containers</Form.Text>
                                 </Form.Group>
                             </CompModalStandard>)
                         }}/>

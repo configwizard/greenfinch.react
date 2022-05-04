@@ -28,20 +28,20 @@ const LoadWallet = ({account, recentWallets}) => {
                                 isUppercase={true}
                                 text={"Get started"}
                             />            
-                            <p>To use Greenfinch, a wallet is required. Either load up a previous wallet or create a new wallet now.</p>
+                            <p>To use Greenfinch, a wallet is required. Either load an exisiting wallet or create a new wallet.</p>
                             <div className="d-flex">
                                 <div className="ms-auto">
                                     <ButtonText 
                                         type={"default"}
                                         size={"medium"}
                                         hasIcon={false}
-                                        text={"Load wallet"}
+                                        text={"Load existing wallet"}
                                         onClick={
                                             () => {
                                                 setModal(
                                                     <CompModalStandard
                                                         title={"Wallet Password"}
-                                                        buttonTextPrimary={"Unlock"}
+                                                        buttonTextPrimary={"Locate wallet"}
                                                         buttonTextSecondary={"Cancel"}
                                                         primaryClicked={async () => {await loadWallet(document.getElementById("loadWalletPassword").value); unSetModal()}}
                                                         secondaryClicked={async () => unSetModal()}>
@@ -72,11 +72,11 @@ const LoadWallet = ({account, recentWallets}) => {
                                                         secondaryClicked={async () => unSetModal()}>
                                                         <Form.Group className="form-div">
                                                             <Form.Label>Password</Form.Label>
-                                                            <Form.Control id="createWalletPassword" type="password" />
+                                                            <Form.Control id="createWalletPassword" type="password" placeholder="password" />
                                                         </Form.Group>
                                                         <Form.Group className="form-div">
-                                                            <Form.Label>Re-enter Password</Form.Label>
-                                                            <Form.Control id="createWalletPasswordMatch" type="password" />
+                                                            <Form.Label>Confirm Password</Form.Label>
+                                                            <Form.Control id="createWalletPasswordMatch" type="password" placeholder="Confirm password" />
                                                         </Form.Group>
                                                     </CompModalStandard>)
                                             }}/>
@@ -84,8 +84,6 @@ const LoadWallet = ({account, recentWallets}) => {
                             </div>
                         </div>
                     </div>
-
-                    
                 </div>
                 <div className="section-wallet">
                     <div className="row">
@@ -97,45 +95,46 @@ const LoadWallet = ({account, recentWallets}) => {
                                 level={"h5"}
                                 isUppercase={true}
                                 text={"Recent wallets"} />
-                            {
-                                Object.keys(recentWallets.recentWallets).map(function(obj, ) {
-                                    console.log("RECENT", obj, recentWallets.recentWallets[obj])
-                                    //the absolute path is recentWallets.recentWallets[obj]
-                                    const walletName = recentWallets.recentWallets[obj].split('/')[recentWallets.recentWallets[obj].split('/').length -1]
-                                    return <div key={obj} className="d-flex align-items-center">
-                                        <div className="wallet-name">
-                                            {account && account.address == obj ? "current wallet" - walletName : walletName}
-                                        </div>
-                                        <div className="ms-auto">
-                                            <ButtonText
-                                                type="default"
-                                                size="small"
-                                                hasIcon={false}
-                                                text={"Load wallet"}
-                                                onClick={
-                                                    () => {
-                                                        setModal(
-                                                            <CompModalStandard
-                                                                title={"Wallet Password"}
-                                                                buttonTextPrimary={"Load"}
-                                                                buttonTextSecondary={"Cancel"}
-                                                                primaryClicked={async () => {
-                                                                    await loadWalletWithPath(document.getElementById("loadWalletFromPathPassword").value, recentWallets.recentWallets[obj])
-                                                                    unSetModal()
+                                {
+                                    Object.keys(recentWallets).map(function(obj, ) {
+                                        console.log("RECENT", obj, recentWallets[obj])
+                                        //the absolute path is recentWallets[obj]
+                                        const walletName = recentWallets[obj].split('/')[recentWallets[obj].split('/').length -1]
+                                        return <div key={obj} className="wallet-recent d-flex align-items-center">
+                                            <div className="wallet-name">
+                                                {walletName}
+                                            </div>
+                                            {account && account.address === obj ? <div className="wallet-tag">active</div> : ''}
+                                            <div className="ms-auto">
+                                                <ButtonText
+                                                    type="default"
+                                                    size="small"
+                                                    hasIcon={false}
+                                                    text={"Load this wallet"}
+                                                    onClick={
+                                                        () => {
+                                                            setModal(
+                                                                <CompModalStandard
+                                                                    title={"Wallet Password"}
+                                                                    buttonTextPrimary={"Confirm"}
+                                                                    buttonTextSecondary={"Cancel"}
+                                                                    primaryClicked={async () => {
+                                                                        await loadWalletWithPath(document.getElementById("loadWalletFromPathPassword").value, recentWallets[obj])
+                                                                        unSetModal()
+                                                                        }
                                                                     }
-                                                                }
-                                                                secondaryClicked={async () => unSetModal()}>
-                                                                <Form.Group className="form-div">
-                                                                    <Form.Label>Password</Form.Label>
-                                                                    <Form.Control id="loadWalletFromPathPassword" type="password" />
-                                                                </Form.Group>
-                                                            </CompModalStandard>)
-                                                    }}
-                                            />
+                                                                    secondaryClicked={async () => unSetModal()}>
+                                                                    <Form.Group className="form-div">
+                                                                        <Form.Label>Password</Form.Label>
+                                                                        <Form.Control id="loadWalletFromPathPassword" type="password" placeholder="Password" />
+                                                                    </Form.Group>
+                                                                </CompModalStandard>)
+                                                        }}
+                                                />
+                                            </div>
                                         </div>
-                                    </div>
-                                })
-                            }
+                                    })
+                                }
                         </div>
                     </div>
                 </div>

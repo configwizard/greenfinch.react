@@ -1,6 +1,6 @@
 import React from "react";
 
-import Wallet from "../wallet";
+// import Wallet from "../wallet";
 import Containers from "../containers";
 import Objects from "../objects";
 
@@ -38,7 +38,9 @@ class TabJSON extends React.Component {
                 <div className="row">
                     <div className="col-12 col-sm-12 col-xl-4">
                         <div className="molViewJSON">
-                            <Wallet resp={this.state.account}></Wallet>
+                            {/*
+                                <Wallet resp={this.state.account}></Wallet>
+                            */}
                         </div>
                     </div>
                     <div className="col-12 col-sm-12 col-xl-4">

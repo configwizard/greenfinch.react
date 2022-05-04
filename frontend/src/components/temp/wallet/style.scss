@@ -34,30 +34,6 @@
     & .atmButtonIconClean {
         @include ButtonIconSimple(15px,$brandColorDark);
     }
-    & h4.atmWalletTitle {
-        @include titleStyle(0.9rem);
-        color: $brandColorDark;
-    }
-    h6 {
-        @include titleStyle(0.6rem);
-        color: $brandColorSecondary-dark;
-    }
-    & span.atmWalletAddress {
-        font-size: 0.8rem;
-        line-height: 1.4;
-    }
-    & span.atmWalletNumber {
-        line-height: 1;
-    }
-    & span.atmWalletNumber, span.atmWalletAddress {
-        display:block;
-    }
-    & h6 {
-        margin-bottom: 3px;
-    }
-    & span.atmWalletAddress {
-        margin-top: 2px;
-    }
 }
 
 .molWalletOption {

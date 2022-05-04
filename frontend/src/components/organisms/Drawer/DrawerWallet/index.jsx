@@ -8,7 +8,7 @@ import HeadingGeneral from "../../../atoms/HeadingGeneral";
 import RowWallet from "../../../atoms/RowWallet";
 import {Form} from "react-bootstrap";
 import ButtonText from "../../../atoms/ButtonText";
-import Tooltip from "../../../atoms/Tooltip";
+//import Tooltip from "../../../atoms/Tooltip";
 
 const DrawerWallet = (props) => {
     console.log("drawer wallet props ", props.account)
@@ -21,38 +21,42 @@ const DrawerWallet = (props) => {
             </div>
             <div className="offcanvas-body">
                 <section className="wallet-body">
-                    {/*<RowWallet*/}
-                    {/*    type={"address"}*/}
-                    {/*    title={"Wallet address"}*/}
-                    {/*    children={props.account.address} />*/}
-                    <Tooltip content="Copy your wallet address" direction="bottom">
-                        <ButtonText
-                            size={"small"}
-                            type={"clean"}
-                            hasIcon={false}
-                            text={props.account.address}
-                            onClick={() => {copyTextToClipboard(props.account.address)}}/>
-                    </Tooltip>
-                    <Tooltip content="Copy your public key" direction="bottom">
-                        <ButtonText
-                            size={"small"}
-                            type={"clean"}
-                            hasIcon={false}
-                            text={props.account.publicKey}
-                            onClick={() => {copyTextToClipboard(props.account.publicKey)}}/>
-                    </Tooltip>
+                    {/*
+                    <ButtonText
+                        size={"small"}
+                        type={"clean"}
+                        hasIcon={false}
+                        text={props.account.address}
+                        onClick={() => {copyTextToClipboard(props.account.address)}} />
+                    <ButtonText
+                        size={"small"}
+                        type={"clean"}
+                        hasIcon={false}
+                        text={props.account.publicKey}
+                        onClick={() => {copyTextToClipboard(props.account.publicKey)}} />
+                    */}
+                    <RowWallet
+                        type={"address"}
+                        title={"Wallet address"}
+                        value={props.account.address} />
+                    <RowWallet
+                        type={"address"}
+                        title={"Public Key"}
+                        value={props.account.publicKey} />
+                    <hr />
                     <RowWallet
                         type={"number"}
                         title={"NeoFS GAS balance"}
-                        children={props.account.neoFSBalance} />
+                        value={props.account.neoFSBalance} />
                     <RowWallet
                         type={"number"}
                         title={"Neo balance"}
-                        children={props.account.neoBalance} />
+                        value={props.account.neoBalance} />
                     <RowWallet
                         type={"number"}
                         title={"GAS balance"}
-                        children={props.account.gasBalance} />
+                        value={props.account.gasBalance} />
+                    <hr />
                 </section>
                 <section className="wallet-footer">
                     {/* <h6 className="atmWallet">Top-up NeoFS GAS Balance</h6> */}
@@ -60,7 +64,9 @@ const DrawerWallet = (props) => {
                         level={"h6"}
                         isUppercase={true}
                         text={"Top-up NeoFS GAS Balance"} />
-                    <Form.Control type="number" placeholder="GAS amount" id={"topUpAmount"}/>
+                    <Form.Group className="form-div">
+                        <Form.Control type="number" placeholder="GAS amount" id={"topUpAmount"}/>
+                    </Form.Group>
                     <ButtonText
                         type="default"
                         size="medium"

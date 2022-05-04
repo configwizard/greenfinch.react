@@ -9,7 +9,6 @@ import './assets/greenfinch.scss';
 
 // Components
 import PageHome from './pages/Home';
-import PageTest from './pages/Test';
 import PageShared from './pages/shared';
 import PageContainers from './pages/Containers';
 import PageWebsites from './pages/Websites';
@@ -67,16 +66,17 @@ class App extends React.Component {
 // const App = () => {
     constructor(props) {
         super(props);
-        this.state = {account: {
-            address: "",
-            neoFSBalance: 0,
-            gasBalance: 0,
-            neoBalance: 0
-        },
-        recentWallets: []};
+        this.state = {
+            account: {
+                address: "",
+                neoFSBalance: 0,
+                gasBalance: 0,
+                neoBalance: 0
+            },
+            recentWallets: []
+        };
     }
     componentDidMount = async() => {
-
         window.runtime.EventsOn("fresh_wallet", async (newAccount) => {
             console.log("fresh_wallet response", newAccount)
             const walletData  = await getAccountInformation()
@@ -114,7 +114,7 @@ class App extends React.Component {
                             </div>
                             <div className="w-100">
                                 <Routes>
-                                    <Route path="/" exact element={<PageHome recentWallets={this.state.recentWallets}/>} />
+                                    <Route path="/" exact element={<PageHome recentWallets={this.state.recentWallets} account={this.state.account}/>} />
                                     <Route path="/containers" exact element={<PageContainers setStatusAccount={this.setStatusAccount} account={this.state.account}/>} />
                                     <Route path="/websites" exact element={<PageWebsites/>} />
                                     <Route path="/contacts" exact element={<PageContacts/>} />

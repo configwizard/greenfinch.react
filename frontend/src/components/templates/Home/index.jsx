@@ -1,7 +1,6 @@
 import React from 'react';
 
 // Components
-import ButtonText from '../../atoms/ButtonText';
 import HeadingGeneral from '../../atoms/HeadingGeneral';
 import HeaderPage from '../../organisms/HeaderPage';
 import LoadWallet from '../../organisms/LoadWallet';
@@ -10,7 +9,7 @@ import {SectionHomepage, SectionSupport} from '../../organisms/HomeSections';
 // Central style sheet for templates
 import '../_settings/style.scss';
 
-const TemplateHome = (recentWallets) => {
+const TemplateHome = ({ account, recentWallets }) => {
     return (
         <div class="templatePage d-flex flex-column flex-grow-1">
             <div class="row">
@@ -53,9 +52,8 @@ const TemplateHome = (recentWallets) => {
                                         */}
                                     </div>   
                                     <LoadWallet
-                                        recentWallets={recentWallets}
-                                        sectiontitle={"Recent"}
-                                        />
+                                        account={account}
+                                        recentWallets={recentWallets}/>
                                 </div>
                             </div>
                         </div>

@@ -16,3 +16,22 @@
         font-family: $brandFontSemi;
     }
 }
+
+.wallet-recent {
+    margin-bottom: 5px;
+}
+
+.wallet-name + .wallet-tag {
+    margin-left: $marginXSmall;
+}
+
+.wallet-tag {
+    animation-name: fade-in;
+	animation-duration: 0.3s;
+    font-size: 0.7rem;
+    font-family: $brandFontSemi;
+    background-color: rgba(0,0,0,0.1);
+    color: $brandColorDark;
+    padding: 3px 5px;
+    border-radius: 6px;
+}

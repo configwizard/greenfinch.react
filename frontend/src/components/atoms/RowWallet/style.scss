@@ -1,2 +1,33 @@
 @import "../../../assets/dashboard-variables.scss";
 @import "../../../assets/greenfinch-variables.scss";
+
+.row-wallet-option {
+    margin-bottom: $marginSmall; 
+}
+
+h4.atmWalletTitle {
+    @include titleStyle(0.7rem);
+    color: $brandColorDark;
+}
+
+h6 {
+    @include titleStyle(0.6rem);
+    color: $brandColorSecondary-dark;
+    margin-bottom: 3px;
+}
+
+span.atmWalletNumber, span.atmWalletAddress {
+    font-family: $brandFontBold;
+    display:block;
+}
+
+span.atmWalletAddress {
+    font-size: 0.8rem;
+    line-height: 1.4;
+    margin-top: 2px;
+}
+
+span.atmWalletNumber {
+    font-size: 1.1rem;
+    line-height: 1;
+}
