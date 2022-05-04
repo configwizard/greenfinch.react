@@ -33,16 +33,12 @@ export default class ToastMessage extends React.Component {
             list: []
         }
     }
-    //todo: uncomment for demoing toasts
-
     async componentDidMount () {
         console.log("mounting")
-
         window.runtime.EventsOn(name, async (message) => {
             console.log(message)
             await this.makeToast(message)
         })
-
         setInterval(() => {
             if (this.props.autoDelete && this.state.list.length) {
                 if (((new Date) - this.state.list[0].startTime) > this.props.autoDeleteTime) {
@@ -67,32 +63,32 @@ export default class ToastMessage extends React.Component {
     render() {
         console.log("this.state.list", this.state.list)
         return (
-            <div className="mol-toast">
-                <div className="toast-container">
-                    {
-                        this.state.list.map((toast, i) => {
-                            const faIcon = iconSelector(toast.Type)
-                            console.log("toastType ", toast.type)
-                            return (
-                                <div
-                                    key={i}
-                                    className={`toast-wrapper ${toast.Type}`}>
-                                    <div className="toast-inner d-flex">
-                                        <div className="toast-icon d-flex align-items-center justify-content-center">
-                                            <i className={`fad ${faIcon}`}/>
-                                        </div>
-                                        <div className="toast-content d-flex flex-column justify-content-center">
-                                            <i className="fa fa-fw fa-times" onClick={() => this.deleteToast(toast.id)}/>
-                                            <span className="atmToastTitle">{toast.Title}</span>
-                                            <span className="atmToastMessage">{toast.Description}</span>
+            <>
+                {
+                    this.state.list.map((toast, i) => {
+                        const faIcon = iconSelector(toast.Type)
+                        console.log("toastType ", toast.type)
+                        return (
+                            <div key={i} className="toast-molecule">
+                                <div className="toast-container">
+                                    <div className={`toast-wrapper ${toast.Type}`}>
+                                        <div className="toast-inner d-flex">
+                                            <div className="toast-icon d-flex align-items-center justify-content-center">
+                                                <i className={`fad ${faIcon}`}/>
+                                            </div>
+                                            <div className="toast-content d-flex flex-column justify-content-center">
+                                                <i className="fa fa-times" onClick={() => this.deleteToast(toast.id)}/>
+                                                <span className="atmToastTitle">{toast.Title}</span>
+                                                <span className="atmToastMessage">{toast.Description}</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            )
-                        })
-                    }
-                </div>
-            </div>
+                            </div>
+                        )
+                    })
+                }
+            </>
         )
     }
 }

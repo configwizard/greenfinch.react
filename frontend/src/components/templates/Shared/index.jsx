@@ -15,7 +15,7 @@ const TemplateShared = () => {
             <div class="row">
                 <div className="col-12">
                     <HeaderPage
-                        pageTitle={"Shared with me"}
+                        pageTitle={"Containers shared with me"}
                         hasButton={false} />
                     <div class="row">
                         <div class="col-12">

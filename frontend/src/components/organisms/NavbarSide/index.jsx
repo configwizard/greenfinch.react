@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { topUpNeoFS } from "../../../manager/manager";
+
 // Components
 import NavlinkSide from '../../atoms/NavlinkSide';
 import Tooltip from '../../atoms/Tooltip';
@@ -8,8 +10,6 @@ import DrawerSettings from '../Drawer/DrawerSettings';
 import DrawerWallet from '../Drawer/DrawerWallet';
 
 import './style.scss';
-import Wallet from "../Wallet";
-import {topUpNeoFS} from "../../../manager/manager";
 
 const NavbarSide = (props) => {
     function topUpWallet(amount) {
@@ -47,10 +47,10 @@ const NavbarSide = (props) => {
                             faClass={"fal fa-address-book"}
                             label={"Contacts"} />
                     </Tooltip>
-                    <Tooltip content="Test" direction="right">
+                    <Tooltip content="Shared with me" direction="right">
                         <NavlinkSide
                             to={"/shared"}
-                            faClass={"fa-solid fa-share-nodes"}
+                            faClass={"fal fa-share-alt"}
                             label={"Shared with me"} />
                     </Tooltip>
                 </ul>

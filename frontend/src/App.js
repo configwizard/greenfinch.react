@@ -103,31 +103,31 @@ class App extends React.Component {
     // console.log(location)
 
         return (
-        <>
-            <div className="d-flex flex-column">
-                <div className="container-fluid">
-                    <Header account={this.state.account}></Header>
-                    <div className="templateShell d-flex flex-row">
-                        <div className="flex-shrink-1">
-                            <NavbarSide account={this.state.account}/>
+            <>
+                <div className="d-flex flex-column">
+                    <div className="container-fluid">
+                        <Header account={this.state.account}></Header>
+                        <div className="templateShell d-flex flex-row">
+                            <div className="flex-shrink-1">
+                                <NavbarSide account={this.state.account}/>
+                            </div>
+                            <div className="w-100">
+                                <Routes>
+                                    <Route path="/" exact element={<PageHome recentWallets={this.state.recentWallets}/>} />
+                                    <Route path="/containers" exact element={<PageContainers setStatusAccount={this.setStatusAccount} account={this.state.account}/>} />
+                                    <Route path="/websites" exact element={<PageWebsites/>} />
+                                    <Route path="/contacts" exact element={<PageContacts/>} />
+                                    <Route path="/shared" exact element={<PageShared/>} />
+                                    {/*<Route path="/test" exact element={<PageTest/>} />*/}
+                                </Routes>
+                            </div>
                         </div>
-                        <div className="w-100">
-                            <Routes>
-                                <Route path="/" exact element={<PageHome recentWallets={this.state.recentWallets}/>} />
-                                <Route path="/containers" exact element={<PageContainers setStatusAccount={this.setStatusAccount} account={this.state.account}/>} />
-                                <Route path="/websites" exact element={<PageWebsites/>} />
-                                <Route path="/contacts" exact element={<PageContacts/>} />
-                                <Route path="/shared" exact element={<PageShared/>} />
-                                {/*<Route path="/test" exact element={<PageTest/>} />*/}
-                            </Routes>
-                        </div>
+                        <Footer/>
                     </div>
-                    <Footer/>
                 </div>
-            </div>
-            <ToastMessage autoDelete={true} autoDeleteTime={3000}></ToastMessage>
-            <ProgressBar></ProgressBar>
-        </>
+                <ToastMessage autoDelete={true} autoDeleteTime={3000}></ToastMessage>
+                <ProgressBar></ProgressBar>
+            </>
         );
     }
 };

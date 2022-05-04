@@ -25,6 +25,10 @@ const TemplateHome = (recentWallets) => {
                                     <SectionHomepage
                                         titleLevel={"h3"}
                                         sectionTitle={"Get started"} />
+                                        {/* This might be where we use children */}
+                                    <SectionHomepage
+                                        titleLevel={"h3"}
+                                        sectionTitle={"Help with Greenfinch"} />
                                 </div>
                             </div>
                         </div>
@@ -38,14 +42,16 @@ const TemplateHome = (recentWallets) => {
                                                 isUppercase={false}
                                                 text={"Wallet management"} />
                                         </div>
-                                        <div className="ms-auto">
-                                            <ButtonText 
-                                                type={"Default"}
-                                                size={"small"}
-                                                text={"Add new wallet"}
-                                                disabled={true}
-                                                hasIcon={false} />
-                                        </div>
+                                        {/*
+                                            <div className="ms-auto">
+                                                <ButtonText 
+                                                    type={"Default"}
+                                                    size={"small"}
+                                                    text={"Add new wallet"}
+                                                    disabled={true}
+                                                    hasIcon={false} />
+                                            </div>
+                                        */}
                                     </div>   
                                     <LoadWallet
                                         recentWallets={recentWallets}

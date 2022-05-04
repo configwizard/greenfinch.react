@@ -3,11 +3,14 @@
 
 /* Component: Toast
 - - - - - - - - - - - - - - - - - - */
+/*
 .toast-container {
     transition: transform .6s ease-in-out;
     animation: toast-in-right .7s;
 }
+*/
 
+/*
 @keyframes toast-in-right {
 	from {
 	  transform: translateX(100%);
@@ -15,7 +18,7 @@
 	to {
 	  transform: translateX(0);
 	}
-}
+}*/
 
 .toast-wrapper {
     position: fixed;
@@ -24,7 +27,7 @@
     margin: 0 auto;
     width: 350px;
     min-height: 70px;
-    z-index: 20000;
+    //z-index: 20000;
     & .toast-inner {
         min-height: 70px;
         width: 100%;
@@ -39,13 +42,22 @@
             & span.atmToastTitle {
                 margin-bottom: 7px;
             }
-            & i.fa-times { // close button
-                position: absolute;
-                top: 10px;
-                right: 10px;
-                cursor: pointer;
-            }
         }
+    }
+}
+
+i.fa-times { // close button
+    transition: $brandTransitionSpeed;
+    //position: absolute;
+    //top: 10px;
+    //right: 10px;
+    //z-index: 20010;
+    color: blue;
+    //color: rgba($brandColorDark, 0.5);
+    font-size: 1.1rem;
+    &:hover {
+        color: red;
+        //color: rgba($brandColorDark, 0.8);
     }
 }
 
@@ -77,14 +89,7 @@
                 line-height: 1.2;
                 font-family: $brandFontSemi;
             }
-            & i.fa-times { // close button
-                transition: $brandTransitionSpeed;
-                color: rgba($brandColorDark, 0.5);
-                font-size: 1.1rem;
-                &:hover {
-                    color: rgba($brandColorDark, 0.8);
-                }
-            }
+
         }
     }
     &.success {
