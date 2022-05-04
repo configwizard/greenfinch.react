@@ -1,6 +1,9 @@
 @import "../../../../assets/dashboard-variables.scss";
 @import "../../../../assets/greenfinch-variables.scss";
 
+.offcanvas-end {
+    width: 500px;
+}
 
 .offcanvas-header {
     background-color: darken($brandColorLight,4%);

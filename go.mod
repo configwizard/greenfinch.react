@@ -13,7 +13,7 @@ require (
 	github.com/nspcc-dev/neo-go v0.98.1
 	github.com/nspcc-dev/neofs-sdk-go v1.0.0-rc.2
 	github.com/swaggo/swag v1.8.1
-	github.com/wailsapp/wails/v2 v2.0.0-beta.33
+	github.com/wailsapp/wails/v2 v2.0.0-beta.34
 )
 
 require (

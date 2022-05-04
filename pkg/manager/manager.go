@@ -79,9 +79,9 @@ func (m *Manager) DomReady(ctx context.Context) {
 	m.checkForVersion()
 	if m.wallet == nil {
 		tmp := NewToastMessage(&UXMessage{
-			Title:       "Lets get started",
+			Title:       "Get started",
 			Type:        "info",
-			Description: "Please select a wallet",
+			Description: "Please load a wallet to starting using Greenfinch",
 		})
 		m.MakeToast(tmp)
 		runtime.EventsEmit(m.ctx, "select_wallet", true)
@@ -103,7 +103,7 @@ func (m *Manager) checkForVersion() {
 			}
 			body, err := ioutil.ReadAll(resp.Body)
 			if err != nil {
-				log.Println("error retrieving remote version body", err)
+				log.Println("Error retrieving remote version body", err)
 			}
 			fmt.Println("version check received", string(body))
 			json.Unmarshal(body, &metadata)
@@ -117,9 +117,9 @@ func (m *Manager) checkForVersion() {
 			if err != nil {
 				log.Println("error with versioning. Not Semantic", err)
 				tmp := NewToastMessage(&UXMessage{
-					Title:       "Error checking for update",
+					Title:       "Checking for update",
 					Type:        "warning",
-					Description: "error with versioning " + err.Error() + " " + m.version + " - " + tmpVersion,
+					Description: "Error with versioning " + err.Error() + " " + m.version + " - " + tmpVersion,
 				})
 				m.MakeToast(tmp)
 				return

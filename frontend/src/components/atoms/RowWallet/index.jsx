@@ -3,14 +3,14 @@ import PropTypes from 'prop-types';
 
 import './style.scss';
 
-const RowWallet = ({ type, title, children }) => {
+const RowWallet = ({ type, title, value }) => {
   return (
-    <div className="molWalletOption">
+    <div className="row-wallet-option">
         {
             type === "address" && (
                 <>
                     <h6 className="atmWallet">{title}</h6>
-                    <span className="atmWalletAddress">{children}</span>
+                    <span className="atmWalletAddress">{value}</span>
                 </>
             )
         }
@@ -18,7 +18,7 @@ const RowWallet = ({ type, title, children }) => {
             type === "number" && (
                 <>
                     <h6 className="atmWallet">{title}</h6>
-                    <span className="atmWalletNumber">{children}</span>
+                    <span className="atmWalletNumber">{value}</span>
                 </>
             )
         }
@@ -30,11 +30,11 @@ export default RowWallet;
 
 RowWallet.propTypes = {
     type: PropTypes.string,
-    title: PropTypes.number
+    title: PropTypes.string
 };
 
 RowWallet.defaultProps = {
     type: "number",
     title: "Row Title",
-    children: 0
+    value: "Empty"
 };                            

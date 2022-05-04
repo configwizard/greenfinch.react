@@ -3,6 +3,8 @@
 
 .section-homepage {
     margin: $marginMedium;
+    margin-left: $marginLarge;
+    margin-bottom: $marginLarge;
     &:last-child {
         margin-bottom: 0;
     }
