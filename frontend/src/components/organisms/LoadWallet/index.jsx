@@ -117,23 +117,17 @@ const LoadWallet = ({account, recentWallets}) => {
                                                         setModal(
                                                             <CompModalStandard
                                                                 title={"Wallet Password"}
-                                                                buttonTextPrimary={"Create"}
+                                                                buttonTextPrimary={"Load"}
                                                                 buttonTextSecondary={"Cancel"}
                                                                 primaryClicked={async () => {
-                                                                    if (document.getElementById("createWalletPassword").value == document.getElementById("createWalletPasswordMatch").value) {
-                                                                        await newWallet(document.getElementById("createWalletPassword").value)
-                                                                    }
+                                                                    await loadWalletWithPath(document.getElementById("loadWalletFromPathPassword").value, recentWallets.recentWallets[obj])
                                                                     unSetModal()
-                                                                }
+                                                                    }
                                                                 }
                                                                 secondaryClicked={async () => unSetModal()}>
                                                                 <Form.Group className="form-div">
                                                                     <Form.Label>Password</Form.Label>
-                                                                    <Form.Control id="createWalletPassword" type="password" />
-                                                                </Form.Group>
-                                                                <Form.Group className="form-div">
-                                                                    <Form.Label>Password</Form.Label>
-                                                                    <Form.Control id="createWalletPasswordMatch" type="password" />
+                                                                    <Form.Control id="loadWalletFromPathPassword" type="password" />
                                                                 </Form.Group>
                                                             </CompModalStandard>)
                                                     }}

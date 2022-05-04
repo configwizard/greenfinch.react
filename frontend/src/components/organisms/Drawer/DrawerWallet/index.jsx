@@ -26,11 +26,20 @@ const DrawerWallet = (props) => {
                     {/*    title={"Wallet address"}*/}
                     {/*    children={props.account.address} />*/}
                     <Tooltip content="Copy your wallet address" direction="bottom">
-                        <RowWallet
-                            type={"number"}
-                            title={"NeoFS GAS balance"}
+                        <ButtonText
+                            size={"small"}
+                            type={"clean"}
+                            hasIcon={false}
                             text={props.account.address}
                             onClick={() => {copyTextToClipboard(props.account.address)}}/>
+                    </Tooltip>
+                    <Tooltip content="Copy your public key" direction="bottom">
+                        <ButtonText
+                            size={"small"}
+                            type={"clean"}
+                            hasIcon={false}
+                            text={props.account.publicKey}
+                            onClick={() => {copyTextToClipboard(props.account.publicKey)}}/>
                     </Tooltip>
                     <RowWallet
                         type={"number"}
@@ -59,15 +68,6 @@ const DrawerWallet = (props) => {
                         faClass={"fas fa-chart-line"}
                         text={"Top-up"}
                         onClick={(amount) => {console.log("topping up"); props.topUpWallet(document.getElementById("topUpAmount").value)}} />
-                </section>
-                <section>
-                    <Tooltip content="Copy your public key" direction="top">
-                        <RowWallet
-                            type={"number"}
-                            title={"NeoFS GAS balance"}
-                            text={props.account.publicKey}
-                            onClick={() => {copyTextToClipboard(props.account.publicKey)}}/>
-                    </Tooltip>
                 </section>
             </div>
         </div>
