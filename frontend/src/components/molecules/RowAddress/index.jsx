@@ -7,7 +7,7 @@ import RowElement from '../../atoms/RowElement';
 import Tooltip from '../../atoms/Tooltip';
 
 import './style.scss';
-
+import {deleteContact} from "../../../manager/contacts"
 const RowAddress = ({contact}) => {
     console.log("row address ", contact)
     return (
@@ -17,13 +17,21 @@ const RowAddress = ({contact}) => {
                     size={"small"}
                     isUppercase={false}
                     text={contact.firstName + " " + contact.lastName} />
-                <Tooltip content="Copy wallet address" direction="top">
-                    <ButtonText
-                        size={"small"}
-                        type={"clean"}
-                        hasIcon={false}
-                        text={contact.walletAddress} />
-                </Tooltip>
+                <RowElement
+                    size={"small"}
+                    isUppercase={false}
+                    text={" " + contact.walletAddress} />
+                {/*<Tooltip content="Copy wallet address" direction="top">*/}
+                {/*    <ButtonText*/}
+                {/*        size={"small"}*/}
+                {/*        type={"clean"}*/}
+                {/*        hasIcon={false}*/}
+                {/*        text={contact.walletAddress} />*/}
+                {/*</Tooltip>*/}
+                <RowElement
+                    size={"small"}
+                    isUppercase={false}
+                    text={" " + contact.publicKey} />
             </div>
             <div className="ms-auto">
                 <ButtonText
@@ -31,7 +39,8 @@ const RowAddress = ({contact}) => {
                     type={"clean"}
                     hasIcon={true}
                     faClass={"fas fa-trash-alt"}
-                    text={"Delete"} />
+                    text={"Delete"}
+                onClick={() => {deleteContact(contact.walletAddress)}}/>
                 <ButtonText
                     size={"small"}
                     type={"clean"}

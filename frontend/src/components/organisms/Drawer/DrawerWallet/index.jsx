@@ -4,8 +4,13 @@ import React from 'react';
 
 // Central style sheet for templates
 import '../_settings/style.scss';
+import HeadingGeneral from "../../../atoms/HeadingGeneral";
+import RowWallet from "../../../atoms/RowWallet";
+import {Form} from "react-bootstrap";
+import ButtonText from "../../../atoms/ButtonText";
 
-const DrawerWallet = () => {
+const DrawerWallet = (props) => {
+    console.log("drawer wallet props ", props.account)
     return (
         <>
         <div className="offcanvas offcanvas-end" tabIndex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
@@ -14,7 +19,45 @@ const DrawerWallet = () => {
                 <button type="button" className="atmButtonIconClean" data-bs-dismiss="offcanvas" aria-label="Close"><i className="fas fa-times"/></button>
             </div>
             <div className="offcanvas-body">
-                Wallet Body
+                <section className="wallet-body">
+                    <RowWallet
+                        type={"address"}
+                        title={"Wallet address"}
+                        children={props.account.address} />
+                    <RowWallet
+                        type={"number"}
+                        title={"NeoFS GAS balance"}
+                        children={props.account.neoFSBalance} />
+                    <RowWallet
+                        type={"number"}
+                        title={"Neo balance"}
+                        children={props.account.neoBalance} />
+                    <RowWallet
+                        type={"number"}
+                        title={"GAS balance"}
+                        children={props.account.gasBalance} />
+                </section>
+                <section className="wallet-footer">
+                    {/* <h6 className="atmWallet">Top-up NeoFS GAS Balance</h6> */}
+                    <HeadingGeneral
+                        level={"h6"}
+                        isUppercase={true}
+                        text={"Top-up NeoFS GAS Balance"} />
+                    <Form.Control type="number" placeholder="GAS amount" id={"topUpAmount"}/>
+                    <ButtonText
+                        type="default"
+                        size="medium"
+                        hasIcon={true}
+                        faClass={"fas fa-chart-line"}
+                        text={"Top-up"}
+                        onClick={(amount) => {console.log("topping up"); props.topUpWallet(document.getElementById("topUpAmount").value)}} />
+                </section>
+                <section>
+                    <RowWallet
+                        type={"address"}
+                        title={"Public Key"}
+                        children={props.account.publicKey} />
+                </section>
             </div>
         </div>
     </>

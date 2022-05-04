@@ -35,8 +35,8 @@ const DrawerSettings = () => {
                     </div>
                     <div className="molBlockSwitch d-flex">
                         <div className="atmSwitchContent">
-                            <h5>Option</h5>
-                            <p>Explanation goes here under the design of the title and toggle. And what if there is tons to say?</p>
+                            <h5>Network</h5>
+                            <p>Select testNet or mainNet (disabled for hackathon and will only connect to testNet</p>
                         </div>
                         <div className="atmSwitchToggle ms-auto">
                             <label className="switch">
@@ -47,8 +47,8 @@ const DrawerSettings = () => {
                     </div>
                     <div className="molBlockSwitch d-flex">
                         <div className="atmSwitchContent">
-                            <h5>Option</h5>
-                            <p>Explanation goes here under the design of the title and toggle.</p>
+                            <h5>Local server API</h5>
+                            <p>Expose locally public read containers content. This allows other applications to access your public objects.<br />To access it, visit <b>http://localhost:43520/api/v1/readonly?since=1651657433</b>,<br />where <pre>since=1651657433</pre> can be used to filter objects by a unix timestamp (in seconds)</p>
                         </div>
                         <div className="atmSwitchToggle ms-auto">
                             <label className="switch">

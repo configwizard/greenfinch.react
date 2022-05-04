@@ -117,7 +117,6 @@ func main() {
 	if err != nil {
 		log.Fatal("could not get home directory", err)
 	}
-
 	manager, err := manager.NewFileSystemManager(version, filepath.Join(databaseLocation, "greenfinch.db"), false)
 	if err != nil {
 		log.Fatal("can't create a manager", err)

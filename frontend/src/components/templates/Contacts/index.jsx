@@ -29,7 +29,10 @@ const TemplateContacts = ({contacts, createContact }) => {
                                 title={"Add new contact"}
                                 buttonTextPrimary={"Add"}
                                 buttonTextSecondary={"Cancel"}
-                                primaryClicked={async () => {await createContact(document.getElementById("contactFirstName").value, document.getElementById("contactLastName").value, document.getElementById("contactAddress").value); unSetModal()}}
+                                primaryClicked={async () => {await createContact(document.getElementById("contactFirstName").value,
+                                    document.getElementById("contactLastName").value,
+                                    document.getElementById("contactAddress").value,
+                                    document.getElementById("contactPublicKey").value); unSetModal()}}
                                 secondaryClicked={async () => unSetModal()}>
                                     <Form.Group className="form-div">
                                         <Form.Label>First name of contact</Form.Label>
@@ -44,6 +47,11 @@ const TemplateContacts = ({contacts, createContact }) => {
                                         <Form.Control id="contactAddress" type="text" />
                                         <Form.Text muted>Neo N3 wallet addresses start with 'N'</Form.Text>
                                     </Form.Group>
+                                <Form.Group>
+                                    <Form.Label>Public Key</Form.Label>
+                                    <Form.Control id="contactPublicKey" type="text" />
+                                    <Form.Text muted>Contact's public key</Form.Text>
+                                </Form.Group>
                             </CompModalStandard>)
                         }}/>
                    

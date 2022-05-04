@@ -10,6 +10,7 @@ import './assets/greenfinch.scss';
 // Components
 import PageHome from './pages/Home';
 import PageTest from './pages/Test';
+import PageShared from './pages/shared';
 import PageContainers from './pages/Containers';
 import PageWebsites from './pages/Websites';
 import PageContacts from './pages/Contacts';
@@ -55,6 +56,7 @@ function prepareWalletData(account) {
 
     let cleanBalances = {
         address: account.address,
+        publicKey: account.publicKey,
         neoFSBalance: Number(b/m).toFixed(4),
         gasBalance: Number(gs/ms).toFixed(4),
         neoBalance: clean.nep17.NEO.amount
@@ -107,7 +109,7 @@ class App extends React.Component {
                     <Header account={this.state.account}></Header>
                     <div className="templateShell d-flex flex-row">
                         <div className="flex-shrink-1">
-                            <NavbarSide/>
+                            <NavbarSide account={this.state.account}/>
                         </div>
                         <div className="w-100">
                             <Routes>
@@ -115,7 +117,8 @@ class App extends React.Component {
                                 <Route path="/containers" exact element={<PageContainers setStatusAccount={this.setStatusAccount} account={this.state.account}/>} />
                                 <Route path="/websites" exact element={<PageWebsites/>} />
                                 <Route path="/contacts" exact element={<PageContacts/>} />
-                                <Route path="/test" exact element={<PageTest/>} />
+                                <Route path="/shared" exact element={<PageShared/>} />
+                                {/*<Route path="/test" exact element={<PageTest/>} />*/}
                             </Routes>
                         </div>
                     </div>

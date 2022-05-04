@@ -53,9 +53,9 @@ const ControlBar = ({containers, selectedContainer, onSelected, changeView, view
                                             <Form.Label>Container permissions</Form.Label>
                                             <Form.Select id="containerPermission" aria-label="select">
                                                 <option>Select container permissions...</option>
-                                                <option value="public_readonly">Public Read Only</option>
-                                                <option value="public_readwrite">Public Read/Write</option>
-                                                <option value="public_private">Private</option>
+                                                <option value="PUBLICREAD">Public Read Only</option>
+                                                <option value="PUBLICBASIC">Public Read/Write</option>
+                                                <option value="PRIVATE">Private</option>
                                             </Form.Select>
                                         </Form.Group>
                                 </CompModalStandard>)

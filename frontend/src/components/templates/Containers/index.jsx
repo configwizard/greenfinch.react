@@ -18,7 +18,24 @@ import ContainerShare from '../../organisms/ContainerShare';
 
 // Central style sheet for templates
 import '../_settings/style.scss';
+import {fileSize} from "humanize-plus";
+import Moment from "react-moment";
 
+
+const selectPermission = (rawPermission) => {
+    switch(rawPermission) {
+        case 478973132 :
+            return "PrivateBasicRule"
+        case 264211711:
+            return "EACLReadOnlyBasicRule"
+        case 264224767:
+            return "EACLPublicBasicRule"
+        case 268423167:
+            return "custom - " + rawPermission.toString(16);
+        default:
+        return rawPermission.toString(16)
+    }
+}
 class Containers extends React.Component {
     constructor(props) {
         super(props);
@@ -79,12 +96,17 @@ class Containers extends React.Component {
         let state = this.state
         this.setState({...state, viewMode: viewMode})
     }
-    onContainerSelection = async (containerID, containerName) => {
+    onContainerSelection = async (containerID, containerName, permissions, sharable, createdAt, size) => {
         //we will need to call the function to get the objects for a specific container ID and update the objectList
         const selectedContainer = {
             containerID,
-            containerName
+            containerName,
+            permissions,
+            sharable,
+            createdAt,
+            size
         }
+        console.log("selected container.... ", selectedContainer)
         let state = this.state
 
         this.setState({...state, selectedContainer, objectsLoaded: false})
@@ -140,7 +162,7 @@ class Containers extends React.Component {
             return (
                 <>
                     <div className="col-3">
-                        <p>Wallet details here. i.e these are the containers created with this wallet.</p>
+                        <p>Select a container to see more information and it's contents</p>
                     </div>
                     <div className="col-9">
                         <div className="orgContainersGrid">
@@ -166,17 +188,19 @@ class Containers extends React.Component {
                             level={"h6"}
                             isUppercase={true}
                             text={"Container permission"}/>
-                        <p style={{fontSize:9}}>Add permission </p>
+                        <p style={{fontSize:9}}>{
+                            selectPermission(this.state.selectedContainer.permissions)
+                        }</p>
                         <HeadingGeneral
                             level={"h6"}
                             isUppercase={true}
                             text={"Container created"}/>
-                        <p style={{fontSize:9}}>Add date (state, not props)</p>
+                        <p style={{fontSize:9}}><Moment unix format="DD MMM YY">{this.state.selectedContainer.createdAt}</Moment></p>
                         <HeadingGeneral
                             level={"h6"}
                             isUppercase={true}
                             text={"Container size"}/>
-                        <p style={{fontSize:9}}>Add size (state, not props)</p>
+                        <p style={{fontSize:9}}>{fileSize(this.state.selectedContainer.size)}</p>
                         <hr/>
                         <FileUpload onObjectUpload={this.onObjectUpload}></FileUpload>
                         <ContainerShare/>

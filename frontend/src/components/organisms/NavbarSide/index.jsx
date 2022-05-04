@@ -8,8 +8,17 @@ import DrawerSettings from '../Drawer/DrawerSettings';
 import DrawerWallet from '../Drawer/DrawerWallet';
 
 import './style.scss';
+import Wallet from "../Wallet";
+import {topUpNeoFS} from "../../../manager/manager";
 
-const NavbarSide = () => {
+const NavbarSide = (props) => {
+    function topUpWallet(amount) {
+        console.log("top up amount", amount)
+        alert("topping up amount " + amount)
+
+        const result = topUpNeoFS(amount)
+        console.log(result)
+    }
     return (
         <div className="org-navbar-side d-flex flex-column align-items-start">
             <div className="mb-auto">
@@ -40,9 +49,9 @@ const NavbarSide = () => {
                     </Tooltip>
                     <Tooltip content="Test" direction="right">
                         <NavlinkSide
-                            to={"/test"}
-                            faClass={"fas fa-vial"}
-                            label={"Test"} />
+                            to={"/shared"}
+                            faClass={"fa-solid fa-share-nodes"}
+                            label={"Shared with me"} />
                     </Tooltip>
                 </ul>
             </div>
@@ -56,7 +65,7 @@ const NavbarSide = () => {
                     </Tooltip>
                     <Tooltip content="Wallet" direction="right">
                         <button type="button" className="navbarSide" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"><i className="fal fa-wallet" /></button>
-                        <DrawerWallet></DrawerWallet>
+                        <DrawerWallet account={props.account} topUpWallet={topUpWallet}></DrawerWallet>
                         {/*
                             <NavlinkSide
                                 to={"/toassign02"}

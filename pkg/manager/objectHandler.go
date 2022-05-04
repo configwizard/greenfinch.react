@@ -14,7 +14,6 @@ import (
 	obj "github.com/nspcc-dev/neofs-sdk-go/object"
 	oid "github.com/nspcc-dev/neofs-sdk-go/object/id"
 	"io"
-	"path"
 	"path/filepath"
 	"sort"
 	"strconv"
@@ -24,7 +23,7 @@ import (
 
 
 
-func (m *Manager) UploadObject(containerID, filepath string, fileSize int, attributes map[string]string, ioReader *io.Reader) ([]filesystem.Element, error) {
+func (m *Manager) UploadObject(containerID, fp string, fileSize int, attributes map[string]string, ioReader *io.Reader) ([]filesystem.Element, error) {
 	cntID := cid.ID{}
 	cntID.Parse(containerID)
 	var attr []*obj.Attribute
@@ -45,7 +44,8 @@ func (m *Manager) UploadObject(containerID, filepath string, fileSize int, attri
 
 	fileNameAttr := new(obj.Attribute)
 	fileNameAttr.SetKey(obj.AttributeFileName)
-	fileNameAttr.SetValue(path.Base(filepath))
+	_, filename := filepath.Split(fp)
+	fileNameAttr.SetValue(filename)
 	attr = append(attr, []*obj.Attribute{timeStampAttr, fileNameAttr}...)
 	//now we check if we can create a thumbnail
 	thumbnailData, err := thumbnail(ioReader)

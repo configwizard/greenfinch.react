@@ -227,6 +227,7 @@ func (m Manager) Client() (*neofscli.Client, error) {
 
 type Account struct {
 	Address string `json:"address"`
+	PublicKey string `json:"publicKey"`
 	NeoFS   struct {
 		Balance   int64  `json:"balance"`
 		Precision uint32 `json:"precision"`
@@ -282,6 +283,7 @@ func (m *Manager) GetAccountInformation() (Account, error) {
 	//now create an account object
 	var b = Account{
 		Address: w.Accounts[0].Address,
+		PublicKey: wallet.ByteArrayToString(m.wallet.Accounts[0].PrivateKey().PublicKey().Bytes()),
 		NeoFS: struct {
 			Balance   int64  `json:"balance"`
 			Precision uint32 `json:"precision"`

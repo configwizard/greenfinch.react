@@ -19,7 +19,7 @@ class PageContacts extends React.Component {
         return (
             <>
                 {/* Loader */}
-                <TemplateContacts contacts={this.state.contacts} createContact={(firstName, lastName, walletAddress) => createContact(firstName, lastName, walletAddress)}/>
+                <TemplateContacts contacts={this.state.contacts} createContact={(firstName, lastName, walletAddress, publicKey) => createContact(firstName, lastName, walletAddress, publicKey)}/>
             </>
         )
     }

@@ -28,6 +28,31 @@ const LoadWallet = ({account, recentWallets}) => {
                             text={"Get started"}
                         />            
                         <p>To use Greenfinch, a wallet is required. Either load up a previous wallet or create a new wallet now.</p>
+                        {
+                            Object.keys(recentWallets.recentWallets).map(function(obj, ) {
+                                console.log("RECENT", obj, recentWallets.recentWallets[obj])
+                                //the absolute path is recentWallets.recentWallets[obj]
+                                const walletName = recentWallets.recentWallets[obj].split('/')[recentWallets.recentWallets[obj].split('/').length -1]
+                                return <div key={obj}
+                                onClick={
+                                    () => {
+                                        setModal(
+                                            <CompModalStandard
+                                                title={"Wallet Password"}
+                                                buttonTextPrimary={"Unlock"}
+                                                buttonTextSecondary={"Cancel"}
+                                                primaryClicked={async () => {await loadWallet(document.getElementById("loadWalletPassword").value); unSetModal()}}
+                                                secondaryClicked={async () => unSetModal()}>
+                                                <Form.Group className="form-div">
+                                                    <Form.Label>Password</Form.Label>
+                                                    {/*conne*/}
+                                                    {/*<Form.Control id="loadWalletPassword" type="password" />*/}
+                                                </Form.Group>
+                                            </CompModalStandard>)
+                                    }}
+                                    >{walletName}</div>
+                            })
+                        }
                         <div className="d-flex">
                             <div className="ms-auto">
                                 <ButtonText 

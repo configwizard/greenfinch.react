@@ -5,11 +5,11 @@
 	"info": {
 		"0000": {
 			"ProductVersion": "1.0.0",
-			"CompanyName": "react-templ",
-			"FileDescription": "react-templ",
-			"LegalCopyright": "Copyright.........",
-			"ProductName": "react-templ",
-			"Comments": "Built using Wails (https://wails.app)"
+			"CompanyName": "Greenfinch",
+			"FileDescription": "Greenfinch",
+			"LegalCopyright": "Greenfinch",
+			"ProductName": "Greenfinch",
+			"Comments": "Greenfinch decentralised storage management"
 		}
 	}
 }

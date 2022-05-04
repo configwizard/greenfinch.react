@@ -456,13 +456,13 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 		var customAcl acl.BasicACL //0x0FFFCFFF
 		switch permission {
 		case "PRIVATE":
-			customAcl = acl.PrivateBasicRule
+			customAcl = acl.PrivateBasicRule //0x1C8C8CCC -> 478973132
 		case "PUBLICREAD":
-			customAcl = acl.EACLReadOnlyBasicRule
+			customAcl = acl.EACLReadOnlyBasicRule //0x0FBF8CFF -> 264211711
 		case "PUBLICBASIC":
-			customAcl = acl.EACLPublicBasicRule
+			customAcl = acl.EACLPublicBasicRule //0x0FBFBFFF -> 264224767
 		default:
-			customAcl = acl.BasicACL(0x0FFFCFFF)
+			customAcl = acl.BasicACL(0x0FFFCFFF) //0x0FFFCFFF -> 268423167
 		}
 		id, err := container2.Create(m.ctx, fsCli, &tmpKey, placementPolicy, customAcl, attributes)
 		//sessionToken, err := client2.CreateSession(m.ctx, fsCli, client2.DEFAULT_EXPIRATION, &tmpKey)

@@ -127,6 +127,7 @@ export class  {
 }
 export class Account {
     address: string;
+    publicKey: string;
     neofs: ;
     nep17: {[key: string]: Nep17Tokens};
 
@@ -137,6 +138,7 @@ export class Account {
     constructor(source: any = {}) {
         if ('string' === typeof source) source = JSON.parse(source);
         this.address = source["address"];
+        this.publicKey = source["publicKey"];
         this.neofs = this.convertValues(source["neofs"], );
         this.nep17 = this.convertValues(source["nep17"], Nep17Tokens, true);
     }
@@ -191,6 +193,7 @@ export class contact {
     firstName: string;
     lastName: string;
     walletAddress: string;
+    publicKey: string;
 
     static createFrom(source: any = {}) {
         return new contact(source);
@@ -201,6 +204,7 @@ export class contact {
         this.firstName = source["firstName"];
         this.lastName = source["lastName"];
         this.walletAddress = source["walletAddress"];
+        this.publicKey = source["publicKey"];
     }
 }
 
