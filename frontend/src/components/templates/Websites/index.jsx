@@ -16,7 +16,7 @@ const TemplateWebsites = () => {
             <div class="row">
                 <div className="col-12">
                     <HeaderPage 
-                        pageTitle={"Containers as website"}
+                        pageTitle={"Containers as websites"}
                         hasButton={true}
                         hasIcon={true}
                         faClass={"fas fa-plus-circle"}

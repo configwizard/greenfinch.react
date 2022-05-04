@@ -45,89 +45,6 @@
     padding: $paddingSmall;
 }
 
-/* Element: Toggle switch
-- - - - - - - - - - - - - - - - - - */
-.switch {
-    position: relative;
-    display: inline-block;
-    width: 70px;
-    height: 34px;
-    & input { 
-        width: 0;
-        height: 0;
-    }
-}
-
-.slider {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    &:before {
-        position: absolute;
-        content: "";
-        height: 26px;
-        width: 26px;
-        left: 4px;
-        bottom: 4px;
-    }
-}
-
-input:checked + .slider:before {
-    transform: translateX(26px);
-}
-
-/* Component: Modal
-- - - - - - - - - - - - - - - - - - */
-
-
-// Modal styles from demo (stackoverflow: )
-.orgModal {
-    --spacing: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    z-index: 8000;
-    & .molModalWrapper {
-        display: block;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-    }
-    & .molModalContainer {
-        position: relative;
-        width: calc(var(--spacing) * 30);
-        max-width: 100%;
-        & .modal__close-btn {
-            position: absolute;
-            top: 16px;
-            right: 19px;
-            padding: 0;
-        }
-    }
-}
-.molModalHeader {
-    padding: $paddingMedium $paddingSmall;
-    & h2 {
-        margin-bottom: 0;
-    }
-}
-.molModalBody {
-    padding: $paddingMedium $paddingSmall;
-}
-.molModalFooter {
-    padding: $paddingSmall;
-}
-
 
 /* Styles: Folders
 - - - - - - - - - - - - - - - - - - */
@@ -224,47 +141,16 @@ input:checked + .slider:before {
         margin-top: $marginSmall;
         padding: 0 $paddingSmall;
         height: 100%;
-        
         overflow-x: hidden;
         overflow-y: scroll;
         & .molButtonGrid {
             margin-bottom: 14px;
-            & .atmButtonGridHeader, .atmButtonGridContent {
-                width: 100%;
-            }
-            & .atmButtonGridHeader {
-                padding: 0;
-                margin: 0;
-            }
-            & .atmButtonGridContent {
-                width: 100%;
-                padding-top: 32px;
-                padding-bottom: 16px;
-                & .atmButtonGridName {
-                    margin-top: 2px;
-                    margin-bottom: 2px;
-                    max-width: 160px;
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                }
-            }
             & .atmButtonOptions {
                 position: relative;
                 padding: 0 5px;
             }
         }
         & .molButtonRow {
-            margin-bottom: 7px;
-            & .atmButtonRowContent {
-                & i {
-                    margin-right: $marginMedium;
-                }
-                & .atmButtonRowName {
-                    margin-left: 2px;
-                    margin-left: 2px;
-                }
-            }
             & .atmButtonOptions {
                 position: relative;
             }
@@ -299,9 +185,7 @@ input:checked + .slider:before {
     }
 }
 
-.atmSwitchContent {
-    padding-right: 40px;
-}
+
 
 /* Layout: Breadcrumb
 - - - - - - - - - - - - - - - - - - */
@@ -366,21 +250,6 @@ input:checked + .slider:before {
 }
 
 
-.orgFooterAction {
-    padding: $paddingSmall;
-}
-
-/* Styles: Offcanvas Right
-- - - - - - - - - - - - - - - - - - */
-#offcanvasRight {
-    .molBlockSwitch, .molBlockDropdown {
-        margin-bottom: $marginLarge;
-    }
-    & h4 {
-        margin-top: $marginSmall;
-        margin-bottom: $marginSmall;
-    }
-}
 
 /* Styles: Typography
 - - - - - - - - - - - - - - - - - - */

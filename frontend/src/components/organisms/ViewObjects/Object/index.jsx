@@ -26,6 +26,7 @@ export function ObjectGrid({onDelete, onObjectSelection, item}) {
             </div>
             <CardObject
                 onClick={() => onObjectSelection(item.id, item.attributes.FileName)}
+                objectFile={item.attributes.Thumbnail}
                 dataType={item.attributes.X_EXT}
                 objectName={item.attributes.FileName}>
             </CardObject>

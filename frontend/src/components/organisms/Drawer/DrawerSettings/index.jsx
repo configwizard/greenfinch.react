@@ -2,26 +2,28 @@ import React from 'react';
 
 // Components
 
+// Central style sheet for drawers
+import '../_settings/style.scss';
 
-import './style.scss';
-
-const Settings = () => {
+const DrawerSettings = () => {
     return (
         <>
             {/* This is what was needed for the a drawer to appear on click of cog:
                     <button type="button" className="atmButtonIconClean" data-bs-toggle="offcanvas" data-bs-target="#offcanvasLeft" aria-controls="offcanvasLeft"><i className="far fa-cog" /></button>
             */}
 
-            {/* To sort: Offcanvas right; need to do classes and text */}
+            {/* To sort: Offcanvas left; need to do classes and text */}
 
-            <div className="offcanvas offcanvas-end" tabIndex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+            <div className="offcanvas offcanvas-start" tabIndex="-1" id="offcanvasLeft" aria-labelledby="offcanvasLeftLabel">
                 <div className="offcanvas-header d-flex align-items-center">
-                    <h4 id="offcanvasRightLabel">Account Settings</h4>
+                    <h4 id="offcanvasLeftLabel"><i className="fas fa-lg fa-cog"/>&nbsp;Account Settings</h4>
                     <button type="button" className="atmButtonIconClean" data-bs-dismiss="offcanvas" aria-label="Close"><i className="fas fa-times"/></button>
                 </div>
                 <div className="offcanvas-body">
                     <div className="molBlockDropdown d-flex">
-                        <Dropdown></Dropdown>
+                        {/*
+                            <Dropdown></Dropdown>
+                        */}
                         {/* <div class="dropdown">
                             <button onclick="myFunction()" class="dropbtn">Dropdown</button>
                             <div id="myDropdown" class="dropdown-content">
@@ -73,4 +75,4 @@ const Settings = () => {
     )
 }
 
-export default Settings;
+export default DrawerSettings;

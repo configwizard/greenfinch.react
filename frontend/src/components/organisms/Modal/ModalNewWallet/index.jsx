@@ -13,6 +13,9 @@ import { useModal } from "../ModalContext";
 import ButtonText from "../atoms/ButtonText";
 import CompModalBrand from "../ModalBrand";
 
+// Central style sheet for modals
+import '../_settings/style.scss';
+
 function NewWalletModal(props) {
     const {setModal, unSetModal} = useModal()
     return (

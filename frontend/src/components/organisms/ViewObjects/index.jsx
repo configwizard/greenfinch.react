@@ -12,7 +12,7 @@ function ViewObjects({onDelete, objectList, onObjectSelection, objectsLoaded, vi
         return (
             <>
                 {objectsLoaded && objectList.length > 0 ? objectList.map((item, i) =>
-                    <div className="col-6 col-lg-3 col-xl-2" key={i}>
+                    <div className="col-6 col-lg-3" key={i}>
                         <div className="molButtonGrid">
                             <ObjectGrid onDelete={() => {onDelete(item.id)}} onObjectSelection={onObjectSelection} item={item}></ObjectGrid>
                         </div>

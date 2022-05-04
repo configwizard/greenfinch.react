@@ -71,7 +71,7 @@ export default class ToastMessage extends React.Component {
                 <div className="toast-container">
                     {
                         this.state.list.map((toast, i) => {
-                            const fontAwesomeIcon = iconSelector(toast.Type)
+                            const faIcon = iconSelector(toast.Type)
                             console.log("toastType ", toast.type)
                             return (
                                 <div
@@ -79,7 +79,7 @@ export default class ToastMessage extends React.Component {
                                     className={`toast-wrapper ${toast.Type}`}>
                                     <div className="toast-inner d-flex">
                                         <div className="toast-icon d-flex align-items-center justify-content-center">
-                                            <i className={`fad ${fontAwesomeIcon}`}/>
+                                            <i className={`fad ${faIcon}`}/>
                                         </div>
                                         <div className="toast-content d-flex flex-column justify-content-center">
                                             <i className="fa fa-fw fa-times" onClick={() => this.deleteToast(toast.id)}/>

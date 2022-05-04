@@ -3,6 +3,9 @@ import React from 'react';
 // Components
 import ButtonText from '../../../atoms/ButtonText';
 
+// Central style sheet for modals
+import '../_settings/style.scss';
+
 const CompModalStandard = props => {
     return (
         <section className="orgModalBrand">
@@ -13,7 +16,7 @@ const CompModalStandard = props => {
                 {props.children}
             </div>
             <div className="molModalFooter d-flex">
-                <div className="ms-auto molButtonGroup">
+                <div className="ms-auto buttonGroup">
                     <ButtonText
                         type="secondary"
                         size="medium"

@@ -2,7 +2,7 @@
 @import "../../../assets/greenfinch-variables.scss";
 
 .templateShell {
-    padding-top: $heightHeader;
+    padding-top: $heightHeader + 7px; // manually added number, doesn't make sense 
     height: 100vh;
 }
 

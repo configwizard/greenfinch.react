@@ -53,7 +53,8 @@ const Wallet = props => {
                             text={"Top-up NeoFS GAS Balance"} />
                         <Form.Control type="number" placeholder="GAS amount" id={"topUpAmount"}/>
                         <ButtonText 
-                            buttonClass={"atmButtonText"}
+                            type="default"
+                            size="medium"
                             hasIcon={true}
                             faClass={"fas fa-chart-line"}
                             text={"Top-up"}

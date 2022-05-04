@@ -1,5 +1,8 @@
 import React from "react";
 
+// Central style sheet for modals
+import '../_settings/style.scss';
+
 const CompModalBrand = props => {
     return (
         <section className="orgModalBrand">
