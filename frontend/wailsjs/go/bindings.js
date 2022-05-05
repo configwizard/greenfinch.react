@@ -143,11 +143,10 @@ const go = {
       /**
        * ListContainers
        * @param {boolean} arg1 - Go Type: bool
-       * @param {boolean} arg2 - Go Type: bool
        * @returns {Promise<Array<Element>|Error>}  - Go Type: []filesystem.Element
        */
-      "ListContainers": (arg1, arg2) => {
-        return window.go.manager.Manager.ListContainers(arg1, arg2);
+      "ListContainers": (arg1) => {
+        return window.go.manager.Manager.ListContainers(arg1);
       },
       /**
        * ListSharedContainers

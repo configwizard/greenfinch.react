@@ -8,7 +8,6 @@ import (
 	"github.com/nspcc-dev/neo-go/pkg/crypto/keys"
 	"github.com/nspcc-dev/neofs-sdk-go/client"
 	"log"
-	"sort"
 	"strconv"
 	"sync"
 	"time"
@@ -62,7 +61,7 @@ func (m *Manager) ListContainerIDs() ([]string, error) {
 // NewListReadOnlyContainerContents lists from cache
 func (m *Manager) NewListReadOnlyContainerContents(since int64) ([]filesystem.Element, error) {
 	//list the containers
-	containers, err := m.ListContainers(false, false)
+	containers, err := m.ListContainers(false)
 	if err != nil {
 		return nil, err
 	}
@@ -226,7 +225,7 @@ func (m *Manager) listContainersAsync() ([]filesystem.Element, error) {
 	if m.DEBUG {
 		DebugSaveJson("ListContainers.json", containers)
 	}
-	containerList, err := m.ListContainers(true, false)
+	containerList, err := m.ListContainers(true)
 	fmt.Println("async returning", containerList)
 	return containerList, err
 }
@@ -254,22 +253,14 @@ func (m *Manager) prepareAndAppendContainer(vID cid.ID, sessionToken *session.To
 
 
 // ListContainers populates from cache
-func (m *Manager) ListContainers(synchronised, shared bool) ([]filesystem.Element, error) {
+func (m *Manager) ListContainers(synchronised bool) ([]filesystem.Element, error) {
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
 		return []filesystem.Element{}, err
 	}
-	var tmpContainers map[string][]byte
-	if shared {
-		tmpContainers, err = cache.RetrieveContainers(tmpWallet.Accounts[0].Address)
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		tmpContainers, err = cache.RetrieveSharedContainers(tmpWallet.Accounts[0].Address)
-		if err != nil {
-			return nil, err
-		}
+	tmpContainers, err := cache.RetrieveContainers(tmpWallet.Accounts[0].Address)
+	if err != nil {
+		return nil, err
 	}
 	if len(tmpContainers) == 0 {
 		//we need to check there aren't any on the network
@@ -297,24 +288,24 @@ func (m *Manager) ListContainers(synchronised, shared bool) ([]filesystem.Elemen
 	}
 	fmt.Println("ended up with", len(unsortedContainers))
 	//sort keys
-	keys := make([]string, 0, len(unsortedContainers))
-	for _, v := range unsortedContainers {
-		keys = append(keys, v.Attributes[obj.AttributeFileName])
-	}
-	sort.Strings(keys)
+	//keys := make([]string, 0, len(unsortedContainers))
+	//for _, v := range unsortedContainers {
+	//	keys = append(keys, v.Attributes[obj.AttributeFileName])
+	//}
+	//sort.Strings(keys)
 	//append to array in alphabetical order by key
-	var containers []filesystem.Element
-	for _, k := range keys {
-		for _, v := range unsortedContainers {
-			if v.Attributes[obj.AttributeFileName] == k {
-				containers = append(containers, v)
-				break
-			}
-		}
-	}
+	//var containers []filesystem.Element
+	//for _, k := range keys {
+	//	for _, v := range unsortedContainers {
+	//		if v.Attributes[obj.AttributeFileName] == k {
+	//			containers = append(containers, v)
+	//			break
+	//		}
+	//	}
+	//}
 
 	fmt.Println("finally", len(unsortedContainers))
-	return containers, nil
+	return unsortedContainers, nil
 }
 
 // DeleteContainer must mark the container in the cache as deleted
@@ -383,7 +374,7 @@ func (m *Manager) DeleteContainer(id string) ([]filesystem.Element, error) {
 		}
 		m.MakeToast(NewToastMessage(&t))
 	}
-	return m.ListContainers(false, false)
+	return m.ListContainers(false)
 }
 
 //ultimately, you want to do this with containers that can be restricted (i.e eaclpublic)
@@ -453,40 +444,6 @@ func (m *Manager) RestrictContainer(id string, publicKey string) error {
 	return nil
 }
 
-func (m *Manager) ListSharedContainers() ([]filesystem.Element, error) {
-	return m.ListContainers(false, true)
-}
-func (m *Manager) AddSharedContainer(containerID string) error {
-	//check if you can access this container
-	tmpWallet, err := m.retrieveWallet()
-	if err != nil {
-		return err
-	}
-	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
-	fsCli, err := m.Client()
-	c := cid.ID{}
-	err = c.Parse(containerID)
-	if err != nil {
-		return err
-	}
-	sessionToken, err := client2.CreateSessionForContainerList(m.ctx, fsCli, client2.DEFAULT_EXPIRATION, &tmpKey)
-	if err != nil {
-		return err
-	}
-	cont, err := m.prepareAndAppendContainer(c, sessionToken)
-	if err != nil {
-		return err
-	}
-	fmt.Printf("shared container %+v\r\n", cont)
-	marshal, err := json.Marshal(cont)
-	if err != nil {
-		return err
-	}
-	if err := cache.StoreContainer(tmpWallet.Accounts[0].Address, containerID, marshal); err != nil {
-		return err
-	}
-	return nil
-}
 func (m *Manager) CreateContainer(name string, permission string, block bool) error {
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
