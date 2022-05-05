@@ -26,6 +26,11 @@ tag-major:
 tag-minor:
 	git semver minor
 
+#when patch changes are made and we release, we run this
+.PHONY: tag-patch
+tag-patch:
+	git semver patch
+
 #while developing, run this to create an app
 .PHONY: dev
 dev:
@@ -39,6 +44,9 @@ prod:
 .PHONY: win
 win:
 	wails build -nsis -f ${LDFLAGS} -platform windows/arm64,windows/amd64
+
+.PHONY: release
+release: tag-patch dev win
 
 # instructions on manually signing, in order are below
 # now for the bit where an app is signed, notorized and stapled

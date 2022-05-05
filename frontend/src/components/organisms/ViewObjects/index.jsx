@@ -36,7 +36,7 @@ function ViewObjects({onDelete, objectList, onObjectSelection, objectsLoaded, vi
         )
     }
 }
-export function FileUpload({onObjectUpload}) {
+export function ContainerPreviewButton({icon, text, onClick}) {
     return (
         <div className="molBlockUpload d-flex align-items-center justify-content-center">
             <div className="atmBlockUpload d-flex flex-column align-items-center justify-content-center">
@@ -45,9 +45,9 @@ export function FileUpload({onObjectUpload}) {
                     type={"default"}
                     size={"medium"}
                     hasIcon={true}
-                    faClass={"fas fa-upload"}
-                    onClick={onObjectUpload}
-                    text={"Upload to this container"}/>
+                    faClass={icon}
+                    onClick={onClick}
+                    text={text}/>
             </div>
         </div>
     )

@@ -75,8 +75,8 @@ func (m *Manager) NewListReadOnlyContainerContents(since int64) ([]filesystem.El
 		wg.Add(1)
 		go func(v filesystem.Element) {
 			defer wg.Done()
-			fmt.Println("serving container", v.ID, v.BasicAcl, acl.BasicACL(0x0FFFCFFF))
-			if v.BasicAcl != acl.BasicACL(0x0FFFCFFF) { //acl.EACLReadOnlyBasicRule
+			fmt.Println("serving container", v.ID, v.BasicAcl, acl.EACLReadOnlyBasicRule)
+			if v.BasicAcl != acl.EACLReadOnlyBasicRule {
 				return
 			}
 			//now we need the metadata for the objects in this container.
@@ -87,16 +87,24 @@ func (m *Manager) NewListReadOnlyContainerContents(since int64) ([]filesystem.El
 			}
 			fmt.Println("number of objects in container ", v.ID, len(objects))
 			var pendingContainer filesystem.Element
+			pendingContainer.ID = cnt.ID
+			pendingContainer.Type = cnt.Type
+			pendingContainer.Attributes = cnt.Attributes
+			size := uint64(0)
 			for _, el := range objects {
+				size += el.Size
 				//filteredElements = append(filteredElements, el)
 				unixString, ok := el.Attributes[obj.AttributeTimestamp];
 				unixTime, err := strconv.ParseInt(unixString, 10, 64);
 				fmt.Println(" processing ", el.ID, unixTime, since, unixTime > since)
 				if ok && err == nil && unixTime > since {
 					//its a good object
+					//remove the unecessary attribute
+					delete(el.Attributes, "Thumbnail");
 					pendingContainer.Children = append(pendingContainer.Children, el)
 				}
 			}
+			pendingContainer.Size = size
 			resultCounter += len(pendingContainer.Children)
 			if len(pendingContainer.Children) > 0 {
 				mu.Lock()
@@ -516,6 +524,7 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 					ID:             id.String(),
 					Type:           "container",
 					Size:           0,
+					BasicAcl: customAcl,
 					Attributes: make(map[string]string),
 				}
 				for _, a := range attributes {

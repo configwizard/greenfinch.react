@@ -7,6 +7,7 @@ import OverlayMenu from '../../../molecules/OverlayMenu';
 
 export function ObjectGrid({onDelete, onObjectSelection, item}) {
     const [showMenu, setShowMenu] = useState(false)
+    console.log("item", item)
     return (
         <>
             <div className="atmButtonGridHeader d-flex">{/* Overlaymenu option */}

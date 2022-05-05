@@ -110,6 +110,13 @@ const go = {
         return window.go.manager.Manager.GetObjectMetaData(arg1, arg2);
       },
       /**
+       * GetVersion
+       * @returns {Promise<string>}  - Go Type: string
+       */
+      "GetVersion": () => {
+        return window.go.manager.Manager.GetVersion();
+      },
+      /**
        * ListContainerIDs
        * @returns {Promise<Array<string>|Error>}  - Go Type: []string
        */

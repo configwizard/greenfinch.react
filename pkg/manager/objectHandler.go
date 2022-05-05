@@ -263,7 +263,11 @@ func (m *Manager) ListContainerObjects(containerID string, synchronised bool) ([
 			continue
 		}
 		//fmt.Println("object ", tmp.ID, tmp.PendingDeleted, tmp.ParentID)
-
+		if filename, ok := tmp.Attributes[obj.AttributeFileName]; ok {
+			tmp.Attributes["X_EXT"] = filepath.Ext(filename)[1:]
+		} else {
+			tmp.Attributes["X_EXT"] = ""
+		}
 		//ok this needs to be an array to add the correct ones, not a map other wise we lose duplicates quickly
 		if !tmp.PendingDeleted && tmp.ParentID == containerID { //don't return deleted containers
 			unsortedObjects = append(unsortedObjects, tmp)

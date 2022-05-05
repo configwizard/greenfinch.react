@@ -5,7 +5,7 @@ import ButtonText from '../../atoms/ButtonText';
 import HeadingGeneral from '../../atoms/HeadingGeneral';
 import HeaderPage from '../../organisms/HeaderPage';
 import LoadWallet from '../../organisms/LoadWallet';
-import SectionHomepage from '../../organisms/SectionHomepage';
+import {SectionHomepage, SectionSupport} from '../../organisms/HomeSections';
 
 // Central style sheet for templates
 import '../_settings/style.scss';
@@ -25,10 +25,9 @@ const TemplateHome = (recentWallets) => {
                                     <SectionHomepage
                                         titleLevel={"h3"}
                                         sectionTitle={"Get started"} />
-                                        {/* This might be where we use children */}
-                                    <SectionHomepage
+                                    <SectionSupport
                                         titleLevel={"h3"}
-                                        sectionTitle={"Help with Greenfinch"} />
+                                        sectionTitle={"Help and support"} />
                                 </div>
                             </div>
                         </div>

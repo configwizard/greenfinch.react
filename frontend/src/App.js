@@ -19,7 +19,7 @@ import Footer from './components/organisms/Footer';
 import Header from './components/organisms/Header';
 import NavbarSide from './components/organisms/NavbarSide';
 
-import { getAccountInformation } from './manager/manager.js';
+import {getAccountInformation, getVersion} from './manager/manager.js';
 import ToastMessage from "./components/molecules/Toast";
 import ProgressBar from "./components/molecules/ProgressBar";
 import { retrieveRecentWallets } from "./manager/manager.js";
@@ -85,7 +85,8 @@ class App extends React.Component {
             await this.setState({account})
         })
         const recentWallets = await retrieveRecentWallets()
-        this.setState({...this.state, recentWallets})
+        const version = await getVersion()
+        this.setState({...this.state, version, recentWallets})
         console.log(recentWallets)
         //FAKER remove in reality
         // const account = prepareWalletData({})
@@ -109,7 +110,7 @@ class App extends React.Component {
                         <Header account={this.state.account}></Header>
                         <div className="templateShell d-flex flex-row">
                             <div className="flex-shrink-1">
-                                <NavbarSide account={this.state.account}/>
+                                <NavbarSide version={this.state.version} account={this.state.account}/>
                             </div>
                             <div className="w-100">
                                 <Routes>

@@ -3,7 +3,7 @@ import React from 'react';
 // Actual
 import { deleteContainer, listContainers} from '../../../manager/containers.js';
 import { deleteObject, getObject, listObjects, uploadObject } from '../../../manager/objects.js';
-
+import {openInDefaultBrowser} from "../../../manager/manager.js"
 // Mocker
 // import { deleteContainer, listContainers} from '../../../mocker/containers.js';
 // import { deleteObject, getObject, listObjects, uploadObject } from '../../../mocker/objects.js';
@@ -13,7 +13,7 @@ import HeadingGeneral from '../../atoms/HeadingGeneral';
 import ControlBar from '../../molecules/ControlBar';
 import BreadCrumb from '../../organisms/HeaderArtboard';
 import ViewContainers from '../../organisms/ViewContainers';
-import ViewObjects, { FileUpload } from '../../organisms/ViewObjects';
+import ViewObjects, {ContainerPreviewButton, FileUpload} from '../../organisms/ViewObjects';
 import ContainerShare from '../../organisms/ContainerShare';
 
 // Central style sheet for templates
@@ -21,7 +21,6 @@ import '../_settings/style.scss';
 import {fileSize} from "humanize-plus";
 import Moment from "react-moment";
 import {listContacts} from "../../../manager/contacts";
-
 
 const selectPermission = (rawPermission) => {
     switch(rawPermission) {
@@ -131,8 +130,14 @@ class Containers extends React.Component {
         }
         let state = this.state
         this.setState({...state, selectedObject})
-        await getObject(objectName, objectID, this.state.selectedContainer.containerID)
+        // await getObject(objectName, objectID, this.state.selectedContainer.containerID)
         console.log('state after selecting object', this.state)
+    }
+    onObjectDownload = async() => {
+        if (this.state.selectedObject == null) {
+            return
+        }
+        await getObject(this.state.selectedObject.objectName, this.state.selectedObject.objectID, this.state.selectedContainer.containerID)
     }
     onObjectUpload = async () => {
         if (this.state.selectedContainer == null) {
@@ -206,9 +211,33 @@ class Containers extends React.Component {
                             isUppercase={true}
                             text={"Container size"}/>
                         <p style={{fontSize:9}}>{fileSize(this.state.selectedContainer.size)}</p>
-                        <hr/>
-                        <FileUpload onObjectUpload={this.onObjectUpload}></FileUpload>
+                        <ContainerPreviewButton text="Upload to this container" onClick={this.onObjectUpload}></ContainerPreviewButton>
                         <ContainerShare containerId={this.state.selectedContainer.containerID} contacts={this.state.contacts}/>
+                        <hr/>
+                        {
+                            this.state.selectedObject ?
+                                <><span id={"objectData"}>
+                                <HeadingGeneral
+                                    level={"h4"}
+                                    isUppercase={true}
+                                    text={"Selected Object"}/>
+                                    { selectPermission(this.state.selectedContainer.permissions) == "EACLReadOnlyBasicRule" || "EACLPublicBasicRule" ?
+                                        <p onClick={() => openInDefaultBrowser(`https://http.testnet.fs.neo.org/${this.state.selectedContainer.containerID}/${this.state.selectedObject.objectID}`)} style={{fontSize: 9}}>Click to view in web browser</p> : null }
+                                    <HeadingGeneral
+                                        level={"h6"}
+                                        isUppercase={true}
+                                        text={"Object name"}/>
+                                    <p style={{fontSize: 9}}>{this.state.selectedObject.objectName || null}</p>
+                                    <HeadingGeneral
+                                        level={"h6"}
+                                        isUppercase={true}
+                                        text={"Object Id"}/>
+                                    <p style={{fontSize: 9}}>{this.state.selectedObject.objectID || null}</p>
+                                    <ContainerPreviewButton icon="fas fa-download" text="Download this object" onClick={this.onObjectDownload}></ContainerPreviewButton>
+                                </span>
+                                </> : null
+                        }
+
                     </div>
                     <div className="col-9">
                         <div className="orgContainersGrid">

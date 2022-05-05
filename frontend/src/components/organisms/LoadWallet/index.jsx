@@ -104,7 +104,7 @@ const LoadWallet = ({account, recentWallets}) => {
                                     const walletName = recentWallets.recentWallets[obj].split('/')[recentWallets.recentWallets[obj].split('/').length -1]
                                     return <div key={obj} className="d-flex align-items-center">
                                         <div className="wallet-name">
-                                            {walletName}
+                                            {account && account.address == obj ? "current wallet" - walletName : walletName}
                                         </div>
                                         <div className="ms-auto">
                                             <ButtonText

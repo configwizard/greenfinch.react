@@ -1,12 +1,12 @@
 import React from 'react';
-import {openInDefaultBrowser} from "../../../../manager/manager"
+import {openInDefaultBrowser, getVersion} from "../../../../manager/manager"
 
 // Components
 
 // Central style sheet for drawers
 import '../_settings/style.scss';
 
-const DrawerSettings = () => {
+const DrawerSettings = (props) => {
     return (
         <>
             {/* This is what was needed for the a drawer to appear on click of cog:
@@ -60,14 +60,8 @@ const DrawerSettings = () => {
                     </div>
                     <div className="molBlockSwitch d-flex">
                         <div className="atmSwitchContent">
-                            <h5>Option</h5>
-                            <p>Explanation goes here under the design of the title.</p>
-                        </div>
-                        <div className="atmSwitchToggle ms-auto">
-                            <label className="switch">
-                                <input type="checkbox"/>
-                                <span className="slider round"></span>
-                            </label>
+                            <h5>Version</h5>
+                            <p>{props.version}</p>
                         </div>
                     </div>
                 </div>

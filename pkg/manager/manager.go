@@ -88,6 +88,9 @@ func (m *Manager) DomReady(ctx context.Context) {
 	}
 }
 
+func (m *Manager) GetVersion() string {
+	return m.version
+}
 func (m *Manager) checkForVersion() {
 	//version
 	go func() {

@@ -13,6 +13,7 @@ export interface go {
 		Get(arg1:string,arg2:string,arg3:number,arg4:Writer):Promise<Array<number>|Error>
 		GetAccountInformation():Promise<Account|Error>
 		GetObjectMetaData(arg1:string,arg2:string):Promise<Object|Error>
+		GetVersion():Promise<string>
 		ListContainerIDs():Promise<Array<string>|Error>
 		ListContainerObjects(arg1:string,arg2:boolean):Promise<Array<Element>|Error>
 		ListContainers(arg1:boolean):Promise<Array<Element>|Error>

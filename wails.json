@@ -18,7 +18,6 @@
   "info": {
     "companyName": "Greenfinch",
     "productName": "Greenfinch",
-    "productVersion": "[The version of the product. Default: '1.0.0']",
     "copyright": "Copyright 2022",
     "comments": "Decentralised storage ecosystem"
   },

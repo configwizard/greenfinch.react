@@ -75,7 +75,7 @@ const NavbarSide = (props) => {
                     </Tooltip>
                     <Tooltip content="Settings" direction="right">
                         <button type="button" className="navbarSide" data-bs-toggle="offcanvas" data-bs-target="#offcanvasLeft" aria-controls="offcanvasLeft"><i className="fal fa-cog" /></button>
-                        <DrawerSettings></DrawerSettings>
+                        <DrawerSettings version={props.version}></DrawerSettings>
                         {/*
                         <NavlinkSide
                             to={"/toassign03"}

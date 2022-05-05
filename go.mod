@@ -6,9 +6,10 @@ require (
 	github.com/atotto/clipboard v0.1.4
 	github.com/blang/semver/v4 v4.0.0
 	github.com/boltdb/bolt v1.3.1
-	github.com/configwizard/gaspump-api v0.3.5
+	github.com/configwizard/gaspump-api v0.3.6
 	github.com/disintegration/imaging v1.6.2
 	github.com/go-chi/chi/v5 v5.0.7
+	github.com/go-chi/cors v1.2.0
 	github.com/machinebox/progress v0.2.0
 	github.com/nspcc-dev/neo-go v0.98.1
 	github.com/nspcc-dev/neofs-sdk-go v1.0.0-rc.2
@@ -46,7 +47,7 @@ require (
 	github.com/klauspost/compress v1.12.2 // indirect
 	github.com/leaanthony/go-ansi-parser v1.0.1 // indirect
 	github.com/leaanthony/go-common-file-dialog v1.0.3 // indirect
-	github.com/leaanthony/go-webview2 v1.0.3-0.20220314105146-f44268990abe // indirect
+	github.com/leaanthony/go-webview2 v1.0.3-0.20220125181555-00f20a61c17d // indirect
 	github.com/leaanthony/gosod v1.0.3 // indirect
 	github.com/leaanthony/slicer v1.5.0 // indirect
 	github.com/leaanthony/typescriptify-golang-structs v0.1.7 // indirect
@@ -79,7 +80,7 @@ require (
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
 	go.uber.org/zap v1.18.1 // indirect
-	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect
+	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5 // indirect
 	golang.org/x/image v0.0.0-20201208152932-35266b937fa6 // indirect
 	golang.org/x/net v0.0.0-20211015210444-4f30a5c0130f // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
@@ -92,3 +93,5 @@ require (
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
+
+//replace github.com/wailsapp/wails/v2 => /Users/alex.walker/go/src/github.com/wailsapp/wails/v2

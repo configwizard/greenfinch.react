@@ -72,6 +72,15 @@ const copyTextToClipboard = async(txt) => {
         console.log("error loading wallet", e)
     }
 }
+
+const getVersion = async() => {
+    try {
+        const v = await window.go.manager.Manager.GetVersion()
+        return v
+    } catch(e) {
+        console.log("could not get version", e)
+    }
+}
 export {
 
     copyTextToClipboard,
@@ -81,5 +90,6 @@ export {
     topUpNeoFS,
     newWallet,
     loadWallet,
-    loadWalletWithPath
+    loadWalletWithPath,
+    getVersion
 }
