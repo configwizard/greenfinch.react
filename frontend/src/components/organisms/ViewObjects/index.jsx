@@ -10,7 +10,7 @@ function ViewObjects({onDelete, objectList, onObjectSelection, objectsLoaded, vi
 
     if (viewMode === "grid") {
         return (
-            <>
+            <div className="row">
                 {objectsLoaded && objectList.length > 0 ? objectList.map((item, i) =>
                     <div className="col-6 col-lg-3" key={i}>
                         <div className="molButtonGrid">
@@ -18,21 +18,19 @@ function ViewObjects({onDelete, objectList, onObjectSelection, objectsLoaded, vi
                         </div>
                     </div>
                 ) : objectsLoaded ? <div className="atmStatusSmall"><i className="fas fa-exclamation-triangle"/>&nbsp;There are no objects in this container.</div> : <div className="utLoading"><i className="fad fa-spinner fa-spin"/>Loading...</div>}
-            </>
+            </div>
         )
     } else {
         return (
-            <>
+            <div className="row">
                 {objectsLoaded && objectList.length > 0 ? objectList.map((item,i) =>
-                    <div className="row">
-                            <div className="col-12" key={i}>
-                                <div className="molButtonRow">
-                                    <ObjectRow onDelete={() => {onDelete(item.id)}} onObjectSelection={onObjectSelection} item={item}></ObjectRow>
-                                </div>
-                            </div>
+                    <div className="col-12" key={i}>
+                        <div className="molButtonRow">
+                            <ObjectRow onDelete={() => {onDelete(item.id)}} onObjectSelection={onObjectSelection} item={item}></ObjectRow>
+                        </div>
                     </div>
                 ) : objectsLoaded ? <div className="atmStatusSmall"><i className="fas fa-exclamation-triangle"/>&nbsp;There are no objects in this container.</div> : <div className="utLoading"><i className="fad fa-spinner fa-spin"/>Loading...</div>}
-            </>
+            </div>
         )
     }
 }

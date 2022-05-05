@@ -180,9 +180,7 @@ class Containers extends React.Component {
                     </div>
                     <div className="col-8">
                         <div className="orgContainersGrid">
-                            <div className="row">
-                                <ViewContainers containerList={this.state.containerList} onDelete={this.onContainerDelete} viewMode={this.state.viewMode} onContainerSelection={this.onContainerSelection}></ViewContainers>
-                            </div>
+                            <ViewContainers containerList={this.state.containerList} onDelete={this.onContainerDelete} viewMode={this.state.viewMode} onContainerSelection={this.onContainerSelection}></ViewContainers>
                         </div>
                     </div>
                 </>
@@ -254,9 +252,7 @@ class Containers extends React.Component {
                     </div>
                     <div className="col-8">
                         <div className="orgContainersGrid">
-                            <div className="row">
-                                <ViewObjects objectsLoaded={this.state.objectsLoaded} onDelete={this.onObjectDelete} objectList={this.state.objectList} viewMode={this.state.viewMode} onObjectSelection={this.onObjectSelection}></ViewObjects>
-                            </div>
+                            <ViewObjects objectsLoaded={this.state.objectsLoaded} onDelete={this.onObjectDelete} objectList={this.state.objectList} viewMode={this.state.viewMode} onObjectSelection={this.onObjectSelection}></ViewObjects>
                         </div>
                     </div>
                 </>
@@ -279,23 +275,21 @@ class Containers extends React.Component {
 
                         <div class="row">
                             <div class="col-12">
+                                <div className="containerOptions">
+                                    <div className="row">
+                                        <div className="col-6">
+                                            <BreadCrumb account={this.props.account} onRefresh={this.onRefresh} resetBreadcrumb={this.resetBreadcrumb} container={this.state.selectedContainer} object={this.state.selectedObject}></BreadCrumb>
+                                        </div>
+                                        <div className="col-6">
+                                            <ControlBar resetBreadcrumb={this.resetBreadcrumb} changeView={this.onViewChange} viewMode={this.state.viewMode} selectedContainer={this.state.selectedContainer}></ControlBar>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div className="templateWrapper">
                                     <div className="templateContainer">
-                                        
-                                        <div className="containerOptions">
-                                            <div className="row">
-                                                <div className="col-6">
-                                                    <BreadCrumb account={this.props.account} onRefresh={this.onRefresh} resetBreadcrumb={this.resetBreadcrumb} container={this.state.selectedContainer} object={this.state.selectedObject}></BreadCrumb>
-                                                </div>
-                                                <div className="col-6">
-                                                    <ControlBar resetBreadcrumb={this.resetBreadcrumb} changeView={this.onViewChange} viewMode={this.state.viewMode} selectedContainer={this.state.selectedContainer}></ControlBar>
-                                                </div>
-                                            </div>
-                                        </div>
                                         <div className="row">
                                             {this.retrieveCorrectComponent()}
                                         </div>
-
                                     </div>
                                 </div>
                             </div>

@@ -19,11 +19,11 @@
 }
 
 .templateContainer {
-    background-color:red;
     padding-right: $paddingSmall;
     min-height: 0; // without min-height/height:0 flex:1 doesn't works
 	flex: 1;
-	overflow: auto !important;
+    //white-space: nowrap;
+	overflow: auto;
 }
 
 .containerOptions {

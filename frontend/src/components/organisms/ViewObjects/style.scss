@@ -3,43 +3,7 @@
 
 // TO SORT This is replicated in ViewContainers
 .molButtonGrid {
-    margin-bottom: $marginSmall;
-    & .atmButtonOptions {
-        position: relative;
-        padding: 0 5px;
-    }
-}
-.molButtonRow {
-    & .atmButtonOptions {
-        position: relative;
-    }
-}
-.molButtonGrid {
-    & .utOverlayMenuSmall {
-        position: absolute;
-        z-index: 150;
-        top: 30px;
-        left: 0;
-        min-width: 180px;
-    }
-}
-.molButtonRow {
-    & .utOverlayMenuSmall {
-        position: absolute;
-        z-index: 500;
-        top: 20px;
-        right: 0; 
-        min-width: 180px;
-        z-index: 200;
-    }
-    & .atmRowList {
-        width: 200px;
-        &:first-child {
-            width: 400px;
-        }
-    }
-}
-.molButtonGrid {
+    margin-bottom: $marginXSmall;
     background-color: rgba($brandColorSecondary, 0.03);
     border: 1px solid $brandColorWhite;
     &:hover {
@@ -47,45 +11,67 @@
         border: 1px solid $brandColorPrimary;
     }
     & .atmButtonGridHeader {
-        & .atmButtonOptions {
-            border-radius: 0;
-            background-color: rgba($brandColorSecondary, 0.04);
-            &:hover {
-                cursor: pointer;
-                background-color: rgba($brandColorSecondary, 0.1);
-            }
-        }
         &:hover {
             cursor: default;
         }
     }
-    & .utOverlayMenuSmall {
-        background-color: $brandColorWhite;
-        box-shadow: $brandBoxShadow;
-        font-size: 0.9rem;
-        text-align: left;
-        color: $brandColorDark;
-    } 
-}
-.molButtonRow {
-    & .atmRowList {
-        font-family: $brandFontSemi;
-        color: $brandColorDark;
-        font-size: 0.7rem;
-    }
-    & .utOverlayMenuSmall {
-        background-color: $brandColorWhite;
-        box-shadow: $brandBoxShadow;
-        font-size: 0.9rem;
-        text-align: left;
-        color: $brandColorDark;
-    } // add dots here
     & .atmButtonOptions {
+        width: 30px;
+        height: 30px;
+        position: relative;
         border-radius: 0;
         background-color: rgba($brandColorSecondary, 0.04);
         &:hover {
             cursor: pointer;
             background-color: rgba($brandColorSecondary, 0.1);
+        }
+    }
+    & .utOverlayMenuSmall {
+        position: absolute;
+        z-index: 150;
+        top: 30px;
+        left: 0;
+        min-width: 180px;
+        background-color: $brandColorWhite;
+        box-shadow: $brandBoxShadow;
+        font-size: 0.9rem;
+        text-align: left;
+        color: $brandColorDark;
+    }
+}
+
+.molButtonRow {
+    & .atmButtonOptions {
+        width: 30px;
+        height: 30px;
+        position: relative;
+        border-radius: 0;
+        background-color: rgba($brandColorSecondary, 0.04);
+        &:hover {
+            cursor: pointer;
+            background-color: rgba($brandColorSecondary, 0.1);
+        }
+    }
+    & .utOverlayMenuSmall {
+        position: absolute;
+        z-index: 500;
+        top: 20px;
+        right: 0; 
+        min-width: 180px;
+        z-index: 200;
+        background-color: $brandColorWhite;
+        box-shadow: $brandBoxShadow;
+        font-size: 0.9rem;
+        text-align: left;
+        color: $brandColorDark;
+    }
+    & .atmRowList {
+        width: 200px;
+        font-family: $brandFontSemi;
+        color: $brandColorDark;
+        font-size: 0.7rem;
+        &:first-child {
+            width: 400px;
         }
     }
 }

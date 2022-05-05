@@ -17,7 +17,8 @@ export function ContainerGrid(props) {
                     type="button" 
                     className="atmButtonOptions ms-auto" 
                     onClick={() => setShowMenu(!showMenu)}>
-                        { !showMenu ? <i className="far fa-ellipsis-h"/> : <i className="far fa-times" style={{"color":"red"}}/> }
+                        {/* { !showMenu ? <i className="far fa-ellipsis-h"/> : <i className="far fa-times" style={{"color":"red"}}/> } */}
+                        <i className="far fa-ellipsis-h"/>
                         <OverlayMenu 
                             type={props.item.type} 
                             onDelete={props.onDelete} 
@@ -60,7 +61,8 @@ export function ContainerRow(props) {
                     type="button"   
                     className="atmButtonOptions" 
                     onClick={() => setShowMenu(!showMenu)}>
-                        { !showMenu ? <i className="far fa-ellipsis-h"/> : <i className="far fa-times" style={{"color":"red"}}/> }
+                        <i className="far fa-ellipsis-h"/>
+                        {/* { !showMenu ? <i className="far fa-ellipsis-h"/> : <i className="far fa-times" style={{"color":"red"}}/> } */}
                         <OverlayMenu type={props.item.type} onDelete={props.onDelete} setShowMenu={setShowMenu} show={showMenu}></OverlayMenu>
                 </button>
             </div>

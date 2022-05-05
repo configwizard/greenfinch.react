@@ -134,47 +134,10 @@
         height: 100%;
         overflow-x: hidden;
         overflow-y: scroll;
-        & .molButtonGrid {
-            margin-bottom: 14px;
-            & .atmButtonOptions {
-                position: relative;
-                padding: 0 5px;
-            }
-        }
-        & .molButtonRow {
-            & .atmButtonOptions {
-                position: relative;
-            }
-        }
     }
 }
 
-.molButtonGrid {
-    & .utOverlayMenuSmall {
-        position: absolute;
-        z-index: 150;
-        top: 30px;
-        left: 0;
-        min-width: 180px;
-    }
-}
 
-.molButtonRow {
-    & .utOverlayMenuSmall {
-        position: absolute;
-        z-index: 500;
-        top: 20px;
-        right: 0; 
-        min-width: 180px;
-        z-index: 200;
-    }
-    & .atmRowList {
-        width: 200px;
-        &:first-child {
-            width: 400px;
-        }
-    }
-}
 
 .orgWalletFooter { // short-term option as being over-run below
     & .form-control {

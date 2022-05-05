@@ -15,7 +15,8 @@ export function ObjectGrid({onDelete, onObjectSelection, item}) {
                     type="button" 
                     className="atmButtonOptions ms-auto" 
                     onClick={() => setShowMenu(!showMenu)}>
-                        { !showMenu ? <i className="far fa-ellipsis-h"/> : <i className="far fa-times" style={{"color":"red"}}/> }
+                        <i className="far fa-ellipsis-h"/>
+                        {/* { !showMenu ? <i className="far fa-ellipsis-h"/> : <i className="far fa-times" style={{"color":"red"}}/> } */}
                         <OverlayMenu 
                             onDelete={onDelete} 
                             onObjectSelection={onObjectSelection} 
@@ -49,7 +50,8 @@ export function ObjectRow({onDelete, onObjectSelection, item}) {
                     type="button"   
                     className="atmButtonOptions" 
                     onClick={() => setShowMenu(!showMenu)}>
-                        { !showMenu ? <i className="far fa-ellipsis-h"/> : <i className="far fa-times" style={{"color":"red"}}/> }
+                        <i className="far fa-ellipsis-h"/>
+                        {/* { !showMenu ? <i className="far fa-ellipsis-h"/> : <i className="far fa-times" style={{"color":"red"}}/> } */}
                         <OverlayMenu onDelete={onDelete} type={item.type} setShowMenu={setShowMenu} show={showMenu}></OverlayMenu>
                 </button>
             </div>
