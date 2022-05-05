@@ -1,6 +1,6 @@
 import React from 'react';
 //import PropTypes from 'prop-types';
-import {copyTextToClipboard} from "../../../manager/manager.js"
+import {copyTextToClipboard, transferGasToContact} from "../../../manager/manager.js"
 // Components
 import ButtonText from '../../atoms/ButtonText';
 import RowElement from '../../atoms/RowElement';
@@ -8,7 +8,13 @@ import Tooltip from '../../atoms/Tooltip';
 
 import './style.scss';
 import {deleteContact} from "../../../manager/contacts"
+import CompModalStandard from "../../organisms/Modal/ModalStandard";
+import {Form} from "react-bootstrap";
+import { useModal } from '../../organisms/Modal/ModalContext';
+
+
 const RowAddress = ({first, contact}) => {
+    const { setModal, unSetModal } = useModal()
     console.log("row address ", contact)
     return (
         <div className="rowAddress d-flex flex-row align-items-center">
@@ -17,10 +23,6 @@ const RowAddress = ({first, contact}) => {
                     size={"small"}
                     isUppercase={false}
                     text={contact.firstName + " " + contact.lastName} />
-                <RowElement
-                    size={"small"}
-                    isUppercase={false}
-                    text={" " + contact.walletAddress} />
                 <Tooltip content="Copy wallet address" direction={first ? "bottom": "top"}>
                     <ButtonText
                         size={"small"}
@@ -51,7 +53,23 @@ const RowAddress = ({first, contact}) => {
                     type={"clean"}
                     hasIcon={true}
                     faClass={"fas fa-paper-plane"}
-                    text={"Send GAS"} />
+                    text={"Send GAS"}
+                    onClick={
+                        () => {
+                            setModal(
+                                <CompModalStandard
+                                    title={"Add new contact"}
+                                    buttonTextPrimary={"Send"}
+                                    buttonTextSecondary={"Cancel"}
+                                    primaryClicked={async () => {await transferGasToContact(contact.walletAddress, document.getElementById("transferGasAmount").value); await unSetModal()}}
+                                    secondaryClicked={async () => unSetModal()}>
+                                    <Form.Group className="form-div">
+                                        <Form.Label>Transfer Gas to {contact.firstName + " " + contact.lastName} - {contact.walletAddress}</Form.Label>
+                                        <Form.Control id="transferGasAmount" type="number" placeholder={"1.2"}/>
+                                        <Form.Text muted>e.g 1.3 GAS</Form.Text>
+                                    </Form.Group>
+                                </CompModalStandard>)
+                        }}/>
             </div>
         </div>
     )

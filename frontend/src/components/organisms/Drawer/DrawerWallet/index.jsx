@@ -14,27 +14,13 @@ const DrawerWallet = (props) => {
     console.log("drawer wallet props ", props.account)
     return (
         <>
-        <div className="offcanvas offcanvas-end" tabIndex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+        <div className="offcanvas offcanvas-start" tabIndex="-1" id="offcanvasLeft" aria-labelledby="offcanvasLeftLabel">
             <div className="offcanvas-header d-flex align-items-center">
-                <h4 id="offcanvasRightLabel"><i className="fas fa-lg fa-wallet"/>&nbsp;Wallet</h4>
+                <h4 id="offcanvasLeftLabel"><i className="fas fa-lg fa-wallet"/>&nbsp;Wallet</h4>
                 <button type="button" className="atmButtonIconClean" data-bs-dismiss="offcanvas" aria-label="Close"><i className="fas fa-times"/></button>
             </div>
             <div className="offcanvas-body">
                 <section className="wallet-body">
-                    {/*
-                    <ButtonText
-                        size={"small"}
-                        type={"clean"}
-                        hasIcon={false}
-                        text={props.account.address}
-                        onClick={() => {copyTextToClipboard(props.account.address)}} />
-                    <ButtonText
-                        size={"small"}
-                        type={"clean"}
-                        hasIcon={false}
-                        text={props.account.publicKey}
-                        onClick={() => {copyTextToClipboard(props.account.publicKey)}} />
-                    */}
                     <RowWallet
                         type={"address"}
                         title={"Wallet address"}
@@ -56,6 +42,8 @@ const DrawerWallet = (props) => {
                         type={"number"}
                         title={"GAS balance"}
                         value={props.account.gasBalance} />
+                    <button type="button" className="atmButtonIconClean" onClick={() => props.refreshAccount()}><i
+                        className="fa-solid fa-arrows-rotate"></i>refresh balance</button>
                     <hr />
                 </section>
                 <section className="wallet-footer">
@@ -73,7 +61,7 @@ const DrawerWallet = (props) => {
                         hasIcon={true}
                         faClass={"fas fa-chart-line"}
                         text={"Top-up"}
-                        onClick={(amount) => {console.log("topping up"); props.topUpWallet(document.getElementById("topUpAmount").value)}} />
+                        onClick={(amount) => {console.log("topping up"); props.topUpWallet(document.getElementById("topUpAmount").value);}} />
                 </section>
             </div>
         </div>

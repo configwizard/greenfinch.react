@@ -43,7 +43,7 @@ const LoadWallet = ({account, recentWallets}) => {
                                                         title={"Wallet Password"}
                                                         buttonTextPrimary={"Locate wallet"}
                                                         buttonTextSecondary={"Cancel"}
-                                                        primaryClicked={async () => {await loadWallet(document.getElementById("loadWalletPassword").value); unSetModal()}}
+                                                        primaryClicked={async () => {await loadWallet(document.getElementById("loadWalletPassword").value); await unSetModal()}}
                                                         secondaryClicked={async () => unSetModal()}>
                                                         <Form.Group className="form-div">
                                                             <Form.Label>Password</Form.Label>
@@ -119,8 +119,8 @@ const LoadWallet = ({account, recentWallets}) => {
                                                                     buttonTextPrimary={"Confirm"}
                                                                     buttonTextSecondary={"Cancel"}
                                                                     primaryClicked={async () => {
-                                                                        await loadWalletWithPath(document.getElementById("loadWalletFromPathPassword").value, recentWallets[obj])
-                                                                        unSetModal()
+                                                                        loadWalletWithPath(document.getElementById("loadWalletFromPathPassword").value, recentWallets[obj])
+                                                                        await unSetModal()
                                                                         }
                                                                     }
                                                                     secondaryClicked={async () => unSetModal()}>

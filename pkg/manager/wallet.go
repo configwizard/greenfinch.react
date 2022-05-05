@@ -16,12 +16,8 @@ import (
 func (m *Manager) RecentWallets() (map[string]string, error){
 	return cache.RecentWallets()
 }
-func (m *Manager) TopUpNeoWallet(amount float64) (string, error){
-	if amount == 0 {
-		amount = 1_00_000_000 // 1 GAS
-	} else {
-		amount = math.Floor(amount * math.Pow(10, 8))
-	}
+
+func (m *Manager) TransferToken(recipient string, amount float64) (string, error) {
 	w, err := m.retrieveWallet()
 	if err != nil {
 		return "", err
@@ -50,7 +46,7 @@ func (m *Manager) TopUpNeoWallet(amount float64) (string, error){
 	}
 	//send 1 GAS (precision 8) to NeoFS wallet
 	//neoFSWallet := ""
-	token, err := wallet.TransferToken(w.Accounts[0], int64(amount), "NadZ8YfvkddivcFFkztZgfwxZyKf1acpRF", gasToken, wallet.RPC_TESTNET)
+	token, err := wallet.TransferToken(w.Accounts[0], int64(amount), recipient, gasToken, wallet.RPC_TESTNET)
 	if err != nil {
 		tmp := UXMessage{
 			Title:       "Transfer failed",
@@ -66,7 +62,16 @@ func (m *Manager) TopUpNeoWallet(amount float64) (string, error){
 		Description: "TxID: " + token,
 	}
 	m.MakeToast(NewToastMessage(&tmp))
-	return token, nil
+	return token, err
+}
+func (m *Manager) TopUpNeoWallet(amount float64) (string, error){
+	if amount == 0 {
+		amount = 1_00_000_000 // 1 GAS
+	} else {
+		amount = math.Floor(amount * math.Pow(10, 8))
+	}
+	token, err := m.TransferToken("NadZ8YfvkddivcFFkztZgfwxZyKf1acpRF", amount)
+	return token, err
 }
 func (m *Manager) NewWallet(password string) error {
 	homeDir, err := os.UserHomeDir()

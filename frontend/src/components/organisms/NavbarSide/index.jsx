@@ -66,8 +66,8 @@ const NavbarSide = (props) => {
                         </Tooltip>
                     */}
                     <Tooltip content="Wallet" direction="right">
-                        <button type="button" className="navbarSide" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"><i className="fal fa-wallet" /></button>
-                        <DrawerWallet account={props.account} topUpWallet={topUpWallet}></DrawerWallet>
+                        <button type="button" className="navbarSide" data-bs-toggle="offcanvas" data-bs-target="#offcanvasLeft" aria-controls="offcanvasLeft"><i className="fal fa-wallet" /></button>
+                        <DrawerWallet refreshAccount={props.refreshAccount} account={props.account} topUpWallet={topUpWallet}></DrawerWallet>
                         {/*
                             <NavlinkSide
                                 to={"/toassign02"}
@@ -76,7 +76,7 @@ const NavbarSide = (props) => {
                         */}
                     </Tooltip>
                     <Tooltip content="Settings" direction="right">
-                        <button type="button" className="navbarSide" data-bs-toggle="offcanvas" data-bs-target="#offcanvasLeft" aria-controls="offcanvasLeft"><i className="fal fa-cog" /></button>
+                        <button type="button" className="navbarSide" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"><i className="fal fa-cog" /></button>
                         <DrawerSettings version={props.version}></DrawerSettings>
                         {/*
                         <NavlinkSide

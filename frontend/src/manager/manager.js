@@ -10,6 +10,17 @@ const getAccountInformation = async () => {
     }
 }
 
+const transferGasToContact = async (contactAddress, amount) => {
+    console.log("transferring with ", amount)
+    try {
+        let floatAmount = parseFloat(amount)
+        floatAmount = floatAmount * Math.pow(10, 8)
+        let t = await window.go.manager.Manager.TransferToken(contactAddress, floatAmount)
+        console.log("t", t)
+    } catch(e) {
+        console.log("error transferring", e)
+    }
+}
 const topUpNeoFS = async (amount) => {
     console.log("topping up with ", amount)
     try {
@@ -82,7 +93,7 @@ const getVersion = async() => {
     }
 }
 export {
-
+    transferGasToContact,
     copyTextToClipboard,
     openInDefaultBrowser,
     retrieveRecentWallets,

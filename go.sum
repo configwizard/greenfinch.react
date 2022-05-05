@@ -369,8 +369,8 @@ github.com/valyala/tcplisten v1.0.0 h1:rBHj/Xf+E1tRGZyWIWwJDiRY0zc1Js+CV5DqwacVS
 github.com/valyala/tcplisten v1.0.0/go.mod h1:T0xQ8SeCZGxckz9qRXTfG43PvQ/mcWh7FwZEA7Ioqkc=
 github.com/virtuald/go-ordered-json v0.0.0-20170621173500-b18e6e673d74 h1:JwtAtbp7r/7QSyGz8mKUbYJBg2+6Cd7OjM8o/GNOcVo=
 github.com/virtuald/go-ordered-json v0.0.0-20170621173500-b18e6e673d74/go.mod h1:RmMWU37GKR2s6pgrIEB4ixgpVCt/cf7dnJv3fuH1J1c=
-github.com/wailsapp/wails/v2 v2.0.0-beta.34 h1:xGHYAbBHwjcKccoy09c06CjnuCoTZfuz5j+P7qGVCcA=
-github.com/wailsapp/wails/v2 v2.0.0-beta.34/go.mod h1:2bMwhTMjkNeB6X8hIPVgbZaqdgJxP90NSlec7/CZuXc=
+github.com/wailsapp/wails/v2 v2.0.0-beta.33 h1:ZkMfsNJFSnwV+oxp4t3Cnki9DzC2MPvMRfw7Mv2YdFs=
+github.com/wailsapp/wails/v2 v2.0.0-beta.33/go.mod h1:BczaKn29wsLFJYIAYvuuLvUJRwmpYsimhhW8BLNONtI=
 github.com/yuin/goldmark v1.2.1/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.4.1/go.mod h1:mwnBkeHKe2W/ZEtQ+71ViKU8L12m81fl3OWwC1Zlc8k=
 github.com/yuin/gopher-lua v0.0.0-20190514113301-1cd887cd7036/go.mod h1:gqRgreBUhTSL0GeU64rtZ3Uq3wtjOa/TB2YfrtkCbVQ=

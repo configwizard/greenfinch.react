@@ -28,10 +28,23 @@ const TemplateContacts = ({contacts, createContact }) => {
                                 title={"Add new contact"}
                                 buttonTextPrimary={"Add"}
                                 buttonTextSecondary={"Cancel"}
-                                primaryClicked={async () => {await createContact(document.getElementById("contactFirstName").value,
+                                primaryClicked={async () => {
+                                    let walletInput = document.getElementById("contactAddress").value
+                                    let publicInput = document.getElementById("contactPublicKey").value
+                                    if (walletInput.length !== 34 || !walletInput.startsWith("N")) {
+                                        document.getElementById("warningarea").style.display = "block";
+                                        document.getElementById("errormessage").innerHTML = "Incorrect wallet address";
+                                        return
+                                    }
+                                    if (publicInput.length !== 66) {
+                                        document.getElementById("warningarea").style.display = "block";
+                                        document.getElementById("errormessage").innerHTML = "Incorrect public key";
+                                        return
+                                    }
+                                    await createContact(document.getElementById("contactFirstName").value,
                                     document.getElementById("contactLastName").value,
-                                    document.getElementById("contactAddress").value,
-                                    document.getElementById("contactPublicKey").value); unSetModal()}}
+                                        walletInput,
+                                        publicInput); unSetModal()}}
                                 secondaryClicked={async () => unSetModal()}>
                                     <Form.Group className="form-div">
                                         <Form.Label>First name of contact</Form.Label>
@@ -50,6 +63,9 @@ const TemplateContacts = ({contacts, createContact }) => {
                                     <Form.Label>Public Key</Form.Label>
                                     <Form.Control id="contactPublicKey" type="text" />
                                     <Form.Text muted>N.B. A contact's public key is required to share containers</Form.Text>
+                                </Form.Group>
+                                <Form.Group id={"warningarea"} style={{display: "none"}}>
+                                    <span id="errormessage" style={{color: "red"}}></span>
                                 </Form.Group>
                             </CompModalStandard>)
                         }}/>

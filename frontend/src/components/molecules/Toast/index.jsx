@@ -54,11 +54,11 @@ export default class ToastMessage extends React.Component {
         console.log("push list", list)
         await this.setState({list: list})
     }
-    deleteToast = id => {
+    deleteToast = async id => {
         const index = this.state.list.findIndex(e => e.id === id);
         let list = this.state.list
         list.splice(index, 1); //how to set the state back to this
-        this.setState({list: list})
+        await this.setState({list: list})
     }
     render() {
         console.log("this.state.list", this.state.list)
