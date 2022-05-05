@@ -380,6 +380,12 @@ func (m *Manager) DeleteContainer(id string) ([]filesystem.Element, error) {
 //ultimately, you want to do this with containers that can be restricted (i.e eaclpublic)
 
 func (m *Manager) RestrictContainer(id string, publicKey string) error {
+	tmp := UXMessage{
+		Title:       "Sharing pending",
+		Type:        "info",
+		Description: "please wait",
+	}
+	m.MakeToast(NewToastMessage(&tmp))
 	//block everything for other keys
 	var pKey *keys.PublicKey
 	if publicKey != "" {
@@ -393,9 +399,9 @@ func (m *Manager) RestrictContainer(id string, publicKey string) error {
 	err := c.Parse(id)
 	if err != nil {
 		tmp := UXMessage{
-			Title:       "Container Error",
+			Title:       "Sharing Error",
 			Type:        "error",
-			Description: "Container does not exist " + err.Error(),
+			Description: "Could not find a container " + err.Error(),
 		}
 		m.MakeToast(NewToastMessage(&tmp))
 		return err
@@ -409,7 +415,13 @@ func (m *Manager) RestrictContainer(id string, publicKey string) error {
 	}
 	_, err = fsCli.ContainerSetEACL(m.ctx, prmContainerSetEACL)
 	if err != nil {
-		log.Fatal("eacl was not set")
+		tmp := UXMessage{
+			Title:       "Container Error",
+			Type:        "error",
+			Description: "EACL failed" + err.Error(),
+		}
+		m.MakeToast(NewToastMessage(&tmp))
+		return err
 	}
 
 	err = AwaitTime(30, func() bool {

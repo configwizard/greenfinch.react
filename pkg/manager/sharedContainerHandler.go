@@ -14,6 +14,7 @@ func (m *Manager) ListSharedContainers() ([]filesystem.Element, error) {
 	if err != nil {
 		return []filesystem.Element{}, err
 	}
+	fmt.Println("finding shared for ",tmpWallet.Accounts[0].Address)
 	tmpContainers, err := cache.RetrieveSharedContainers(tmpWallet.Accounts[0].Address)
 	if err != nil {
 		return nil, err
@@ -42,8 +43,10 @@ func (m *Manager) ListSharedContainers() ([]filesystem.Element, error) {
 }
 func (m *Manager) AddSharedContainer(containerID string) error {
 	//check if you can access this container
+	fmt.Println("adding ocntainer with id", containerID)
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
+		fmt.Println("error retrieving wallet")
 		return err
 	}
 	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
@@ -51,6 +54,7 @@ func (m *Manager) AddSharedContainer(containerID string) error {
 	c := cid.ID{}
 	err = c.Parse(containerID)
 	if err != nil {
+		fmt.Println("error parsing container ", err)
 		return err
 	}
 	sessionToken, err := client2.CreateSessionForContainerList(m.ctx, fsCli, client2.DEFAULT_EXPIRATION, &tmpKey)

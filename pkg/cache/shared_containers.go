@@ -5,7 +5,7 @@ import (
 	"github.com/boltdb/bolt"
 )
 
-const shared_container_bucket = "shared_containers"
+const shared_container_bucket = "shared_container_bucket"
 
 func StoreSharedContainer(wallet, id string, container []byte) error {
 	return db.Update(func(tx *bolt.Tx) error {
@@ -44,9 +44,11 @@ func DeleteSharedContainer(wallet, id string) error {
 	})
 }
 func RetrieveSharedContainers(wallet string) (map[string][]byte, error) {
+	fmt.Println("searching for wallet", wallet)
 	containers := make(map[string][]byte)
 	err := db.View(func(tx *bolt.Tx) error {
 		ub := tx.Bucket([]byte(wallet))
+		fmt.Printf("ub is %+v\r\n", ub)
 		b := ub.Bucket([]byte(shared_container_bucket))
 		c := b.Cursor()
 

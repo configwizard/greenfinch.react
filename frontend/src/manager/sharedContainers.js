@@ -1,10 +1,12 @@
 const addSharedContainer = async (containerId) => {
+    console.log("received container ID", containerId)
     try {
-        let containerId = await window.go.manager.Manager.AddSharedContainer(containerId)
+        console.log("container ID to add", containerId)
+        let containerId = await window.go.manager.Manager.AddSharedContainer("32w1uCZm6GG5pEFyy6MCw3MEcLoiuCijTqYpCe9Suqxh")
         console.log("created container", containerId)
         return containerId
     } catch(e) {
-        console.log("error creating containers", e)
+        console.log("error adding container", e)
     }
 }
 const listSharedContainers = async () => {
