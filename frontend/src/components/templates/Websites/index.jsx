@@ -2,6 +2,7 @@ import React from 'react';
 
 // Components
 import HeaderPage from '../../organisms/HeaderPage';
+import TestHomepage from '../../organisms/TestHomepage';
 
 // Central style sheet for templates
 import '../_settings/style.scss';
@@ -27,7 +28,7 @@ const TemplateWebsites = () => {
                         <div class="col-12">
                             <div className="templateWrapper">
                                 <div className="templateContainer">
-                                    <p>List of website containers here.</p>
+                                    <TestHomepage></TestHomepage>
                                 </div>
                             </div>
                         </div>

@@ -105,56 +105,7 @@
         margin: 0;
     }
 }
-.molButtonGrid {
-    background-color: rgba($brandColorSecondary, 0.03);
-    border: 1px solid $brandColorWhite;
-    &:hover {
-        background-color: rgba($brandColorSecondary, 0.05);
-        border: 1px solid $brandColorPrimary;
-    }
-    & .atmButtonGridHeader {
-        & .atmButtonOptions {
-            border-radius: 0;
-            background-color: rgba($brandColorSecondary, 0.04);
-            &:hover {
-                cursor: pointer;
-                background-color: rgba($brandColorSecondary, 0.1);
-            }
-        }
-        &:hover {
-            cursor: default;
-        }
-    }
-    & .utOverlayMenuSmall {
-        background-color: $brandColorWhite;
-        box-shadow: $brandBoxShadow;
-        font-size: 0.9rem;
-        text-align: left;
-        color: $brandColorDark;
-    } 
-}
-.molButtonRow {
-    & .atmRowList {
-        font-family: $brandFontSemi;
-        color: $brandColorDark;
-        font-size: 0.7rem;
-    }
-    & .utOverlayMenuSmall {
-        background-color: $brandColorWhite;
-        box-shadow: $brandBoxShadow;
-        font-size: 0.9rem;
-        text-align: left;
-        color: $brandColorDark;
-    } // add dots here
-    & .atmButtonOptions {
-        border-radius: 0;
-        background-color: rgba($brandColorSecondary, 0.04);
-        &:hover {
-            cursor: pointer;
-            background-color: rgba($brandColorSecondary, 0.1);
-        }
-    }
-}
+
 .atmStatusSmall {
     color: $brandColorDark;
     font-size: 0.8rem;

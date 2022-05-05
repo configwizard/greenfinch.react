@@ -76,25 +76,32 @@
 
 .atmButtonGridContent {
     width: 100%;
-    padding-top: 32px;
-    padding-bottom: 16px;
+    padding-top: $paddingXSmall;
+    padding-bottom: $paddingSmall;
     border-radius: 0;
     background: none;
     & .atmButtonGridName {
-        margin-top: 2px;
-        margin-bottom: 2px;
-        max-width: 160px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
         color: $brandColorSecondary-dark;
         font-size: 0.75rem;
         font-family: $brandFontSemi;
+        margin-top: $marginXSmall;
+        margin-bottom: 2px;
+        max-width: 150px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
         &:hover {
             cursor: pointer;
         }
         & i {
             color: $brandColorPrimary;
         }
+    }
+}
+
+.atmButtonGridContent {
+    & img {
+        border: 3px $brandColorWhite solid;
+        box-shadow: 0 0 5px rgba(0,0,0,0.2);
     }
 }
