@@ -1,0 +1,37 @@
+@import "../../../assets/dashboard-variables.scss";
+@import "../../../assets/greenfinch-variables.scss";
+
+.folder-icon { //Update classes
+    width: 90px;
+    height: 70px;
+    display: inline-block;
+    margin: auto;
+    position: relative;
+    margin-bottom: 8px;
+    margin-top: 12px;
+    &:before {
+        width: 50%;
+        height: 0.7em;
+        position: absolute;
+        top: -0.7em;
+        left: 0px;
+    }
+}
+
+.folder-icon { //Update classes
+    border-radius: 5px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    border-top: 4px solid #96DCFD;
+    &:before {
+        content: '';
+        border-radius: 5px 10px 0 0;
+    }
+}
+
+.neo.folder-icon { //Update classes
+    background: linear-gradient(180deg, $brandColorSecondary 0%, $brandColorPrimary 76%, $brandColorSecondary 100%);
+    border-top: 4px solid $brandColorPrimary;
+    &:before {
+        background-color: $brandColorPrimary;
+    }
+}

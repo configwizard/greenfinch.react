@@ -41,25 +41,6 @@
     }
 }
 
-/* Styles: Folders
-- - - - - - - - - - - - - - - - - - */
-.folder-icon { //Update classes
-    width: 90px;
-    height: 70px;
-    display: inline-block;
-    margin: auto;
-    position: relative;
-    margin-bottom: 8px;
-    margin-top: 12px;
-    &:before {
-        width: 50%;
-        height: 0.7em;
-        position: absolute;
-        top: -0.7em;
-        left: 0px;
-    }
-}
-
 /* Styles: File icons
 - - - - - - - - - - - - - - - - - - */
 .file-icon {

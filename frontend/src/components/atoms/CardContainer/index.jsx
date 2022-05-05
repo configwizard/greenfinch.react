@@ -1,6 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+// Components
+import ContainerIcon from '../../atoms/ContainerIcon';
+
 import './style.scss';
 
 const CardContainer = ({ onClick, containerName }) => {
@@ -9,7 +12,7 @@ const CardContainer = ({ onClick, containerName }) => {
             type="button"
             className="atmButtonGridContent d-flex flex-column align-items-center justify-content-between"
             onClick={onClick}>
-                <div className="neo folder-icon"></div>
+                <ContainerIcon></ContainerIcon>
                 <span className="atmButtonGridName">{containerName}</span>
         </button>
     )

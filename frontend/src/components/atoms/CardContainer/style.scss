@@ -1,26 +1,6 @@
 @import "../../../assets/dashboard-variables.scss";
 @import "../../../assets/greenfinch-variables.scss";
 
-/* Styles: Folders
-- - - - - - - - - - - - - - - - - - */
-.folder-icon { //Update classes
-    border-radius: 5px;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
-    border-top: 4px solid #96DCFD;
-    &:before {
-        content: '';
-        border-radius: 5px 10px 0 0;
-    }
-}
-
-.neo.folder-icon { //Update classes
-    background: linear-gradient(180deg, $brandColorSecondary 0%, $brandColorPrimary 76%, $brandColorSecondary 100%);
-    border-top: 4px solid $brandColorPrimary;
-    &:before {
-        background-color: $brandColorPrimary;
-    }
-}
-
 /* Styles: File icons
 - - - - - - - - - - - - - - - - - - */
 .file-icon {

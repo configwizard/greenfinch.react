@@ -14,6 +14,7 @@ import { listContacts } from "../../../manager/contacts";
 
 // Components
 import ButtonText from '../../atoms/ButtonText';
+import ContainerIcon from '../../atoms/ContainerIcon';
 import HeadingGeneral from '../../atoms/HeadingGeneral';
 import ControlBar from '../../molecules/ControlBar';
 import BreadCrumb from '../../organisms/Breadcrumb';
@@ -189,7 +190,7 @@ class Containers extends React.Component {
             return (
                 <>
                     <div className="container-data col-4">
-                        <div className="neo folder-icon"></div>
+                        <ContainerIcon></ContainerIcon>
                         <HeadingGeneral
                             level={"h5"}
                             isUppercase={false}
