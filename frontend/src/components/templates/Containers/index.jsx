@@ -190,7 +190,8 @@ class Containers extends React.Component {
             return (
                 <>
                     <div className="container-data col-4">
-                        <ContainerIcon></ContainerIcon>
+                        <ContainerIcon
+                            size={"medium"}/>
                         <HeadingGeneral
                             level={"h5"}
                             isUppercase={false}
