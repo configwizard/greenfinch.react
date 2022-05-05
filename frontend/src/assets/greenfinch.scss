@@ -1,8 +1,5 @@
 @import "./greenfinch-variables.scss";
 
-/* Styles: Base
-- - - - - - - - - - - - - - - - - - */
-
 /* Elements: Buttons
 - - - - - - - - - - - - - - - - - - */
 // Make mixin
@@ -27,7 +24,6 @@
         }
     }
 }
-
 .atmButtonText {
     color: $brandColorDark;
     background: none;
@@ -62,14 +58,10 @@
             }
         }
     }
-    & .orgViewJSON, .orgViewVisual {
-        background-color: rgba(255,255,255,0.8);
-    }
 }
 
 /* Styles: General
 - - - - - - - - - - - - - - - - - - */
-
 .orgMainJSON { //change this name
     background-color: $brandColorWhite;
     box-shadow: 0 0 15px rgba($brandColorDark, 0.3);
@@ -88,18 +80,6 @@
             }
             & .utNum {
                 display: block;
-            }
-        }
-    }
-    & .molBlockBread {
-        border-bottom: 1px solid $brandColorDark;
-        font-size: 0.75rem;
-        font-family: $brandFontSemi;
-        color: $brandColorSecondary;
-        & .atmBlockBread i {
-            color: $brandColorDark;
-            &.fa-home {
-                cursor: default;
             }
         }
     }
@@ -125,7 +105,6 @@
         margin: 0;
     }
 }
-
 .molButtonGrid {
     background-color: rgba($brandColorSecondary, 0.03);
     border: 1px solid $brandColorWhite;
@@ -176,15 +155,11 @@
         }
     }
 }
-
 .atmStatusSmall {
     color: $brandColorDark;
     font-size: 0.8rem;
     font-family: $brandFontSemi;
 }
-
-
-
 
 /* Styles: Typography
 - - - - - - - - - - - - - - - - - - */

@@ -3,8 +3,8 @@ import { Form } from 'react-bootstrap';
 import {shareContainerWithContact} from "../../../manager/contacts"
 // Components
 import ButtonText from '../../atoms/ButtonText';
-import { useModal } from '../../organisms/Modal/ModalContext';
-import CompModalStandard from '../../organisms/Modal/ModalStandard';
+import { useModal } from '../Modal/ModalContext';
+import CompModalStandard from '../Modal/ModalStandard';
 import {NavLink} from "react-router-dom";
 
 // const shareContainer = async (shareContact) => {
@@ -17,7 +17,7 @@ const ContainerShare = ({containerId, contacts}) => {
     return (
         <ButtonText
             type="default"
-            size="medium"
+            size="small"
             hasIcon={true}
             faClass={"fas fa-share"} 
             text={"Share container"}
@@ -30,14 +30,14 @@ const ContainerShare = ({containerId, contacts}) => {
                     primaryClicked={async () => {console.log("clicked", document.getElementById("shareContact").value); await shareContainerWithContact(containerId, document.getElementById("shareContact").value); unSetModal()}}
                     secondaryClicked={async () => unSetModal()}>
                         <Form.Group>
-                            <Form.Label>Contact</Form.Label>
+                            <Form.Label>Select contact</Form.Label>
                             <Form.Select id="shareContact" aria-label="select">
-                                <option>{contacts.length > 0 ? "Select contact to share..." : "you currently have no contacts" }</option>
+                                <option>{contacts.length > 0 ? "Select contact to share..." : "N.B. You currently have no contacts in Greenfinch" }</option>
                                 {
                                     contacts.map(c => {
                                         return <option value={c.publicKey} key={c.walletAddress}>{c.firstName + " " + c.lastName}</option>
                                     })
-                                }}
+                                }
                             </Form.Select>
                         </Form.Group>
                 </CompModalStandard>)

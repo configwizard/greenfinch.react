@@ -1,9 +1,13 @@
 import React from 'react';
+import { fileSize } from "humanize-plus";
+import Moment from "react-moment";
 
 // Actual
-import { deleteContainer, listContainers} from '../../../manager/containers.js';
+import { deleteContainer, listContainers } from '../../../manager/containers.js';
 import { deleteObject, getObject, listObjects, uploadObject } from '../../../manager/objects.js';
-import {openInDefaultBrowser} from "../../../manager/manager.js"
+import { openInDefaultBrowser } from "../../../manager/manager.js";
+import { listContacts } from "../../../manager/contacts";
+
 // Mocker
 // import { deleteContainer, listContainers} from '../../../mocker/containers.js';
 // import { deleteObject, getObject, listObjects, uploadObject } from '../../../mocker/objects.js';
@@ -11,31 +15,30 @@ import {openInDefaultBrowser} from "../../../manager/manager.js"
 // Components
 import HeadingGeneral from '../../atoms/HeadingGeneral';
 import ControlBar from '../../molecules/ControlBar';
-import BreadCrumb from '../../organisms/HeaderArtboard';
+import BreadCrumb from '../../organisms/Breadcrumb';
+import ContainerHeaderPage from '../../organisms/HeaderPage/ContainerHeaderPage';
 import ViewContainers from '../../organisms/ViewContainers';
-import ViewObjects, {ContainerPreviewButton, FileUpload} from '../../organisms/ViewObjects';
-import ContainerShare from '../../organisms/ContainerShare';
+import ViewObjects, { ContainerPreviewButton, FileUpload } from '../../organisms/ViewObjects';
+import ContainerShareButton from '../../organisms/ContainerShareButton';
 
 // Central style sheet for templates
 import '../_settings/style.scss';
-import {fileSize} from "humanize-plus";
-import Moment from "react-moment";
-import {listContacts} from "../../../manager/contacts";
 
 const selectPermission = (rawPermission) => {
     switch(rawPermission) {
         case 478973132 :
-            return "PrivateBasicRule"
+            return "Private"
         case 264211711:
-            return "EACLReadOnlyBasicRule"
+            return "Public Read Only"
         case 264224767:
-            return "EACLPublicBasicRule"
+            return "Public Read/Write"
         case 268423167:
             return "custom - " + rawPermission.toString(16);
         default:
         return rawPermission.toString(16)
     }
 }
+
 class Containers extends React.Component {
     constructor(props) {
         super(props);
@@ -186,58 +189,61 @@ class Containers extends React.Component {
         } else {
             return (
                 <>
-                    <div className="col-3">
-                        <i className="fas fa-4x fa-folder"/>
+                    <div className="temporary-class col-3">
+                        <div className="neo folder-icon"></div>
                         <h4>{this.state.selectedContainer.containerName}</h4>
                         <HeadingGeneral
                             level={"h6"}
                             isUppercase={true}
                             text={"Container ID"}/>
-                        <p style={{fontSize:9}}>{this.state.selectedContainer.containerID}</p>
+                        <p>{this.state.selectedContainer.containerID}</p>
                         <HeadingGeneral
                             level={"h6"}
                             isUppercase={true}
                             text={"Container permission"}/>
-                        <p style={{fontSize:9}}>{
-                            selectPermission(this.state.selectedContainer.permissions)
-                        }</p>
+                        <p>{selectPermission(this.state.selectedContainer.permissions)}</p>
                         <HeadingGeneral
                             level={"h6"}
                             isUppercase={true}
                             text={"Container created"}/>
-                        <p style={{fontSize:9}}><Moment unix format="DD MMM YY">{this.state.selectedContainer.createdAt}</Moment></p>
+                        <p><Moment unix format="DD MMM YY">{this.state.selectedContainer.createdAt}</Moment></p>
                         <HeadingGeneral
                             level={"h6"}
                             isUppercase={true}
                             text={"Container size"}/>
-                        <p style={{fontSize:9}}>{fileSize(this.state.selectedContainer.size)}</p>
-                        <ContainerPreviewButton text="Upload to this container" onClick={this.onObjectUpload}></ContainerPreviewButton>
-                        <ContainerShare containerId={this.state.selectedContainer.containerID} contacts={this.state.contacts}/>
-                        <hr/>
-                        {
-                            this.state.selectedObject ?
-                                <><span id={"objectData"}>
-                                <HeadingGeneral
-                                    level={"h4"}
-                                    isUppercase={true}
-                                    text={"Selected Object"}/>
-                                    { selectPermission(this.state.selectedContainer.permissions) == "EACLReadOnlyBasicRule" || "EACLPublicBasicRule" ?
-                                        <p onClick={() => openInDefaultBrowser(`https://http.testnet.fs.neo.org/${this.state.selectedContainer.containerID}/${this.state.selectedObject.objectID}`)} style={{fontSize: 9}}>Click to view in web browser</p> : null }
-                                    <HeadingGeneral
-                                        level={"h6"}
-                                        isUppercase={true}
-                                        text={"Object name"}/>
-                                    <p style={{fontSize: 9}}>{this.state.selectedObject.objectName || null}</p>
-                                    <HeadingGeneral
-                                        level={"h6"}
-                                        isUppercase={true}
-                                        text={"Object Id"}/>
-                                    <p style={{fontSize: 9}}>{this.state.selectedObject.objectID || null}</p>
-                                    <ContainerPreviewButton icon="fas fa-download" text="Download this object" onClick={this.onObjectDownload}></ContainerPreviewButton>
-                                </span>
-                                </> : null
-                        }
-
+                        <p>{fileSize(this.state.selectedContainer.size)}</p>
+                        <div class="buttonStack">
+                            <ContainerPreviewButton 
+                                icon="fas fa-upload" 
+                                text="Upload to this container" 
+                                onClick={this.onObjectUpload}/>
+                            <ContainerShareButton 
+                                containerId={this.state.selectedContainer.containerID} 
+                                contacts={this.state.contacts}/>
+                                {
+                                    this.state.selectedObject ?
+                                        <><span id={"objectData"}>
+                                        <HeadingGeneral
+                                            level={"h4"}
+                                            isUppercase={true}
+                                            text={"Selected Object"}/>
+                                            { this.state.selectedContainer.permissions === 264211711 || 264224767 ?
+                                                <p onClick={() => openInDefaultBrowser(`https://http.testnet.fs.neo.org/${this.state.selectedContainer.containerID}/${this.state.selectedObject.objectID}`)} style={{fontSize: 9}}>Click to view in web browser</p> : null }
+                                            <HeadingGeneral
+                                                level={"h6"}
+                                                isUppercase={true}
+                                                text={"Object name"}/>
+                                            <p style={{fontSize: 9}}>{this.state.selectedObject.objectName || null}</p>
+                                            <HeadingGeneral
+                                                level={"h6"}
+                                                isUppercase={true}
+                                                text={"Object Id"}/>
+                                            <p style={{fontSize: 9}}>{this.state.selectedObject.objectID || null}</p>
+                                            <ContainerPreviewButton icon="fas fa-download" text="Download this object" onClick={this.onObjectDownload}></ContainerPreviewButton>
+                                        </span>
+                                        </> : null
+                                }
+                            </div>
                     </div>
                     <div className="col-9">
                         <div className="orgContainersGrid">
@@ -253,21 +259,32 @@ class Containers extends React.Component {
     render() {
         console.log("props/state account", this.props.account, this.state.account)
         return (
-            <section className="orgViewVisual">
-                <div className="row">
+            <div class="templatePage d-flex flex-column flex-grow-1">
+                <div class="row">
                     <div className="col-12">
-                        <BreadCrumb account={this.props.account} onRefresh={this.onRefresh} resetBreadcrumb={this.resetBreadcrumb} container={this.state.selectedContainer} object={this.state.selectedObject}></BreadCrumb>
+                        <ContainerHeaderPage 
+                            pageTitle={"Containers"} 
+                            hasButton={true}
+                            hasIcon={true}
+                            faClass={"fas fa-plus-circle"}
+                            buttonText={"Create new container"}
+                        />
+                        <div className="containerOptions">
+                            <div className="row">
+                                <div className="col-6">
+                                    <BreadCrumb account={this.props.account} onRefresh={this.onRefresh} resetBreadcrumb={this.resetBreadcrumb} container={this.state.selectedContainer} object={this.state.selectedObject}></BreadCrumb>
+                                </div>
+                                <div className="col-6">
+                                    <ControlBar resetBreadcrumb={this.resetBreadcrumb} changeView={this.onViewChange} viewMode={this.state.viewMode} selectedContainer={this.state.selectedContainer}></ControlBar>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="row">
+                            {this.retrieveCorrectComponent()}
+                        </div>
                     </div>
                 </div>
-                <div className="row">
-                    <div className="col-12">
-                        <ControlBar resetBreadcrumb={this.resetBreadcrumb} changeView={this.onViewChange} viewMode={this.state.viewMode} selectedContainer={this.state.selectedContainer}></ControlBar>
-                    </div>
-                </div>
-                <div className="row">
-                    {this.retrieveCorrectComponent()}
-                </div>
-            </section>
+            </div>
         );
     }
 }

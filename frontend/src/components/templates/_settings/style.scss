@@ -24,3 +24,18 @@
 	flex: 1;
 	overflow: auto;
 }
+
+.containerOptions {
+    margin-right: $marginSmall;
+    margin-bottom: $marginMedium;
+}
+
+.temporary-class {
+    & h6 {
+        font-size: 0.6rem;
+    } 
+    & p {
+        font-size: 0.7rem;
+        font-family: $brandFontSemi;
+    }
+}

@@ -1,7 +1,13 @@
 @import "../../../assets/dashboard-variables.scss";
 @import "../../../assets/greenfinch-variables.scss";
 
-[class^="bread"] {
+.breadcrumb-wrapper {
+    font-size: 0.75rem;
+    font-family: $brandFontSemi;
+    color: $brandColorSecondary;
+}
+
+[class^="bread-"] {
     transition: $brandTransitionSpeed;
     border-radius: 2px;
     padding: 2px 6px;
@@ -37,3 +43,18 @@
         content: '\f0da';
     }
 }
+
+// To Sort
+/*
+span.atmBreadCrumb, & span.utBreadLive {
+    margin-right: 10px;
+    max-width: 170px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    &:hover {
+        text-decoration: underline;
+        cursor: pointer;
+    }
+}
+*/

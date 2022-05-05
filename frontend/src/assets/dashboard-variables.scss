@@ -39,7 +39,8 @@ span {
 .form-label {
     margin-bottom: $marginXSmall*0.5;
 }
- 
+
+// Button Group - Horizontal
 .buttonGroup, .me-auto .buttonGroup {
     & .buttonText {
         margin-right: 10px;
@@ -49,5 +50,16 @@ span {
 .ms-auto .buttonGroup {
     & .buttonText {
         margin-left: 10px;
+    }
+}
+
+// Button Stack - Vertical
+.buttonStack {
+    & button {
+        display: block;
+        margin-bottom: $marginXSmall;
+        &:last-child {
+            margin-bottom: 0;
+        }
     }
 }

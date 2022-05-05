@@ -15,6 +15,7 @@ export interface go {
 		Get(arg1:string,arg2:string,arg3:number,arg4:models.Writer):Promise<Array<number>|Error>
 		GetAccountInformation():Promise<models.Account|Error>
 		GetObjectMetaData(arg1:string,arg2:string):Promise<models.Object|Error>
+		GetVersion():Promise<string>
 		ListContainerIDs():Promise<Array<string>|Error>
 		ListContainerObjects(arg1:string,arg2:boolean):Promise<Array<models.Element>|Error>
 		ListContainers(arg1:boolean):Promise<Array<models.Element>|Error>

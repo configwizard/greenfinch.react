@@ -41,11 +41,6 @@
     }
 }
 
-.orgViewJSON, .orgViewVisual {
-    padding: $paddingSmall;
-}
-
-
 /* Styles: Folders
 - - - - - - - - - - - - - - - - - - */
 .folder-icon { //Update classes
@@ -111,12 +106,8 @@
     }
 }
 
-/* Styles: Utilites
-- - - - - - - - - - - - - - - - - - */
-
 /* Styles: General
 - - - - - - - - - - - - - - - - - - */
-
 .orgMainJSON { //change this name
     //margin-top: $marginSmall;
     //margin-bottom: $marginSmall;
@@ -185,35 +176,11 @@
     }
 }
 
-
-
-/* Layout: Breadcrumb
-- - - - - - - - - - - - - - - - - - */
-.molBlockBread { // to sort as not helpful now
-    padding: $paddingXSmall $paddingSmall;
-    margin: 0;
-    & span.atmBreadCrumb, & span.utBreadLive {
-        margin-right: 10px;
-        max-width: 170px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        &:hover {
-            text-decoration: underline;
-            cursor: pointer;
-        }
-    }
-}
-
 .orgWalletFooter { // short-term option as being over-run below
     & .form-control {
         margin-top: $marginXSmall*1.5;
     }
 }
-
-
-/* Component: Wallet
-- - - - - - - - - - - - - - - - - - */
 
 /* View: Options
 - - - - - - - - - - - - - - - - - - */
@@ -230,26 +197,6 @@
         }
     }
 }
-
-.molContainersHeader {
-    padding: $paddingSmall $paddingSmall;
-    margin-bottom: $marginMedium;
-    & .molButtonGroup {
-        margin-right: $marginSmall;
-        &:first-child {
-            margin-left: 0;
-            margin-right: 0;
-        }
-        &:last-child {
-            margin-right: 0;
-            & button:last-child {
-                margin-left: $marginXSmall;
-            }
-        }
-    }
-}
-
-
 
 /* Styles: Typography
 - - - - - - - - - - - - - - - - - - */
@@ -276,5 +223,3 @@ span {
         padding: 0;
     }
 }
-
-

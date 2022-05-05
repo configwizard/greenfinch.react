@@ -35,8 +35,11 @@
     }
 }
 .molModalHeader {
+    background-color: darken($brandColorLight,4%);
     padding: $paddingMedium $paddingSmall;
     & h2 {
+        @include titleStyle(1.1rem);
+        color: $brandColorDark;
         margin-bottom: 0;
     }
 }
@@ -78,14 +81,6 @@
             }
         }
     }   
-}
-
-.molModalHeader {
-    background-color: darken($brandColorLight,4%);
-    & h2 {
-        @include titleStyle(1rem);
-        color: $brandColorDark;
-    }
 }
 
 .molModalBody {

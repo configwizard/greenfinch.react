@@ -38,18 +38,13 @@ function ViewObjects({onDelete, objectList, onObjectSelection, objectsLoaded, vi
 }
 export function ContainerPreviewButton({icon, text, onClick}) {
     return (
-        <div className="molBlockUpload d-flex align-items-center justify-content-center">
-            <div className="atmBlockUpload d-flex flex-column align-items-center justify-content-center">
-                {/* <i className="fas fa-upload"/> */}
-                <ButtonText
-                    type={"default"}
-                    size={"medium"}
-                    hasIcon={true}
-                    faClass={icon}
-                    onClick={onClick}
-                    text={text}/>
-            </div>
-        </div>
+        <ButtonText
+            type={"default"}
+            size={"small"}
+            hasIcon={true}
+            faClass={icon}
+            onClick={onClick}
+            text={text}/>
     )
 } 
 

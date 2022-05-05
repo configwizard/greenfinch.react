@@ -20,14 +20,14 @@ const HeaderPage = ({ pageTitle, hasButton, hasIcon, faClass, buttonText, button
                 </div>
                 <div className="ms-auto">
                     { hasButton ? 
-                    <ButtonText
-                        size={"small"}
-                        type={"default"}
-                        hasIcon={hasIcon}
-                        faClass={faClass}
-                        text={buttonText}
-                        onClick={buttonAction}
-                    /> : null }
+                        <ButtonText
+                            size={"small"}
+                            type={"default"}
+                            hasIcon={hasIcon}
+                            faClass={faClass}
+                            text={buttonText}
+                            onClick={buttonAction} /> 
+                        : null }
                 </div>
             </div>
         </div>
