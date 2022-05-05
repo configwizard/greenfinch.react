@@ -31,7 +31,7 @@ const TemplateShared = () => {
                                 primaryClicked=""
                                 secondaryClicked={async () => unSetModal()}>
                                     <Form.Group className="form-div">
-                                        <Form.Label>To add a shared container, enter the &lsquo;Container ID&rsquo;.</Form.Label>
+                                        <Form.Label>To add a shared container, enter the &lsquo;Container ID&rsquo;:</Form.Label>
                                         <Form.Control id="containerID" type="text" placeholder="Container ID" />
                                     </Form.Group>
                             </CompModalStandard>)

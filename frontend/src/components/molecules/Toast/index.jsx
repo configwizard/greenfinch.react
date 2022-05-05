@@ -77,9 +77,7 @@ export default class ToastMessage extends React.Component {
                                                 <i className={`fad ${faIcon}`}/>
                                             </div>
                                             <div className="toast-content d-flex flex-column justify-content-center">
-                                                {/*
-                                                    <i className="fa fa-times" onClick={() => this.deleteToast(toast.id)}/>
-                                                */}
+                                                <i className="fa fa-times" onClick={() => this.deleteToast(toast.id)}/>
                                                 <span className="atmToastTitle">{toast.Title}</span>
                                                 <span className="atmToastMessage">{toast.Description}</span>
                                             </div>

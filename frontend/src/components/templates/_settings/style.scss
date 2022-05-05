@@ -30,12 +30,17 @@
     margin-bottom: $marginMedium;
 }
 
-.temporary-class {
+.container-data, .object-data {
     & h6 {
         font-size: 0.6rem;
     } 
     & p {
-        font-size: 0.7rem;
+        font-size: 0.65rem;
+        margin-bottom: 10px;
         font-family: $brandFontSemi;
     }
+}
+
+.object-data {
+    margin-top: $marginLarge;
 }
