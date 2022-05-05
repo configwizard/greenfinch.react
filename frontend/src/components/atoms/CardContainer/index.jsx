@@ -12,7 +12,8 @@ const CardContainer = ({ onClick, containerName }) => {
             type="button"
             className="atmButtonGridContent d-flex flex-column align-items-center justify-content-between"
             onClick={onClick}>
-                <ContainerIcon></ContainerIcon>
+                <ContainerIcon
+                    size={"medium"}/>
                 <span className="atmButtonGridName">{containerName}</span>
         </button>
     )

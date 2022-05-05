@@ -11,7 +11,7 @@ export const IconSize = {
 
 const ContainerIcon = ({ size }) => {
     return (
-        <div className="neo folder-icon"></div>
+        <div className={`neo folder-icon ${[size]}`}></div>
     )
 }
 export default ContainerIcon;
