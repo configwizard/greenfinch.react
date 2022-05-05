@@ -70,7 +70,7 @@ func (m *Manager) AddSharedContainer(containerID string) error {
 	if err != nil {
 		return err
 	}
-	if err := cache.StoreContainer(tmpWallet.Accounts[0].Address, containerID, marshal); err != nil {
+	if err := cache.StoreSharedContainer(tmpWallet.Accounts[0].Address, containerID, marshal); err != nil {
 		return err
 	}
 	return nil

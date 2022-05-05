@@ -6,21 +6,45 @@ import HeaderPage from '../../organisms/HeaderPage';
 import { useModal } from '../../organisms/Modal/ModalContext';
 import CompModalStandard from '../../organisms/Modal/ModalStandard';
 // import ViewContainers from '../../organisms/ViewContainers';
-
+import SharedContainerHeaderPage from '../../organisms/HeaderPage/SharedContainerHeaderPage';
 // Central style sheet for templates
 import '../_settings/style.scss';
 import {addSharedContainer, listSharedContainers} from "../../../manager/sharedContainers";
+import ViewContainers from "../../organisms/ViewContainers";
+import {listObjects} from "../../../manager/objects";
+import retrieveCorrectComponent from "../hacked/containerObjectHandler";
 
 class SharedContainers extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {sharedContainers: []};
+        this.state = {contacts: [], containerList: [], objectList: [], selectedObject: null, selectedContainer: null, viewMode: "grid", objectsLoaded: false, requestNewWallet: false};
+        // this.state = {sharedContainers: [], viewMode: "grid"};
     }
     async componentDidMount() {
-        const sharedContainers = await listSharedContainers()
-        console.log("listing shared containers", sharedContainers)
-        await this.setState(this.setState({...this.state, sharedContainers}))
+        const containerList = await listSharedContainers()
+        console.log("listing shared containers", containerList)
+        await this.setState(this.setState({...this.state, containerList}))
     }
+    onContainerSelection = async (containerID, containerName, permissions, sharable, createdAt, size) => {
+        //we will need to call the function to get the objects for a specific container ID and update the objectList
+        const selectedContainer = {
+            containerID,
+            containerName,
+            permissions,
+            sharable,
+            createdAt,
+            size
+        }
+        console.log("selected shared container.... ", selectedContainer)
+        let state = this.state
+
+        this.setState({...state, selectedContainer, objectsLoaded: false})
+        // const objectList = await listSharedObjects(containerID)
+        // console.log("container selected object list", objectList)
+        // this.setState({...state, selectedContainer, objectList, objectsLoaded: true})
+    }
+    addSharedContainer() {}
+
 
     render() {
 // const TemplateShared = () => {
@@ -29,55 +53,39 @@ class SharedContainers extends React.Component {
             <div class="templatePage d-flex flex-column flex-grow-1">
                 <div class="row">
                     <div className="col-12">
-                        <HeaderPage
-                            pageTitle={"Shared Containers"}
+                        <SharedContainerHeaderPage
+                            pageTitle={"Containers shared with me"}
                             hasButton={true}
                             hasIcon={true}
                             faClass={"fas fa-plus-circle"}
                             buttonText={"Add shared container"}
-                            // buttonAction={() => {
-                            //     setModal(
-                            //         <CompModalStandard
-                            //             title={"Add shared container"}
-                            //             buttonTextPrimary={"Add container"}
-                            //             buttonTextSecondary={"Cancel"}
-                            //             primaryClicked={async () => {
-                            //                 const containerID = document.getElementById("sharedContainerID").value
-                            //                 console.log("adding container ", containerID)
-                            //                 await addSharedContainer(containerID)
-                            //             }}
-                            //             secondaryClicked={async () => unSetModal()}>
-                            //             <Form.Group className="form-div">
-                            //                 <Form.Label>To add a shared container, enter the &lsquo;Container
-                            //                     ID&rsquo;.</Form.Label>
-                            //                 <Form.Control id="sharedContainerID" type="text"
-                            //                               placeholder="Container ID"/>
-                            //             </Form.Group>
-                            //         </CompModalStandard>)
-                            // }}
                         />
-                        <div class="row">
-                            <div class="col-12">
-                                <div className="templateWrapper">
-                                    <div className="templateContainer">
-
-                                        <div class="row">
-                                            <div className="col-3">
-                                                <p>Select a container to open and view contents.</p>
-                                            </div>
-                                            <div className="col-9">
-                                                <div className="orgContainersGrid">
-                                                    <div className="row">
-                                                        {/* <ViewContainers containerList={this.state.containerList} onDelete={this.onContainerDelete} viewMode={this.state.viewMode} onContainerSelection={this.onContainerSelection} ></ViewContainers>*/}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
+                        <div className="row">
+                            {retrieveCorrectComponent(this.state, null, null, null, null, this.onContainerSelection, null)}
                         </div>
+                        {/*<div class="row">*/}
+                        {/*    <div class="col-12">*/}
+                        {/*        <div className="templateWrapper">*/}
+                        {/*            <div className="templateContainer">*/}
+
+                        {/*                <div class="row">*/}
+                        {/*                    <div className="col-3">*/}
+                        {/*                        <p>Select a container to open and view contents.</p>*/}
+                        {/*                    </div>*/}
+                        {/*                    <div className="col-9">*/}
+                        {/*                        <div className="orgContainersGrid">*/}
+                        {/*                            <div className="row">*/}
+                        {/*                                {retrieveCorrectComponent(this.state, null, null, null, null, this.onContainerSelection, null)}*/}
+                        {/*                                 /!*<ViewContainers containerList={this.state.sharedContainers} viewMode={this.state.viewMode} onContainerSelection={this.onSharedContainerSelection} ></ViewContainers>*!/*/}
+                        {/*                            </div>*/}
+                        {/*                        </div>*/}
+                        {/*                    </div>*/}
+                        {/*                </div>*/}
+
+                        {/*            </div>*/}
+                        {/*        </div>*/}
+                        {/*    </div>*/}
+                        {/*</div>*/}
                     </div>
                 </div>
             </div>

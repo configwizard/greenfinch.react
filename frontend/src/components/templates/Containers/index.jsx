@@ -13,8 +13,6 @@ import { listContacts } from "../../../manager/contacts";
 // import { deleteObject, getObject, listObjects, uploadObject } from '../../../mocker/objects.js';
 
 // Components
-import ButtonText from '../../atoms/ButtonText';
-import ContainerIcon from '../../atoms/ContainerIcon';
 import HeadingGeneral from '../../atoms/HeadingGeneral';
 import ControlBar from '../../molecules/ControlBar';
 import BreadCrumb from '../../organisms/Breadcrumb';
@@ -25,21 +23,7 @@ import ContainerShareButton from '../../organisms/ContainerShareButton';
 
 // Central style sheet for templates
 import '../_settings/style.scss';
-
-const selectPermission = (rawPermission) => {
-    switch(rawPermission) {
-        case 478973132 :
-            return "Private"
-        case 264211711:
-            return "Public Read Only"
-        case 264224767:
-            return "Public Read/Write"
-        case 268423167:
-            return "custom - " + rawPermission.toString(16);
-        default:
-        return rawPermission.toString(16)
-    }
-}
+import retrieveCorrectComponent from "../hacked/containerObjectHandler";
 
 class Containers extends React.Component {
     constructor(props) {
@@ -48,31 +32,6 @@ class Containers extends React.Component {
     }
     async componentDidMount() {
 
-        // const account = await getAccountInformation()
-        // // console.log("now have wallet ", this.props.account)
-        // await this.props.setStatusAccount(account)
-        // // await this.setState({...this.state, account})
-
-        // window.runtime.EventsOn("appendContainer", async (container) => {
-        //     let containerList = this.state.containerList
-        //     console.log("new container added", container)
-        //     containerList.push(container)
-        //     await this.setState({...this.state, containerList})
-        // })
-        // window.runtime.EventsOn("appendObject", async (object) => {
-        //     let objectList = this.state.objectList
-        //     objectList.push(object)
-        //     await this.setState({...this.state, objectList})
-        // })
-        //
-        // window.runtime.EventsOn("clearContainer", async () => {
-        //     await this.setState(this.setState({...this.state, containerList: []}))
-        // })
-        // window.runtime.EventsOn("freshUpload", async (value) => {
-        //     console.log("fresh objects made", value)
-        //     const objectList = await listObjects(this.state.selectedContainer.containerID) || []//list contents of a container
-        //     await this.setState({...this.state, objectList})
-        // })
         const contacts = await listContacts()
         console.log("share contacts", contacts)
         console.log("received wallet", this.props.account)
@@ -172,95 +131,7 @@ class Containers extends React.Component {
         let state = this.state
         await this.setState({...state, objectList: [], selectedObject: null, selectedContainer: null})
     }
-    retrieveCorrectComponent() {
-        if (this.state.selectedContainer == null) {
-            return (
-                <>
-                    <div className="col-4">
-                        <p>Select a container to open and view contents.</p>
-                    </div>
-                    <div className="col-8">
-                        <div className="orgContainersGrid">
-                            <ViewContainers containerList={this.state.containerList} onDelete={this.onContainerDelete} viewMode={this.state.viewMode} onContainerSelection={this.onContainerSelection}></ViewContainers>
-                        </div>
-                    </div>
-                </>
-            )
-        } else {
-            return (
-                <>
-                    <div className="container-data col-4">
-                        <ContainerIcon
-                            size={"medium"}/>
-                        <HeadingGeneral
-                            level={"h5"}
-                            isUppercase={false}
-                            text={this.state.selectedContainer.containerName}/>
-                        <HeadingGeneral
-                            level={"h6"}
-                            isUppercase={true}
-                            text={"Container ID"}/>
-                        <p>{this.state.selectedContainer.containerID}</p>
-                        <HeadingGeneral
-                            level={"h6"}
-                            isUppercase={true}
-                            text={"Container permission"}/>
-                        <p>{selectPermission(this.state.selectedContainer.permissions)}</p>
-                        <HeadingGeneral
-                            level={"h6"}
-                            isUppercase={true}
-                            text={"Container created"}/>
-                        <p><Moment unix format="DD MMM YY">{this.state.selectedContainer.createdAt}</Moment></p>
-                        <HeadingGeneral
-                            level={"h6"}
-                            isUppercase={true}
-                            text={"Container size"}/>
-                        <p>{fileSize(this.state.selectedContainer.size)}</p>
-                        <div class="buttonStack">
-                            <ContainerPreviewButton 
-                                icon="fas fa-upload" 
-                                text="Upload to this container" 
-                                onClick={this.onObjectUpload}/>
-                            <ContainerShareButton 
-                                containerId={this.state.selectedContainer.containerID} 
-                                contacts={this.state.contacts}/>
-                                {
-                                    this.state.selectedObject ?
-                                    <>
-                                        <div className="object-data" id={"objectData"}>
-                                            <HeadingGeneral
-                                                level={"h5"}
-                                                isUppercase={false}
-                                                text={this.state.selectedObject.objectName || null}/>
-                                            <HeadingGeneral
-                                                level={"h6"}
-                                                isUppercase={true}
-                                                text={"Object ID"}/>
-                                                <p>{this.state.selectedObject.objectID || null}</p>
-                                            <ContainerPreviewButton icon="fas fa-download" text="Download this object" onClick={this.onObjectDownload}></ContainerPreviewButton>
-                                            { this.state.selectedContainer.permissions === 264211711 || 264224767 ?
-                                                <ButtonText 
-                                                    type="clean"
-                                                    size="small"
-                                                    hasIcon={true}
-                                                    faClass={"fas fa-external-link"}
-                                                    text={"Click to view file in web browser"}
-                                                    onClick={() => openInDefaultBrowser(`https://http.testnet.fs.neo.org/${this.state.selectedContainer.containerID}/${this.state.selectedObject.objectID}`)} /> 
-                                            : null}
-                                        </div>
-                                    </> : null
-                                }
-                            </div>
-                    </div>
-                    <div className="col-8">
-                        <div className="orgContainersGrid">
-                            <ViewObjects objectsLoaded={this.state.objectsLoaded} onDelete={this.onObjectDelete} objectList={this.state.objectList} viewMode={this.state.viewMode} onObjectSelection={this.onObjectSelection}></ViewObjects>
-                        </div>
-                    </div>
-                </>
-            )
-        }
-    }
+
     render() {
         console.log("props/state account", this.props.account, this.state.account)
         return (
@@ -274,27 +145,18 @@ class Containers extends React.Component {
                             faClass={"fas fa-plus-circle"}
                             buttonText={"Create new container"}
                         />
-
-                        <div class="row">
-                            <div class="col-12">
-                                <div className="containerOptions">
-                                    <div className="row">
-                                        <div className="col-6">
-                                            <BreadCrumb account={this.props.account} onRefresh={this.onRefresh} resetBreadcrumb={this.resetBreadcrumb} container={this.state.selectedContainer} object={this.state.selectedObject}></BreadCrumb>
-                                        </div>
-                                        <div className="col-6">
-                                            <ControlBar resetBreadcrumb={this.resetBreadcrumb} changeView={this.onViewChange} viewMode={this.state.viewMode} selectedContainer={this.state.selectedContainer}></ControlBar>
-                                        </div>
-                                    </div>
+                        <div className="containerOptions">
+                            <div className="row">
+                                <div className="col-6">
+                                    <BreadCrumb account={this.props.account} onRefresh={this.onRefresh} resetBreadcrumb={this.resetBreadcrumb} container={this.state.selectedContainer} object={this.state.selectedObject}></BreadCrumb>
                                 </div>
-                                <div className="templateWrapper">
-                                    <div className="templateContainer">
-                                        <div className="row">
-                                            {this.retrieveCorrectComponent()}
-                                        </div>
-                                    </div>
+                                <div className="col-6">
+                                    <ControlBar resetBreadcrumb={this.resetBreadcrumb} changeView={this.onViewChange} viewMode={this.state.viewMode} selectedContainer={this.state.selectedContainer}></ControlBar>
                                 </div>
                             </div>
+                        </div>
+                        <div className="row">
+                            {retrieveCorrectComponent(this.state, this.onObjectSelection, this.onObjectDelete, this.onObjectDownload, this.onObjectUpload, this.onContainerSelection, this.onContainerDelete)}
                         </div>
 
                     </div>
