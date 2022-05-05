@@ -4,7 +4,7 @@ import React from 'react';
 import HeadingGeneral from '../../atoms/HeadingGeneral';
 import HeaderPage from '../../organisms/HeaderPage';
 import LoadWallet from '../../organisms/LoadWallet';
-import {SectionHomepage, SectionSupport} from '../../organisms/HomeSections';
+import { SectionHomepage, SectionSupport } from '../../organisms/HomeSections';
 
 // Central style sheet for templates
 import '../_settings/style.scss';
