@@ -2,6 +2,7 @@ export interface go {
   "manager": {
     "Manager": {
 		AddContact(arg1:string,arg2:string,arg3:string,arg4:string):Promise<Error>
+		AddSharedContainer(arg1:string):Promise<Error>
 		Client():Promise<Client|Error>
 		CopyToClipboard(arg1:string):Promise<Error>
 		CreateContainer(arg1:string,arg2:string,arg3:boolean):Promise<Error>
@@ -16,7 +17,8 @@ export interface go {
 		GetVersion():Promise<string>
 		ListContainerIDs():Promise<Array<string>|Error>
 		ListContainerObjects(arg1:string,arg2:boolean):Promise<Array<Element>|Error>
-		ListContainers(arg1:boolean):Promise<Array<Element>|Error>
+		ListContainers(arg1:boolean,arg2:boolean):Promise<Array<Element>|Error>
+		ListSharedContainers():Promise<Array<Element>|Error>
 		LoadWallet(arg1:string):Promise<Error>
 		LoadWalletWithPath(arg1:string,arg2:string):Promise<Error>
 		MakeNotification(arg1:UXMessage):Promise<void>

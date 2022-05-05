@@ -16,6 +16,14 @@ const go = {
         return window.go.manager.Manager.AddContact(arg1, arg2, arg3, arg4);
       },
       /**
+       * AddSharedContainer
+       * @param {string} arg1 - Go Type: string
+       * @returns {Promise<Error>}  - Go Type: error
+       */
+      "AddSharedContainer": (arg1) => {
+        return window.go.manager.Manager.AddSharedContainer(arg1);
+      },
+      /**
        * Client
        * @returns {Promise<Client|Error>}  - Go Type: *client.Client
        */
@@ -135,10 +143,18 @@ const go = {
       /**
        * ListContainers
        * @param {boolean} arg1 - Go Type: bool
+       * @param {boolean} arg2 - Go Type: bool
        * @returns {Promise<Array<Element>|Error>}  - Go Type: []filesystem.Element
        */
-      "ListContainers": (arg1) => {
-        return window.go.manager.Manager.ListContainers(arg1);
+      "ListContainers": (arg1, arg2) => {
+        return window.go.manager.Manager.ListContainers(arg1, arg2);
+      },
+      /**
+       * ListSharedContainers
+       * @returns {Promise<Array<Element>|Error>}  - Go Type: []filesystem.Element
+       */
+      "ListSharedContainers": () => {
+        return window.go.manager.Manager.ListSharedContainers();
       },
       /**
        * LoadWallet

@@ -62,7 +62,7 @@ func (m *Manager) ListContainerIDs() ([]string, error) {
 // NewListReadOnlyContainerContents lists from cache
 func (m *Manager) NewListReadOnlyContainerContents(since int64) ([]filesystem.Element, error) {
 	//list the containers
-	containers, err := m.ListContainers(false)
+	containers, err := m.ListContainers(false, false)
 	if err != nil {
 		return nil, err
 	}
@@ -226,7 +226,7 @@ func (m *Manager) listContainersAsync() ([]filesystem.Element, error) {
 	if m.DEBUG {
 		DebugSaveJson("ListContainers.json", containers)
 	}
-	containerList, err := m.ListContainers(true)
+	containerList, err := m.ListContainers(true, false)
 	fmt.Println("async returning", containerList)
 	return containerList, err
 }
@@ -238,7 +238,7 @@ func (m *Manager) prepareAndAppendContainer(vID cid.ID, sessionToken *session.To
 		log.Fatal("SERIOUS ERROR , could not retrieve client - in Go routine", err)
 		return filesystem.Element{}, err
 	}
-	tmpContainer := filesystem.PopulateContainerList(m.ctx, c, vID)
+	tmpContainer := filesystem.PopulateContainerList(m.ctx, c, vID) // todo - why does this not return an eror on a container?
 	var filters = obj.SearchFilters{}
 	filters.AddRootFilter()
 	list, err := object.QueryObjects(m.ctx, c, vID, filters, nil, sessionToken)
@@ -254,14 +254,22 @@ func (m *Manager) prepareAndAppendContainer(vID cid.ID, sessionToken *session.To
 
 
 // ListContainers populates from cache
-func (m *Manager) ListContainers(synchronised bool) ([]filesystem.Element, error) {
+func (m *Manager) ListContainers(synchronised, shared bool) ([]filesystem.Element, error) {
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
 		return []filesystem.Element{}, err
 	}
-	tmpContainers, err := cache.RetrieveContainers(tmpWallet.Accounts[0].Address)
-	if err != nil {
-		return nil, err
+	var tmpContainers map[string][]byte
+	if shared {
+		tmpContainers, err = cache.RetrieveContainers(tmpWallet.Accounts[0].Address)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		tmpContainers, err = cache.RetrieveSharedContainers(tmpWallet.Accounts[0].Address)
+		if err != nil {
+			return nil, err
+		}
 	}
 	if len(tmpContainers) == 0 {
 		//we need to check there aren't any on the network
@@ -375,7 +383,7 @@ func (m *Manager) DeleteContainer(id string) ([]filesystem.Element, error) {
 		}
 		m.MakeToast(NewToastMessage(&t))
 	}
-	return m.ListContainers(false)
+	return m.ListContainers(false, false)
 }
 
 //ultimately, you want to do this with containers that can be restricted (i.e eaclpublic)
@@ -440,6 +448,41 @@ func (m *Manager) RestrictContainer(id string, publicKey string) error {
 			Description: "failed to restrict container" + err.Error(),
 		}
 		m.MakeToast(NewToastMessage(&tmp))
+		return err
+	}
+	return nil
+}
+
+func (m *Manager) ListSharedContainers() ([]filesystem.Element, error) {
+	return m.ListContainers(false, true)
+}
+func (m *Manager) AddSharedContainer(containerID string) error {
+	//check if you can access this container
+	tmpWallet, err := m.retrieveWallet()
+	if err != nil {
+		return err
+	}
+	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
+	fsCli, err := m.Client()
+	c := cid.ID{}
+	err = c.Parse(containerID)
+	if err != nil {
+		return err
+	}
+	sessionToken, err := client2.CreateSessionForContainerList(m.ctx, fsCli, client2.DEFAULT_EXPIRATION, &tmpKey)
+	if err != nil {
+		return err
+	}
+	cont, err := m.prepareAndAppendContainer(c, sessionToken)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("shared container %+v\r\n", cont)
+	marshal, err := json.Marshal(cont)
+	if err != nil {
+		return err
+	}
+	if err := cache.StoreContainer(tmpWallet.Accounts[0].Address, containerID, marshal); err != nil {
 		return err
 	}
 	return nil
