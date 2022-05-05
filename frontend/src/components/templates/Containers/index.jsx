@@ -175,7 +175,7 @@ class Containers extends React.Component {
             return (
                 <>
                     <div className="col-3">
-                        <p>Select a container to see more information and it's contents</p>
+                        <p>Select a container to open and view contents.</p>
                     </div>
                     <div className="col-9">
                         <div className="orgContainersGrid">

@@ -51,18 +51,20 @@ const NavbarSide = (props) => {
                         <NavlinkSide
                             to={"/shared"}
                             faClass={"fal fa-share-alt"}
-                            label={"Shared with me"} />
+                            label={"Shared Containers"} />
                     </Tooltip>
                 </ul>
             </div>
             <div>
                 <ul className="d-flex flex-column justify-content-center">
-                    <Tooltip content="Notifications" direction="right">
-                        <NavlinkSide
-                            to={"/toassign01"}
-                            faClass={"fal fa-bell"}
-                            label={"Notifications"} />
-                    </Tooltip>
+                    {/*
+                        <Tooltip content="Notifications" direction="right">
+                            <NavlinkSide
+                                to={"/toassign01"}
+                                faClass={"fal fa-bell"}
+                                label={"Notifications"} />
+                        </Tooltip>
+                    */}
                     <Tooltip content="Wallet" direction="right">
                         <button type="button" className="navbarSide" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"><i className="fal fa-wallet" /></button>
                         <DrawerWallet account={props.account} topUpWallet={topUpWallet}></DrawerWallet>

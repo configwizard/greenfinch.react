@@ -22,8 +22,7 @@ const TemplateContacts = ({contacts, createContact }) => {
                         hasIcon={true}
                         faClass={"fas fa-plus-circle"}
                         buttonText={"Add new contact"}
-                        buttonAction={
-                            () => {
+                        buttonAction={() => {
                             setModal(
                             <CompModalStandard
                                 title={"Add new contact"}
