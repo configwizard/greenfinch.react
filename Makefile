@@ -46,7 +46,7 @@ win:
 	wails build -nsis -f ${LDFLAGS} -platform windows/arm64,windows/amd64
 
 .PHONY: release
-release: tag-patch dev win
+release: tag-patch prod win
 
 # instructions on manually signing, in order are below
 # now for the bit where an app is signed, notorized and stapled

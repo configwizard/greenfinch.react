@@ -6,7 +6,7 @@ require (
 	github.com/atotto/clipboard v0.1.4
 	github.com/blang/semver/v4 v4.0.0
 	github.com/boltdb/bolt v1.3.1
-	github.com/configwizard/gaspump-api v0.3.6
+	github.com/configwizard/gaspump-api v0.3.7
 	github.com/disintegration/imaging v1.6.2
 	github.com/go-chi/chi/v5 v5.0.7
 	github.com/go-chi/cors v1.2.0
@@ -95,4 +95,4 @@ require (
 )
 
 //replace github.com/wailsapp/wails/v2 => /Users/alex.walker/go/src/github.com/wailsapp/wails/v2
-replace github.com/configwizard/gaspump-api => /Users/alex.walker/go/src/github.com/configwizard/gaspump-api
+//replace github.com/configwizard/gaspump-api => /Users/alex.walker/go/src/github.com/configwizard/gaspump-api

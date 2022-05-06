@@ -69,6 +69,7 @@ export default class ToastMessage extends React.Component {
                         const faIcon = iconSelector(toast.Type)
                         console.log("toastType ", toast.type)
                         return (
+
                             <div key={i} className="toast-molecule">
                                 <div className="toast-container">
                                     <div className={`toast-wrapper ${toast.Type}`}>
