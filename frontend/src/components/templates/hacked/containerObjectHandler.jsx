@@ -68,22 +68,22 @@ function retrieveCorrectComponent(state, onObjectSelection, onObjectDelete, onOb
                         level={"h6"}
                         isUppercase={true}
                         text={"Container ID"}/>
-                    <p>{state.selectedContainer.containerID}</p>
+                    <span>{state.selectedContainer.containerID}</span>
                     <HeadingGeneral
                         level={"h6"}
                         isUppercase={true}
                         text={"Container permission"}/>
-                    <p>{selectPermission(state.selectedContainer.permissions)}</p>
+                    <span>{selectPermission(state.selectedContainer.permissions)}</span>
                     <HeadingGeneral
                         level={"h6"}
                         isUppercase={true}
                         text={"Container created"}/>
-                    <p><Moment unix format="DD MMM YY">{state.selectedContainer.createdAt}</Moment></p>
+                    <span><Moment unix format="DD MMM YY">{state.selectedContainer.createdAt}</Moment></span>
                     <HeadingGeneral
                         level={"h6"}
                         isUppercase={true}
                         text={"Container size"}/>
-                    <p>{fileSize(state.selectedContainer.size)}</p>
+                    <span>{fileSize(state.selectedContainer.size)}</span>
                     <div class="buttonStack">
                         <ContainerInfoButton
                             containerName={state.selectedContainer.containerName}
@@ -110,7 +110,7 @@ function retrieveCorrectComponent(state, onObjectSelection, onObjectDelete, onOb
                                             level={"h6"}
                                             isUppercase={true}
                                             text={"Object ID"}/>
-                                            <p>{state.selectedObject.objectID || null}</p>
+                                            <span>{state.selectedObject.objectID || null}</span>
                                         <ObjectInfoButton
                                             objectName={state.selectedObject.objectName}
                                             objectId={state.selectedObject.objectID} />
