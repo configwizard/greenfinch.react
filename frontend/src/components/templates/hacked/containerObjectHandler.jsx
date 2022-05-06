@@ -2,10 +2,17 @@ import ViewContainers from "../../organisms/ViewContainers";
 import HeadingGeneral from "../../atoms/HeadingGeneral";
 import Moment from "react-moment";
 import {fileSize} from "humanize-plus";
+
+// Components
+import ButtonText from '../../atoms/ButtonText';
+import ContainerIcon from '../../atoms/ContainerIcon';
 import ViewObjects, {ContainerPreviewButton} from "../../organisms/ViewObjects";
 import ContainerShareButton from "../../organisms/ContainerShareButton";
 import {openInDefaultBrowser} from "../../../manager/manager";
 import React from "react";
+
+// Central style sheet for templates
+import '../_settings/style.scss';
 
 const selectPermission = (rawPermission) => {
     switch(rawPermission) {
@@ -41,9 +48,13 @@ function retrieveCorrectComponent(state, onObjectSelection, onObjectDelete, onOb
     } else {
         return (
             <>
-                <div className="temporary-class col-3">
-                    <div className="neo folder-icon"></div>
-                    <h4>{state.selectedContainer.containerName}</h4>
+                <div className="container-data col-4">
+                    <ContainerIcon
+                        size={"medium"}/>
+                    <HeadingGeneral
+                        level={"h5"}
+                        isUppercase={false}
+                        text={state.selectedContainer.containerName}/>
                     <HeadingGeneral
                         level={"h6"}
                         isUppercase={true}
@@ -72,32 +83,35 @@ function retrieveCorrectComponent(state, onObjectSelection, onObjectDelete, onOb
                         <ContainerShareButton
                             containerId={state.selectedContainer.containerID}
                             contacts={state.contacts}/>
-                        {
+                            {
                             state.selectedObject ?
-                                <><span id={"objectData"}>
+                                <>
+                                    <div className="object-data" id={"objectData"}>
                                         <HeadingGeneral
-                                            level={"h4"}
+                                            level={"h5"}
+                                            isUppercase={false}
+                                            text={state.selectedObject.objectName || null}/>
+                                        <HeadingGeneral
+                                            level={"h6"}
                                             isUppercase={true}
-                                            text={"Selected Object"}/>
-                                    { state.selectedContainer.permissions === 264211711 || 264224767 ?
-                                        <p onClick={() => openInDefaultBrowser(`https://http.testnet.fs.neo.org/${state.selectedContainer.containerID}/${state.selectedObject.objectID}`)} style={{fontSize: 9}}>Click to view in web browser</p> : null }
-                                    <HeadingGeneral
-                                        level={"h6"}
-                                        isUppercase={true}
-                                        text={"Object name"}/>
-                                            <p style={{fontSize: 9}}>{state.selectedObject.objectName || null}</p>
-                                            <HeadingGeneral
-                                                level={"h6"}
-                                                isUppercase={true}
-                                                text={"Object Id"}/>
-                                            <p style={{fontSize: 9}}>{state.selectedObject.objectID || null}</p>
-                                            <ContainerPreviewButton icon="fas fa-download" text="Download this object" onClick={onObjectDownload}></ContainerPreviewButton>
-                                        </span>
+                                            text={"Object ID"}/>
+                                            <p>{state.selectedObject.objectID || null}</p>
+                                        <ContainerPreviewButton icon="fas fa-download" text="Download this object" onClick={onObjectDownload}></ContainerPreviewButton>
+                                        { state.selectedContainer.permissions === 264211711 || 264224767 ?
+                                            <ButtonText 
+                                                type="clean"
+                                                size="small"
+                                                hasIcon={true}
+                                                faClass={"fas fa-external-link"}
+                                                text={"Click to view file in web browser"}
+                                                onClick={() => openInDefaultBrowser(`https://http.testnet.fs.neo.org/${state.selectedContainer.containerID}/${state.selectedObject.objectID}`)} /> 
+                                        : null }
+                                    </div>
                                 </> : null
-                        }
+                            }
                     </div>
                 </div>
-                <div className="col-9">
+                <div className="col-8">
                     <div className="orgContainersGrid">
                         <div className="row">
                             <ViewObjects objectsLoaded={state.objectsLoaded} onDelete={onObjectDelete} objectList={state.objectList} viewMode={state.viewMode} onObjectSelection={onObjectSelection}></ViewObjects>
