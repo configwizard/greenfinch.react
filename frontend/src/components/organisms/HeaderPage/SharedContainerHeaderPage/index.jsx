@@ -45,7 +45,7 @@ const SharedContainerHeaderPage = ({ pageTitle, hasButton, hasIcon, faClass, but
                                         primaryClicked={async () => {
                                                 const containerID = document.getElementById("sharedContainerID").value
                                                 console.log("adding container ", containerID)
-                                                addSharedContainer(containerID)
+                                                await addSharedContainer(containerID)
                                             }}
                                         secondaryClicked={async () => unSetModal()}>
                                         <Form.Group className="form-div">

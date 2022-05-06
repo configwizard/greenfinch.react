@@ -2,6 +2,24 @@
 
 export {};
 
+export class contact {
+    firstName: string;
+    lastName: string;
+    walletAddress: string;
+    publicKey: string;
+
+    static createFrom(source: any = {}) {
+        return new contact(source);
+    }
+
+    constructor(source: any = {}) {
+        if ('string' === typeof source) source = JSON.parse(source);
+        this.firstName = source["firstName"];
+        this.lastName = source["lastName"];
+        this.walletAddress = source["walletAddress"];
+        this.publicKey = source["publicKey"];
+    }
+}
 export class Client {
 
 
@@ -14,6 +32,7 @@ export class Client {
 
     }
 }
+
 export class Element {
     id: string;
     size: number;
@@ -176,6 +195,7 @@ export class Object {
 
 
 
+
 export class UXMessage {
 
 
@@ -190,24 +210,7 @@ export class UXMessage {
 }
 
 
-export class contact {
-    firstName: string;
-    lastName: string;
-    walletAddress: string;
-    publicKey: string;
 
-    static createFrom(source: any = {}) {
-        return new contact(source);
-    }
-
-    constructor(source: any = {}) {
-        if ('string' === typeof source) source = JSON.parse(source);
-        this.firstName = source["firstName"];
-        this.lastName = source["lastName"];
-        this.walletAddress = source["walletAddress"];
-        this.publicKey = source["publicKey"];
-    }
-}
 
 export class ProgressMessage {
 

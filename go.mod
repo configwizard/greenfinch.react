@@ -14,7 +14,7 @@ require (
 	github.com/nspcc-dev/neo-go v0.98.1
 	github.com/nspcc-dev/neofs-sdk-go v1.0.0-rc.2
 	github.com/swaggo/swag v1.8.1
-	github.com/wailsapp/wails/v2 v2.0.0-beta.34
+	github.com/wailsapp/wails/v2 v2.0.0-beta.33
 )
 
 require (
@@ -95,3 +95,4 @@ require (
 )
 
 //replace github.com/wailsapp/wails/v2 => /Users/alex.walker/go/src/github.com/wailsapp/wails/v2
+replace github.com/configwizard/gaspump-api => /Users/alex.walker/go/src/github.com/configwizard/gaspump-api

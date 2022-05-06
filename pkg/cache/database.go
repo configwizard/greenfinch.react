@@ -43,6 +43,10 @@ func CreateWalletBucket(wallet, walletLocation string) error {
 		if err != nil {
 			return fmt.Errorf("creating bucket failed: %s", err)
 		}
+		_, err = userBucket.CreateBucketIfNotExists([]byte("shared_object_bucket"))
+		if err != nil {
+			return fmt.Errorf("creating bucket failed: %s", err)
+		}
 		_, err = userBucket.CreateBucketIfNotExists([]byte("objects"))
 		if err != nil {
 			return fmt.Errorf("creating bucket failed: %s", err)

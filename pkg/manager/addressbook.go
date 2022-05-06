@@ -49,9 +49,9 @@ func (m *Manager) RetrieveContactByWalletAddress(walletAddress string) (contact,
 	return c, nil
 }
 
-func (m *Manager) AddContact(firstName, lastName, walletAddress, publicKey string) error {
+func (m *Manager) AddContact(firstName, lastName, walletAddress, publicKey string) ([]contact, error) {
 	if m.wallet == nil {
-		return errors.New("no wallet loaded")
+		return []contact{}, errors.New("no wallet loaded")
 	}
 	w := m.wallet.Accounts[0].Address
 	c := contact{
@@ -62,18 +62,22 @@ func (m *Manager) AddContact(firstName, lastName, walletAddress, publicKey strin
 	}
 	byt, err := json.Marshal(c)
 	if err != nil {
-		return err
+		return []contact{}, err
 	}
 	if err := cache.StoreContact(w, walletAddress, byt); err != nil {
-		return err
+		return []contact{}, err
 	}
-	return nil
+	return m.RetrieveContacts()
 }
 
-func (m *Manager) DeleteContact(walletAddress string) error {
+func (m *Manager) DeleteContact(walletAddress string) ([]contact, error) {
 	if m.wallet == nil {
-		return errors.New("no wallet loaded")
+		return []contact{}, errors.New("no wallet loaded")
 	}
 	w := m.wallet.Accounts[0].Address
-	return cache.DeleteContact(w, walletAddress)
+	err := cache.DeleteContact(w, walletAddress)
+	if err != nil {
+		return []contact{}, err
+	}
+	return m.RetrieveContacts()
 }

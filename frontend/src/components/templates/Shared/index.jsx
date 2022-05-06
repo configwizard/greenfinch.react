@@ -12,6 +12,7 @@ import '../_settings/style.scss';
 import {addSharedContainer, listSharedContainers} from "../../../manager/sharedContainers";
 import ViewContainers from "../../organisms/ViewContainers";
 import {listObjects} from "../../../manager/objects";
+import {listSharedContainerObjects} from "../../../manager/sharedContainers";
 import retrieveCorrectComponent from "../hacked/containerObjectHandler";
 
 class SharedContainers extends React.Component {
@@ -25,7 +26,7 @@ class SharedContainers extends React.Component {
         console.log("listing shared containers", containerList)
         await this.setState(this.setState({...this.state, containerList}))
     }
-    onContainerSelection = async (containerID, containerName, permissions, sharable, createdAt, size) => {
+    onSharedContainerSelection = async (containerID, containerName, permissions, sharable, createdAt, size) => {
         //we will need to call the function to get the objects for a specific container ID and update the objectList
         const selectedContainer = {
             containerID,
@@ -35,13 +36,13 @@ class SharedContainers extends React.Component {
             createdAt,
             size
         }
-        console.log("selected shared container.... ", selectedContainer)
+        console.log("selected container.... ", selectedContainer)
         let state = this.state
 
         this.setState({...state, selectedContainer, objectsLoaded: false})
-        // const objectList = await listSharedObjects(containerID)
-        // console.log("container selected object list", objectList)
-        // this.setState({...state, selectedContainer, objectList, objectsLoaded: true})
+        const objectList = await listSharedContainerObjects(containerID)
+        console.log("container selected object list", objectList)
+        this.setState({...state, selectedContainer, objectList, objectsLoaded: true})
     }
     addSharedContainer() {}
 
@@ -61,7 +62,7 @@ class SharedContainers extends React.Component {
                             buttonText={"Add shared container"}
                         />
                         <div className="row">
-                            {retrieveCorrectComponent(this.state, null, null, null, null, this.onContainerSelection, null)}
+                            {retrieveCorrectComponent(this.state, null, null, null, null, this.onSharedContainerSelection, null)}
                         </div>
                         {/*<div class="row">*/}
                         {/*    <div class="col-12">*/}

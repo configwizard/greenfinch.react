@@ -7,13 +7,12 @@ import RowElement from '../../atoms/RowElement';
 import Tooltip from '../../atoms/Tooltip';
 
 import './style.scss';
-import {deleteContact} from "../../../manager/contacts"
 import CompModalStandard from "../../organisms/Modal/ModalStandard";
 import {Form} from "react-bootstrap";
 import { useModal } from '../../organisms/Modal/ModalContext';
 
 
-const RowAddress = ({first, contact}) => {
+const RowAddress = ({first, contact, deleteContact}) => {
     const { setModal, unSetModal } = useModal()
     console.log("row address ", contact)
     return (

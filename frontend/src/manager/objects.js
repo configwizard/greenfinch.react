@@ -27,7 +27,8 @@ const getObjectMetaData = async (objId, containerID) => {
 }
 const deleteObject = async (objId, containerID) => {
     try {
-        await window.go.manager.Manager.DeleteObject(objId, containerID)
+        const response = await window.go.manager.Manager.DeleteObject(objId, containerID)
+        return response || []
     } catch(e) {
         console.log("error deleting object ", e)
     }
@@ -36,8 +37,8 @@ const deleteObject = async (objId, containerID) => {
 const uploadObject = async (containerID) => {
     try {
         let attributes = {} //map - string:string only - will cause error
-        let result = await window.go.manager.Manager.Upload(containerID, attributes)
-        return result
+        let response = await window.go.manager.Manager.Upload(containerID, attributes)
+        return response || []
     } catch(e) {
         console.log("error uploading content", e)
     }

@@ -10,7 +10,7 @@ const go = {
        * @param {string} arg2 - Go Type: string
        * @param {string} arg3 - Go Type: string
        * @param {string} arg4 - Go Type: string
-       * @returns {Promise<Error>}  - Go Type: error
+       * @returns {Promise<Array<contact>|Error>}  - Go Type: []manager.contact
        */
       "AddContact": (arg1, arg2, arg3, arg4) => {
         return window.go.manager.Manager.AddContact(arg1, arg2, arg3, arg4);
@@ -25,7 +25,7 @@ const go = {
       },
       /**
        * Client
-       * @returns {Promise<models.Client|Error>}  - Go Type: *client.Client
+       * @returns {Promise<Client|Error>}  - Go Type: *client.Client
        */
       "Client": () => {
         return window.go.manager.Manager.Client();
@@ -51,7 +51,7 @@ const go = {
       /**
        * DeleteContact
        * @param {string} arg1 - Go Type: string
-       * @returns {Promise<Error>}  - Go Type: error
+       * @returns {Promise<Array<contact>|Error>}  - Go Type: []manager.contact
        */
       "DeleteContact": (arg1) => {
         return window.go.manager.Manager.DeleteContact(arg1);
@@ -59,7 +59,7 @@ const go = {
       /**
        * DeleteContainer
        * @param {string} arg1 - Go Type: string
-       * @returns {Promise<Array<models.Element>|Error>}  - Go Type: []filesystem.Element
+       * @returns {Promise<Array<Element>|Error>}  - Go Type: []filesystem.Element
        */
       "DeleteContainer": (arg1) => {
         return window.go.manager.Manager.DeleteContainer(arg1);
@@ -68,7 +68,7 @@ const go = {
        * DeleteObject
        * @param {string} arg1 - Go Type: string
        * @param {string} arg2 - Go Type: string
-       * @returns {Promise<Array<models.Element>|Error>}  - Go Type: []filesystem.Element
+       * @returns {Promise<Array<Element>|Error>}  - Go Type: []filesystem.Element
        */
       "DeleteObject": (arg1, arg2) => {
         return window.go.manager.Manager.DeleteObject(arg1, arg2);
@@ -95,7 +95,7 @@ const go = {
        * @param {string} arg1 - Go Type: string
        * @param {string} arg2 - Go Type: string
        * @param {number} arg3 - Go Type: int
-       * @param {models.Writer} arg4 - Go Type: *io.Writer
+       * @param {Writer} arg4 - Go Type: *io.Writer
        * @returns {Promise<Array<number>|Error>}  - Go Type: []uint8
        */
       "Get": (arg1, arg2, arg3, arg4) => {
@@ -103,7 +103,7 @@ const go = {
       },
       /**
        * GetAccountInformation
-       * @returns {Promise<models.Account|Error>}  - Go Type: manager.Account
+       * @returns {Promise<Account|Error>}  - Go Type: manager.Account
        */
       "GetAccountInformation": () => {
         return window.go.manager.Manager.GetAccountInformation();
@@ -112,7 +112,7 @@ const go = {
        * GetObjectMetaData
        * @param {string} arg1 - Go Type: string
        * @param {string} arg2 - Go Type: string
-       * @returns {Promise<models.Object|Error>}  - Go Type: *object.Object
+       * @returns {Promise<Object|Error>}  - Go Type: *object.Object
        */
       "GetObjectMetaData": (arg1, arg2) => {
         return window.go.manager.Manager.GetObjectMetaData(arg1, arg2);
@@ -135,7 +135,7 @@ const go = {
        * ListContainerObjects
        * @param {string} arg1 - Go Type: string
        * @param {boolean} arg2 - Go Type: bool
-       * @returns {Promise<Array<models.Element>|Error>}  - Go Type: []filesystem.Element
+       * @returns {Promise<Array<Element>|Error>}  - Go Type: []filesystem.Element
        */
       "ListContainerObjects": (arg1, arg2) => {
         return window.go.manager.Manager.ListContainerObjects(arg1, arg2);
@@ -143,14 +143,23 @@ const go = {
       /**
        * ListContainers
        * @param {boolean} arg1 - Go Type: bool
-       * @returns {Promise<Array<models.Element>|Error>}  - Go Type: []filesystem.Element
+       * @returns {Promise<Array<Element>|Error>}  - Go Type: []filesystem.Element
        */
       "ListContainers": (arg1) => {
         return window.go.manager.Manager.ListContainers(arg1);
       },
       /**
+       * ListSharedContainerObjects
+       * @param {string} arg1 - Go Type: string
+       * @param {boolean} arg2 - Go Type: bool
+       * @returns {Promise<Array<Element>|Error>}  - Go Type: []filesystem.Element
+       */
+      "ListSharedContainerObjects": (arg1, arg2) => {
+        return window.go.manager.Manager.ListSharedContainerObjects(arg1, arg2);
+      },
+      /**
        * ListSharedContainers
-       * @returns {Promise<Array<models.Element>|Error>}  - Go Type: []filesystem.Element
+       * @returns {Promise<Array<Element>|Error>}  - Go Type: []filesystem.Element
        */
       "ListSharedContainers": () => {
         return window.go.manager.Manager.ListSharedContainers();
@@ -174,7 +183,7 @@ const go = {
       },
       /**
        * MakeNotification
-       * @param {models.UXMessage} arg1 - Go Type: manager.UXMessage
+       * @param {UXMessage} arg1 - Go Type: manager.UXMessage
        * @returns {Promise<void>} 
        */
       "MakeNotification": (arg1) => {
@@ -182,7 +191,7 @@ const go = {
       },
       /**
        * MakeToast
-       * @param {models.UXMessage} arg1 - Go Type: manager.UXMessage
+       * @param {UXMessage} arg1 - Go Type: manager.UXMessage
        * @returns {Promise<void>} 
        */
       "MakeToast": (arg1) => {
@@ -191,7 +200,7 @@ const go = {
       /**
        * NewListReadOnlyContainerContents
        * @param {number} arg1 - Go Type: int64
-       * @returns {Promise<Array<models.Element>|Error>}  - Go Type: []filesystem.Element
+       * @returns {Promise<Array<Element>|Error>}  - Go Type: []filesystem.Element
        */
       "NewListReadOnlyContainerContents": (arg1) => {
         return window.go.manager.Manager.NewListReadOnlyContainerContents(arg1);
@@ -231,14 +240,14 @@ const go = {
       /**
        * RetrieveContactByWalletAddress
        * @param {string} arg1 - Go Type: string
-       * @returns {Promise<models.contact|Error>}  - Go Type: manager.contact
+       * @returns {Promise<contact|Error>}  - Go Type: manager.contact
        */
       "RetrieveContactByWalletAddress": (arg1) => {
         return window.go.manager.Manager.RetrieveContactByWalletAddress(arg1);
       },
       /**
        * RetrieveContacts
-       * @returns {Promise<Array<models.contact>|Error>}  - Go Type: []manager.contact
+       * @returns {Promise<Array<contact>|Error>}  - Go Type: []manager.contact
        */
       "RetrieveContacts": () => {
         return window.go.manager.Manager.RetrieveContacts();
@@ -254,7 +263,7 @@ const go = {
       },
       /**
        * SetProgressPercentage
-       * @param {models.ProgressMessage} arg1 - Go Type: manager.ProgressMessage
+       * @param {ProgressMessage} arg1 - Go Type: manager.ProgressMessage
        * @returns {Promise<void>} 
        */
       "SetProgressPercentage": (arg1) => {
@@ -297,7 +306,7 @@ const go = {
        * Upload
        * @param {string} arg1 - Go Type: string
        * @param {any} arg2 - Go Type: map[string]string
-       * @returns {Promise<Array<models.Element>|Error>}  - Go Type: []filesystem.Element
+       * @returns {Promise<Array<Element>|Error>}  - Go Type: []filesystem.Element
        */
       "Upload": (arg1, arg2) => {
         return window.go.manager.Manager.Upload(arg1, arg2);
@@ -308,8 +317,8 @@ const go = {
        * @param {string} arg2 - Go Type: string
        * @param {number} arg3 - Go Type: int
        * @param {any} arg4 - Go Type: map[string]string
-       * @param {models.Reader} arg5 - Go Type: *io.Reader
-       * @returns {Promise<Array<models.Element>|Error>}  - Go Type: []filesystem.Element
+       * @param {Reader} arg5 - Go Type: *io.Reader
+       * @returns {Promise<Array<Element>|Error>}  - Go Type: []filesystem.Element
        */
       "UploadObject": (arg1, arg2, arg3, arg4, arg5) => {
         return window.go.manager.Manager.UploadObject(arg1, arg2, arg3, arg4, arg5);

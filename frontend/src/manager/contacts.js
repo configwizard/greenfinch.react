@@ -19,8 +19,9 @@ const shareContainerWithContact = async(containerId, publicKey) => {
 
 const createContact = async (firstName, lastName, walletAddress, publicKey) => {
     try {
-        console.log(firstName, lastName, walletAddress)
-        await window.go.manager.Manager.AddContact(firstName, lastName, walletAddress, publicKey)
+        console.log("creating contact ", firstName, lastName, walletAddress)
+        const contacts = await window.go.manager.Manager.AddContact(firstName, lastName, walletAddress, publicKey)
+        return contacts || []
     }catch (e) {
         console.log("error listing containers", e)
         return []
@@ -29,7 +30,8 @@ const createContact = async (firstName, lastName, walletAddress, publicKey) => {
 const deleteContact = async (walletAddress) => {
     try {
         console.log('deleting', walletAddress)
-        await window.go.manager.Manager.DeleteContact(walletAddress)
+        const contacts = await window.go.manager.Manager.DeleteContact(walletAddress)
+        return contacts || []
     }catch (e) {
         console.log("error listing containers", e)
         return []

@@ -98,6 +98,10 @@ class App extends React.Component {
         console.log("setting wallet details to ", account)
         await this.setState({account})
     }
+    refreshRecentWallets = async() => {
+        const recentWallets = await retrieveRecentWallets()
+        this.setState({...this.state, recentWallets})
+    }
     // waitForWallet();
     render() {
     // const location = useLocation();
@@ -114,7 +118,7 @@ class App extends React.Component {
                             </div>
                             <div className="w-100">
                                 <Routes>
-                                    <Route path="/" exact element={<PageHome recentWallets={this.state.recentWallets} account={this.state.account}/>} />
+                                    <Route path="/" exact element={<PageHome refreshRecentWallets={this.refreshRecentWallets} recentWallets={this.state.recentWallets} account={this.state.account}/>} />
                                     <Route path="/containers" exact element={<PageContainers setStatusAccount={this.setStatusAccount} account={this.state.account}/>} />
                                     <Route path="/websites" exact element={<PageWebsites/>} />
                                     <Route path="/contacts" exact element={<PageContacts/>} />

@@ -12,7 +12,7 @@ import CompModalStandard from "../Modal/ModalStandard";
 import {Form} from "react-bootstrap";
 
 
-const LoadWallet = ({account, recentWallets}) => {
+const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
         const { setModal, unSetModal } = useModal()
         console.log("propogating wallet", account, recentWallets)
         return (
@@ -43,7 +43,11 @@ const LoadWallet = ({account, recentWallets}) => {
                                                         title={"Wallet Password"}
                                                         buttonTextPrimary={"Locate wallet"}
                                                         buttonTextSecondary={"Cancel"}
-                                                        primaryClicked={async () => {await loadWallet(document.getElementById("loadWalletPassword").value); await unSetModal()}}
+                                                        primaryClicked={async () => {
+                                                            await loadWallet(document.getElementById("loadWalletPassword").value);
+                                                            await unSetModal()
+                                                            await refreshRecentWallets()
+                                                        }}
                                                         secondaryClicked={async () => unSetModal()}>
                                                         <Form.Group className="form-div">
                                                             <Form.Label>Password</Form.Label>
@@ -67,7 +71,8 @@ const LoadWallet = ({account, recentWallets}) => {
                                                             if (document.getElementById("createWalletPassword").value === document.getElementById("createWalletPasswordMatch").value) {
                                                                 await newWallet(document.getElementById("createWalletPassword").value)
                                                             }
-                                                            unSetModal()
+                                                            await unSetModal()
+                                                            await refreshRecentWallets()
                                                         }}
                                                         secondaryClicked={async () => unSetModal()}>
                                                         <Form.Group className="form-div">

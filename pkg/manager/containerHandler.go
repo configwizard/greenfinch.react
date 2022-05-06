@@ -406,7 +406,7 @@ func (m *Manager) RestrictContainer(id string, publicKey string) error {
 		m.MakeToast(NewToastMessage(&tmp))
 		return err
 	}
-	table := eacl.PutAllowDenyOthersEACL(c, pKey)
+	table := eacl.AllAllowDenyOthersEACL(c, pKey)
 	var prmContainerSetEACL client.PrmContainerSetEACL
 	prmContainerSetEACL.SetTable(table)
 	fsCli, err := m.Client()

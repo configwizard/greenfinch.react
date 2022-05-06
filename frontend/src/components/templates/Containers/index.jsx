@@ -108,7 +108,8 @@ class Containers extends React.Component {
             throw new Error("cannot retrieve an object from non existent container")
         }
         let state = this.state
-        await uploadObject(this.state.selectedContainer.containerID)
+        const objectList = await uploadObject(this.state.selectedContainer.containerID)
+        this.setState({...this.state, objectList})
     }
     onContainerDelete = async (containerId) => {
         this.setState(this.setState({...this.state, containerList: []}))
@@ -123,8 +124,9 @@ class Containers extends React.Component {
             throw new Error("cannot retrieve an object from non existent container")
         }
         const containerId = this.state.selectedContainer.containerID
-        let response = await deleteObject(objectId, containerId)
-        console.log("deleting object ", objectId, containerId, response)
+        let objectList = await deleteObject(objectId, containerId)
+        console.log("deleting object ", objectId, containerId, objectList)
+        this.setState({...this.state, objectList})
 
     }
     resetBreadcrumb = async () => {

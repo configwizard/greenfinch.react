@@ -9,7 +9,7 @@ import { SectionHomepage, SectionSupport } from '../../organisms/HomeSections';
 // Central style sheet for templates
 import '../_settings/style.scss';
 
-const TemplateHome = ({ account, recentWallets }) => {
+const TemplateHome = ({ account, recentWallets, refreshRecentWallets }) => {
     return (
         <div class="templatePage d-flex flex-column flex-grow-1">
             <div class="row">
@@ -53,7 +53,8 @@ const TemplateHome = ({ account, recentWallets }) => {
                                     </div>   
                                     <LoadWallet
                                         account={account}
-                                        recentWallets={recentWallets}/>
+                                        recentWallets={recentWallets}
+                                        refreshRecentWallets={refreshRecentWallets}/>
                                 </div>
                             </div>
                         </div>
