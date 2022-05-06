@@ -39,7 +39,7 @@ const SharedContainerHeaderPage = ({ pageTitle, hasButton, hasIcon, faClass, but
                             onClick={() => {
                                 setModal(
                                     <CompModalStandard
-                                        title={"Add a shared container"}
+                                        title={"Add shared container"}
                                         buttonTextPrimary={"Add"}
                                         buttonTextSecondary={"Cancel"}
                                         primaryClicked={async () => {
@@ -49,10 +49,11 @@ const SharedContainerHeaderPage = ({ pageTitle, hasButton, hasIcon, faClass, but
                                             }}
                                         secondaryClicked={async () => unSetModal()}>
                                         <Form.Group className="form-div">
-                                            <Form.Label>To add a shared container, enter the &lsquo;Container
-                                                ID&rsquo;.</Form.Label>
-                                            <Form.Control id="sharedContainerID" type="text"
-                                                          placeholder="Container ID"/>
+                                            <Form.Label>To add a shared container, enter the &lsquo;Container ID&rsquo;:</Form.Label>
+                                            <Form.Control 
+                                                id="sharedContainerID" 
+                                                type="text"
+                                                placeholder="Container ID"/>
                                         </Form.Group>
                                     </CompModalStandard>)
                             }} />

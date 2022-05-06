@@ -1,3 +1,5 @@
+import React from "react";
+
 import ViewContainers from "../../organisms/ViewContainers";
 import HeadingGeneral from "../../atoms/HeadingGeneral";
 import Moment from "react-moment";
@@ -7,9 +9,16 @@ import {fileSize} from "humanize-plus";
 import ButtonText from '../../atoms/ButtonText';
 import ContainerIcon from '../../atoms/ContainerIcon';
 import ViewObjects, {ContainerPreviewButton} from "../../organisms/ViewObjects";
+
+import ContainerInfoButton from "../../organisms/ContainerInfoButton";
 import ContainerShareButton from "../../organisms/ContainerShareButton";
+import ObjectInfoButton from "../../organisms/ObjectInfoButton";
 import {openInDefaultBrowser} from "../../../manager/manager";
-import React from "react";
+
+import { useModal } from '../../organisms/Modal/ModalContext';
+import CompModalStandard from '../../organisms/Modal/ModalStandard';
+
+
 
 // Central style sheet for templates
 import '../_settings/style.scss';
@@ -76,6 +85,12 @@ function retrieveCorrectComponent(state, onObjectSelection, onObjectDelete, onOb
                         text={"Container size"}/>
                     <p>{fileSize(state.selectedContainer.size)}</p>
                     <div class="buttonStack">
+                        <ContainerInfoButton
+                            containerName={state.selectedContainer.containerName}
+                            containerId={state.selectedContainer.containerID}
+                            containerPermission={selectPermission(state.selectedContainer.permissions)}
+                            containerCreated={<Moment unix format="DD MMM YY">{state.selectedContainer.createdAt}</Moment>}
+                            containerSize={fileSize(state.selectedContainer.size)} />
                         <ContainerPreviewButton
                             icon="fas fa-upload"
                             text="Upload to this container"
@@ -96,7 +111,11 @@ function retrieveCorrectComponent(state, onObjectSelection, onObjectDelete, onOb
                                             isUppercase={true}
                                             text={"Object ID"}/>
                                             <p>{state.selectedObject.objectID || null}</p>
+                                        <ObjectInfoButton
+                                            objectName={state.selectedObject.objectName}
+                                            objectId={state.selectedObject.objectID} />
                                         <ContainerPreviewButton icon="fas fa-download" text="Download this object" onClick={onObjectDownload}></ContainerPreviewButton>
+                                        
                                         { state.selectedContainer.permissions === 264211711 || 264224767 ?
                                             <ButtonText 
                                                 type="clean"

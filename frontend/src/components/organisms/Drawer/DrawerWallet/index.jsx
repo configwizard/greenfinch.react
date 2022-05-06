@@ -42,8 +42,12 @@ const DrawerWallet = (props) => {
                         type={"number"}
                         title={"GAS balance"}
                         value={props.account.gasBalance} />
-                    <button type="button" className="atmButtonIconClean" onClick={() => props.refreshAccount()}><i
-                        className="fa-solid fa-arrows-rotate"></i>refresh balance</button>
+                        <ButtonText 
+                            type="default"
+                            size="small"
+                            onClick={() => props.refreshAccount()}
+                            text={"Refresh balance"}
+                            faClass={"fas fa-sync-alt"} />
                     <hr />
                 </section>
                 <section className="wallet-footer">

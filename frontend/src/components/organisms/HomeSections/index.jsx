@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 // Components
-import ButtonText from '../../atoms/ButtonText';
+import HomeLink from '../../atoms/HomeLink';
 import HeadingGeneral from '../../atoms/HeadingGeneral';
 
 import { NavLink } from 'react-router-dom'; 
@@ -17,25 +17,50 @@ const SectionSupport = ({ titleLevel, sectionTitle }) => {
                 level={titleLevel}
                 isUppercase={false}
                 text={sectionTitle} />
-                <div className="section-homepage">
-                    <ul>
-                        <li className="navlink-homepage" style={{cursor: "pointer"}}>
-                            <span onClick={() => openInDefaultBrowser("https://youtube.com/greenfinch")}>Greenfinch overview</span>
-                        </li>
-                        <li className="navlink-homepage" style={{cursor: "pointer"}}>
-                            <span onClick={() => openInDefaultBrowser("https://youtube.com/greenfinch")}>Using wallets</span>
-                        </li>
-                        <li className="navlink-homepage" style={{cursor: "pointer"}}>
-                            <span onClick={() => openInDefaultBrowser("https://youtube.com/greenfinch")}>Containers and object</span>
-                        </li>
-                        <li className="navlink-homepage" style={{cursor: "pointer"}}>
-                            <span onClick={() => openInDefaultBrowser("https://youtube.com/greenfinch")}>Managing contacts</span>
-                        </li>
-                        <li className="navlink-homepage" style={{cursor: "pointer"}}>
-                            <span onClick={() => openInDefaultBrowser("https://youtube.com/greenfinch")}>Sharing containers</span>
-                        </li>
-                    </ul>
-                </div>
+            <div className="section-homepage">
+                <ul>
+                    <li className="home-link">
+                        <HomeLink
+                            className="d-block"
+                            text={"Greenfinch Overview"}
+                            faClass={"fab fa-youtube"}
+                            onClick={() => openInDefaultBrowser("https://youtube.com/greenfinch")}>
+                        </HomeLink>
+                    </li>
+                    <li className="home-link">
+                        <HomeLink
+                            className="d-block"
+                            text={"Using wallets"}
+                            faClass={"fab fa-youtube"}
+                            onClick={() => openInDefaultBrowser("https://youtube.com/greenfinch")}>
+                        </HomeLink>
+                    </li>
+                    <li className="home-link">
+                        <HomeLink
+                            className="d-block"
+                            text={"Containers and object"}
+                            faClass={"fab fa-youtube"}
+                            onClick={() => openInDefaultBrowser("https://youtube.com/greenfinch")}>
+                        </HomeLink>
+                    </li>
+                    <li className="home-link">
+                        <HomeLink
+                            className="d-block"
+                            text={"Managing contacts"}
+                            faClass={"fab fa-youtube"}
+                            onClick={() => openInDefaultBrowser("https://youtube.com/greenfinch")}>
+                        </HomeLink>
+                    </li>
+                    <li className="home-link">
+                        <HomeLink
+                            className="d-block"
+                            text={"Sharing containers"}
+                            faClass={"fab fa-youtube"}
+                            onClick={() => openInDefaultBrowser("https://youtube.com/greenfinch")}>
+                        </HomeLink>
+                    </li>
+                </ul>
+            </div>
         </>
     );
 }
@@ -48,26 +73,26 @@ const SectionHomepage = ({ titleLevel, sectionTitle }) => {
                 level={titleLevel}
                 isUppercase={false}
                 text={sectionTitle} />
-                <div className="section-homepage">
-                    <ul>
-                        <li className="navlink-homepage">
-                            <NavLink
-                                className="d-block"
-                                to="/containers"
-                                label="Containers">
-                                <i className="fas fa-copy"/>View containers...
+            <div className="section-homepage">
+                <ul>
+                    <li className="navlink-homepage">
+                        <NavLink
+                            className="d-block"
+                            to="/containers"
+                            label="Containers">
+                            <i className="fas fa-copy"/>View containers...
                         </NavLink>
-                        </li>
-                        <li className="navlink-homepage">
-                            <NavLink
-                                className="d-block"
-                                to="/contacts"
-                                label="Contacts">
-                                <i className="fas fa-address-book"/>View contacts...
-                            </NavLink>
-                        </li>
-                    </ul>
-                </div>
+                    </li>
+                    <li className="navlink-homepage">
+                        <NavLink
+                            className="d-block"
+                            to="/contacts"
+                            label="Contacts">
+                            <i className="fas fa-address-book"/>View contacts...
+                        </NavLink>
+                    </li>
+                </ul>
+            </div>
         </>
     );
 }

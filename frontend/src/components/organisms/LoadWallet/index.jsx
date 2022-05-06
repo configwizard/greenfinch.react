@@ -50,8 +50,8 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                                         }}
                                                         secondaryClicked={async () => unSetModal()}>
                                                         <Form.Group className="form-div">
-                                                            <Form.Label>Password</Form.Label>
-                                                            <Form.Control id="loadWalletPassword" type="password" />
+                                                            <Form.Label>Enter password for existing wallet:</Form.Label>
+                                                            <Form.Control id="loadWalletPassword" type="password" placeholder="Password" />
                                                         </Form.Group>
                                                     </CompModalStandard>)
                                             }}/>
@@ -76,12 +76,12 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                                         }}
                                                         secondaryClicked={async () => unSetModal()}>
                                                         <Form.Group className="form-div">
-                                                            <Form.Label>Password</Form.Label>
-                                                            <Form.Control id="createWalletPassword" type="password" placeholder="password" />
+                                                            <Form.Label>To create a new wallet, you will need a password:</Form.Label>
+                                                            <Form.Control id="createWalletPassword" type="password" placeholder="Password" />
                                                         </Form.Group>
                                                         <Form.Group className="form-div">
-                                                            <Form.Label>Confirm Password</Form.Label>
-                                                            <Form.Control id="createWalletPasswordMatch" type="password" placeholder="Confirm password" />
+                                                            <Form.Label>Re-enter password to confirm:</Form.Label>
+                                                            <Form.Control id="createWalletPasswordMatch" type="password" placeholder="Password" />
                                                         </Form.Group>
                                                     </CompModalStandard>)
                                             }}/>

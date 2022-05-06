@@ -1,0 +1,22 @@
+@import "../../../assets/dashboard-variables.scss";
+@import "../../../assets/greenfinch-variables.scss";
+
+li.home-link{
+    overflow: visible;
+    & button {
+        font-family: $brandFontSemi;
+        transition: $brandTransitionSpeed;
+        background-color: rgba(0,0,0,0);
+        padding: 0 $paddingXSmall;
+        color: $brandColorDark;
+        margin-bottom: $marginXSmall;
+        text-decoration: none;
+        &:hover {
+            cursor: pointer;
+            color: $brandColorSecondary;
+        }
+        & i {
+            margin-right: $marginSmall;
+        }
+    }
+}
