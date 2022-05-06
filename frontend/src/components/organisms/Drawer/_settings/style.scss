@@ -14,12 +14,16 @@
 }
 
 .molBlockSwitch, .molBlockDropdown {
-    margin-bottom: $marginLarge;
+    margin-bottom: $marginMedium;
 }
 
 h4 {
     margin-top: $marginSmall;
     margin-bottom: $marginSmall;
+}
+
+.button-offcanvas {
+    background: none;
 }
 
 
@@ -29,6 +33,20 @@ h4 {
         color: $brandColorDark;
         font-size: 0.8rem;
         line-height: 1.25;
+        &.temp-small {
+            font-size: 0.7rem;
+            line-height: 1.6; 
+        }
+        & button {
+            background: none;
+            text-decoration: underline;
+            margin: 0;
+            padding: 0;
+            &:hover {
+                color: rgb(0,0,0,);
+                cursor: pointer;
+            }
+        }
     }
     & h4 {
         @include titleStyle(0.9rem);
