@@ -229,6 +229,14 @@ const go = {
         return window.go.manager.Manager.RecentWallets();
       },
       /**
+       * RemoveSharedContainer
+       * @param {string} arg1 - Go Type: string
+       * @returns {Promise<Array<Element>|Error>}  - Go Type: []filesystem.Element
+       */
+      "RemoveSharedContainer": (arg1) => {
+        return window.go.manager.Manager.RemoveSharedContainer(arg1);
+      },
+      /**
        * RestrictContainer
        * @param {string} arg1 - Go Type: string
        * @param {string} arg2 - Go Type: string

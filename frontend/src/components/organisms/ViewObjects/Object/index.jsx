@@ -5,11 +5,12 @@ import CardObject from '../../../atoms/CardObject';
 import RowObject from '../../../atoms/RowObject';
 import OverlayMenu from '../../../molecules/OverlayMenu';
 
-export function ObjectGrid({onDelete, onObjectSelection, item}) {
+export function ObjectGrid({showOverlayMenu, onDelete, onObjectSelection, item}) {
     const [showMenu, setShowMenu] = useState(false)
     console.log("item", item)
     return (
         <>
+            {showOverlayMenu ?
             <div className="atmButtonGridHeader d-flex">{/* Overlaymenu option */}
                 <button 
                     type="button" 
@@ -25,7 +26,7 @@ export function ObjectGrid({onDelete, onObjectSelection, item}) {
                             show={showMenu}>
                         </OverlayMenu>
                 </button>
-            </div>
+            </div> : null }
             <CardObject
                 onClick={() => onObjectSelection(item.id, item.attributes.FileName)}
                 objectFile={item.attributes.Thumbnail}
@@ -35,7 +36,7 @@ export function ObjectGrid({onDelete, onObjectSelection, item}) {
         </>
     )
 }
-export function ObjectRow({onDelete, onObjectSelection, item}) { 
+export function ObjectRow({showOverlayMenu, onDelete, onObjectSelection, item}) {
     const [showMenu, setShowMenu] = useState(false)
     return (
         <div className="d-flex flex-row align-items-center">
@@ -45,6 +46,7 @@ export function ObjectRow({onDelete, onObjectSelection, item}) {
                 objectSize={item.size}
                 objectOrigin={item.attributes.Timestamp}>
             </RowObject>
+            {showOverlayMenu ?
             <div className="ms-auto">
                 <button 
                     type="button"   
@@ -54,7 +56,7 @@ export function ObjectRow({onDelete, onObjectSelection, item}) {
                         {/* { !showMenu ? <i className="far fa-ellipsis-h"/> : <i className="far fa-times" style={{"color":"red"}}/> } */}
                         <OverlayMenu onDelete={onDelete} type={item.type} setShowMenu={setShowMenu} show={showMenu}></OverlayMenu>
                 </button>
-            </div>
+            </div> : null }
         </div>
     )
 }

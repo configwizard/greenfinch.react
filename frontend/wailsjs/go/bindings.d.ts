@@ -28,6 +28,7 @@ export interface go {
 		NewWallet(arg1:string):Promise<Error>
 		OpenInDefaultBrowser(arg1:string):Promise<Error>
 		RecentWallets():Promise<any|Error>
+		RemoveSharedContainer(arg1:string):Promise<Array<Element>|Error>
 		RestrictContainer(arg1:string,arg2:string):Promise<Error>
 		RetrieveContactByWalletAddress(arg1:string):Promise<contact|Error>
 		RetrieveContacts():Promise<Array<contact>|Error>

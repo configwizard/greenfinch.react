@@ -28,7 +28,7 @@ import retrieveCorrectComponent from "../hacked/containerObjectHandler";
 class Containers extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {contacts: [], containerList: [], objectList: [], selectedObject: null, selectedContainer: null, viewMode: "grid", objectsLoaded: false, requestNewWallet: false};
+        this.state = {shared: false, contacts: [], containerList: [], objectList: [], selectedObject: null, selectedContainer: null, viewMode: "grid", objectsLoaded: false, requestNewWallet: false};
     }
     async componentDidMount() {
 

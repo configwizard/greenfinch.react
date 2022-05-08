@@ -18,6 +18,17 @@ const listSharedContainers = async () => {
         return []
     }
 }
+const removeSharedContainer = async (containerId) => {
+    try {
+        const containers = await window.go.manager.Manager.RemoveSharedContainer(containerId)
+        console.log("removing containers ", containers)
+        return containers || []
+    }catch (e) {
+        console.log("error removing containers", e)
+        return []
+    }
+}
+
 const listSharedContainerObjects = async (containerID) => {
     try {
         let objects = await window.go.manager.Manager.ListSharedContainerObjects(containerID, false)
@@ -29,6 +40,7 @@ const listSharedContainerObjects = async (containerID) => {
 }
 export {
     addSharedContainer,
+    removeSharedContainer,
     listSharedContainers,
     listSharedContainerObjects
 }

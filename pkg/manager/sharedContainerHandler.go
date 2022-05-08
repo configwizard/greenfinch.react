@@ -1,12 +1,14 @@
 package manager
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/amlwwalker/greenfinch.react/pkg/cache"
 	client2 "github.com/configwizard/gaspump-api/pkg/client"
 	"github.com/configwizard/gaspump-api/pkg/filesystem"
 	"github.com/configwizard/gaspump-api/pkg/object"
+	"github.com/nspcc-dev/neofs-sdk-go/client"
 	cid "github.com/nspcc-dev/neofs-sdk-go/container/id"
 	obj "github.com/nspcc-dev/neofs-sdk-go/object"
 	oid "github.com/nspcc-dev/neofs-sdk-go/object/id"
@@ -14,6 +16,17 @@ import (
 	"sort"
 	"sync"
 )
+
+func getHelperTokenExpiry(ctx context.Context, cli *client.Client) uint64 {
+	ni, err := cli.NetworkInfo(ctx, client.PrmNetworkInfo{})
+	if err != nil {
+		return 0
+	}
+
+	expire := ni.Info().CurrentEpoch() + 10 // valid for 10 epochs (~ 10 hours)
+	return expire
+}
+
 
 func (m *Manager) ListSharedContainers() ([]filesystem.Element, error) {
 	tmpWallet, err := m.retrieveWallet()
@@ -62,7 +75,8 @@ func (m *Manager) listSharedContainerObjectsAsync(containerID string) ([]filesys
 	if err != nil {
 		return []filesystem.Element{}, err
 	}
-	sessionToken, err := client2.CreateSessionWithObjectGetContext(m.ctx, c, nil, &cntID, client2.DEFAULT_EXPIRATION, &tmpKey)
+	//CreateSessionForContainerList
+	sessionToken, err := client2.CreateSessionForContainerList(m.ctx, c, getHelperTokenExpiry(m.ctx, c), &tmpKey)
 	if err != nil {
 		return []filesystem.Element{}, err
 	}
@@ -194,6 +208,19 @@ func (m *Manager) ListSharedContainerObjects(containerID string, synchronised bo
 	//	}
 	//}
 	return unsortedObjects, nil
+}
+
+func (m *Manager) RemoveSharedContainer(containerId string) ([]filesystem.Element, error)  {
+	fmt.Println("adding ocntainer with id", containerId)
+	tmpWallet, err := m.retrieveWallet()
+	if err != nil {
+		fmt.Println("error retrieving wallet")
+		return nil, err
+	}
+	if err := cache.DeleteSharedContainer(tmpWallet.Accounts[0].Address, containerId); err != nil {
+		return nil, err
+	}
+	return m.ListSharedContainers()
 }
 func (m *Manager) AddSharedContainer(containerID string) error {
 	//check if you can access this container

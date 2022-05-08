@@ -91,13 +91,16 @@ function retrieveCorrectComponent(state, onObjectSelection, onObjectDelete, onOb
                             containerPermission={selectPermission(state.selectedContainer.permissions)}
                             containerCreated={<Moment unix format="DD MMM YY">{state.selectedContainer.createdAt}</Moment>}
                             containerSize={fileSize(state.selectedContainer.size)} />
+                        { !state.shared ? <>
                         <ContainerPreviewButton
+
                             icon="fas fa-upload"
                             text="Upload to this container"
                             onClick={onObjectUpload}/>
                         <ContainerShareButton
                             containerId={state.selectedContainer.containerID}
                             contacts={state.contacts}/>
+                        </> : null }
                             {
                             state.selectedObject ?
                                 <>
@@ -133,7 +136,7 @@ function retrieveCorrectComponent(state, onObjectSelection, onObjectDelete, onOb
                 <div className="col-8">
                     <div className="orgContainersGrid">
                         <div className="row">
-                            <ViewObjects objectsLoaded={state.objectsLoaded} onDelete={onObjectDelete} objectList={state.objectList} viewMode={state.viewMode} onObjectSelection={onObjectSelection}></ViewObjects>
+                            <ViewObjects shared={state.shared} objectsLoaded={state.objectsLoaded} onDelete={onObjectDelete} objectList={state.objectList} viewMode={state.viewMode} onObjectSelection={onObjectSelection}></ViewObjects>
                         </div>
                     </div>
                 </div>
