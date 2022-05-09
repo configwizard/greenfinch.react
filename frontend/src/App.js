@@ -131,7 +131,7 @@ class App extends React.Component {
                         </div>
                         <Footer/>
                     </div>
-                    w
+                    <ToastMessage autoDelete={true} autoDeleteTime={3000}></ToastMessage>
                     <ProgressBar></ProgressBar>
                 </div>
             </>
