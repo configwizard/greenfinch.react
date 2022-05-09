@@ -35,12 +35,6 @@ const NavbarSide = (props) => {
                             faClass={"fal fa-copy"}
                             label={"Containers"} />
                     </Tooltip>
-                    <Tooltip content="Websites" direction="right">
-                        <NavlinkSide
-                            to={"/websites"}
-                            faClass={"fal fa-globe"}
-                            label={"Websites"} />
-                    </Tooltip>
                     <Tooltip content="Contacts" direction="right">
                         <NavlinkSide
                             to={"/contacts"}
@@ -52,6 +46,18 @@ const NavbarSide = (props) => {
                             to={"/shared"}
                             faClass={"fal fa-share-alt"}
                             label={"Shared Containers"} />
+                    </Tooltip>
+                    <Tooltip content="Websites" direction="right">
+                        <NavlinkSide
+                            to={"/websites"}
+                            faClass={"fal fa-globe"}
+                            label={"Websites"} />
+                    </Tooltip>
+                    <Tooltip content="NFT Management" direction="right">
+                        <NavlinkSide
+                            to={"/nfts"}
+                            faClass={"fal fa-hexagon"}
+                            label={"NFT Management"} />
                     </Tooltip>
                 </ul>
             </div>
