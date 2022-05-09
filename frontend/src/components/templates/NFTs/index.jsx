@@ -22,7 +22,7 @@ const TemplateNFTs = () => {
                         hasIcon={true}
                         faClass={"fas fa-plus-circle"}
                         buttonText={"Add new website"}
-                        buttonAction={TestButtonAction} />
+                        buttonAction={TestButtonAction} /> 
                         
                     <div class="row">
                         <div class="col-12">
