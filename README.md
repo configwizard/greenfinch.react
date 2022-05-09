@@ -1,50 +1,48 @@
-# Greenfinch Desktop React App
+# Greenfinch Decentralised storage ecosystem and GUI
 
-This application uses Wails 2.0 to create a desktop app to interact with the gaspump application.
+Greenfinch aims to be _the_ set of tools to interface with the Neo blockchain and the Neo decentralised file system, NeoFS.
 
-Greenfinch is a UI into the NeoFS ecosystem. Although the desktop application doesn't need the API, this is a 'sister' project to the greenfinch-api
+Using Greenfinch, you can create and manage containers, the permissions and the data that is stored within them. Containers allow for policies to be specified defining how and where your data is stored and any level of redundancy of storage you like.
 
-## To do
+Objects are the 'umbrella' term for the data that is stored within a container and the attributes that are related to the data. This allows for extremely granular management of your decentralised data.
 
-* pipe the upload and response with notifications on upload/download status
+## License
 
-## Troubleshooting:
+Greenfinch is licensed under [Apache 2.0](/License)
 
-1. Node version 17
+## Starting
 
-```shell
-Error: error:0308010C:digital envelope routines::unsupported
-    at new Hash (node:internal/crypto/hash:67:19)
-    at Object.createHash (node:crypto:130:10)
-    at module.exports (/Users/user/Programming Documents/WebServer/untitled/node_modules/webpack/lib/util/createHash.js:135:53)
-    at NormalModule._initBuildHash (/Users/user/Programming Documents/WebServer/untitled/node_modules/webpack/lib/NormalModule.js:417:16)
-    at handleParseError (/Users/user/Programming Documents/WebServer/untitled/node_modules/webpack/lib/NormalModule.js:471:10)
-    at /Users/user/Programming Documents/WebServer/untitled/node_modules/webpack/lib/NormalModule.js:503:5
-    at /Users/user/Programming Documents/WebServer/untitled/node_modules/webpack/lib/NormalModule.js:358:12
-    at /Users/user/Programming Documents/WebServer/untitled/node_modules/loader-runner/lib/LoaderRunner.js:373:3
-    at iterateNormalLoaders (/Users/user/Programming Documents/WebServer/untitled/node_modules/loader-runner/lib/LoaderRunner.js:214:10)
-    at iterateNormalLoaders (/Users/user/Programming Documents/WebServer/untitled/node_modules/loader-runner/lib/LoaderRunner.js:221:10)
-/Users/user/Programming Documents/WebServer/untitled/node_modules/react-scripts/scripts/start.js:19
-  throw err;
-  ^
-```
+Greenfinch is written in Go(lang) and has been developed using Go 1.18 and the UI framework is using [Wails.io](https://wails.io/) and React (html/css/js). To run greenfinch from source, both of these will need to be installed.
 
-This is due to
-> This is caused by the latest node.js V17 compatible issues with OpenSSL, see this and this issue on GitHub.
+Greenfinch currently runs on Windows, Linux and Mac OSX however pre-existing compiled versions are ready for Mac OS X (signed and notorised) and Windows (not yet signed), therefore when running on Windows, you will need to accept it as an untrusted source.
 
-> The easiest thing is just downgrade from node.js V17 to node.js V16. See this post on how to downgrade node.js.
+To run it from code, you can either run from the root directory `wails dev` (`make`) or `wails build` on your local system. You may have to run `npm install` prior to running wails
+
+## Code
+
+* To gain familiarity with the code, start inspecting the pkg/manager directory
+* Greenfinch has also released their [helper/wrapper SDK](https://github.com/configwizard/gaspump-api) to support developing on NeoFS in Go, and this is relied upon by Greenfinch GUI.`
+
 ## Setup
 
 Before really getting started you will need a wallet, and probably some Gas from the testnet for your wallet.
 
-To generate a new wallet, you can:
+To generate a new wallet, you can either
 
-1. Build the application `wails build`
-2. Generate a new wallet with `./build/bin/GasPump.app/Contents/MacOS/GasPump -wallet=./wallets/wallet.json -password=password`
+Generate a new wallet with `./build/bin/GasPump.app/Contents/MacOS/GasPump -wallet=./wallets/wallet.json -password=password`
    1. Note, the application will default to look for ./wallets/wallet.json.
    2. The password will default to password. Feel free to change it, however you will need to pass the password when running the application if you change it. For development it is recommended to keep it as is
 
-You should see something like:
+or 
+
+Use one from NeoLine/Neon etc
+
+or 
+
+When Greenfinch is running use the GUI to create a new one.
+
+You should see something like this created at the location of the walelt once you have completed this step. This is something that you should keep private.
+
 ```shell
 created new wallet: NcmPeooTMFsaAf5DTqhATQzka74mLHHQw3
  {
@@ -105,25 +103,40 @@ To open a browser window. This can be handy for debugging.
 
 ## Transferring Gas to NeoFS
 
-Once you have received Gas from the Neo test faucet, you need to transfer some to the NeoFS smart contract so that you can pay for storage
+Once you have received Gas from the Neo test faucet, you need to transfer some to the NeoFS smart contract so that you can pay for storage.
 
-```shell
-build/bin/GasPump.app/Contents/MacOS/GasPump -wallet=./wallets/wallet.json -address=NadZ8YfvkddivcFFkztZgfwxZyKf1acpRF -amount=100000000 transfer
-```
-Where
-* `NadZ8YfvkddivcFFkztZgfwxZyKf1acpRF` is the NeoFS *TESTNET* address
-* `100000000` is 1 Gas to a precision of 8 (accurate to 8dp)
+Inside the Greenfinch GUI click the walelt icon and transfer some GAS from your wallet to the NeoFS smart contract. You will need to wait for the transaction to complete, and then click refresh to see your new balance
 
-After that, run the app as normal and you will see your balance has increased
 
-## Tools
+## Useful Tools
 
 * Blockchain explorer for looking up your TESTNET transactions [neo tracker (testnet)](https://testnet.neotracker.io/)
 * Neo TESTNET faucet for getting some Gas/Neo [testnet faucet](https://neowish.ngd.network/)
 * NeoFS documentation including endpoints (docs)[https://testcdn.fs.neo.org/doc/]
 
-## Frontend Development
 
-However currently rebuilding the frontend on changes is not functional, and so rebuilding every time can be slow. To just develop the frontend, go inside the frontend directory and run `npm start`.
+## Troubleshooting:
 
-Note you may need to `npm install`
+1. Node version 17
+
+```shell
+Error: error:0308010C:digital envelope routines::unsupported
+    at new Hash (node:internal/crypto/hash:67:19)
+    at Object.createHash (node:crypto:130:10)
+    at module.exports (/Users/user/Programming Documents/WebServer/untitled/node_modules/webpack/lib/util/createHash.js:135:53)
+    at NormalModule._initBuildHash (/Users/user/Programming Documents/WebServer/untitled/node_modules/webpack/lib/NormalModule.js:417:16)
+    at handleParseError (/Users/user/Programming Documents/WebServer/untitled/node_modules/webpack/lib/NormalModule.js:471:10)
+    at /Users/user/Programming Documents/WebServer/untitled/node_modules/webpack/lib/NormalModule.js:503:5
+    at /Users/user/Programming Documents/WebServer/untitled/node_modules/webpack/lib/NormalModule.js:358:12
+    at /Users/user/Programming Documents/WebServer/untitled/node_modules/loader-runner/lib/LoaderRunner.js:373:3
+    at iterateNormalLoaders (/Users/user/Programming Documents/WebServer/untitled/node_modules/loader-runner/lib/LoaderRunner.js:214:10)
+    at iterateNormalLoaders (/Users/user/Programming Documents/WebServer/untitled/node_modules/loader-runner/lib/LoaderRunner.js:221:10)
+/Users/user/Programming Documents/WebServer/untitled/node_modules/react-scripts/scripts/start.js:19
+  throw err;
+  ^
+```
+
+This is due to
+> This is caused by the latest node.js V17 compatible issues with OpenSSL, see this and this issue on GitHub.
+
+> The easiest thing is just downgrade from node.js V17 to node.js V16. See this post on how to downgrade node.js.
