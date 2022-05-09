@@ -8,7 +8,7 @@ Objects are the 'umbrella' term for the data that is stored within a container a
 
 ## License
 
-Greenfinch is licensed under [Apache 2.0](/License)
+Greenfinch is licensed under [Apache 2.0](https://github.com/configwizard/greenfinch.react/blob/master/LICENSE)
 
 ## Starting
 
