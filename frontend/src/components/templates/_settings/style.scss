@@ -49,3 +49,30 @@
 .object-data {
     margin-top: $marginLarge;
 }
+
+ol.home-ol {
+    margin-top: $marginSmall;
+    margin-left: $marginLarge;
+    & li {
+        font-family: $brandFontSemi;
+        margin-bottom: 5px;
+        & button {
+            font-family: $brandFontSemi;
+            transition: $brandTransitionSpeed;
+            background-color: rgba(0,0,0,0);
+            padding: 0;
+            color: $brandColorDark;
+            text-decoration: underline;
+            &:hover {
+                cursor: pointer;
+                color: $brandColorSecondary;
+            }
+        }
+    }
+}
+
+.home-sm {
+    font-size: 0.8rem;
+    line-height: 1.2;
+    font-family: $brandFontSemi;
+}
