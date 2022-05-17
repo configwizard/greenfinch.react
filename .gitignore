@@ -1,10 +1,6 @@
 !wallets/
 wallets/*
 !wallets/.placeholder
-!build/bin/
-build/bin/*
-!build/bin/.placeholder
-!build/
 node_modules/
 frontend/build
 !frontend/src/dbg_data_structures/
