@@ -29,6 +29,10 @@ func (m *Manager) Upload(containerID string, attributes map[string]string) ([]fi
 	if err != nil {
 		return []filesystem.Element{}, err
 	}
+	if filepath == "" {
+		fmt.Println("no upload filepath. Bailing out")
+		return []filesystem.Element{}, err
+	}
 	f, err := os.Open(filepath)
 	defer f.Close()
 	if err != nil {

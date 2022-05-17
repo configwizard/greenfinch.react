@@ -17,18 +17,7 @@ definitions:
         example: status server error
         type: string
     type: object
-host: localhost:43520
 info:
-  contact:
-    name: Alex Walker
-    url: '@configwizard on Discord'
-  description: This api allows you to interact with Greenfinch Gui from other apps
-    running locally.
-  license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
-  termsOfService: See license
-  title: Greenfinch GUI local API
-  version: "0.1"
+  contact: {}
 paths: {}
 swagger: "2.0"

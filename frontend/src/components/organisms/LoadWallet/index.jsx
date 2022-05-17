@@ -101,7 +101,7 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                 isUppercase={true}
                                 text={"Recent wallets"} />
                                 {
-                                    Object.keys(recentWallets).map(function(obj, ) {
+                                    recentWallets ? Object.keys(recentWallets).map(function(obj, ) {
                                         console.log("RECENT", obj, recentWallets[obj])
                                         //the absolute path is recentWallets[obj]
                                         const walletName = recentWallets[obj].split('/')[recentWallets[obj].split('/').length -1]
@@ -138,7 +138,7 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                                 />
                                             </div>
                                         </div>
-                                    })
+                                    }) : null
                                 }
                         </div>
                     </div>

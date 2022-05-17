@@ -24,7 +24,7 @@ const SectionSupport = ({ titleLevel, sectionTitle }) => {
                             className="d-block"
                             text={"Greenfinch Overview"}
                             faClass={"fab fa-youtube"}
-                            onClick={() => openInDefaultBrowser("https://youtube.com/greenfinch")}>
+                            onClick={() => openInDefaultBrowser("https://www.youtube.com/watch?v=W8uYDd-eXGc&t=2s")}>
                         </HomeLink>
                     </li>
                     <li className="home-link">
@@ -32,7 +32,7 @@ const SectionSupport = ({ titleLevel, sectionTitle }) => {
                             className="d-block"
                             text={"Using wallets"}
                             faClass={"fab fa-youtube"}
-                            onClick={() => openInDefaultBrowser("https://youtube.com/greenfinch")}>
+                            onClick={() => openInDefaultBrowser("https://www.youtube.com/watch?v=W8uYDd-eXGc&t=14s")}>
                         </HomeLink>
                     </li>
                     <li className="home-link">
@@ -40,7 +40,7 @@ const SectionSupport = ({ titleLevel, sectionTitle }) => {
                             className="d-block"
                             text={"Containers and object"}
                             faClass={"fab fa-youtube"}
-                            onClick={() => openInDefaultBrowser("https://youtube.com/greenfinch")}>
+                            onClick={() => openInDefaultBrowser("https://www.youtube.com/watch?v=W8uYDd-eXGc&t=95s")}>
                         </HomeLink>
                     </li>
                     <li className="home-link">
@@ -48,7 +48,7 @@ const SectionSupport = ({ titleLevel, sectionTitle }) => {
                             className="d-block"
                             text={"Managing contacts"}
                             faClass={"fab fa-youtube"}
-                            onClick={() => openInDefaultBrowser("https://youtube.com/greenfinch")}>
+                            onClick={() => openInDefaultBrowser("https://www.youtube.com/watch?v=W8uYDd-eXGc&t=160s")}>
                         </HomeLink>
                     </li>
                     <li className="home-link">
@@ -56,7 +56,7 @@ const SectionSupport = ({ titleLevel, sectionTitle }) => {
                             className="d-block"
                             text={"Sharing containers"}
                             faClass={"fab fa-youtube"}
-                            onClick={() => openInDefaultBrowser("https://youtube.com/greenfinch")}>
+                            onClick={() => openInDefaultBrowser("https://www.youtube.com/watch?v=W8uYDd-eXGc&t=269s")}>
                         </HomeLink>
                     </li>
                 </ul>
