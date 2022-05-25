@@ -12,6 +12,7 @@ const listObjects = async (containerID) => {
 const getObject = async (objId, filename, containerID) => {
     try {
         let metaData = await window.go.manager.Manager.Download(objId, filename, containerID)
+        console.log("object metadata ", metaData)
         return metaData
     } catch(e) {
         console.log("error retrieving object", e, "container id", containerID, "object id", objId)
@@ -20,6 +21,7 @@ const getObject = async (objId, filename, containerID) => {
 const getObjectMetaData = async (objId, containerID) => {
     try {
         let metaData = await window.go.manager.Manager.GetObjectMetaData(objId, containerID)
+        console.log("object metadata ", metaData)
         return metaData
     } catch(e) {
         console.log("error retrieving metadata", e)
@@ -34,9 +36,8 @@ const deleteObject = async (objId, containerID) => {
     }
 }
 
-const uploadObject = async (containerID) => {
+const uploadObject = async (containerID, attributes) => {
     try {
-        let attributes = {} //map - string:string only - will cause error
         let response = await window.go.manager.Manager.Upload(containerID, attributes)
         return response || []
     } catch(e) {

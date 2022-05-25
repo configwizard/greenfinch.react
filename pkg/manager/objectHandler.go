@@ -21,7 +21,30 @@ import (
 	"time"
 )
 
-
+func setMimeType(filename string, attr []*obj.Attribute) *obj.Attribute{
+	foundMime := false
+	for _, v := range attr {
+		if v.Key() == "Content-Type" {
+			foundMime = true
+			break
+		}
+	}
+	var m []Mimes
+	json.Unmarshal([]byte(mimes), &m)
+	if !foundMime {
+		//set the mime type to the expected filename type, or nothing...
+		tmp := &obj.Attribute{}
+		tmp.SetKey("Content-Type")
+		ext := filepath.Ext(filename)
+		for _, v := range m {
+			if v.Extension == ext {
+				tmp.SetValue(v.MimeType)
+				return tmp
+			}
+		}
+	}
+	return nil
+}
 
 func (m *Manager) UploadObject(containerID, fp string, fileSize int, attributes map[string]string, ioReader *io.Reader) ([]filesystem.Element, error) {
 	cntID := cid.ID{}
@@ -47,6 +70,11 @@ func (m *Manager) UploadObject(containerID, fp string, fileSize int, attributes 
 	_, filename := filepath.Split(fp)
 	fileNameAttr.SetValue(filename)
 	attr = append(attr, []*obj.Attribute{timeStampAttr, fileNameAttr}...)
+
+	//auto set the content type
+	if mimeTime := setMimeType(filename, attr); mimeTime != nil {
+		attr = append(attr, mimeTime)
+	}
 	//now we check if we can create a thumbnail
 	thumbnailData, err := thumbnail(ioReader)
 	if err == nil {
@@ -56,7 +84,7 @@ func (m *Manager) UploadObject(containerID, fp string, fileSize int, attributes 
 		thumbNailAttr.SetValue(sEnc)
 		attr = append(attr, thumbNailAttr)
 	}
-
+	fmt.Println("attributes: ", attr)
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
 		return []filesystem.Element{}, err

@@ -108,7 +108,8 @@ class Containers extends React.Component {
             throw new Error("cannot retrieve an object from non existent container")
         }
         let state = this.state
-        const objectList = await uploadObject(this.state.selectedContainer.containerID)
+        let attributes = {} //map - string:string only - will cause error
+        const objectList = await uploadObject(this.state.selectedContainer.containerID, attributes)
         this.setState({...this.state, objectList})
     }
     onContainerDelete = async (containerId) => {
