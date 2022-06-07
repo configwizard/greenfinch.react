@@ -19,10 +19,10 @@ const TemplateHome = ({ account, recentWallets, refreshRecentWallets }) => {
                     <HeaderPage 
                         pageTitle={"Welcome to Greenfinch"} 
                         hasButton={false}/>
-                    <div class="row">
+                    <div class="row g-0">
                         <div class="col-6">
                             <div className="templateWrapper">
-                                <div className="templateContainer">
+                                <div className="templateInner">
                                     <SectionHomepage
                                         titleLevel={"h3"}
                                         sectionTitle={"Get started"} />
@@ -49,7 +49,7 @@ const TemplateHome = ({ account, recentWallets, refreshRecentWallets }) => {
                         </div>
                         <div class="col-6">
                             <div className="templateWrapper">
-                                <div className="templateContainer">
+                                <div className="templateInner">
                                     <div className="d-flex">
                                         <div>
                                             <HeadingGeneral 

@@ -15,11 +15,6 @@ import ContainerShareButton from "../../organisms/ContainerShareButton";
 import ObjectInfoButton from "../../organisms/ObjectInfoButton";
 import {openInDefaultBrowser} from "../../../manager/manager";
 
-import { useModal } from '../../organisms/Modal/ModalContext';
-import CompModalStandard from '../../organisms/Modal/ModalStandard';
-
-
-
 // Central style sheet for templates
 import '../_settings/style.scss';
 

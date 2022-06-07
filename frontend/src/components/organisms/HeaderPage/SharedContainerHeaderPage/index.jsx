@@ -5,7 +5,6 @@ import { Form } from 'react-bootstrap';
 
 import { createContainer } from '../../../../manager/containers.js';
 
-
 // Components
 import HeadingGeneral from '../../../atoms/HeadingGeneral';
 import ButtonText from '../../../atoms/ButtonText';
@@ -20,7 +19,7 @@ const SharedContainerHeaderPage = ({ pageTitle, hasButton, hasIcon, faClass, but
     const { setModal, unSetModal } = useModal();
     return (
         <div className="HeaderPageWrapper">
-            <div className="HeaderPage d-flex align-items-center">
+            <div className="HeaderPageInner d-flex align-items-center">
                 <div>
                     <HeadingGeneral
                         level={"h1"}

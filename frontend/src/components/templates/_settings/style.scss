@@ -2,28 +2,23 @@
 @import "../../../assets/greenfinch-variables.scss";
 
 .templateShell {
-    padding-top: $heightHeader + 7px; // manually added number, doesn't make sense 
-    height: 100vh;
+    height: calc(100vh - $heightHeader);
 }
 
 .templatePage {
     background-color: $brandColorLight;
-    padding: $paddingMedium;
     height: calc(100% - $heightFooter);
 }
  
 .templateWrapper {
-    display: flex;
-    flex-flow: column;
-    height: 100%; // Has to be 100% otherwise it's 90% of available div
+    height: calc(100vh - $heightHeader - $heightPageHeader - $heightFooter - $marginMedium);
+    overflow-y: scroll !important;
+    margin-right: $marginSmall; // To allow for scroll-bar width
 }
 
-.templateContainer {
-    padding-right: $paddingSmall;
-    min-height: 0; // without min-height/height:0 flex:1 doesn't works
-	flex: 1;
-    //white-space: nowrap;
-	overflow: auto;
+.templateInner {
+    margin: 0 $marginSmall;
+    //background-color: rgba(0,0,0,0.1);
 }
 
 .containerOptions {

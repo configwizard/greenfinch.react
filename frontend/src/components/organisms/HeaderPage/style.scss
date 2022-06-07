@@ -2,9 +2,18 @@
 @import "../../../assets/greenfinch-variables.scss";
 
 .HeaderPageWrapper {
+    height: $heightPageHeader;
     margin-right: $marginSmall;
-    margin-bottom: $marginSmall;
-    & .HeaderPage {
-        border-bottom: 2px dotted rgba($brandColorDark, 0.5);
+    background-color: orange;
+}
+
+.HeaderPageInner {
+    margin: $marginSmall;
+    margin-top: 0;
+    padding-top: $paddingSmall;
+    padding-bottom: $paddingXSmall;
+    border-bottom: 2px dotted rgba($brandColorDark, 0.5);
+    & h1 {
+        margin: 0;
     }
 }
