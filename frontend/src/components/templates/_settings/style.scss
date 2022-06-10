@@ -14,17 +14,31 @@
     height: calc(100vh - $heightHeader - $heightPageHeader - $heightFooter - $marginMedium);
     overflow-y: scroll !important;
     margin-right: $marginSmall; // To allow for scroll-bar width
+    & .templateInner {
+        padding: $paddingSmall;
+        padding-top: $paddingMedium;
+        margin: 0 $marginSmall;
+    }
 }
 
-.templateInner {
-    margin: 0 $marginSmall;
-    //background-color: rgba(0,0,0,0.1);
+.containerWrapper {
+    height: calc(100vh - $heightHeader - $heightPageHeader - $heightFooter - $marginMedium - 40px);
+    overflow-y: scroll !important;
+    margin-right: $marginSmall; // To allow for scroll-bar width
+    & .containerInner {
+        padding: 0 $paddingSmall;
+        margin: 0 $marginSmall;
+    }
 }
 
-.containerOptions {
-    margin-right: $marginSmall;
-    margin-bottom: $marginMedium;
+.optionsWrapper {
+    height: 40px;
+    & .optionsInner {
+        //background-color: purple;
+        margin: 0 $marginSmall;
+    }
 }
+
 
 .container-data, .object-data {
     & h6 {
@@ -67,7 +81,13 @@ ol.home-ol {
 }
 
 .home-sm {
+    font-family: $brandFontSemi;
     font-size: 0.8rem;
     line-height: 1.2;
+}
+
+.instruction {
     font-family: $brandFontSemi;
+    font-size: 1.1rem;
+    line-height: 1.3;
 }

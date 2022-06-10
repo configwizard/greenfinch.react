@@ -19,7 +19,7 @@ import '../_settings/style.scss';
 function NewWalletModal(props) {
     const {setModal, unSetModal} = useModal()
     return (
-        <div className="ms-auto molButtonGroup">
+        <div className="ms-auto buttonGroup">
             <button
                 type="button"
                 className={`atmButtonText`}

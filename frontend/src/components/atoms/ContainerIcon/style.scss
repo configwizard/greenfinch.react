@@ -1,36 +1,61 @@
 @import "../../../assets/dashboard-variables.scss";
 @import "../../../assets/greenfinch-variables.scss";
 
-.folder-icon { //Update classes
-    width: 90px;
-    height: 70px;
+
+.containerIcon {
     display: inline-block;
     margin: auto;
     position: relative;
     margin-bottom: 8px;
     margin-top: 12px;
-    &:before {
-        width: 50%;
-        height: 0.7em;
-        position: absolute;
-        top: -0.7em;
-        left: 0px;
-    }
-}
-
-.folder-icon { //Update classes
-    border-radius: 5px;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
-    border-top: 4px solid #96DCFD;
+    border-top-style: solid;
     &:before {
         content: '';
-        border-radius: 5px 10px 0 0;
+        left: 0px;
+        position: absolute;
+        width: 50%;
+    }
+    &.small {
+        border-top-width: 3px;
+        box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+        border-radius: 3px;
+        width: 45px;
+        height: 35px;
+        &:before {
+            height: 0.5em;
+            top: -0.5em;
+            border-radius: 3px 5px 0 0;
+        }
+    }
+    &.medium {
+        border-top-width: 4px;
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+        border-radius: 5px;
+        width: 90px;
+        height: 70px;
+        &:before {
+            height: 0.7em;
+            top: -0.7em;
+            border-radius: 5px 9px 0 0;
+        }
+    }
+    &.large {
+        border-top-width: 5px;
+        box-shadow: 3px 3px 7px rgba(0, 0, 0, 0.2);
+        border-radius: 7px;
+        width: 135px;
+        height: 105px;
+        &:before {
+            height: 0.9em;
+            top: -0.9em;
+            border-radius: 7px 12px 0 0;
+        }
     }
 }
 
-.neo.folder-icon { //Update classes
+.neo {
     background: linear-gradient(180deg, $brandColorSecondary 0%, $brandColorPrimary 76%, $brandColorSecondary 100%);
-    border-top: 4px solid $brandColorPrimary;
+    border-top-color: $brandColorPrimary;
     &:before {
         background-color: $brandColorPrimary;
     }

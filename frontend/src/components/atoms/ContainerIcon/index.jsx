@@ -3,23 +3,30 @@ import PropTypes from 'prop-types';
 
 import './style.scss';
 
-export const IconSize = {
+export const ContainerIconSize = {
     SMALL: 'small',
     MEDIUM: 'medium',
     LARGE: 'large',
 }
 
-const ContainerIcon = ({ size }) => {
+export const ContainerIconType = {
+    NEO: 'neo',
+}
+
+const ContainerIcon = ({ type, size }) => {
     return (
-        <div className={`neo folder-icon ${[size]}`}></div>
+        <div className={`containerIcon ${[type]} ${[size]}`}></div>
     )
 }
+
 export default ContainerIcon;
 
 ContainerIcon.propTypes = {
-    size: PropTypes.oneOf(Object.keys(IconSize)),
+    size: PropTypes.oneOf(Object.keys(ContainerIconSize)),
+    type: PropTypes.oneOf(Object.keys(ContainerIconType))
 };
 
 ContainerIcon.defaultProps = {
-    size: IconSize.MEDIUM
-};  
+    size: ContainerIconSize.MEDIUM,
+    type: ContainerIconType.Neo
+};

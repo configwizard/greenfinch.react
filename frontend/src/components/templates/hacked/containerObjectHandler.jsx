@@ -38,12 +38,21 @@ function retrieveCorrectComponent(state, onObjectSelection, onObjectDelete, onOb
         return (
             <>
                 <div className="col-3">
-                    <p>Select a container to open and view contents.</p>
+                    <div className="containerWrapper">
+                        <div className="containerInner">
+                            <i className="fas fa-lg fa-info-circle"/>
+                            <p class="instruction">Select a container to open and view contents</p>
+                        </div>
+                    </div>
                 </div>
                 <div className="col-9">
-                    <div className="orgContainersGrid">
-                        <div className="row">
-                            <ViewContainers containerList={state.containerList} onDelete={onContainerDelete} viewMode={state.viewMode} onContainerSelection={onContainerSelection}></ViewContainers>
+                    <div className="containerWrapper">
+                        <div className="containerInner">
+                            <div className="orgContainersGrid">
+                                <div className="row">
+                                    <ViewContainers containerList={state.containerList} onDelete={onContainerDelete} viewMode={state.viewMode} onContainerSelection={onContainerSelection}></ViewContainers>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -53,85 +62,94 @@ function retrieveCorrectComponent(state, onObjectSelection, onObjectDelete, onOb
         return (
             <>
                 <div className="container-data col-4">
-                    <ContainerIcon
-                        size={"medium"}/>
-                    <HeadingGeneral
-                        level={"h5"}
-                        isUppercase={false}
-                        text={state.selectedContainer.containerName}/>
-                    <HeadingGeneral
-                        level={"h6"}
-                        isUppercase={true}
-                        text={"Container ID"}/>
-                    <span>{state.selectedContainer.containerID}</span>
-                    <HeadingGeneral
-                        level={"h6"}
-                        isUppercase={true}
-                        text={"Container permission"}/>
-                    <span>{selectPermission(state.selectedContainer.permissions)}</span>
-                    <HeadingGeneral
-                        level={"h6"}
-                        isUppercase={true}
-                        text={"Container created"}/>
-                    <span><Moment unix format="DD MMM YY">{state.selectedContainer.createdAt}</Moment></span>
-                    <HeadingGeneral
-                        level={"h6"}
-                        isUppercase={true}
-                        text={"Container size"}/>
-                    <span>{fileSize(state.selectedContainer.size)}</span>
-                    <div class="buttonStack">
-                        <ContainerInfoButton
-                            containerName={state.selectedContainer.containerName}
-                            containerId={state.selectedContainer.containerID}
-                            containerPermission={selectPermission(state.selectedContainer.permissions)}
-                            containerCreated={<Moment unix format="DD MMM YY">{state.selectedContainer.createdAt}</Moment>}
-                            containerSize={fileSize(state.selectedContainer.size)} />
-                        { !state.shared ? <>
-                        <ContainerPreviewButton
+                    <div className="containerWrapper">
+                        <div className="containerInner">
+                            <ContainerIcon
+                                size={"small"}
+                                type={"neo"}/>
+                            <HeadingGeneral
+                                level={"h5"}
+                                isUppercase={false}
+                                text={state.selectedContainer.containerName}/>
+                            <HeadingGeneral
+                                level={"h6"}
+                                isUppercase={true}
+                                text={"Container ID"}/>
+                            <span>{state.selectedContainer.containerID}</span>
+                            <HeadingGeneral
+                                level={"h6"}
+                                isUppercase={true}
+                                text={"Container permission"}/>
+                            <span>{selectPermission(state.selectedContainer.permissions)}</span>
+                            <HeadingGeneral
+                                level={"h6"}
+                                isUppercase={true}
+                                text={"Container created"}/>
+                            <span><Moment unix format="DD MMM YY">{state.selectedContainer.createdAt}</Moment></span>
+                            <HeadingGeneral
+                                level={"h6"}
+                                isUppercase={true}
+                                text={"Container size"}/>
+                            <span>{fileSize(state.selectedContainer.size)}</span>
+                            <div class="buttonStack">
+                                <ContainerInfoButton
+                                    containerName={state.selectedContainer.containerName}
+                                    containerId={state.selectedContainer.containerID}
+                                    containerPermission={selectPermission(state.selectedContainer.permissions)}
+                                    containerCreated={<Moment unix format="DD MMM YY">{state.selectedContainer.createdAt}</Moment>}
+                                    containerSize={fileSize(state.selectedContainer.size)} />
+                                { !state.shared ? <>
+                                <ContainerPreviewButton
 
-                            icon="fas fa-upload"
-                            text="Upload to this container"
-                            onClick={onObjectUpload}/>
-                        <ContainerShareButton
-                            containerId={state.selectedContainer.containerID}
-                            contacts={state.contacts}/>
-                        </> : null }
-                            {
-                            state.selectedObject ?
-                                <>
-                                    <div className="object-data" id={"objectData"}>
-                                        <HeadingGeneral
-                                            level={"h5"}
-                                            isUppercase={false}
-                                            text={state.selectedObject.objectName || null}/>
-                                        <HeadingGeneral
-                                            level={"h6"}
-                                            isUppercase={true}
-                                            text={"Object ID"}/>
-                                            <span>{state.selectedObject.objectID || null}</span>
-                                        <ObjectInfoButton
-                                            objectName={state.selectedObject.objectName}
-                                            objectId={state.selectedObject.objectID} />
-                                        <ContainerPreviewButton icon="fas fa-download" text="Download this object" onClick={onObjectDownload}></ContainerPreviewButton>
-                                        
-                                        { state.selectedContainer.permissions === 264211711 || 264224767 ?
-                                            <ButtonText 
-                                                type="clean"
-                                                size="small"
-                                                hasIcon={true}
-                                                faClass={"fas fa-external-link"}
-                                                text={"Click to view file in web browser"}
-                                                onClick={() => openInDefaultBrowser(`https://http.testnet.fs.neo.org/${state.selectedContainer.containerID}/${state.selectedObject.objectID}`)} /> 
-                                        : null }
-                                    </div>
-                                </> : null
-                            }
+                                    icon="fas fa-upload"
+                                    text="Upload to this container"
+                                    onClick={onObjectUpload}/>
+                                <ContainerShareButton
+                                    containerId={state.selectedContainer.containerID}
+                                    contacts={state.contacts}/>
+                                </> : null }
+                                    {
+                                    state.selectedObject ?
+                                        <>
+                                            <div className="object-data" id={"objectData"}>
+                                                <HeadingGeneral
+                                                    level={"h5"}
+                                                    isUppercase={false}
+                                                    text={state.selectedObject.objectName || null}/>
+                                                <HeadingGeneral
+                                                    level={"h6"}
+                                                    isUppercase={true}
+                                                    text={"Object ID"}/>
+                                                    <span>{state.selectedObject.objectID || null}</span>
+                                                <ObjectInfoButton
+                                                    objectName={state.selectedObject.objectName}
+                                                    objectId={state.selectedObject.objectID} />
+                                                <ContainerPreviewButton icon="fas fa-download" text="Download this object" onClick={onObjectDownload}></ContainerPreviewButton>
+                                                
+                                                { state.selectedContainer.permissions === 264211711 || 264224767 ?
+                                                    <ButtonText 
+                                                        type="clean"
+                                                        size="small"
+                                                        hasIcon={true}
+                                                        faClass={"fas fa-external-link"}
+                                                        text={"Click to view file in web browser"}
+                                                        onClick={() => openInDefaultBrowser(`https://http.testnet.fs.neo.org/${state.selectedContainer.containerID}/${state.selectedObject.objectID}`)} /> 
+                                                : null }
+                                            </div>
+                                        </> : null
+                                    }
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div className="col-8">
-                    <div className="orgContainersGrid">
-                        <div className="row">
-                            <ViewObjects shared={state.shared} objectsLoaded={state.objectsLoaded} onDelete={onObjectDelete} objectList={state.objectList} viewMode={state.viewMode} onObjectSelection={onObjectSelection}></ViewObjects>
+                    <div className="containerWrapper">
+                        <div className="containerInner">
+                            <div className="orgContainersGrid">
+                                <div className="row">
+                                    <ViewObjects shared={state.shared} objectsLoaded={state.objectsLoaded} onDelete={onObjectDelete} objectList={state.objectList} viewMode={state.viewMode} onObjectSelection={onObjectSelection}></ViewObjects>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
