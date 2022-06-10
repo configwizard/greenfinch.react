@@ -74,7 +74,7 @@ const TemplateContacts = ({contacts, createContact, deleteContact}) => {
                     <div class="row">
                         <div class="col-12">
                             <div className="templateWrapper">
-                                <div className="templateContainer">
+                                <div className="templateInner">
                                     {contacts.length > 0 ? <AddressBook contacts={contacts} deleteContact={deleteContact}/>
                                         : <NoContent
                                             text={"You currently have no contacts. Add contacts to share containers."}/>

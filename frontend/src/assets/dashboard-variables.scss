@@ -14,7 +14,9 @@ $marginMedium: $baseSizing * 1.5;
 $marginLarge: $baseSizing * 2;
 $marginXLarge: $baseSizing * 3;
 
-$heightHeader: 72px;
+//Explicit layout heights, to allow for scroll
+$heightHeader: 80px; // Originally 72px, to tweak
+$heightPageHeader: 70px;
 $heightFooter: 15px;
 
 /* Reset + Base
@@ -40,16 +42,24 @@ span {
     margin-bottom: $marginXSmall*0.5;
 }
 
-// Button Group - Horizontal
-.buttonGroup, .me-auto .buttonGroup {
-    & .buttonText {
-        margin-right: 10px;
+
+// Button Group - Horizontal, starting from the left
+.buttonGroup, .me-auto.buttonGroup {
+    & button {
+        margin-right: $marginXSmall;
+        &:last-child {
+            margin-right: 0;
+        }
     }
 }
 
-.ms-auto .buttonGroup {
-    & .buttonText {
-        margin-left: 10px;
+// Button Group - Horizontal, starting from the right
+.ms-auto.buttonGroup {
+    & button {
+        margin-left: $marginXSmall;
+        &:last-child {
+            margin-left: 0;
+        }
     }
 }
 

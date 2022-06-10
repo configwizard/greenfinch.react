@@ -466,7 +466,7 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 	if err != nil {
 		return err
 	}
-	log.Println("creating container with name", name)
+	log.Println("Creating container with name", name)
 	attr := container.NewAttribute()
 	attr.SetKey(obj.AttributeFileName)
 	attr.SetValue(name)
@@ -503,24 +503,24 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 			tmp := UXMessage{
 				Title:       "Container Error",
 				Type:        "error",
-				Description: "Container '" + name + "' failed " + err.Error(),
+				Description: "Container '" + name + "' failed - " + err.Error(),
 			}
 			m.MakeToast(NewToastMessage(&tmp))
 			return
 		}
 		tmp := UXMessage{
-			Title:       "Container " + name + " initialised",
+			Title:       "In progress...",
 			Type:        "info",
-			Description: "Please wait up to 1 minute",
+			Description: "Container '" + name + "' initialised. Please wait up to 1 minute",
 		}
 		m.MakeToast(NewToastMessage(&tmp))
 		for i := 0; i <= 180; i++ {
 			if i == 60 {
 				log.Printf("Timeout, containers %s was not persisted in side chain\n", id)
 				tmp := UXMessage{
-					Title:       "Container Error",
+					Title:       "Container error",
 					Type:        "error",
-					Description: "Container '" + name + "' failed. Timeout",
+					Description: "Container '" + name + "' failed - timeout",
 				}
 				m.MakeToast(NewToastMessage(&tmp))
 				return
@@ -528,9 +528,9 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 			_, err := container2.Get(m.ctx, fsCli, *id)
 			if err == nil {
 				tmp := UXMessage{
-					Title:       "Container Created",
+					Title:       "Container created",
 					Type:        "success",
-					Description: "Container '" + name + "' created",
+					Description: "Container '" + name + "' is now live",
 				}
 				el := filesystem.Element{
 					ID:             id.String(),

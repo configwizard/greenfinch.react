@@ -3,6 +3,8 @@ import React from 'react';
 // Components
 import HeaderPage from '../../organisms/HeaderPage';
 
+import TestHomePage from '../../organisms/TestHomePage';
+
 // Central style sheet for templates
 import '../_settings/style.scss';
 
@@ -21,11 +23,19 @@ const TemplateTest = () => {
                         faClass={"fas fa-vial"}
                         buttonText={"Test button"}
                         buttonAction={TestButtonAction} />
-                    <div class="row">
-                        <div class="col-12">
+                    <div class="row g-0">
+                        <div class="col-6">
                             <div className="templateWrapper">
-                                <div className="templateContainer">
+                                <div className="templateInner">
                                 <p>A page to test components + design.</p>
+                                <TestHomePage></TestHomePage>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div className="templateWrapper">
+                                <div className="templateInner">
+                                <TestHomePage></TestHomePage>
                                 </div>
                             </div>
                         </div>

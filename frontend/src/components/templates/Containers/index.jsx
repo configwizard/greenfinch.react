@@ -148,13 +148,15 @@ class Containers extends React.Component {
                             faClass={"fas fa-plus-circle"}
                             buttonText={"Create new container"}
                         />
-                        <div className="containerOptions">
-                            <div className="row">
-                                <div className="col-6">
-                                    <BreadCrumb account={this.props.account} onRefresh={this.onRefresh} resetBreadcrumb={this.resetBreadcrumb} container={this.state.selectedContainer} object={this.state.selectedObject}></BreadCrumb>
-                                </div>
-                                <div className="col-6">
-                                    <ControlBar resetBreadcrumb={this.resetBreadcrumb} changeView={this.onViewChange} viewMode={this.state.viewMode} selectedContainer={this.state.selectedContainer}></ControlBar>
+                        <div class="optionsWrapper">
+                            <div class="optionsInner">
+                                <div className="row">
+                                    <div className="col-6">
+                                        <BreadCrumb account={this.props.account} onRefresh={this.onRefresh} resetBreadcrumb={this.resetBreadcrumb} container={this.state.selectedContainer} object={this.state.selectedObject}></BreadCrumb>
+                                    </div>
+                                    <div className="col-6">
+                                        <ControlBar resetBreadcrumb={this.resetBreadcrumb} changeView={this.onViewChange} viewMode={this.state.viewMode} selectedContainer={this.state.selectedContainer}></ControlBar>
+                                    </div>
                                 </div>
                             </div>
                         </div>

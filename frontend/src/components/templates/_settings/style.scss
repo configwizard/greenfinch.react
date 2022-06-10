@@ -2,34 +2,43 @@
 @import "../../../assets/greenfinch-variables.scss";
 
 .templateShell {
-    padding-top: $heightHeader + 7px; // manually added number, doesn't make sense 
-    height: 100vh;
+    height: calc(100vh - $heightHeader);
 }
 
 .templatePage {
     background-color: $brandColorLight;
-    padding: $paddingMedium;
     height: calc(100% - $heightFooter);
 }
  
 .templateWrapper {
-    display: flex;
-    flex-flow: column;
-    height: 100%; // Has to be 100% otherwise it's 90% of available div
+    height: calc(100vh - $heightHeader - $heightPageHeader - $heightFooter - $marginMedium);
+    overflow-y: scroll !important;
+    margin-right: $marginSmall; // To allow for scroll-bar width
+    & .templateInner {
+        padding: $paddingSmall;
+        padding-top: $paddingMedium;
+        margin: 0 $marginSmall;
+    }
 }
 
-.templateContainer {
-    padding-right: $paddingSmall;
-    min-height: 0; // without min-height/height:0 flex:1 doesn't works
-	flex: 1;
-    //white-space: nowrap;
-	overflow: auto;
+.containerWrapper {
+    height: calc(100vh - $heightHeader - $heightPageHeader - $heightFooter - $marginMedium - 40px);
+    overflow-y: scroll !important;
+    margin-right: $marginSmall; // To allow for scroll-bar width
+    & .containerInner {
+        padding: 0 $paddingSmall;
+        margin: 0 $marginSmall;
+    }
 }
 
-.containerOptions {
-    margin-right: $marginSmall;
-    margin-bottom: $marginMedium;
+.optionsWrapper {
+    height: 40px;
+    & .optionsInner {
+        //background-color: purple;
+        margin: 0 $marginSmall;
+    }
 }
+
 
 .container-data, .object-data {
     & h6 {
@@ -72,7 +81,13 @@ ol.home-ol {
 }
 
 .home-sm {
+    font-family: $brandFontSemi;
     font-size: 0.8rem;
     line-height: 1.2;
+}
+
+.instruction {
     font-family: $brandFontSemi;
+    font-size: 1.1rem;
+    line-height: 1.3;
 }

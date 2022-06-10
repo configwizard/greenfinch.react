@@ -113,32 +113,14 @@
         margin-top: $marginSmall;
         padding: 0 $paddingSmall;
         height: 100%;
-        overflow-x: hidden;
-        overflow-y: scroll;
+        //overflow-x: hidden;
+        //overflow-y: scroll;
     }
 }
-
-
 
 .orgWalletFooter { // short-term option as being over-run below
     & .form-control {
         margin-top: $marginXSmall*1.5;
-    }
-}
-
-/* View: Options
-- - - - - - - - - - - - - - - - - - */
-.molButtonGroup {
-    margin: 0 5px;
-}
-
-.ms-auto .molButtonGroup {
-    margin: 0;
-    & button {
-        margin-left: 5px;
-        &:last-child {
-            margin-left: 0;
-        }
     }
 }
 
