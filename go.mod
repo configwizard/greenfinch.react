@@ -95,4 +95,4 @@ require (
 )
 
 //replace github.com/wailsapp/wails/v2 => /Users/alex.walker/go/src/github.com/wailsapp/wails/v2
-//replace github.com/configwizard/gaspump-api => /Users/alex.walker/go/src/github.com/configwizard/gaspump-api
+replace github.com/configwizard/gaspump-api => /Users/alex.walker/go/src/github.com/configwizard/gaspump-api
