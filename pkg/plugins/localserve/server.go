@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"time"
 )
+
 func dateFormat(layout string, intTime int64) time.Time {
 	t := time.Unix(intTime, 0)
 	if layout == "" {
@@ -20,7 +21,6 @@ func dateFormat(layout string, intTime int64) time.Time {
 	fmt.Println(t.Format(layout))
 	return t
 }
-
 
 func SetupServer(m *manager.Manager) {
 	r := chi.NewRouter()

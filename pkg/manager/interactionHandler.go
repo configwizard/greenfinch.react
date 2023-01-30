@@ -6,7 +6,6 @@ import (
 	"github.com/machinebox/progress"
 	"path"
 
-	"github.com/configwizard/gaspump-api/pkg/filesystem"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"io"
 	"os"
@@ -15,7 +14,7 @@ import (
 
 //Upload will put an object in NeoFS. You can access publically available files at
 //https://http.testnet.fs.neo.org/<containerID>/<objectID>
-func (m *Manager) Upload(containerID string, attributes map[string]string) ([]filesystem.Element, error) {
+func (m *Manager) Upload(containerID string, attributes map[string]string) ([]Element, error) {
 	homeDir, err := os.UserHomeDir()
 	filepath, err := runtime.OpenFileDialog(m.ctx, runtime.OpenDialogOptions{
 		DefaultDirectory:           homeDir,
@@ -27,20 +26,20 @@ func (m *Manager) Upload(containerID string, attributes map[string]string) ([]fi
 		TreatPackagesAsDirectories: false,
 	})
 	if err != nil {
-		return []filesystem.Element{}, err
+		return []Element{}, err
 	}
 	if filepath == "" {
 		fmt.Println("no upload filepath. Bailing out")
-		return []filesystem.Element{}, err
+		return []Element{}, err
 	}
 	f, err := os.Open(filepath)
 	defer f.Close()
 	if err != nil {
-		return []filesystem.Element{}, err
+		return []Element{}, err
 	}
 	fs, err := f.Stat()
 	if err != nil {
-		return []filesystem.Element{}, err
+		return []Element{}, err
 	}
 	r := progress.NewReader(f)
 	go func() {
@@ -158,15 +157,15 @@ func (m *Manager) Download(filename, objectID, containerID string) error {
 	return err
 }
 
-//func (m Manager) RetrieveFileSystem() ([]filesystem.Element, error) {
+//func (m Manager) RetrieveFileSystem() ([]Element, error) {
 //	tmpWallet, err := m.retrieveWallet()
 //	if err != nil {
-//		return []filesystem.Element{}, err
+//		return []Element{}, err
 //	}
 //	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
 //	fsCli, err := m.Client()
 //	if err != nil {
-//		return []filesystem.Element{}, err
+//		return []Element{}, err
 //	}
 //	sessionToken, err := client2.CreateSession(m.ctx, fsCli, client2.DEFAULT_EXPIRATION, &tmpKey)
 //	if err != nil {
@@ -185,15 +184,15 @@ func (m *Manager) Download(filename, objectID, containerID string) error {
 //	}
 //	return el, err
 //}
-//func (m Manager) RetrieveContainerFileSystem(containerID string, token *token.BearerToken, session *session.Token) (filesystem.Element, error) {
+//func (m Manager) RetrieveContainerFileSystem(containerID string, token *token.BearerToken, session *session.Token) (Element, error) {
 //	//tmpWallet, err := m.retrieveWallet()
 //	//if err != nil {
-//	//	return filesystem.Element{}, err
+//	//	return Element{}, err
 //	//}
 //	//tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
 //	fsCli, err := m.Client()
 //	if err != nil {
-//		return filesystem.Element{}, err
+//		return Element{}, err
 //	}
 //	contID := cid.ID{}
 //	contID.Parse(containerID)

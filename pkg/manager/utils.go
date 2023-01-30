@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"github.com/atotto/clipboard"
 	"github.com/disintegration/imaging"
+	"github.com/nspcc-dev/neofs-sdk-go/container/acl"
+	"github.com/nspcc-dev/neofs-sdk-go/eacl"
 	"image"
 	"image/jpeg"
 	"image/png"
@@ -17,6 +19,7 @@ import (
 	"runtime"
 	"time"
 )
+
 func (m Manager) OpenInDefaultBrowser(txt string) error {
 	var err error
 	switch runtime.GOOS {
@@ -73,14 +76,14 @@ func thumbnail(ioReader *io.Reader) ([]byte, error) {
 	fixedSize := 80.
 	if width > height {
 		fmt.Println("width > height")
-		ratio = fixedSize/width
+		ratio = fixedSize / width
 		fmt.Println("ratio", ratio)
 		width = height * ratio
 		height = fixedSize
 		fmt.Println("new height", height)
 	} else {
 		fmt.Println("height > width", height, width)
-		ratio = fixedSize/height
+		ratio = fixedSize / height
 		fmt.Println("ratio", ratio)
 		height = width * ratio
 		width = fixedSize
@@ -103,4 +106,17 @@ func thumbnail(ioReader *io.Reader) ([]byte, error) {
 		return []byte{}, errors.New("unknown format")
 	}
 	return buf.Bytes(), nil
+}
+
+type Element struct {
+	ID string `json:"id"`
+	Type string `josn:"type"`
+	Size uint64 `json:"size"`
+	BasicAcl acl.Basic
+	ExtendedAcl eacl.Table
+	Attributes map[string]string `json:"attributes""`
+	Errors []error `json:"errors",omitempty`
+	ParentID string
+	Children []Element `json:"children",omitempty`
+	PendingDeleted bool
 }

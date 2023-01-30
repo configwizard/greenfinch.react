@@ -1,26 +1,27 @@
 package manager
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/amlwwalker/greenfinch.react/pkg/cache"
+	gspool "github.com/amlwwalker/greenfinch.react/pkg/pool"
+	"github.com/amlwwalker/greenfinch.react/pkg/tokens"
 	"github.com/nspcc-dev/neo-go/pkg/crypto/keys"
-	"github.com/nspcc-dev/neofs-sdk-go/client"
+	"github.com/nspcc-dev/neofs-sdk-go/container/acl"
+	"github.com/nspcc-dev/neofs-sdk-go/eacl"
+	"github.com/nspcc-dev/neofs-sdk-go/netmap"
+	obj "github.com/nspcc-dev/neofs-sdk-go/object"
+	oid "github.com/nspcc-dev/neofs-sdk-go/object/id"
+	"github.com/nspcc-dev/neofs-sdk-go/pool"
+	"github.com/nspcc-dev/neofs-sdk-go/user"
 	"log"
+	"path/filepath"
 	"strconv"
 	"sync"
 	"time"
 
-	client2 "github.com/configwizard/gaspump-api/pkg/client"
-	container2 "github.com/configwizard/gaspump-api/pkg/container"
-	"github.com/configwizard/gaspump-api/pkg/eacl"
-	"github.com/configwizard/gaspump-api/pkg/filesystem"
-	"github.com/configwizard/gaspump-api/pkg/object"
-	"github.com/nspcc-dev/neofs-sdk-go/acl"
 	"github.com/nspcc-dev/neofs-sdk-go/container"
 	cid "github.com/nspcc-dev/neofs-sdk-go/container/id"
-	obj "github.com/nspcc-dev/neofs-sdk-go/object"
 	"github.com/nspcc-dev/neofs-sdk-go/session"
 )
 
@@ -29,19 +30,29 @@ type Container struct {
 	Size uint64
 }
 
-func (m *Manager) listContainerIDs() ([]*cid.ID, error) {
+func (m *Manager) listContainerIDs() ([]cid.ID, error) {
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
-		return []*cid.ID{}, err
+		return nil, err
 	}
 	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
-	c, err := m.Client()
+	userID := user.ID{}
+	user.IDFromKey(&userID, tmpKey.PublicKey)
+
+	// UserContainers implements neofs.NeoFS interface method.
+	var prm pool.PrmContainerList
+	prm.SetOwnerID(userID)
+
+	pl, err := m.Pool()
 	if err != nil {
-		return []*cid.ID{}, err
+		return nil, err
 	}
-	ids, err := container2.List(m.ctx, c, &tmpKey)
-	log.Printf("%v\r\n", ids)
-	return ids, err
+	r, err := pl.ListContainers(m.ctx, prm)
+	if err != nil {
+		fmt.Errorf("list user containers via connection pool: %w", err)
+	}
+	log.Printf("%v\r\n", r)
+	return r, err
 }
 func (m *Manager) ListContainerIDs() ([]string, error) {
 	var stringIds []string
@@ -59,23 +70,23 @@ func (m *Manager) ListContainerIDs() ([]string, error) {
 }
 
 // NewListReadOnlyContainerContents lists from cache
-func (m *Manager) NewListReadOnlyContainerContents(since int64) ([]filesystem.Element, error) {
+func (m *Manager) NewListReadOnlyContainerContents(since int64) ([]Element, error) {
 	//list the containers
 	containers, err := m.ListContainers(false)
 	if err != nil {
 		return nil, err
 	}
 	resultCounter := 0
-	var validContainers []filesystem.Element
+	var validContainers []Element
 	//now for each container, we want to check the basic ACL
 	wg := sync.WaitGroup{}
 	var mu       sync.Mutex
 	for _, cnt := range containers {
 		wg.Add(1)
-		go func(v filesystem.Element) {
+		go func(v Element) {
 			defer wg.Done()
-			fmt.Println("serving container", v.ID, v.BasicAcl, acl.EACLReadOnlyBasicRule)
-			if v.BasicAcl != acl.EACLReadOnlyBasicRule {
+			fmt.Println("serving container", v.ID, v.BasicAcl, acl.PublicROExtended)
+			if v.BasicAcl != acl.PublicROExtended {
 				return
 			}
 			//now we need the metadata for the objects in this container.
@@ -85,7 +96,7 @@ func (m *Manager) NewListReadOnlyContainerContents(since int64) ([]filesystem.El
 				return
 			}
 			fmt.Println("number of objects in container ", v.ID, len(objects))
-			var pendingContainer filesystem.Element
+			var pendingContainer Element
 			pendingContainer.ID = cnt.ID
 			pendingContainer.Type = cnt.Type
 			pendingContainer.Attributes = cnt.Attributes
@@ -116,25 +127,56 @@ func (m *Manager) NewListReadOnlyContainerContents(since int64) ([]filesystem.El
 	fmt.Println("resulting in ", resultCounter)
 	return validContainers, nil
 }
-//func (m *Manager) ListReadOnlyContainersContents(since int64) ([]filesystem.Element, error) {
+//func (m *Manager) ListReadOnlyContainersContents(since int64) ([]Element, error) {
 //	tmpWallet, err := m.retrieveWallet()
 //	if err != nil {
-//		return []filesystem.Element{}, err
+//		return []Element{}, err
 //	}
 //	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
-//	c, err := m.Client()
+//
+//	pl, err := m.Pool()
 //	if err != nil {
-//		return []filesystem.Element{}, err
-//	}
-//	sessionToken, err := client2.CreateSession(m.ctx, c, client2.DEFAULT_EXPIRATION, &tmpKey)
-//	if err != nil {
-//		return []filesystem.Element{}, err
+//		return nil, err
 //	}
 //	ids, err := m.listContainerIDs()
 //	if err != nil {
-//		return []filesystem.Element{}, err
+//		return []Element{}, err
 //	}
-//	var containers []filesystem.Element
+//	for _, v := range ids {
+//		tmpContainer := populateContainerList(m.ctx, c, v)
+//		fmt.Printf("container eacl for %s: %s ?= %s\r\n", v.String(), tmpContainer.BasicAcl, acl.PublicRO) //these codes are incorrect.
+//		if tmpContainer.BasicAcl != acl.Basic(0x0FFFCFFF) { //acl.EACLReadOnlyBasicRule
+//			continue
+//		}
+//		var filters = obj.SearchFilters{}
+//		filters.AddRootFilter()
+//		list, err := m.listObjectsAsync(v.String())
+//		if err != nil {
+//			return nil, err
+//		}
+//
+//		//list, err := object.QueryObjects(m.ctx, c, v, filters, nil, sessionToken)
+//		//if err != nil {
+//		//	tmpContainer.Errors = append(tmpContainer.Errors, err)
+//		//	continue
+//		//}
+//		//is this inefficient? the expensive part is the request, but we are throwing away the whole object
+//		_, els := generateObjectStruct(m.ctx, list, v, nil, sessionToken)
+//		var filteredElements []Element
+//		for _, el := range els {
+//			//filteredElements = append(filteredElements, el)
+//			unixString, ok := el.Attributes[obj.AttributeTimestamp];
+//			unixTime, err := strconv.ParseInt(unixString, 10, 64);
+//			if ok && err == nil && unixTime > since {
+//				//its a good object
+//				filteredElements = append(filteredElements, el)
+//			}
+//		}
+//	}
+//	if err != nil {
+//		return []Element{}, err
+//	}
+//	var containers []Element
 //	resultCounter := 0
 //	for _, v := range ids {
 //		tmpContainer := filesystem.PopulateContainerList(m.ctx, c, *v)
@@ -150,8 +192,8 @@ func (m *Manager) NewListReadOnlyContainerContents(since int64) ([]filesystem.El
 //			continue
 //		}
 //		//is this inefficient? the expensive part is the request, but we are throwing away the whole object
-//		_, els := filesystem.GenerateObjectStruct(m.ctx, c, list, *v, nil, sessionToken)
-//		var filteredElements []filesystem.Element
+//		_, els := filesystem.GenerateObjectStruct(list, v)
+//		var filteredElements []Element
 //		for _, el := range els {
 //			//filteredElements = append(filteredElements, el)
 //			unixString, ok := el.Attributes[obj.AttributeTimestamp];
@@ -173,6 +215,58 @@ func (m *Manager) NewListReadOnlyContainerContents(since int64) ([]filesystem.El
 //	fmt.Println("for ", since, " there are ", resultCounter, " objects")
 //	return containers, nil
 //}
+//
+//// PopulateContainerList returns a container with its attributes as an Element (used by GenerateFileSystemFromContainer)
+//func populateContainerList(ctx context.Context, cli *client.Client, containerID cid.ID) Element {
+//	cont := Element{
+//		Type: "container",
+//		ID: containerID.String(),
+//		Attributes: make(map[string]string),
+//	}
+//	c, err := container.Get(ctx, cli, containerID)
+//	if err != nil {
+//		cont.Errors = append(cont.Errors, err)
+//		return cont
+//	}
+//	cont.BasicAcl = acl.BasicACL(c.BasicACL())
+//	fmt.Println("processing attributes ", c.Attributes())
+//	for _, a := range c.Attributes() {
+//		cont.Attributes[a.Key()] = a.Value()
+//	}
+//	if _, ok := cont.Attributes[obj.AttributeFileName]; !ok {
+//		cont.Attributes[obj.AttributeFileName] = ""
+//	}
+//	return cont
+//}
+//generateObjectStruct returns an array of elements containing all the objects owned by the contianer ID
+func (m *Manager) generateObjectStruct(objs []oid.ID, containerID cid.ID) (uint64, []Element){
+	var newObjs []Element
+	size := uint64(0)
+	for _, o := range objs {
+		tmp := Element{
+			Type: "object",
+			ID:         o.String(),
+			Attributes: make(map[string]string),
+		}
+		head, err := m.GetObjectMetaData(o.String(), containerID.String())
+		if err != nil {
+			tmp.Errors = append(tmp.Errors, err)
+		}
+		for _, a := range head.Attributes() {
+			tmp.Attributes[a.Key()] = a.Value()
+		}
+		if filename, ok := tmp.Attributes[obj.AttributeFileName]; ok {
+			tmp.Attributes["X_EXT"] = filepath.Ext(filename)[1:]
+		} else {
+			tmp.Attributes["X_EXT"] = ""
+		}
+
+		tmp.Size = head.Object().PayloadSize()
+		size += tmp.Size
+		newObjs = append(newObjs, tmp)
+	}
+	return size, newObjs
+}
 func (m *Manager) ForceSync() {
 	fmt.Println("force syncing")
 	if _, err := m.listContainersAsync(); err != nil {
@@ -180,46 +274,45 @@ func (m *Manager) ForceSync() {
 	}
 
 }
+
 //listContainersAsync should be purely used to refresh the database cache
 //todo: this needs to clean out the database as its a refresh of everything
-func (m *Manager) listContainersAsync() ([]filesystem.Element, error) {
-	var containers []filesystem.Element
+func (m *Manager) listContainersAsync() ([]Element, error) {
+	var containers []Element
 	//runtime.EventsEmit(m.ctx, "clearContainer", nil)
-	tmpWallet, err := m.retrieveWallet()
-	if err != nil {
-		return []filesystem.Element{}, err
-	}
-	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
-	c, err := m.Client()
-	if err != nil {
-		return []filesystem.Element{}, err
-	}
-	sessionToken, err := client2.CreateSessionForContainerList(m.ctx, c, client2.DEFAULT_EXPIRATION, &tmpKey)
-	if err != nil {
-		return []filesystem.Element{}, err
-	}
+	//tmpWallet, err := m.retrieveWallet()
+	//if err != nil {
+	//	return []Element{}, err
+	//}
+	//tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
+	//pl, err := m.Pool()
+	//if err != nil {
+	//	return []Element{}, err
+	//}
+
 	ids, err := m.listContainerIDs()
 	if err != nil {
-		return []filesystem.Element{}, err
+		return []Element{}, err
 	}
 	fmt.Println("container ids,", len(ids), ids)
 	wg := sync.WaitGroup{}
 	for _, v := range ids {
 		wg.Add(1)
 		go func(vID cid.ID) {
+			//todo - this is meant to update the cache with the relevant objects. Lets check this out
 			defer wg.Done()
-			tmpContainer, err := m.prepareAndAppendContainer(vID, sessionToken)
-			str, err := json.MarshalIndent(tmpContainer, "", "  ")
-			if err != nil {
-				fmt.Println(err)
-			}
-			fmt.Println("retrieved containers", tmpContainer)
-			//store in database
-			fmt.Println("storing container", tmpContainer.ID)
-			if err = cache.StoreContainer(tmpWallet.Accounts[0].Address, tmpContainer.ID, str); err != nil {
-				fmt.Println("MASSIVE ERROR could not store container in database", err)
-			}
-		}(*v)
+			//tmpContainer, err := m.prepareAndAppendContainer(vID, sessionToken)
+			//str, err := json.MarshalIndent(tmpContainer, "", "  ")
+			//if err != nil {
+			//	fmt.Println(err)
+			//}
+			//fmt.Println("retrieved containers", tmpContainer)
+			////store in database
+			//fmt.Println("storing container", tmpContainer.ID)
+			//if err = cache.StoreContainer(tmpWallet.Accounts[0].Address, tmpContainer.ID, str); err != nil {
+			//	fmt.Println("MASSIVE ERROR could not store container in database", err)
+			//}
+		}(v)
 	}
 	wg.Wait()
 	if m.DEBUG {
@@ -230,33 +323,37 @@ func (m *Manager) listContainersAsync() ([]filesystem.Element, error) {
 	return containerList, err
 }
 
-// prepareAndAppendContainer only used to update cache. Never as part of cache
-func (m *Manager) prepareAndAppendContainer(vID cid.ID, sessionToken *session.Token) (filesystem.Element, error) {
-	c, err := m.Client()
-	if err != nil {
-		log.Fatal("SERIOUS ERROR , could not retrieve client - in Go routine", err)
-		return filesystem.Element{}, err
-	}
-	tmpContainer := filesystem.PopulateContainerList(m.ctx, c, vID) // todo - why does this not return an eror on a container?
-	var filters = obj.SearchFilters{}
-	filters.AddRootFilter()
-	list, err := object.QueryObjects(m.ctx, c, vID, filters, nil, sessionToken)
-	if err != nil {
-		tmpContainer.Errors = append(tmpContainer.Errors, err)
-		return filesystem.Element{}, err
-	}
-	//is this inefficient? the expensive part is the request, but we are throwing away the whole object
-	size, _ := filesystem.GenerateObjectStruct(m.ctx, c, list, vID, nil, sessionToken)
-	tmpContainer.Size = size
-	return tmpContainer, nil
-}
-
+//// prepareAndAppendContainer only used to update cache. Never as part of cache
+//func (m *Manager) prepareAndAppendContainer(vID cid.ID, sessionToken *session.Token) (Element, error) {
+//	c, err := m.Client()
+//	if err != nil {
+//		log.Fatal("SERIOUS ERROR , could not retrieve client - in Go routine", err)
+//		return Element{}, err
+//	}
+//	fmt.Println("prepare and append container ", vID.String())
+//	tmpContainer := filesystem.PopulateContainerList(m.ctx, c, vID) // todo - why does this not return an eror on a container?
+//	var filters = obj.SearchFilters{}
+//	filters.AddRootFilter()
+//	fmt.Printf("tmpContainer 1 %+v\r\n", tmpContainer)
+//	list, err := object.QueryObjects(m.ctx, c, vID, filters, nil, sessionToken)
+//	if err != nil {
+//		fmt.Println("error querying objects of container", err)
+//		tmpContainer.Errors = append(tmpContainer.Errors, err)
+//		return tmpContainer, err
+//	}
+//	fmt.Printf("tmpContainer 2 %+v\r\n", tmpContainer)
+//	//is this inefficient? the expensive part is the request, but we are throwing away the whole object
+//	size, _ := filesystem.GenerateObjectStruct(m.ctx, c, list, vID, nil, sessionToken)
+//	tmpContainer.Size = size
+//	fmt.Printf("tmpContainer 3 %+v\r\n", tmpContainer)
+//	return tmpContainer, nil
+//}
 
 // ListContainers populates from cache
-func (m *Manager) ListContainers(synchronised bool) ([]filesystem.Element, error) {
+func (m *Manager) ListContainers(synchronised bool) ([]Element, error) {
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
-		return []filesystem.Element{}, err
+		return []Element{}, err
 	}
 	tmpContainers, err := cache.RetrieveContainers(tmpWallet.Accounts[0].Address)
 	if err != nil {
@@ -267,11 +364,11 @@ func (m *Manager) ListContainers(synchronised bool) ([]filesystem.Element, error
 		//todo notify frontend of database sync
 		return m.listContainersAsync()
 	}
-	var unsortedContainers []filesystem.Element
+	var unsortedContainers []Element
 	//now convert to the elements
 	fmt.Println("listing ", len(tmpContainers))
 	for k, v := range tmpContainers {
-		tmp := filesystem.Element{}
+		tmp := Element{}
 		err := json.Unmarshal(v, &tmp)
 		if err != nil {
 			fmt.Println("warning - could not unmarshal container", k)
@@ -287,22 +384,6 @@ func (m *Manager) ListContainers(synchronised bool) ([]filesystem.Element, error
 		}
 	}
 	fmt.Println("ended up with", len(unsortedContainers))
-	//sort keys
-	//keys := make([]string, 0, len(unsortedContainers))
-	//for _, v := range unsortedContainers {
-	//	keys = append(keys, v.Attributes[obj.AttributeFileName])
-	//}
-	//sort.Strings(keys)
-	//append to array in alphabetical order by key
-	//var containers []filesystem.Element
-	//for _, k := range keys {
-	//	for _, v := range unsortedContainers {
-	//		if v.Attributes[obj.AttributeFileName] == k {
-	//			containers = append(containers, v)
-	//			break
-	//		}
-	//	}
-	//}
 
 	fmt.Println("finally", len(unsortedContainers))
 	return unsortedContainers, nil
@@ -310,33 +391,41 @@ func (m *Manager) ListContainers(synchronised bool) ([]filesystem.Element, error
 
 // DeleteContainer must mark the container in the cache as deleted
 // and delete it from neoFS
-func (m *Manager) DeleteContainer(id string) ([]filesystem.Element, error) {
+func (m *Manager) DeleteContainer(id string) ([]Element, error) {
 	fmt.Println("deleting container ", id)
-	c := cid.ID{}
-	err := c.Parse(id)
-	if err != nil {
+	cnrID := cid.ID{}
+	if err := cnrID.DecodeString(id); err != nil {
 		tmp := UXMessage{
 			Title:       "Container Error",
 			Type:        "error",
 			Description: "Container does not exist " + err.Error(),
 		}
 		m.MakeToast(NewToastMessage(&tmp))
-		return []filesystem.Element{}, err
+		return []Element{}, err
 	}
+
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
-		return []filesystem.Element{}, err
+		return []Element{}, err
 	}
 	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
-	fsCli, err := m.Client()
+	pKey := &keys.PrivateKey{PrivateKey: tmpKey}
+	pl, err := m.Pool()
 	if err != nil {
-		return []filesystem.Element{}, err
+		return []Element{}, err
 	}
-	sessionToken, err := client2.CreateSessionWithContainerDeleteContext(m.ctx, fsCli, nil, c, client2.DEFAULT_EXPIRATION, &tmpKey)
+
+	iAt, exp, err := gspool.TokenExpiryValue(m.ctx, pl, 100)
+	sc, err := tokens.BuildContainerSessionToken(pKey, iAt, iAt, exp, cnrID, session.VerbContainerDelete, *pKey.PublicKey())
 	if err != nil {
-		return []filesystem.Element{}, err
+		log.Fatal("error creating session token to create a container")
 	}
-	_, err = container2.Delete(m.ctx, fsCli, c, sessionToken)
+	var prm pool.PrmContainerDelete
+	prm.SetContainerID(cnrID)
+
+	if sc != nil {
+		prm.SetSessionToken(*sc)
+	}
 	if err != nil {
 		fmt.Println("error deleting container", err)
 		tmp := UXMessage{
@@ -350,22 +439,22 @@ func (m *Manager) DeleteContainer(id string) ([]filesystem.Element, error) {
 		cacheContainer, err := cache.RetrieveContainer(tmpWallet.Accounts[0].Address, id)
 		if err != nil {
 			fmt.Println("error retrieving container??", err)
-			return []filesystem.Element{}, err
+			return []Element{}, err
 		}
 		if cacheContainer == nil {
 			//there is no container
 		}
-		tmp := filesystem.Element{}
+		tmp := Element{}
 		if err := json.Unmarshal(cacheContainer, &tmp); err != nil {
-			return []filesystem.Element{}, err
+			return []Element{}, err
 		}
 		tmp.PendingDeleted = true
 		del, err := json.Marshal(tmp)
 		if err := json.Unmarshal(cacheContainer, &tmp); err != nil {
-			return []filesystem.Element{}, err
+			return []Element{}, err
 		}
 		if err := cache.PendContainerDeleted(tmpWallet.Accounts[0].Address, id, del); err != nil {
-			return []filesystem.Element{}, err
+			return []Element{}, err
 		}
 		t := UXMessage{
 			Title:       "Container Deleted",
@@ -386,18 +475,8 @@ func (m *Manager) RestrictContainer(id string, publicKey string) error {
 		Description: "please wait",
 	}
 	m.MakeToast(NewToastMessage(&tmp))
-	//block everything for other keys
-	var pKey *keys.PublicKey
-	if publicKey != "" {
-		var err error
-		pKey, err = keys.NewPublicKeyFromString(publicKey)
-		if err != nil {
-			return err
-		}
-	}
-	c := cid.ID{}
-	err := c.Parse(id)
-	if err != nil {
+	cnrID := cid.ID{}
+	if err := cnrID.DecodeString(id); err != nil {
 		tmp := UXMessage{
 			Title:       "Sharing Error",
 			Type:        "error",
@@ -406,15 +485,42 @@ func (m *Manager) RestrictContainer(id string, publicKey string) error {
 		m.MakeToast(NewToastMessage(&tmp))
 		return err
 	}
-	table := eacl.AllAllowDenyOthersEACL(c, pKey)
-	var prmContainerSetEACL client.PrmContainerSetEACL
-	prmContainerSetEACL.SetTable(table)
-	fsCli, err := m.Client()
+	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
 		return err
 	}
-	_, err = fsCli.ContainerSetEACL(m.ctx, prmContainerSetEACL)
+
+	//this doesn't feel correct??
+	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
+	pKey := &keys.PrivateKey{PrivateKey: tmpKey}
+
+	//todo: how do you attach a new session to a session Container?
+	sc, err := tokens.BuildContainerSessionToken(pKey, 500, 500, 500, cnrID, session.VerbContainerPut, *pKey.PublicKey())
 	if err != nil {
+		log.Fatal("error creating session token to create a container")
+	}
+
+	//for the time being, this is the same key
+	specifiedTargetRole := eacl.NewTarget()
+	eacl.SetTargetECDSAKeys(specifiedTargetRole, &tmpKey.PublicKey)
+
+	var prm pool.PrmContainerSetEACL
+	table, err := tokens.AllowKeyPutRead(cnrID, *specifiedTargetRole)
+	if err != nil {
+		log.Fatal("couldn't create eacl table", err)
+	}
+	prm.SetTable(table)
+	if sc != nil {
+		prm.WithinSession(*sc) //todo = what if the sc is nil? Why continue?
+	}
+	pl, err := m.Pool()
+	if err != nil {
+		fmt.Errorf("%w", err)
+		return err
+	}
+
+	if err := pl.SetEACL(m.ctx, prm); err != nil {
+		fmt.Errorf("save eACL via connection pool: %w", err)
 		tmp := UXMessage{
 			Title:       "Container Error",
 			Type:        "error",
@@ -424,141 +530,177 @@ func (m *Manager) RestrictContainer(id string, publicKey string) error {
 		return err
 	}
 
-	err = AwaitTime(30, func() bool {
-		var prmContainerEACL client.PrmContainerEACL
-		prmContainerEACL.SetContainer(c)
-		r, err := fsCli.ContainerEACL(m.ctx, prmContainerEACL)
-		if err != nil {
-			return false
-		}
-		expected, _ := table.Marshal()
-		got, _ := r.Table().Marshal()
-		res := bytes.Equal(expected, got)
-		if res {
-			tmp := UXMessage{
-				Title:       "Sharing successful",
-				Type:        "success",
-				Description: "successfully shared container",
-			}
-			m.MakeToast(NewToastMessage(&tmp))
-		}
-		return res
-	})
-	if err != nil {
-		tmp := UXMessage{
-			Title:       "Container Error",
-			Type:        "error",
-			Description: "failed to restrict container" + err.Error(),
-		}
-		m.MakeToast(NewToastMessage(&tmp))
-		return err
-	}
+	////table := eacl.AllAllowDenyOthersEACL(c, pKey)
+	//var prmContainerSetEACL client.PrmContainerSetEACL
+	//prmContainerSetEACL.SetTable(table)
+	//pl, err := m.Pool()
+	//if err != nil {
+	//	return err
+	//}
+	//_, err = pl.ContainerSetEACL(m.ctx, prmContainerSetEACL)
+	//if err != nil {
+	//	tmp := UXMessage{
+	//		Title:       "Container Error",
+	//		Type:        "error",
+	//		Description: "EACL failed" + err.Error(),
+	//	}
+	//	m.MakeToast(NewToastMessage(&tmp))
+	//	return err
+	//}
+	//
+	//err = AwaitTime(30, func() bool {
+	//	var prmContainerEACL client.PrmContainerEACL
+	//	prmContainerEACL.SetContainer(c)
+	//	r, err := fsCli.ContainerEACL(m.ctx, prmContainerEACL)
+	//	if err != nil {
+	//		return false
+	//	}
+	//	expected, _ := table.Marshal()
+	//	got, _ := r.Table().Marshal()
+	//	res := bytes.Equal(expected, got)
+	//	if res {
+	//		tmp := UXMessage{
+	//			Title:       "Sharing successful",
+	//			Type:        "success",
+	//			Description: "successfully shared container",
+	//		}
+	//		m.MakeToast(NewToastMessage(&tmp))
+	//	}
+	//	return res
+	//})
+	//if err != nil {
+	//	tmp := UXMessage{
+	//		Title:       "Container Error",
+	//		Type:        "error",
+	//		Description: "failed to restrict container" + err.Error(),
+	//	}
+	//	m.MakeToast(NewToastMessage(&tmp))
+	//	return err
+	//}
 	return nil
 }
 
 func (m *Manager) CreateContainer(name string, permission string, block bool) error {
+	var containerAttributes = make(map[string]string)
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
 		return err
 	}
 	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
-	fsCli, err := m.Client()
+	pKey := &keys.PrivateKey{PrivateKey: tmpKey}
+
+	pl, err := m.Pool()
 	if err != nil {
 		return err
 	}
 	log.Println("creating container with name", name)
-	attr := container.NewAttribute()
-	attr.SetKey(obj.AttributeFileName)
-	attr.SetValue(name)
 
-	timeAttr := container.NewAttribute()
-	timeAttr.SetKey(container.AttributeTimestamp)
-	timeAttr.SetValue(strconv.FormatInt(time.Now().Unix(), 10))
-	var attributes []*container.Attribute
-	attributes = append(attributes, []*container.Attribute{attr, timeAttr}...)
-	// Poll containers ID until it will be available in the network.
-	go func() {
-		placementPolicy := `REP 2 IN X
-        CBF 2
-        SELECT 2 FROM * AS X
-        `
-		var customAcl acl.BasicACL //0x0FFFCFFF
-		switch permission {
-		case "PRIVATE":
-			customAcl = acl.PrivateBasicRule //0x1C8C8CCC -> 478973132
-		case "PUBLICREAD":
-			customAcl = acl.EACLReadOnlyBasicRule //0x0FBF8CFF -> 264211711
-		case "PUBLICBASIC":
-			customAcl = acl.EACLPublicBasicRule //0x0FBFBFFF -> 264224767
-		default:
-			customAcl = acl.BasicACL(0x0FFFCFFF) //0x0FFFCFFF -> 268423167
-		}
-		id, err := container2.Create(m.ctx, fsCli, &tmpKey, placementPolicy, customAcl, attributes)
-		//sessionToken, err := client2.CreateSession(m.ctx, fsCli, client2.DEFAULT_EXPIRATION, &tmpKey)
-		//if err != nil {
-		//	fmt.Println("could not create session token")
-		//	return
-		//}
-		if err != nil {
-			tmp := UXMessage{
-				Title:       "Container Error",
-				Type:        "error",
-				Description: "Container '" + name + "' failed " + err.Error(),
-			}
-			m.MakeToast(NewToastMessage(&tmp))
-			return
-		}
+	userID := user.ID{}
+	user.IDFromKey(&userID, tmpKey.PublicKey)
+
+	placementPolicy := `REP 2 IN X 
+	CBF 2
+	SELECT 2 FROM * AS X
+	`
+
+	policy := netmap.PlacementPolicy{}
+	if err := policy.DecodeString(placementPolicy); err != nil {
+		fmt.Errorf("failed to build placement policy: %w", err)
+		return err
+	}
+
+	var cnr container.Container
+	cnr.Init()
+	cnr.SetPlacementPolicy(policy)
+	cnr.SetOwner(userID)
+
+	var customAcl acl.Basic //0x0FFFCFFF
+	switch permission {
+	case "PRIVATE":
+		customAcl = acl.Private //0x1C8C8CCC -> 478973132
+	case "PUBLICREAD":
+		customAcl = acl.PublicROExtended //EACLReadOnlyBasicRule //0x0FBF8CFF -> 264211711
+	case "PUBLICBASIC":
+		customAcl = acl.PublicRWExtended //EACLPublicBasicRule //0x0FBFBFFF -> 264224767
+	default:
+		customAcl = acl.PublicRWExtended //BasicACL(0x0FFFCFFF) //0x0FFFCFFF -> 268423167
+	}
+
+	cnr.SetBasicACL(customAcl) //acl.PublicRWExtended)
+	container.SetCreationTime(&cnr, time.Now())
+
+	// todo: what is the difference between domain name and container name??
+	var d container.Domain
+	d.SetName("domain-name")
+
+	container.WriteDomain(&cnr, d)
+	container.SetName(&cnr, name)
+
+	for k, v := range containerAttributes {
+		cnr.SetAttribute(k, v)
+	}
+
+	fmt.Println("pool retrieved")
+	if err := pool.SyncContainerWithNetwork(m.ctx, &cnr, pl); err != nil {
+		fmt.Errorf("sync container with the network state: %w", err)
+		return err
+	}
+
+	var prmPut pool.PrmContainerPut
+	prmPut.SetContainer(cnr)
+
+	iAt, exp, err := gspool.TokenExpiryValue(m.ctx, pl, 100)
+	sc, err := tokens.BuildContainerSessionToken(pKey, iAt, iAt, exp, cid.ID{}, session.VerbContainerPut, *pKey.PublicKey())
+	if err != nil {
+		log.Fatal("error creating session token to create a container")
+	}
+	if sc != nil {
+		prmPut.WithinSession(*sc)
+	} else {
+		//todo: what about just providing a key or a bearer token?
+	}
+
+	fmt.Println("about to put container")
+	// send request to save the container
+	//todo - do this on a routine so that we don't hang
+	idCnr, err := pl.PutContainer(m.ctx, prmPut) //see SetWaitParams to change wait times
+	if err != nil {
+		fmt.Println("save container via connection pool: %w", err)
 		tmp := UXMessage{
-			Title:       "Container " + name + " initialised",
-			Type:        "info",
-			Description: "Please wait up to 1 minute",
+			Title:       "Container Error",
+			Type:        "error",
+			Description: "Container '" + name + "' failed " + err.Error(),
 		}
 		m.MakeToast(NewToastMessage(&tmp))
-		for i := 0; i <= 180; i++ {
-			if i == 60 {
-				log.Printf("Timeout, containers %s was not persisted in side chain\n", id)
-				tmp := UXMessage{
-					Title:       "Container Error",
-					Type:        "error",
-					Description: "Container '" + name + "' failed. Timeout",
-				}
-				m.MakeToast(NewToastMessage(&tmp))
-				return
-			}
-			_, err := container2.Get(m.ctx, fsCli, *id)
-			if err == nil {
-				tmp := UXMessage{
-					Title:       "Container Created",
-					Type:        "success",
-					Description: "Container '" + name + "' created",
-				}
-				el := filesystem.Element{
-					ID:             id.String(),
-					Type:           "container",
-					Size:           0,
-					BasicAcl: customAcl,
-					Attributes: make(map[string]string),
-				}
-				for _, a := range attributes {
-					el.Attributes[a.Key()] = a.Value()
-				}
-				marshal, err := json.Marshal(el)
-				if err != nil {
-					return
-				}
-				err = cache.StoreContainer(tmpWallet.Accounts[0].Address, id.String(), marshal)
-				if err != nil {
-					return 
-				}
-				//update the database cache
-				//m.prepareAndAppendContainer(*id, sessionToken)
-				m.MakeToast(NewToastMessage(&tmp))
-				return
-			}
-			time.Sleep(time.Second)
-			//todo output the time/poll to a channel for the frontend
-		}
-	}()
-	//convert to frontend friendly format
+		return err
+	}
+	fmt.Println("container putted")
+	fmt.Println("container created ", idCnr)
+
+	tmp := UXMessage{
+		Title:       "Container Created",
+		Type:        "success",
+		Description: "Container '" + name + "' created",
+	}
+	el := Element{
+		ID:         idCnr.String(),
+		Type:       "container",
+		Size:       0,
+		BasicAcl:   customAcl,
+		Attributes: make(map[string]string),
+	}
+	for k, v := range containerAttributes {
+		el.Attributes[k] = v
+	}
+	marshal, err := json.Marshal(el)
+	if err != nil {
+		return err
+	}
+	err = cache.StoreContainer(tmpWallet.Accounts[0].Address, idCnr.String(), marshal)
+	if err != nil {
+		return err
+	}
+	m.MakeToast(NewToastMessage(&tmp))
 	return nil
+
 }

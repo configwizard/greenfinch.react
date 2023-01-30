@@ -6,6 +6,7 @@ import (
 )
 
 const container_bucket = "containers"
+
 func StoreContainer(wallet, id string, container []byte) error {
 	return db.Update(func(tx *bolt.Tx) error {
 		ub := tx.Bucket([]byte(wallet))

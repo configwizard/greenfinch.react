@@ -5,13 +5,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/amlwwalker/greenfinch.react/pkg/cache"
-	client2 "github.com/configwizard/gaspump-api/pkg/client"
-	"github.com/configwizard/gaspump-api/pkg/filesystem"
-	"github.com/configwizard/gaspump-api/pkg/object"
+	gspool "github.com/amlwwalker/greenfinch.react/pkg/pool"
+	"github.com/amlwwalker/greenfinch.react/pkg/tokens"
+	"github.com/nspcc-dev/neo-go/pkg/crypto/keys"
 	"github.com/nspcc-dev/neofs-sdk-go/client"
 	cid "github.com/nspcc-dev/neofs-sdk-go/container/id"
-	obj "github.com/nspcc-dev/neofs-sdk-go/object"
+	"github.com/nspcc-dev/neofs-sdk-go/eacl"
+	"github.com/nspcc-dev/neofs-sdk-go/object"
 	oid "github.com/nspcc-dev/neofs-sdk-go/object/id"
+	"github.com/nspcc-dev/neofs-sdk-go/pool"
+	"log"
 	"path/filepath"
 	"sort"
 	"sync"
@@ -27,22 +30,21 @@ func getHelperTokenExpiry(ctx context.Context, cli *client.Client) uint64 {
 	return expire
 }
 
-
-func (m *Manager) ListSharedContainers() ([]filesystem.Element, error) {
+func (m *Manager) ListSharedContainers() ([]Element, error) {
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
-		return []filesystem.Element{}, err
+		return []Element{}, err
 	}
-	fmt.Println("finding shared for ",tmpWallet.Accounts[0].Address)
+	fmt.Println("finding shared for ", tmpWallet.Accounts[0].Address)
 	tmpContainers, err := cache.RetrieveSharedContainers(tmpWallet.Accounts[0].Address)
 	if err != nil {
 		return nil, err
 	}
-	var unsortedContainers []filesystem.Element
+	var unsortedContainers []Element
 	//now convert to the elements
 	fmt.Println("listing ", len(tmpContainers))
 	for k, v := range tmpContainers {
-		tmp := filesystem.Element{}
+		tmp := Element{}
 		err := json.Unmarshal(v, &tmp)
 		if err != nil {
 			fmt.Println("warning - could not unmarshal container", k)
@@ -63,54 +65,116 @@ func (m *Manager) ListSharedContainers() ([]filesystem.Element, error) {
 
 //ListSharedContainerObjectsAsync
 //ListSharedContainerObjectsAsync update object in database with metadata
-func (m *Manager) listSharedContainerObjectsAsync(containerID string) ([]filesystem.Element, error) {
-	cntID := cid.ID{}
-	cntID.Parse(containerID)
-	tmpWallet, err := m.retrieveWallet()
-	if err != nil {
-		return []filesystem.Element{}, err
+func (m *Manager) listSharedContainerObjectsAsync(containerID string) ([]Element, error) {
+	cnrID := cid.ID{}
+
+	if err := cnrID.DecodeString(containerID); err != nil {
+		log.Fatal("couldn't decode containerID")
 	}
-	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
-	c, err := m.Client()
+	pl, err := m.Pool()
 	if err != nil {
-		return []filesystem.Element{}, err
-	}
-	//CreateSessionForContainerList
-	sessionToken, err := client2.CreateSessionForContainerList(m.ctx, c, getHelperTokenExpiry(m.ctx, c), &tmpKey)
-	if err != nil {
-		return []filesystem.Element{}, err
+		return []Element{}, err
 	}
 
-	var filters = obj.SearchFilters{}
-	filters.AddRootFilter()
-	ids, err := object.QueryObjects(m.ctx, c, cntID, filters, nil, sessionToken)
-	fmt.Println("ids for container,", containerID, " ids ", len(ids))
+	tmpWallet, err := m.retrieveWallet()
+	if err != nil {
+		return []Element{}, err
+	}
+	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
+
+	//this doesn't feel correct??
+	pKey := &keys.PrivateKey{PrivateKey: tmpKey}
+	target := eacl.Target{}
+	target.SetRole(eacl.RoleUser)
+	target.SetBinaryKeys([][]byte{pKey.Bytes()})
+	table, err := tokens.AllowKeyPutRead(cnrID, target)
+	if err != nil {
+		log.Fatal("error retrieving table ", err)
+	}
+	iAt, exp, err := gspool.TokenExpiryValue(m.ctx, pl, 100)
+	bt, err := tokens.BuildBearerToken(pKey, &table, iAt, iAt, exp, pKey.PublicKey())
+	if err != nil {
+		log.Fatal("error creating bearer token to upload object")
+	}
+
+	prms := pool.PrmObjectSearch{}
+	if bt != nil{
+		prms.UseBearer(*bt)
+	} else {
+		prms.UseKey(&tmpKey)
+	}
+
+	prms.SetContainerID(cnrID)
+
+	filter := object.SearchFilters{}
+	filter.AddRootFilter()
+	prms.SetFilters(filter)
+	objects, err := pl.SearchObjects(m.ctx, prms)
+	if err != nil {
+		return nil, err
+	}
+	var list []oid.ID
+	if err = objects.Iterate(func(id oid.ID) bool {
+		list = append(list, id)
+		return false
+	}); err != nil {
+		log.Println("error listing objects %s\r\n", err)
+	}
+	fmt.Printf("list objects %+v\r\n", list)
 	wg := sync.WaitGroup{}
-	for _, v := range ids {
+	var prmHead pool.PrmObjectHead
+	var addr oid.Address
+	addr.SetContainer(cnrID)
+	for _, v := range list {
 		fmt.Println("looping", v.String())
 		wg.Add(1)
 		go func(vID oid.ID) {
 			defer wg.Done()
 			fmt.Println("processing object with id", vID.String())
-			tmp := filesystem.Element{
-				Type: "object",
+			tmp := Element{
+				Type:       "object",
 				ID:         vID.String(),
 				Attributes: make(map[string]string),
-				ParentID: containerID,
+				ParentID:   containerID,
 			}
-			head, err := object.GetObjectMetaData(m.ctx, c, vID, cntID, nil, sessionToken)
+			addr.SetObject(vID)
+			prmHead.SetAddress(addr)
+			hdr, err := pl.HeadObject(m.ctx, prmHead)
 			if err != nil {
-				tmp.Errors = append(tmp.Errors, err)
+				if reason, ok := isErrAccessDenied(err); ok {
+					fmt.Printf("%w: %s\r\n", err, reason)
+					return
+				}
+				fmt.Errorf("read object header via connection pool: %w", err)
+				return
 			}
-			for _, a := range head.Attributes() {
+
+			for _, attr := range hdr.Attributes() {
+				key := attr.Key()
+				val := attr.Value()
+				fmt.Println(key, val)
+				switch key {
+				case object.AttributeFileName:
+				case object.AttributeTimestamp:
+				case object.AttributeContentType:
+				}
+			}
+
+			fmt.Printf("%+v\r\n", hdr.PayloadSize())
+
+			//head, err := object.GetObjectMetaData(m.ctx, c, vID, cntID, nil, sessionToken)
+			//if err != nil {
+			//	tmp.Errors = append(tmp.Errors, err)
+			//}
+			for _, a := range hdr.Attributes() {
 				tmp.Attributes[a.Key()] = a.Value()
 			}
-			if filename, ok := tmp.Attributes[obj.AttributeFileName]; ok {
+			if filename, ok := tmp.Attributes[object.AttributeFileName]; ok {
 				tmp.Attributes["X_EXT"] = filepath.Ext(filename)[1:]
 			} else {
 				tmp.Attributes["X_EXT"] = ""
 			}
-			tmp.Size = head.PayloadSize()
+			tmp.Size = hdr.PayloadSize()
 			str, err := json.MarshalIndent(tmp, "", "  ")
 			if err != nil {
 				fmt.Println(err)
@@ -121,19 +185,20 @@ func (m *Manager) listSharedContainerObjectsAsync(containerID string) ([]filesys
 			}
 		}(v)
 	}
-	fmt.Println("length of ids", len(ids))
-	if len(ids) > 0 {
+	fmt.Println("length of ids", len(list))
+	if len(list) > 0 {
 		wg.Wait()
 	}
 	objectList, err := m.ListSharedContainerObjects(containerID, true)
 	fmt.Println("async returning", objectList)
 	return objectList, err
 }
+
 //ListSharedContainerObjects ets from cache
-func (m *Manager) ListSharedContainerObjects(containerID string, synchronised bool) ([]filesystem.Element, error) {
+func (m *Manager) ListSharedContainerObjects(containerID string, synchronised bool) ([]Element, error) {
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
-		return []filesystem.Element{}, err
+		return []Element{}, err
 	}
 	tmpObjects, err := cache.RetrieveSharedObjects(tmpWallet.Accounts[0].Address)
 	if err != nil {
@@ -146,17 +211,17 @@ func (m *Manager) ListSharedContainerObjects(containerID string, synchronised bo
 	}
 	fmt.Println("len unsorted", len(tmpObjects))
 	//filter for this container
-	var unsortedObjects []filesystem.Element //make(map[string]filesystem.Element)
+	var unsortedObjects []Element //make(map[string]Element)
 	fmt.Println("processinb ojects for", containerID)
 	for k, v := range tmpObjects {
-		tmp := filesystem.Element{}
+		tmp := Element{}
 		err := json.Unmarshal(v, &tmp)
 		if err != nil {
 			fmt.Println("warning - could not unmarshal container", k)
 			continue
 		}
 		//fmt.Println("object ", tmp.ID, tmp.PendingDeleted, tmp.ParentID)
-		if filename, ok := tmp.Attributes[obj.AttributeFileName]; ok {
+		if filename, ok := tmp.Attributes[object.AttributeFileName]; ok {
 			tmp.Attributes["X_EXT"] = filepath.Ext(filename)[1:]
 		} else {
 			tmp.Attributes["X_EXT"] = ""
@@ -184,8 +249,8 @@ func (m *Manager) ListSharedContainerObjects(containerID string, synchronised bo
 	//then attach the others on the end as miscs...
 	keys := make([]string, 0, len(unsortedObjects))
 	for _, v := range unsortedObjects {
-		if name, ok := v.Attributes[obj.AttributeFileName]; ok && name != "" {
-			keys = append(keys, v.Attributes[obj.AttributeFileName])
+		if name, ok := v.Attributes[object.AttributeFileName]; ok && name != "" {
+			keys = append(keys, v.Attributes[object.AttributeFileName])
 		} else {
 			keys = append(keys, v.ID)
 		}
@@ -193,8 +258,8 @@ func (m *Manager) ListSharedContainerObjects(containerID string, synchronised bo
 	sort.Strings(keys)
 	//sorting harder than i thought when no name is possilbe on an object
 	//append to array in alphabetical order by key
-	//var objects []filesystem.Element
-	//var unnamed []filesystem.Element
+	//var objects []Element
+	//var unnamed []Element
 	//for _, k := range keys {
 	//	for _, v := range unsortedObjects {
 	//		if name, ok := v.Attributes[obj.AttributeFileName]; ok && name != "" && name == k {
@@ -210,7 +275,7 @@ func (m *Manager) ListSharedContainerObjects(containerID string, synchronised bo
 	return unsortedObjects, nil
 }
 
-func (m *Manager) RemoveSharedContainer(containerId string) ([]filesystem.Element, error)  {
+func (m *Manager) RemoveSharedContainer(containerId string) ([]Element, error) {
 	fmt.Println("adding ocntainer with id", containerId)
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
@@ -224,35 +289,38 @@ func (m *Manager) RemoveSharedContainer(containerId string) ([]filesystem.Elemen
 }
 func (m *Manager) AddSharedContainer(containerID string) error {
 	//check if you can access this container
-	fmt.Println("adding ocntainer with id", containerID)
-	tmpWallet, err := m.retrieveWallet()
-	if err != nil {
-		fmt.Println("error retrieving wallet")
-		return err
-	}
-	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
-	fsCli, err := m.Client()
-	c := cid.ID{}
-	err = c.Parse(containerID)
-	if err != nil {
-		fmt.Println("error parsing container ", err)
-		return err
-	}
-	sessionToken, err := client2.CreateSessionForContainerList(m.ctx, fsCli, client2.DEFAULT_EXPIRATION, &tmpKey)
-	if err != nil {
-		return err
-	}
-	cont, err := m.prepareAndAppendContainer(c, sessionToken)
-	if err != nil {
-		return err
-	}
-	fmt.Printf("shared container %+v\r\n", cont)
-	marshal, err := json.Marshal(cont)
-	if err != nil {
-		return err
-	}
-	if err := cache.StoreSharedContainer(tmpWallet.Accounts[0].Address, containerID, marshal); err != nil {
-		return err
-	}
+	fmt.Println("adding shared container with id", containerID)
+
+	fmt.Println("adding shared containers currently disabled.")
 	return nil
+	//tmpWallet, err := m.retrieveWallet()
+	//if err != nil {
+	//	fmt.Println("error retrieving wallet")
+	//	return err
+	//}
+	//tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
+	//fsCli, err := m.Client()
+	//c := cid.ID{}
+	//err = c.Parse(containerID)
+	//if err != nil {
+	//	fmt.Println("error parsing container ", err)
+	//	return err
+	//}
+	//sessionToken, err := client2.CreateSessionForContainerList(m.ctx, fsCli, client2.DEFAULT_EXPIRATION, &tmpKey)
+	//if err != nil {
+	//	return err
+	//}
+	//cont, err := m.prepareAndAppendContainer(c, sessionToken)
+	//if err != nil {
+	//	return err
+	//}
+	//fmt.Printf("shared container %+v\r\n", cont)
+	//marshal, err := json.Marshal(cont)
+	//if err != nil {
+	//	return err
+	//}
+	//if err := cache.StoreSharedContainer(tmpWallet.Accounts[0].Address, containerID, marshal); err != nil {
+	//	return err
+	//}
+	//return nil
 }

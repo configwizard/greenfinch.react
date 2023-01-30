@@ -3,17 +3,17 @@ package manager
 import (
 	"fmt"
 	"github.com/amlwwalker/greenfinch.react/pkg/cache"
-	"github.com/configwizard/gaspump-api/pkg/wallet"
+	"github.com/amlwwalker/greenfinch.react/pkg/wallet"
+	//"github.com/configwizard/gaspump-api/pkg/wallet"
 	"github.com/nspcc-dev/neo-go/pkg/core/native/nativenames"
-	walletClient "github.com/nspcc-dev/neo-go/pkg/rpc/client"
+	walletClient "github.com/nspcc-dev/neo-go/pkg/rpcclient"
 	wal "github.com/nspcc-dev/neo-go/pkg/wallet"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"math"
 	"os"
 )
 
-
-func (m *Manager) RecentWallets() (map[string]string, error){
+func (m *Manager) RecentWallets() (map[string]string, error) {
 	return cache.RecentWallets()
 }
 
@@ -48,6 +48,7 @@ func (m *Manager) TransferToken(recipient string, amount float64) (string, error
 	//neoFSWallet := ""
 	token, err := wallet.TransferToken(w.Accounts[0], int64(amount), recipient, gasToken, wallet.RPC_TESTNET)
 	if err != nil {
+		fmt.Println("error from transferring token function!")
 		tmp := UXMessage{
 			Title:       "Transfer failed",
 			Type:        "error",
@@ -64,18 +65,21 @@ func (m *Manager) TransferToken(recipient string, amount float64) (string, error
 	m.MakeToast(NewToastMessage(&tmp))
 	return token, err
 }
-func (m *Manager) TopUpNeoWallet(amount float64) (string, error){
+func (m *Manager) TopUpNeoWallet(amount float64) (string, error) {
 	if amount == 0 {
 		amount = 1_00_000_000 // 1 GAS
 	} else {
 		amount = math.Floor(amount * math.Pow(10, 8))
 	}
-	token, err := m.TransferToken("NadZ8YfvkddivcFFkztZgfwxZyKf1acpRF", amount)
+	token, err := m.TransferToken("NZAUkYbJ1Cb2HrNmwZ1pg9xYHBhm2FgtKV", amount)
+	if err != nil {
+		fmt.Println("transfer token error ", err)
+	}
 	return token, err
 }
 func (m *Manager) NewWallet(password string) error {
 	homeDir, err := os.UserHomeDir()
-	fmt.Println("saving to ", )
+	fmt.Println("saving to ")
 	filepath, err := runtime.SaveFileDialog(m.ctx, runtime.SaveDialogOptions{
 		DefaultDirectory:           homeDir,
 		DefaultFilename:            "wallet.json",
@@ -119,10 +123,10 @@ func (m *Manager) NewWallet(password string) error {
 		Description: "You will need to transfer the wallet some gas. Then you will need to transfer to NeoFS. Your wallet",
 	}
 	m.MakeToast(NewToastMessage(&tmp))
-	if _, err = m.Client(); err != nil {
-		fmt.Println("error retrieving client: ", err)
-		return err
-	}
+	//if _, err = m.Client(); err != nil {
+	//	fmt.Println("error retrieving client: ", err)
+	//	return err
+	//}
 	runtime.EventsEmit(m.ctx, "fresh_wallet", w.Accounts[0])
 	runtime.EventsEmit(m.ctx, "select_wallet", false)
 
@@ -165,20 +169,21 @@ func (m *Manager) LoadWalletWithPath(password, filepath string) error {
 	tmp := UXMessage{
 		Title:       "Success reading wallet",
 		Type:        "success",
-		Description: "Using wallet: "  + w.Accounts[0].Address,
+		Description: "Using wallet: " + w.Accounts[0].Address,
 	}
 	m.MakeToast(NewToastMessage(&tmp))
 
-	if _, err = m.Client(); err != nil {
-		tmp := UXMessage{
-			Title:       "Error retrieving client",
-			Type:        "error",
-			Description: err.Error(),
-		}
-		m.MakeToast(NewToastMessage(&tmp))
-		fmt.Println("error retrieving client: ", err)
-		return err
-	}
+	//todo - was this to get it to force update the client? Should we do the same for the pool?
+	//if _, err = m.Client(); err != nil {
+	//	tmp := UXMessage{
+	//		Title:       "Error retrieving client",
+	//		Type:        "error",
+	//		Description: err.Error(),
+	//	}
+	//	m.MakeToast(NewToastMessage(&tmp))
+	//	fmt.Println("error retrieving client: ", err)
+	//	return err
+	//}
 	vanityWallet, err := m.GetAccountInformation()
 	if err != nil {
 		tmp := UXMessage{

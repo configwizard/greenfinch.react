@@ -6,8 +6,12 @@ import (
 	"errors"
 	"fmt"
 	"github.com/amlwwalker/greenfinch.react/pkg/cache"
+	"github.com/amlwwalker/greenfinch.react/pkg/config"
+	gspool "github.com/amlwwalker/greenfinch.react/pkg/pool"
+	"github.com/amlwwalker/greenfinch.react/pkg/wallet"
 	"github.com/blang/semver/v4"
-	"github.com/configwizard/gaspump-api/pkg/client"
+	"github.com/nspcc-dev/neofs-sdk-go/pool"
+	"github.com/nspcc-dev/neofs-sdk-go/user"
 	"io/ioutil"
 	"log"
 	"math/rand"
@@ -15,9 +19,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/configwizard/gaspump-api/pkg/wallet"
 	wal "github.com/nspcc-dev/neo-go/pkg/wallet"
-	neofscli "github.com/nspcc-dev/neofs-sdk-go/client"
 	//"github.com/patrickmn/go-cache"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
@@ -40,7 +42,7 @@ type UXMessage struct {
 	Title       string
 	Type        string
 	Description string
-	Closure bool
+	Closure     bool
 }
 
 func NewToastMessage(t *UXMessage) UXMessage {
@@ -49,15 +51,17 @@ func NewToastMessage(t *UXMessage) UXMessage {
 }
 
 type Manager struct {
+	configLocation         string
 	walletPath, walletAddr string
-	fsCli                  *neofscli.Client
+	pool                   *pool.Pool
+	//fsCli                  *neofscli.Client
 	//key                    *ecdsa.PrivateKey
 	version string
 	//c                      *cache.Cache
-	ctx                    context.Context
-	wallet 				*wal.Wallet
-	password			string //warning this is not a good idea
-	DEBUG                  bool
+	ctx      context.Context
+	wallet   *wal.Wallet
+	password string //warning this is not a good idea
+	DEBUG    bool
 }
 
 const (
@@ -67,6 +71,7 @@ const (
 func (m *Manager) UnlockWallet() error {
 	return m.wallet.Accounts[0].Decrypt(m.password, m.wallet.Scrypt)
 }
+
 // startup is called at application startup
 func (m *Manager) Startup(ctx context.Context) {
 	// Perform your setup here
@@ -101,7 +106,7 @@ func (m *Manager) checkForVersion() {
 		if err != nil {
 			log.Println("err retrieving version", err)
 		} else {
-			var metadata struct{
+			var metadata struct {
 				RemoteVersion string `json:"binary_version"`
 			}
 			body, err := ioutil.ReadAll(resp.Body)
@@ -161,6 +166,7 @@ func (m *Manager) SendSignal(signalName string, signalValue interface{}) {
 func (m *Manager) Shutdown(ctx context.Context) {
 	// Perform your teardown here
 }
+
 //func (m *Manager) Search(search string) ([]filesystem.Element, error) {
 //	tmpFS, found := m.c.Get(CACHE_FILE_SYSTEM)
 //	if !found {
@@ -184,11 +190,11 @@ func NewFileSystemManager(version string, dbLocation string, DEBUG bool) (*Manag
 		//walletPath: walletPath,
 		//walletAddr: walletAddr,
 		version: version,
-		fsCli:      nil,
+		pool:    nil,
 		//key:        key, //this is holding the private key in memory - not good?
 		//c:          cache.New(1*time.Minute, 10*time.Minute),
-		ctx:        nil,
-		DEBUG:      DEBUG,
+		ctx:   nil,
+		DEBUG: DEBUG,
 	}, nil
 }
 
@@ -210,28 +216,30 @@ func (m *Manager) SetWalletDebugging(walletPath, password string) error {
 		return err
 	}
 	m.ctx = context.Background()
-	_, err = m.Client()
+	_, err = m.Pool()
 	return err
 }
 
 // todo we will want to have things dependent on the wallet controlled elsewhere with singletons and no other way of getting the value
 // todo remove the need to pass the private key to the api (usually for getOwnerID - however this should be passed into the backend
-func (m Manager) Client() (*neofscli.Client, error) {
+func (m Manager) Pool() (*pool.Pool, error) {
 
-	if m.fsCli == nil {
-		cli, err := client.NewClient(&m.wallet.Accounts[0].PrivateKey().PrivateKey, client.TESTNET)
+	if m.pool == nil {
+		config := config.ReadConfig("cfg.yml", m.configLocation)
+		//todo: this should be wallet connect pool
+		pl, err := gspool.GetPool(m.ctx, m.wallet.Accounts[0].PrivateKey().PrivateKey, config.Peers)
 		if err != nil {
-			return nil, err
+			fmt.Errorf("error retrieving pool %w", err)
 		}
-		m.fsCli = cli
+		m.pool = pl
 	}
-	return m.fsCli, nil
+	return m.pool, nil
 }
 
 type Account struct {
-	Address string `json:"address"`
+	Address   string `json:"address"`
 	PublicKey string `json:"publicKey"`
-	NeoFS   struct {
+	NeoFS     struct {
 		Balance   int64  `json:"balance"`
 		Precision uint32 `json:"precision"`
 	} `json:"neofs"`
@@ -239,6 +247,7 @@ type Account struct {
 }
 
 var NotFound = errors.New("wallet not found")
+
 func (m *Manager) retrieveWallet() (*wal.Wallet, error) {
 	if m.wallet == nil {
 		//tmp := NewToastMessage(&UXMessage{
@@ -268,24 +277,36 @@ func (m *Manager) GetAccountInformation() (Account, error) {
 	}
 	fmt.Printf("retrieved balances %+v\r\n", balances)
 	//Now the neo fs gas balance
-	id, err := wallet.OwnerIDFromPrivateKey(&m.wallet.Accounts[0].PrivateKey().PrivateKey)
+	//id, err := wallet.OwnerIDFromPrivateKey(&m.wallet.Accounts[0].PrivateKey().PrivateKey)
+	//if err != nil {
+	//	return Account{}, err
+	//}
+
+	pl, err := m.Pool()
 	if err != nil {
 		return Account{}, err
+	}
+	//get := neofscli.PrmBalanceGet{}
+	//get.SetAccount(*id)
+
+	userID := user.ID{}
+	user.IDFromKey(&userID, m.wallet.Accounts[0].PrivateKey().PrivateKey.PublicKey)
+	blGet := pool.PrmBalanceGet{}
+	blGet.SetAccount(userID)
+
+	fmt.Println("waiting to retrieve result")
+	res, err := pl.Balance(context.Background(), blGet)
+	if err != nil {
+		fmt.Errorf("error %w", err)
 	}
 
-	fsCli, err := m.Client()
-	if err != nil {
-		return Account{}, err
-	}
-	get := neofscli.PrmBalanceGet{}
-	get.SetAccount(*id)
-	result, err := fsCli.BalanceGet(m.ctx, get)
-	if err != nil {
-		return Account{}, err
-	}
+	//result, err := pl.BalanceGet(m.ctx, get)
+	//if err != nil {
+	//	return Account{}, err
+	//}
 	//now create an account object
 	var b = Account{
-		Address: w.Accounts[0].Address,
+		Address:   w.Accounts[0].Address,
 		PublicKey: wallet.ByteArrayToString(m.wallet.Accounts[0].PrivateKey().PublicKey().Bytes()),
 		NeoFS: struct {
 			Balance   int64  `json:"balance"`
@@ -294,8 +315,8 @@ func (m *Manager) GetAccountInformation() (Account, error) {
 			Balance   int64
 			Precision uint32
 		}{
-			Balance:   (*result.Amount()).Value(),
-			Precision: (*result.Amount()).Precision(),
+			Balance:   res.Value(),
+			Precision: res.Precision(),
 		}),
 	}
 	b.Nep17 = balances
@@ -310,4 +331,3 @@ func (m *Manager) GetAccountInformation() (Account, error) {
 	}
 	return b, nil
 }
-

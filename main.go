@@ -7,9 +7,10 @@ import (
 	"fmt"
 	"github.com/amlwwalker/greenfinch.react/pkg/manager"
 	"github.com/amlwwalker/greenfinch.react/pkg/plugins/localserve"
-	"github.com/configwizard/gaspump-api/pkg/wallet"
+	"github.com/amlwwalker/greenfinch.react/pkg/wallet"
+	//"github.com/configwizard/gaspump-api/pkg/wallet"
 	"github.com/nspcc-dev/neo-go/pkg/core/native/nativenames"
-	client2 "github.com/nspcc-dev/neo-go/pkg/rpc/client"
+	client2 "github.com/nspcc-dev/neo-go/pkg/rpcclient"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/logger"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -33,9 +34,9 @@ $ ./build/bin/GasPump.app/Contents/MacOS/GasPump -wallet=./wallets/wallet.json n
 
 var (
 	walletPassword = flag.String("password", "password", "set password for new wallet")
-	walletName = flag.String("name", "", "set name for new wallet")
-	walletPath = flag.String("wallet", "", "path to JSON wallet file")
-	walletAddr = flag.String("address", "", "wallet address")
+	walletName     = flag.String("name", "", "set name for new wallet")
+	walletPath     = flag.String("wallet", "", "path to JSON wallet file")
+	walletAddr     = flag.String("address", "", "wallet address")
 	transferAmount = flag.Int64("amount", 1_00_000_000, "amount to transfer (precision is 8) default 1 GAS")
 	//password = flag.String("password", "", "wallet password")
 	//not used:
@@ -111,7 +112,7 @@ func main() {
 		log.Println("transaction made txID ", transactionID)
 		os.Exit(0)
 	}
-//https://http.testnet.fs.neo.org/CONTAINER_ID/OBJECT_ID
+	//https://http.testnet.fs.neo.org/CONTAINER_ID/OBJECT_ID
 	//createContainerOnStart
 	databaseLocation, err := os.UserHomeDir()
 	if err != nil {
@@ -136,18 +137,18 @@ func main() {
 	//here ---
 	err = wails.Run(&options.App{
 		// Title:  "Greenfinch",
-		Width:  			1280,
-		Height: 			960,
-		MinWidth:			960,
-		MinHeight:			660,
+		Width:     1280,
+		Height:    960,
+		MinWidth:  960,
+		MinHeight: 660,
 		// MaxWidth:		1280,
 		// MaxHeight:		740,
-		DisableResize:		false,
-		Fullscreen:			false,
-		Frameless:			false,
-		StartHidden:		false,
-		HideWindowOnClose:	false,
-		RGBA:				&options.RGBA{255, 255, 255, 255},
+		DisableResize:     false,
+		Fullscreen:        false,
+		Frameless:         false,
+		StartHidden:       false,
+		HideWindowOnClose: false,
+		//RGBA:              &options.RGBA{255, 255, 255, 255},
 		Assets:            assets,
 		LogLevel:          logger.DEBUG,
 		OnStartup:         manager.Startup, //todo update these to the manager scripts

@@ -7,11 +7,12 @@ import (
 )
 
 type contact struct {
-	FirstName string `json:"firstName""`
-	LastName string	`json:"lastName"`
+	FirstName     string `json:"firstName""`
+	LastName      string `json:"lastName"`
 	WalletAddress string `json:"walletAddress"`
-	PublicKey string `json:"publicKey"`
+	PublicKey     string `json:"publicKey"`
 }
+
 func (m *Manager) RetrieveContacts() ([]contact, error) {
 	if m.wallet == nil {
 		return []contact{}, errors.New("no wallet loaded")
@@ -33,7 +34,7 @@ func (m *Manager) RetrieveContacts() ([]contact, error) {
 	return c, nil
 }
 
-func (m *Manager) RetrieveContactByWalletAddress(walletAddress string) (contact,error) {
+func (m *Manager) RetrieveContactByWalletAddress(walletAddress string) (contact, error) {
 	if m.wallet == nil {
 		return contact{}, errors.New("no wallet loaded")
 	}
@@ -58,7 +59,7 @@ func (m *Manager) AddContact(firstName, lastName, walletAddress, publicKey strin
 		FirstName:     firstName,
 		LastName:      lastName,
 		WalletAddress: walletAddress,
-		PublicKey: publicKey,
+		PublicKey:     publicKey,
 	}
 	byt, err := json.Marshal(c)
 	if err != nil {
