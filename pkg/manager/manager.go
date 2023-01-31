@@ -16,6 +16,7 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -53,6 +54,7 @@ func NewToastMessage(t *UXMessage) UXMessage {
 type Manager struct {
 	configLocation         string
 	walletPath, walletAddr string
+	gateAccount wal.Account
 	pool                   *pool.Pool
 	//fsCli                  *neofscli.Client
 	//key                    *ecdsa.PrivateKey
@@ -185,8 +187,25 @@ func (m *Manager) Shutdown(ctx context.Context) {
 //}
 func NewFileSystemManager(version string, dbLocation string, DEBUG bool) (*Manager, error) {
 
+	//move config location to database for development if not set?
+	wd, err := os.Getwd()
+	if err != nil {
+		return nil, err
+	}
 	cache.DB(dbLocation)
+	//we need an ephemeral key for the application to use for tokens that is not the user's key. The user's key should 'never' be used directly to make an action
+	ephemeralAccount, err := wallet.GenerateEphemeralAccount()
+	if err != nil {
+		return nil, err
+	}
+	str, err := wallet.PrettyPrint(*ephemeralAccount)
+	fmt.Println(str)
+	if err != nil {
+		log.Fatal(err)
+	}
 	return &Manager{
+		configLocation: wd,
+		gateAccount: *ephemeralAccount, //used to make requests to RPC endpoints and works on behalf of the user so never to expose their key anywhere
 		//walletPath: walletPath,
 		//walletAddr: walletAddr,
 		version: version,
@@ -222,14 +241,18 @@ func (m *Manager) SetWalletDebugging(walletPath, password string) error {
 
 // todo we will want to have things dependent on the wallet controlled elsewhere with singletons and no other way of getting the value
 // todo remove the need to pass the private key to the api (usually for getOwnerID - however this should be passed into the backend
-func (m Manager) Pool() (*pool.Pool, error) {
-
+func (m *Manager) Pool() (*pool.Pool, error) {
 	if m.pool == nil {
-		config := config.ReadConfig("cfg.yml", m.configLocation)
+		config, err := config.ReadConfig("cfg", m.configLocation)
+		if err != nil {
+			fmt.Println("error reading config ", err)
+			return nil, err
+		}
 		//todo: this should be wallet connect pool
 		pl, err := gspool.GetPool(m.ctx, m.wallet.Accounts[0].PrivateKey().PrivateKey, config.Peers)
 		if err != nil {
-			fmt.Errorf("error retrieving pool %w", err)
+			fmt.Println("error getting pool with key ", err)
+			return nil, err
 		}
 		m.pool = pl
 	}
@@ -263,6 +286,7 @@ func (m *Manager) retrieveWallet() (*wal.Wallet, error) {
 }
 
 func (m *Manager) GetAccountInformation() (Account, error) {
+	fmt.Println(GetCurrentFunctionName(), " caller is ", GetCallerFunctionName())
 	w, err := m.retrieveWallet()
 	if err != nil {
 		//if !errors.Is(err, NotFound) {
@@ -282,6 +306,7 @@ func (m *Manager) GetAccountInformation() (Account, error) {
 	//	return Account{}, err
 	//}
 
+	fmt.Println("getting account information ", m.pool)
 	pl, err := m.Pool()
 	if err != nil {
 		return Account{}, err
@@ -331,3 +356,4 @@ func (m *Manager) GetAccountInformation() (Account, error) {
 	}
 	return b, nil
 }
+

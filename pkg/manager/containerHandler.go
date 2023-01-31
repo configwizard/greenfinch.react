@@ -1,6 +1,7 @@
 package manager
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/amlwwalker/greenfinch.react/pkg/cache"
@@ -11,9 +12,9 @@ import (
 	"github.com/nspcc-dev/neofs-sdk-go/eacl"
 	"github.com/nspcc-dev/neofs-sdk-go/netmap"
 	obj "github.com/nspcc-dev/neofs-sdk-go/object"
-	oid "github.com/nspcc-dev/neofs-sdk-go/object/id"
 	"github.com/nspcc-dev/neofs-sdk-go/pool"
 	"github.com/nspcc-dev/neofs-sdk-go/user"
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"log"
 	"path/filepath"
 	"strconv"
@@ -217,53 +218,51 @@ func (m *Manager) NewListReadOnlyContainerContents(since int64) ([]Element, erro
 //}
 //
 //// PopulateContainerList returns a container with its attributes as an Element (used by GenerateFileSystemFromContainer)
-//func populateContainerList(ctx context.Context, cli *client.Client, containerID cid.ID) Element {
-//	cont := Element{
-//		Type: "container",
-//		ID: containerID.String(),
-//		Attributes: make(map[string]string),
-//	}
-//	c, err := container.Get(ctx, cli, containerID)
-//	if err != nil {
-//		cont.Errors = append(cont.Errors, err)
-//		return cont
-//	}
-//	cont.BasicAcl = acl.BasicACL(c.BasicACL())
-//	fmt.Println("processing attributes ", c.Attributes())
-//	for _, a := range c.Attributes() {
-//		cont.Attributes[a.Key()] = a.Value()
-//	}
-//	if _, ok := cont.Attributes[obj.AttributeFileName]; !ok {
-//		cont.Attributes[obj.AttributeFileName] = ""
-//	}
-//	return cont
-//}
+func populateContainerList(ctx context.Context, pl *pool.Pool, containerID cid.ID) Element {
+	cont := Element{
+		Type: "container",
+		ID: containerID.String(),
+		Attributes: make(map[string]string),
+	}
+	var prmGet pool.PrmContainerGet
+	prmGet.SetContainerID(containerID)
+
+	cnr, err := pl.GetContainer(ctx, prmGet)
+	if err != nil {
+		cont.Errors = append(cont.Errors, err)
+		return cont
+	}
+
+	cont.BasicAcl = cnr.BasicACL()
+	cnr.IterateAttributes(func(k string, v string) {
+		cont.Attributes[k] = v
+	})
+	if _, ok := cont.Attributes[obj.AttributeFileName]; !ok {
+		cont.Attributes[obj.AttributeFileName] = "no-container-name"
+	}
+	return cont
+}
 //generateObjectStruct returns an array of elements containing all the objects owned by the contianer ID
-func (m *Manager) generateObjectStruct(objs []oid.ID, containerID cid.ID) (uint64, []Element){
+func (m *Manager) generateObjectStruct(objs []Element, containerID cid.ID) (uint64, []Element){
 	var newObjs []Element
 	size := uint64(0)
 	for _, o := range objs {
-		tmp := Element{
-			Type: "object",
-			ID:         o.String(),
-			Attributes: make(map[string]string),
-		}
-		head, err := m.GetObjectMetaData(o.String(), containerID.String())
+		head, err := m.GetObjectMetaData(o.ID, containerID.String())
 		if err != nil {
-			tmp.Errors = append(tmp.Errors, err)
+			o.Errors = append(o.Errors, err)
 		}
 		for _, a := range head.Attributes() {
-			tmp.Attributes[a.Key()] = a.Value()
+			o.Attributes[a.Key()] = a.Value()
 		}
-		if filename, ok := tmp.Attributes[obj.AttributeFileName]; ok {
-			tmp.Attributes["X_EXT"] = filepath.Ext(filename)[1:]
+		if filename, ok := o.Attributes[obj.AttributeFileName]; ok {
+			o.Attributes["X_EXT"] = filepath.Ext(filename)[1:]
 		} else {
-			tmp.Attributes["X_EXT"] = ""
+			o.Attributes["X_EXT"] = ""
 		}
 
-		tmp.Size = head.Object().PayloadSize()
-		size += tmp.Size
-		newObjs = append(newObjs, tmp)
+		o.Size = head.PayloadSize()
+		size += o.Size
+		newObjs = append(newObjs, o)
 	}
 	return size, newObjs
 }
@@ -279,17 +278,11 @@ func (m *Manager) ForceSync() {
 //todo: this needs to clean out the database as its a refresh of everything
 func (m *Manager) listContainersAsync() ([]Element, error) {
 	var containers []Element
-	//runtime.EventsEmit(m.ctx, "clearContainer", nil)
-	//tmpWallet, err := m.retrieveWallet()
-	//if err != nil {
-	//	return []Element{}, err
-	//}
-	//tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
-	//pl, err := m.Pool()
-	//if err != nil {
-	//	return []Element{}, err
-	//}
-
+	runtime.EventsEmit(m.ctx, "clearContainer", nil)
+	tmpWallet, err := m.retrieveWallet()
+	if err != nil {
+		return []Element{}, err
+	}
 	ids, err := m.listContainerIDs()
 	if err != nil {
 		return []Element{}, err
@@ -301,17 +294,17 @@ func (m *Manager) listContainersAsync() ([]Element, error) {
 		go func(vID cid.ID) {
 			//todo - this is meant to update the cache with the relevant objects. Lets check this out
 			defer wg.Done()
-			//tmpContainer, err := m.prepareAndAppendContainer(vID, sessionToken)
-			//str, err := json.MarshalIndent(tmpContainer, "", "  ")
-			//if err != nil {
-			//	fmt.Println(err)
-			//}
-			//fmt.Println("retrieved containers", tmpContainer)
-			////store in database
-			//fmt.Println("storing container", tmpContainer.ID)
-			//if err = cache.StoreContainer(tmpWallet.Accounts[0].Address, tmpContainer.ID, str); err != nil {
-			//	fmt.Println("MASSIVE ERROR could not store container in database", err)
-			//}
+			tmpContainer, err := m.prepareAndAppendContainer(vID)
+			str, err := json.MarshalIndent(tmpContainer, "", "  ")
+			if err != nil {
+				fmt.Println(err)
+			}
+			fmt.Println("retrieved containers", tmpContainer)
+			//store in database
+			fmt.Println("storing container", tmpContainer.ID)
+			if err = cache.StoreContainer(tmpWallet.Accounts[0].Address, tmpContainer.ID, str); err != nil {
+				fmt.Println("MASSIVE ERROR could not store container in database", err)
+			}
 		}(v)
 	}
 	wg.Wait()
@@ -323,31 +316,36 @@ func (m *Manager) listContainersAsync() ([]Element, error) {
 	return containerList, err
 }
 
-//// prepareAndAppendContainer only used to update cache. Never as part of cache
-//func (m *Manager) prepareAndAppendContainer(vID cid.ID, sessionToken *session.Token) (Element, error) {
-//	c, err := m.Client()
-//	if err != nil {
-//		log.Fatal("SERIOUS ERROR , could not retrieve client - in Go routine", err)
-//		return Element{}, err
-//	}
-//	fmt.Println("prepare and append container ", vID.String())
-//	tmpContainer := filesystem.PopulateContainerList(m.ctx, c, vID) // todo - why does this not return an eror on a container?
-//	var filters = obj.SearchFilters{}
-//	filters.AddRootFilter()
-//	fmt.Printf("tmpContainer 1 %+v\r\n", tmpContainer)
-//	list, err := object.QueryObjects(m.ctx, c, vID, filters, nil, sessionToken)
-//	if err != nil {
-//		fmt.Println("error querying objects of container", err)
-//		tmpContainer.Errors = append(tmpContainer.Errors, err)
-//		return tmpContainer, err
-//	}
-//	fmt.Printf("tmpContainer 2 %+v\r\n", tmpContainer)
-//	//is this inefficient? the expensive part is the request, but we are throwing away the whole object
-//	size, _ := filesystem.GenerateObjectStruct(m.ctx, c, list, vID, nil, sessionToken)
-//	tmpContainer.Size = size
-//	fmt.Printf("tmpContainer 3 %+v\r\n", tmpContainer)
-//	return tmpContainer, nil
-//}
+// prepareAndAppendContainer only used to update cache. Never as part of cache
+func (m *Manager) prepareAndAppendContainer(vID cid.ID) (Element, error) {
+	//c, err := m.Client()
+	//if err != nil {
+	//	log.Fatal("SERIOUS ERROR , could not retrieve client - in Go routine", err)
+	//	return Element{}, err
+	//}
+	pl, err := m.Pool()
+	if err != nil {
+		return Element{}, err
+	}
+	fmt.Println("prepare and append container ", vID.String())
+	tmpContainer := populateContainerList(m.ctx, pl, vID) // todo - why does this not return an error on a container?
+	//
+	//var filters = obj.SearchFilters{}
+	//filters.AddRootFilter()
+	fmt.Printf("tmpContainer 1 %+v\r\n", tmpContainer)
+	list, err := m.ListContainerObjects(vID.String(), false)//object.QueryObjects(m.ctx, c, vID, filters, nil, sessionToken)
+	if err != nil {
+		fmt.Println("error querying objects of container", err)
+		tmpContainer.Errors = append(tmpContainer.Errors, err)
+		return tmpContainer, err
+	}
+	fmt.Printf("tmpContainer 2 %+v\r\n", tmpContainer)
+	//is this inefficient? the expensive part is the request, but we are throwing away the whole object
+	size, _ := m.generateObjectStruct(list, vID)
+	tmpContainer.Size = size
+	fmt.Printf("tmpContainer 3 %+v\r\n", tmpContainer)
+	return tmpContainer, nil
+}
 
 // ListContainers populates from cache
 func (m *Manager) ListContainers(synchronised bool) ([]Element, error) {
@@ -623,6 +621,7 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 	case "PUBLICBASIC":
 		customAcl = acl.PublicRWExtended //EACLPublicBasicRule //0x0FBFBFFF -> 264224767
 	default:
+		fmt.Println("setting container to default ACL")
 		customAcl = acl.PublicRWExtended //BasicACL(0x0FFFCFFF) //0x0FFFCFFF -> 268423167
 	}
 
@@ -645,7 +644,6 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 		fmt.Errorf("sync container with the network state: %w", err)
 		return err
 	}
-
 	var prmPut pool.PrmContainerPut
 	prmPut.SetContainer(cnr)
 

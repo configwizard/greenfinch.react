@@ -38,6 +38,13 @@ func GenerateNewWallet(path string) (*wallet.Wallet, error) {
 	return w, err
 }
 
+func GenerateEphemeralAccount() (*wallet.Account, error) {
+	acc, err := wallet.NewAccount()
+	if err != nil {
+		return nil, err
+	}
+	return acc, nil
+}
 func GenerateNewSecureWallet(path, name, password string) (*wallet.Wallet, error) {
 	w, err := wallet.NewWallet(path)
 	w.CreateAccount(name, password)
@@ -163,6 +170,7 @@ func TransferToken(a *wallet.Account, amount int64, walletTo string, token util.
 		fmt.Println("couldn't stringtoUint160 client", err)
 		return "", err
 	}
+	nep17.
 	txHash, err := cli.TransferNEP17(a, recipient, token, amount, 0, nil, nil)
 	if err != nil {
 		fmt.Println("couldn't TransferNEP17 client", err)

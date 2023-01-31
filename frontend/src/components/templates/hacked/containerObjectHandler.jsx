@@ -126,7 +126,7 @@ function retrieveCorrectComponent(state, onObjectSelection, onObjectDelete, onOb
                                                 hasIcon={true}
                                                 faClass={"fas fa-external-link"}
                                                 text={"Click to view file in web browser"}
-                                                onClick={() => openInDefaultBrowser(`https://http.testnet.fs.neo.org/${state.selectedContainer.containerID}/${state.selectedObject.objectID}`)} /> 
+                                                onClick={() => openInDefaultBrowser(`https://http.t5.fs.neo.org/${state.selectedContainer.containerID}/${state.selectedObject.objectID}`)} />
                                         : null }
                                     </div>
                                 </> : null

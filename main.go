@@ -122,7 +122,6 @@ func main() {
 	if err != nil {
 		log.Fatal("can't create a manager", err)
 	}
-
 	//manager.SetWalletDebugging(*walletPath, "password") //debugging
 	//balance, err := manager.GetAccountInformation()
 	//if err != nil {

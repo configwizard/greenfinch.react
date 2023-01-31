@@ -29,13 +29,9 @@ func GetPool(ctx context.Context, key ecdsa.PrivateKey, peers map[string]config.
 	}
 
 	prm.SetNodeDialTimeout(1 * time.Minute)
-
 	prm.SetNodeStreamTimeout(1 * time.Minute)
-
 	prm.SetHealthcheckTimeout(1 * time.Minute)
-
 	prm.SetClientRebalanceInterval(1 * time.Minute)
-
 	prm.SetErrorThreshold(1)
 	prm.SetKey(&key)
 	//todo does this need setting or does this have a default?

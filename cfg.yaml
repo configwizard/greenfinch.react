@@ -1,0 +1,24 @@
+# Nodes configuration.
+# This configuration make the gateway use the first node (grpc://s01.neofs.devenv:8080)
+# while it's healthy. Otherwise, the gateway use the second node (grpc://s01.neofs.devenv:8080)
+# for 10% of requests and the third node for 90% of requests.
+peers:
+  0:
+    # Endpoint.
+    address: grpcs://st1.t5.fs.neo.org:8082
+
+    # Until nodes with the same priority level are healthy
+    # nodes with other priority are not used.
+    # The lower the value, the higher the priority.
+    priority: 1
+
+    # Load distribution proportion for nodes with the same priority.
+    weight: 1
+  1:
+    address: grpcs://st2.t5.fs.neo.org:8082
+    priority: 2
+    weight: 1
+  2:
+    address: grpcs://st3.t5.fs.neo.org:8082
+    priority: 2
+    weight: 9

@@ -65,6 +65,8 @@ func (m *Manager) TransferToken(recipient string, amount float64) (string, error
 	m.MakeToast(NewToastMessage(&tmp))
 	return token, err
 }
+
+//todo - terrible name if this is to topup NeoFS Gas
 func (m *Manager) TopUpNeoWallet(amount float64) (string, error) {
 	if amount == 0 {
 		amount = 1_00_000_000 // 1 GAS
