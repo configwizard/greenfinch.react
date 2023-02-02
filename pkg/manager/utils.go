@@ -54,20 +54,27 @@ func AwaitTime(seconds int, f func() bool) error {
 	return errors.New("time ran out")
 }
 
-func thumbnail(ioReader *io.Reader) ([]byte, error) {
+var invalidImageError = errors.New("not an image")
+//todo - we should use this library to cover more formats of thumbnail https://github.com/bakape/thumbnailer/
+func thumbnail(ioReader io.Reader) ([]byte, error) {
 	var img image.Image
 	//Read the content - need to check if this errors what happens to the reader
-	rawBody, err := ioutil.ReadAll(*ioReader)
+	rawBody, err := ioutil.ReadAll(ioReader)
 	if err != nil {
 		return []byte{}, err
 	}
 	// Restore the io.ReadCloser to it's original state
-	*ioReader = (io.Reader)(ioutil.NopCloser(bytes.NewBuffer(rawBody)))
+	ioReader = (io.Reader)(ioutil.NopCloser(bytes.NewBuffer(rawBody)))
 	srcImage, format, err := image.Decode(bytes.NewReader(rawBody))
+	fmt.Println("format detected", format, err)
 	if err != nil {
-		return []byte{}, err
+		if err == image.ErrFormat {
+			fmt.Println("error format is ", err)
+			return nil, image.ErrFormat
+		}
+		fmt.Println(" otherwise responding with ", err)
+		return nil, err
 	}
-	fmt.Println("format detected", format)
 	bounds := srcImage.Bounds()
 	point := bounds.Size()
 	width := float64(point.Y)
@@ -103,7 +110,7 @@ func thumbnail(ioReader *io.Reader) ([]byte, error) {
 			return []byte{}, err
 		}
 	} else {
-		return []byte{}, errors.New("unknown format")
+		return nil, invalidImageError
 	}
 	return buf.Bytes(), nil
 }

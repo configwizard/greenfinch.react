@@ -87,7 +87,7 @@ func (m *Manager) listSharedContainerObjectsAsync(containerID string) ([]Element
 	target := eacl.Target{}
 	target.SetRole(eacl.RoleUser)
 	target.SetBinaryKeys([][]byte{pKey.Bytes()})
-	table, err := tokens.AllowKeyPutRead(cnrID, target)
+	table, err := tokens.AllowGetPut(cnrID, target)
 	if err != nil {
 		log.Fatal("error retrieving table ", err)
 	}

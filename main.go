@@ -1,16 +1,13 @@
 package main
 
 import (
-	"context"
 	"embed"
 	"flag"
 	"fmt"
 	"github.com/amlwwalker/greenfinch.react/pkg/manager"
 	"github.com/amlwwalker/greenfinch.react/pkg/plugins/localserve"
 	"github.com/amlwwalker/greenfinch.react/pkg/wallet"
-	//"github.com/configwizard/gaspump-api/pkg/wallet"
-	"github.com/nspcc-dev/neo-go/pkg/core/native/nativenames"
-	client2 "github.com/nspcc-dev/neo-go/pkg/rpcclient"
+
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/logger"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -70,46 +67,48 @@ func main() {
 		log.Printf("created new wallet: %s\r\n %+v\r\n", newWallet.Accounts[0].Address, res)
 		os.Exit(0)
 	case "transfer":
-		if walletPath == nil || *walletPath == "" {
-			log.Fatal("no wallet path provided")
-		}
-		if transferAmount == nil || *transferAmount == 0 {
-			log.Fatal("amount must be greater than 0")
-		}
-
-		ctx := context.Background()
-		cli, err := client2.New(ctx, string(wallet.RPC_TESTNET), client2.Options{})
-		if err != nil {
-			log.Fatal(err)
-		}
-		err = cli.Init()
-		if err != nil {
-			log.Fatal(err)
-		}
-		unlockedWallet, err := wallet.UnlockWallet(*walletPath, "", *walletPassword)
-		if err != nil {
-			log.Fatal(err)
-		}
-		gasToken, err := cli.GetNativeContractHash(nativenames.Gas)
-		if err != nil {
-			log.Fatal(err)
-		}
-		transactionID, err := wallet.TransferToken(unlockedWallet, *transferAmount, *walletAddr, gasToken, wallet.RPC_TESTNET)
-		if err != nil {
-			log.Fatal(err)
-		}
-		start := uint64(0)
-		stop := uint64(1600094189000)
-		limit := int(10)
-		page := int(1)
-		uint160, err := wallet.StringToUint160(unlockedWallet.Address)
-		if err != nil {
-			return
-		}
-		transfers, err := cli.GetNEP17Transfers(uint160, &start, &stop, &limit, &page)
-		fmt.Printf("error %s\ntransfers %+v\n", err, transfers)
-		//stringTx := wallet.Uint160ToString(transactionID)
-		log.Println("transaction made txID ", transactionID)
+		//if walletPath == nil || *walletPath == "" {
+		//	log.Fatal("no wallet path provided")
+		//}
+		//if transferAmount == nil || *transferAmount == 0 {
+		//	log.Fatal("amount must be greater than 0")
+		//}
+		//
+		//ctx := context.Background()
+		//cli, err := client2.New(ctx, string(wallet.RPC_TESTNET), client2.Options{})
+		//if err != nil {
+		//	log.Fatal(err)
+		//}
+		//err = cli.Init()
+		//if err != nil {
+		//	log.Fatal(err)
+		//}
+		//unlockedWallet, err := wallet.UnlockWallet(*walletPath, "", *walletPassword)
+		//if err != nil {
+		//	log.Fatal(err)
+		//}
+		//gasToken, err := cli.GetNativeContractHash(nativenames.Gas)
+		//if err != nil {
+		//	log.Fatal(err)
+		//}
+		////todo upgrade - tis deprecated
+		//transactionID, err := wallet.TransferToken(unlockedWallet, *transferAmount, *walletAddr, gasToken, wallet.RPC_TESTNET)
+		//if err != nil {
+		//	log.Fatal(err)
+		//}
+		//start := uint64(0)
+		//stop := uint64(1600094189000)
+		//limit := int(10)
+		//page := int(1)
+		//uint160, err := wallet.StringToUint160(unlockedWallet.Address)
+		//if err != nil {
+		//	return
+		//}
+		//transfers, err := cli.GetNEP17Transfers(uint160, &start, &stop, &limit, &page)
+		//fmt.Printf("error %s\ntransfers %+v\n", err, transfers)
+		////stringTx := wallet.Uint160ToString(transactionID)
+		//log.Println("transaction made txID ", transactionID)
+		fmt.Println("re write or remove")
 		os.Exit(0)
 	}
 	//https://http.testnet.fs.neo.org/CONTAINER_ID/OBJECT_ID

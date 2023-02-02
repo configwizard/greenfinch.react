@@ -1,12 +1,17 @@
 package manager
 
 import (
+	"context"
 	"fmt"
 	"github.com/amlwwalker/greenfinch.react/pkg/cache"
 	"github.com/amlwwalker/greenfinch.react/pkg/wallet"
-	//"github.com/configwizard/gaspump-api/pkg/wallet"
-	"github.com/nspcc-dev/neo-go/pkg/core/native/nativenames"
-	walletClient "github.com/nspcc-dev/neo-go/pkg/rpcclient"
+	"github.com/nspcc-dev/neo-go/pkg/encoding/address"
+	"github.com/nspcc-dev/neo-go/pkg/rpcclient/actor"
+	"github.com/nspcc-dev/neo-go/pkg/rpcclient/gas"
+	"github.com/nspcc-dev/neo-go/pkg/rpcclient/nep17"
+	"math/big"
+
+	"github.com/nspcc-dev/neo-go/pkg/rpcclient"
 	wal "github.com/nspcc-dev/neo-go/pkg/wallet"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"math"
@@ -18,10 +23,6 @@ func (m *Manager) RecentWallets() (map[string]string, error) {
 }
 
 func (m *Manager) TransferToken(recipient string, amount float64) (string, error) {
-	w, err := m.retrieveWallet()
-	if err != nil {
-		return "", err
-	}
 	if err := m.UnlockWallet(); err != nil {
 		tmp := UXMessage{
 			Title:       "Error unlocking wallet",
@@ -31,22 +32,23 @@ func (m *Manager) TransferToken(recipient string, amount float64) (string, error
 		m.MakeToast(NewToastMessage(&tmp))
 		return "", err
 	}
-	cli, err := walletClient.New(m.ctx, string(wallet.RPC_TESTNET), walletClient.Options{})
-	if err != nil {
-		return "", err
-	}
-	err = cli.Init()
-	if err != nil {
-		return "", err
-	}
 
-	gasToken, err := cli.GetNativeContractHash(nativenames.Gas)
+	c, err := rpcclient.New(context.Background(), string(wallet.RPC_TESTNET), rpcclient.Options{})
+
 	if err != nil {
 		return "", err
 	}
-	//send 1 GAS (precision 8) to NeoFS wallet
-	//neoFSWallet := ""
-	token, err := wallet.TransferToken(w.Accounts[0], int64(amount), recipient, gasToken, wallet.RPC_TESTNET)
+	a, err := actor.NewSimple(c, m.wallet.Accounts[0])
+	if err != nil {
+		return "", err
+	}
+	n17 := nep17.New(a, gas.Hash)
+
+	tgtAcc, err := address.StringToUint160(recipient)
+	if err != nil {
+		return "", err
+	}
+	txid, _, err := n17.Transfer(a.Sender(), tgtAcc, big.NewInt(int64(amount)), nil)
 	if err != nil {
 		fmt.Println("error from transferring token function!")
 		tmp := UXMessage{
@@ -60,10 +62,11 @@ func (m *Manager) TransferToken(recipient string, amount float64) (string, error
 	tmp := UXMessage{
 		Title:       "Transfer successful",
 		Type:        "success",
-		Description: "TxID: " + token,
+		Description: "TxID: " + txid.StringLE(),
 	}
 	m.MakeToast(NewToastMessage(&tmp))
-	return token, err
+	fmt.Println("txid ", txid.StringLE())
+	return txid.StringLE(), err
 }
 
 //todo - terrible name if this is to topup NeoFS Gas

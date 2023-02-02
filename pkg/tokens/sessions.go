@@ -23,20 +23,29 @@ func CalculateEpochsForTime(ctx context.Context, cli *client.Client, durationInS
 	return uint64(durationInEpochs)                     // (estimate)
 }
 
-func BuildObjectSessionToken(key *keys.PrivateKey, lIat, lNbf, lExp uint64, verb session.ObjectVerb, cnrID cid.ID, gateKey keys.PublicKey) (*session.Object, error) {
+func BuildObjectSessionToken(key *keys.PrivateKey, lIat, lNbf, lExp uint64, verb session.ObjectVerb, cnrID cid.ID, gateSession *client.ResSessionCreate) (*session.Object, error) {
 
 	tok := new(session.Object)
 	tok.ForVerb(verb)
-
-	tok.SetID(uuid.New())
-	tok.SetAuthKey((*neofsecdsa.PublicKey)(&gateKey)) //todo: the gate key will work on behalf ot the user's wallet so never to expose their private key anywhere
-
+	var idSession uuid.UUID
+	if err := idSession.UnmarshalBinary(gateSession.ID()); err != nil {
+		return nil, err
+	}
+	// decode session public key
+	var keySession neofsecdsa.PublicKey
+	if err := keySession.Decode(gateSession.PublicKey()); err != nil {
+		return nil, err
+	}
+	//tok.SetAuthKey((*neofsecdsa.PublicKey)(&gateKey)) //todo - who is this? I thought sessions could only be used by the owner? Who is key and who is gatekey?
+	tok.SetAuthKey(&keySession)
+	tok.SetID(idSession)
 	tok.SetIat(lIat) //is there a way to dynamically get these at runtime see CalculateEpochsForTime commented above. Can this be done?
 	tok.SetNbf(lNbf)
 	tok.SetExp(lExp)
 	tok.BindContainer(cnrID)
-	return tok, tok.Sign(key.PrivateKey) //todo - this will all need signing by wallet connect when the time comes
+	return tok, tok.Sign(key.PrivateKey)
 }
+
 
 func BuildContainerSessionToken(key *keys.PrivateKey, lIat, lNbf, lExp uint64, cnrID cid.ID, verb session.ContainerVerb, gateKey keys.PublicKey) (*session.Container, error) {
 

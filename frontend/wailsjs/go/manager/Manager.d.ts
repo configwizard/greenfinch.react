@@ -23,7 +23,7 @@ export function Download(arg1:string,arg2:string,arg3:string):Promise<void>;
 
 export function ForceSync():Promise<void>;
 
-export function Get(arg1:string,arg2:string,arg3:number,arg4:io.Writer):Promise<Array<number>>;
+export function Get(arg1:string,arg2:string,arg3:io.Writer):Promise<Array<number>>;
 
 export function GetAccountInformation():Promise<manager.Account>;
 
@@ -81,4 +81,4 @@ export function UnlockWallet():Promise<void>;
 
 export function Upload(arg1:string,arg2:{[key: string]: string}):Promise<Array<manager.Element>>;
 
-export function UploadObject(arg1:string,arg2:string,arg3:number,arg4:{[key: string]: string},arg5:io.Reader):Promise<Array<manager.Element>>;
+export function UploadObject(arg1:string,arg2:string,arg3:{[key: string]: string}):Promise<Array<manager.Element>>;

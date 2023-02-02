@@ -149,35 +149,35 @@ func GetNep17Balances(walletAddress string, network RPC_NETWORK) (map[string]Nep
 
 	return tokens, nil
 }
-
-//TransferToken transfer Nep17 token to another wallets, for instance use address here https://testcdn.fs.neo.org/doc/integrations/endpoints/
-//simple example https://gist.github.com/alexvanin/4f22937b99990243a60b7abf68d7458c
-func TransferToken(a *wallet.Account, amount int64, walletTo string, token util.Uint160, network RPC_NETWORK) (string, error) {
-	ctx := context.Background()
-	// use endpoint addresses of public RPC nodes, e.g. from https://dora.coz.io/monitor
-	cli, err := client.New(ctx, string(network), client.Options{})
-	if err != nil {
-		fmt.Println("couldn't create client", err)
-		return "", err
-	}
-	err = cli.Init()
-	if err != nil {
-		fmt.Println("couldn't init client", err)
-		return "", err
-	}
-	recipient, err := StringToUint160(walletTo)
-	if err != nil {
-		fmt.Println("couldn't stringtoUint160 client", err)
-		return "", err
-	}
-	nep17.
-	txHash, err := cli.TransferNEP17(a, recipient, token, amount, 0, nil, nil)
-	if err != nil {
-		fmt.Println("couldn't TransferNEP17 client", err)
-	}
-	le := txHash.StringLE()
-	return le, err
-}
+//
+////TransferToken transfer Nep17 token to another wallets, for instance use address here https://testcdn.fs.neo.org/doc/integrations/endpoints/
+////simple example https://gist.github.com/alexvanin/4f22937b99990243a60b7abf68d7458c
+//func TransferToken(a *wallet.Account, amount int64, walletTo string, token util.Uint160, network RPC_NETWORK) (string, error) {
+//	ctx := context.Background()
+//	// use endpoint addresses of public RPC nodes, e.g. from https://dora.coz.io/monitor
+//	cli, err := client.New(ctx, string(network), client.Options{})
+//	if err != nil {
+//		fmt.Println("couldn't create client", err)
+//		return "", err
+//	}
+//	err = cli.Init()
+//	if err != nil {
+//		fmt.Println("couldn't init client", err)
+//		return "", err
+//	}
+//	recipient, err := StringToUint160(walletTo)
+//	if err != nil {
+//		fmt.Println("couldn't stringtoUint160 client", err)
+//		return "", err
+//	}
+//
+//	txHash, err := cli.TransferNEP17(a, recipient, token, amount, 0, nil, nil)
+//	if err != nil {
+//		fmt.Println("couldn't TransferNEP17 client", err)
+//	}
+//	le := txHash.StringLE()
+//	return le, err
+//}
 
 //todo ...
 func GenerateMultiSignWalletFromSigners() {

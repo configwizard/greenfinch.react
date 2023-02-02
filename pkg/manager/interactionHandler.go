@@ -3,13 +3,11 @@ package manager
 import (
 	"errors"
 	"fmt"
-	"github.com/machinebox/progress"
 	"path"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"io"
 	"os"
-	"time"
 )
 
 //Upload will put an object in NeoFS. You can access publically available files at
@@ -26,52 +24,52 @@ func (m *Manager) Upload(containerID string, attributes map[string]string) ([]El
 		TreatPackagesAsDirectories: false,
 	})
 	if err != nil {
-		return []Element{}, err
+		return nil, err
 	}
 	if filepath == "" {
 		fmt.Println("no upload filepath. Bailing out")
-		return []Element{}, err
+		return nil, err
 	}
-	f, err := os.Open(filepath)
-	defer f.Close()
-	if err != nil {
-		return []Element{}, err
-	}
-	fs, err := f.Stat()
-	if err != nil {
-		return []Element{}, err
-	}
-	r := progress.NewReader(f)
-	go func() {
-		progressChan := progress.NewTicker(m.ctx, r, fs.Size(), 250*time.Millisecond)
-		for p := range progressChan {
-			fmt.Printf("\r%v remaining...", p.Remaining().Round(250*time.Millisecond))
-			tmp := NewProgressMessage(&ProgressMessage{
-				Title:    "Uploading object",
-				Progress: int(p.Percent()),
-				Show:     true,
-			})
-			m.SetProgressPercentage(tmp)
-		}
-		end := NewProgressMessage(&ProgressMessage{
-			Title: "Uploading object",
-			Show:  false,
-		})
-		//auto close the progress bar
-		m.SetProgressPercentage(end)
-		tmp := NewToastMessage(&UXMessage{
-			Title:       "Uploading complete",
-			Type:        "success",
-			Description: "Uploading " + path.Base(filepath) + " complete",
-		})
-		var o interface{}
-		m.SendSignal("freshUpload", o)
-		m.MakeToast(tmp)
-		fmt.Println("\rupload is completed")
-	}()
-	rr := (io.Reader)(r)
+	//f, err := os.Open(filepath)
+	//defer f.Close()
+	//if err != nil {
+	//	return []Element{}, err
+	//}
+	//fs, err := f.Stat()
+	//if err != nil {
+	//	return []Element{}, err
+	//}
+	//r := progress.NewReader(f)
+	//go func() {
+	//	progressChan := progress.NewTicker(m.ctx, r, fs.Size(), 250*time.Millisecond)
+	//	for p := range progressChan {
+	//		fmt.Printf("\r%v remaining...", p.Remaining().Round(250*time.Millisecond))
+	//		tmp := NewProgressMessage(&ProgressMessage{
+	//			Title:    "Uploading object",
+	//			Progress: int(p.Percent()),
+	//			Show:     true,
+	//		})
+	//		m.SetProgressPercentage(tmp)
+	//	}
+	//	end := NewProgressMessage(&ProgressMessage{
+	//		Title: "Uploading object",
+	//		Show:  false,
+	//	})
+	//	//auto close the progress bar
+	//	m.SetProgressPercentage(end)
+	//	tmp := NewToastMessage(&UXMessage{
+	//		Title:       "Uploading complete",
+	//		Type:        "success",
+	//		Description: "Uploading " + path.Base(filepath) + " complete",
+	//	})
+	//	var o interface{}
+	//	m.SendSignal("freshUpload", o)
+	//	m.MakeToast(tmp)
+	//	fmt.Println("\rupload is completed")
+	//}()
+	//rr := (io.Reader)(r)
 
-	objects, err := m.UploadObject(containerID, filepath, int(fs.Size()), attributes, &rr)
+	objects, err := m.UploadObject(containerID, filepath, attributes)
 	if err != nil {
 		end := NewProgressMessage(&ProgressMessage{
 			Title: "Uploading object",
@@ -113,39 +111,41 @@ func (m *Manager) Download(filename, objectID, containerID string) error {
 	if err != nil {
 		return err
 	}
+	fmt.Println("meta data - ", metaData.Attributes())
 	f, err := os.Create(filepath)
 	defer f.Close()
 	if err != nil {
 		return err
 	}
-	w := progress.NewWriter(f)
-	go func() {
-		progressChan := progress.NewTicker(m.ctx, w, int64(metaData.PayloadSize()), 250*time.Millisecond)
-		for p := range progressChan {
-			fmt.Printf("\r%v remaining...", p.Remaining().Round(250*time.Millisecond))
-			tmp := NewProgressMessage(&ProgressMessage{
-				Title:    "Downloading object",
-				Progress: int(p.Percent()),
-				Show:     true,
-			})
-			m.SetProgressPercentage(tmp)
-		}
-		tmp := NewToastMessage(&UXMessage{
-			Title:       "Download complete",
-			Type:        "success",
-			Description: "Downloading " + path.Base(filepath) + " complete",
-		})
-		m.MakeToast(tmp)
-		//auto close the progress bar
-		end := NewProgressMessage(&ProgressMessage{
-			Title: "Downloading object",
-			Show:  false,
-		})
-		m.SetProgressPercentage(end)
-		fmt.Println("\rdownload is completed")
-	}()
-	WW := (io.Writer)(w)
-	_, err = m.Get(objectID, containerID, int(metaData.PayloadSize()), &WW)
+
+	//w := progress.NewWriter(f)
+	//go func() {
+	//	progressChan := progress.NewTicker(m.ctx, w, int64(metaData.PayloadSize()), 250*time.Millisecond)
+	//	for p := range progressChan {
+	//		fmt.Printf("\r%v remaining...", p.Remaining().Round(250*time.Millisecond))
+	//		tmp := NewProgressMessage(&ProgressMessage{
+	//			Title:    "Downloading object",
+	//			Progress: int(p.Percent()),
+	//			Show:     true,
+	//		})
+	//		m.SetProgressPercentage(tmp)
+	//	}
+	//	tmp := NewToastMessage(&UXMessage{
+	//		Title:       "Download complete",
+	//		Type:        "success",
+	//		Description: "Downloading " + path.Base(filepath) + " complete",
+	//	})
+	//	m.MakeToast(tmp)
+	//	//auto close the progress bar
+	//	end := NewProgressMessage(&ProgressMessage{
+	//		Title: "Downloading object",
+	//		Show:  false,
+	//	})
+	//	m.SetProgressPercentage(end)
+	//	fmt.Println("\rdownload is completed")
+	//}()
+	WW := (io.Writer)(f)
+	byt, err := m.Get(objectID, containerID, &WW)
 	if err != nil {
 		tmp := NewToastMessage(&UXMessage{
 			Title:       "Error downloading",
@@ -154,6 +154,7 @@ func (m *Manager) Download(filename, objectID, containerID string) error {
 		})
 		m.MakeToast(tmp)
 	}
+	fmt.Println("byt ", string(byt))
 	return err
 }
 

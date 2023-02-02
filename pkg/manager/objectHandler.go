@@ -1,28 +1,32 @@
 package manager
 
 import (
-	"bytes"
-	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/amlwwalker/greenfinch.react/pkg/cache"
+	"github.com/amlwwalker/greenfinch.react/pkg/config"
 	gspool "github.com/amlwwalker/greenfinch.react/pkg/pool"
 	"github.com/amlwwalker/greenfinch.react/pkg/tokens"
+	"github.com/machinebox/progress"
 	"github.com/nspcc-dev/neo-go/pkg/crypto/keys"
+	"github.com/nspcc-dev/neofs-sdk-go/client"
 	apistatus "github.com/nspcc-dev/neofs-sdk-go/client/status"
 	cid "github.com/nspcc-dev/neofs-sdk-go/container/id"
 	"github.com/nspcc-dev/neofs-sdk-go/eacl"
 	"github.com/nspcc-dev/neofs-sdk-go/object"
 	oid "github.com/nspcc-dev/neofs-sdk-go/object/id"
 	"github.com/nspcc-dev/neofs-sdk-go/pool"
+	"github.com/nspcc-dev/neofs-sdk-go/session"
 	"github.com/nspcc-dev/neofs-sdk-go/user"
 	"io"
 	"io/ioutil"
 	"log"
+	"os"
 	"path/filepath"
 	"sort"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 )
@@ -43,7 +47,7 @@ func isErrAccessDenied(err error) (string, bool) {
 	}
 }
 
-func (m *Manager) UploadObject(containerID, fp string, fileSize int, filtered map[string]string, ioReader *io.Reader) ([]Element, error) {
+func (m *Manager) UploadObject(containerID, fp string, filtered map[string]string) ([]Element, error) {
 
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
@@ -51,15 +55,13 @@ func (m *Manager) UploadObject(containerID, fp string, fileSize int, filtered ma
 	}
 	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
 
-	//pKey := &keys.PrivateKey{PrivateKey: tmpKey}
 	userID := user.ID{}
 	user.IDFromKey(&userID, tmpKey.PublicKey)
 	cnrID := cid.ID{}
 
 	if err := cnrID.DecodeString(containerID); err != nil {
-		log.Fatal("couldn't decode containerID")
+		return nil, err
 	}
-
 	attributes := make([]object.Attribute, 0, len(filtered))
 	// prepares attributes from filtered headers
 	for key, val := range filtered {
@@ -68,58 +70,61 @@ func (m *Manager) UploadObject(containerID, fp string, fileSize int, filtered ma
 		attribute.SetValue(val)
 		attributes = append(attributes, *attribute)
 	}
-	//if _, ok := filtered[object.AttributeFileName]; !ok {
-	//	filename := object.NewAttribute()
-	//	filename.SetKey(object.AttributeFileName)
-	//	filename.SetValue(fn)
-	//	attributes = append(attributes, *filename)
-	//}
+	if _, ok := filtered[object.AttributeFileName]; !ok {
+		filename := object.NewAttribute()
+		filename.SetKey(object.AttributeFileName)
+		filename.SetValue(fp) //todo change this to the shortend filename
+		attributes = append(attributes, *filename)
+	}
 	if _, ok := filtered[object.AttributeTimestamp]; !ok {
 		timestamp := object.NewAttribute()
 		timestamp.SetKey(object.AttributeTimestamp)
 		timestamp.SetValue(strconv.FormatInt(time.Now().Unix(), 10))
 		attributes = append(attributes, *timestamp)
 	}
-
-	////set special attributes last so they don't get overwritten
-	//timeStampAttr := new(obj.Attribute)
-	//timeStampAttr.SetKey(obj.AttributeTimestamp)
-	//timeStampAttr.SetValue(strconv.FormatInt(time.Now().Unix(), 10))
-	//
-	//fileNameAttr := new(obj.Attribute)
-	//fileNameAttr.SetKey(obj.AttributeFileName)
-	//_, filename := filepath.Split(fp)
-	//fileNameAttr.SetValue(filename)
-	//attr = append(attr, []*obj.Attribute{timeStampAttr, fileNameAttr}...)
-	//now we check if we can create a thumbnail
-	thumbnailData, err := thumbnail(ioReader)
-	if err == nil {
-		sEnc := base64.StdEncoding.EncodeToString(thumbnailData)
-		thumbNailAttr := object.NewAttribute()
-		thumbNailAttr.SetKey("Thumbnail")
-		thumbNailAttr.SetValue(sEnc)
-		attributes = append(attributes, *thumbNailAttr)
-	}
-
 	pKey := &keys.PrivateKey{PrivateKey: tmpKey}
 	obj := object.New()
 	obj.SetContainerID(cnrID)
 	obj.SetOwnerID(&userID)
 	obj.SetAttributes(attributes...)
-	data := []byte("this is some data stored as a byte slice in Go Lang!")
-	// convert byte slice to io.Reader
-	reader := bytes.NewReader(data)
 
-	obj.SetPayloadSize(uint64(len(data)))
-
-	target := eacl.Target{}
-	target.SetRole(eacl.RoleUser)
-	target.SetBinaryKeys([][]byte{pKey.Bytes()})
-	table, err := tokens.AllowKeyPutRead(cnrID, target)
+	f, err := os.Open(fp)
+	defer f.Close()
 	if err != nil {
-		fmt.Errorf("error retrieving table %w\r\n", err)
 		return nil, err
 	}
+
+	fileStats, err := f.Stat()
+	if err != nil {
+		return nil, errors.New("could not retrieve stats" + err.Error())
+	}
+	//thumbnailData, err := thumbnail(f)
+	//fmt.Println("thumbnail err is ", err, err == invalidImageError)
+	//if err != nil {
+	//	if err != image.ErrFormat {
+	//		return nil, err
+	//	}
+	//	//todo - get any file thumbnail
+	//} else {
+	//	sEnc := base64.StdEncoding.EncodeToString(thumbnailData)
+	//	thumbNailAttr := object.NewAttribute()
+	//	thumbNailAttr.SetKey("Thumbnail")
+	//	thumbNailAttr.SetValue(sEnc)
+	//	attributes = append(attributes, *thumbNailAttr)
+	//}
+	reader := progress.NewReader(f)
+	wg := sync.WaitGroup{}
+	wg.Add(1)
+	fmt.Println("file size ", fileStats.Size())
+	go func() {
+		defer wg.Done()
+		progressChan := progress.NewTicker(m.ctx, reader, fileStats.Size(), 50*time.Millisecond)
+		for p := range progressChan {
+			fmt.Printf("\r%v remaining...", p.Remaining().Round(50*time.Millisecond))
+		}
+	}()
+
+	obj.SetPayloadSize(uint64(fileStats.Size()))
 
 	pl, err := m.Pool()
 	if err != nil {
@@ -127,39 +132,62 @@ func (m *Manager) UploadObject(containerID, fp string, fileSize int, filtered ma
 	}
 
 	iAt, exp, err := gspool.TokenExpiryValue(m.ctx, pl, 100)
-	bt, err := tokens.BuildBearerToken(pKey, &table, iAt, iAt, exp, pKey.PublicKey())
 	if err != nil {
-		log.Fatal("error creating bearer token to upload object")
-	}
-
-	var prm pool.PrmObjectPut
-	prm.SetHeader(*obj)
-	prm.SetPayload(reader)
-	if bt != nil {
-		fmt.Println("using bearer token")
-		prm.UseBearer(*bt)
-	} else {
-		prm.UseKey(&tmpKey)
-	}
-	idObj, err := pl.PutObject(m.ctx, prm)
-	if err != nil {
-		reason, ok := isErrAccessDenied(err)
-		if ok {
-			fmt.Printf("%w: %s\r\n", err, reason)
-			return nil, err
-		}
-		fmt.Println("save object via connection pool: %s", err)
 		return nil, err
 	}
-	fmt.Println("created object ", idObj, " in container ", cnrID)
-
-	//now get the object metadata to create an entry
-	//objMetaData, err := m.GetObjectMetaData(idObj.String(), containerID)
+	//for the time being we have to use a client directly
+	cfg, err := config.ReadConfig("cfg", m.configLocation)
 	if err != nil {
-		return []Element{}, err
+		return nil, err
 	}
+	addr := cfg.Peers["0"].Address //we need to find the top priority addr really here
+	prmCli := client.PrmInit{}
+	prmCli.SetDefaultPrivateKey(tmpKey)
+	var prmDial client.PrmDial
+	prmDial.SetServerURI(addr)
+	cli := client.Client{}
+	cli.Init(prmCli)
+	cli.Dial(prmDial)
+
+	prmSession := client.PrmSessionCreate{}
+	prmSession.UseKey(tmpKey)
+	prmSession.SetExp(exp)
+	resSession, err := cli.SessionCreate(m.ctx, prmSession)
+	if err != nil {
+		return nil, err
+	}
+	sc, err := tokens.BuildObjectSessionToken(pKey, iAt, iAt, exp, session.VerbObjectPut, cnrID, resSession)
+	if err != nil {
+		log.Fatal("error creating session token to create a container")
+	}
+	putInit := client.PrmObjectPutInit{}
+	putInit.WithinSession(*sc)
+	objWriter, err := cli.ObjectPutInit(m.ctx, putInit)
+	if !objWriter.WriteHeader(*obj) || err != nil {
+		log.Println("error writing object header ", err)
+		return nil, err
+	}
+	buf := make([]byte, 1024) // 1 MiB
+	for {
+		// update progress bar
+		n, err := (*reader).Read(buf)
+		if !objWriter.WritePayloadChunk(buf[:n]) {
+			break
+		}
+		if errors.Is(err, io.EOF) {
+			break
+		}
+	}
+	res, err := objWriter.Close()
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println("res error", res.Status())
+	objectID := res.StoredObjectID()
+	wg.Wait()
+	fmt.Println("uploaded object with id ", objectID.String())
 	el := Element{
-		ID:         idObj.String(),
+		ID:         objectID.String(),
 		Type:       "object",
 		Size:       obj.PayloadSize(),
 		ParentID:   containerID,
@@ -172,7 +200,7 @@ func (m *Manager) UploadObject(containerID, fp string, fileSize int, filtered ma
 	if data, err := json.Marshal(el); err != nil {
 		return []Element{}, err
 	} else {
-		if err := cache.StoreObject(tmpWallet.Accounts[0].Address, idObj.String(), data); err != nil {
+		if err := cache.StoreObject(tmpWallet.Accounts[0].Address, objectID.String(), data); err != nil {
 			return []Element{}, err
 		}
 	}
@@ -219,7 +247,7 @@ func (m *Manager) GetObjectMetaData(objectID, containerID string) (object.Object
 	target := eacl.Target{}
 	target.SetRole(eacl.RoleUser)
 	target.SetBinaryKeys([][]byte{pKey.Bytes()})
-	table, err := tokens.AllowKeyPutRead(cnrID, target)
+	table, err := tokens.AllowGetPut(cnrID, target)
 	if err != nil {
 		log.Fatal("error retrieving table ", err)
 	}
@@ -257,7 +285,7 @@ func (m *Manager) GetObjectMetaData(objectID, containerID string) (object.Object
 	return hdr, nil
 }
 
-func (m *Manager) Get(objectID, containerID string, payloadSize int, writer *io.Writer) ([]byte, error) {
+func (m *Manager) Get(objectID, containerID string, writer *io.Writer) ([]byte, error) {
 	objID := oid.ID{}
 	if err := objID.DecodeString(objectID); err != nil {
 		fmt.Println("wrong object id", err)
@@ -278,35 +306,32 @@ func (m *Manager) Get(objectID, containerID string, payloadSize int, writer *io.
 
 	pKey := &keys.PrivateKey{PrivateKey: tmpKey}
 
+
 	var addr oid.Address
 	addr.SetContainer(cnrID)
 	addr.SetObject(objID)
 
 	var prmGet pool.PrmObjectGet
 	prmGet.SetAddress(addr)
-
-	bt, err := tokens.BuildBearerToken(pKey, &eacl.Table{}, 500, 500, 500, pKey.PublicKey())
-	if err != nil {
-		log.Println("error creating bearer token to download a object")
-		return nil, err
-	}
-	//todo: how do you attach a new session to a session Container?
-	//sc, err := tokens.BuildObjectSessionToken(pKey, 500, 500, 500, cnrID, session.VerbObjectDelete, *pKey.PublicKey())
-	//if err != nil {
-	//	log.Println("error creating session token to download a object")
-	//	return nil, err
-	//}
-
-	if bt != nil {
-		prmGet.UseBearer(*bt)
-	} else {
-		prmGet.UseKey(&tmpKey)
-	}
-
 	pl, err := m.Pool()
 	if err != nil {
 		return nil, err
 	}
+
+	iAt, exp, err := gspool.TokenExpiryValue(m.ctx, pl, 100)
+	bt, err := tokens.BuildBearerToken(pKey, &eacl.Table{}, iAt, iAt,exp, pKey.PublicKey())
+	if err != nil {
+		log.Println("error creating bearer token to download a object")
+		return nil, err
+	}
+
+	if bt != nil {
+		prmGet.UseBearer(*bt)
+	} else {
+		//todo: this should be removec
+		prmGet.UseKey(&tmpKey)
+	}
+
 	rObj, err := pl.GetObject(m.ctx, prmGet)
 	if err != nil {
 		reason, ok := isErrAccessDenied(err)
@@ -364,7 +389,7 @@ func (m *Manager) listObjectsAsync(containerID string) ([]Element, error) {
 	target := eacl.Target{}
 	target.SetRole(eacl.RoleUser)
 	target.SetBinaryKeys([][]byte{pKey.Bytes()})
-	table, err := tokens.AllowKeyPutRead(cnrID, target)
+	table, err := tokens.AllowGetPut(cnrID, target)
 	if err != nil {
 		log.Fatal("error retrieving table ", err)
 	}
@@ -474,7 +499,7 @@ func (m *Manager) ListContainerObjects(containerID string, synchronised bool) ([
 		}
 		//fmt.Println("object ", tmp.ID, tmp.PendingDeleted, tmp.ParentID)
 		if filename, ok := tmp.Attributes[object.AttributeFileName]; ok {
-			tmp.Attributes["X_EXT"] = filepath.Ext(filename)[1:]
+			tmp.Attributes["X_EXT"] = strings.TrimPrefix(filepath.Ext(filename), ".")//[1:]
 		} else {
 			tmp.Attributes["X_EXT"] = ""
 		}

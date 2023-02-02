@@ -503,7 +503,7 @@ func (m *Manager) RestrictContainer(id string, publicKey string) error {
 	eacl.SetTargetECDSAKeys(specifiedTargetRole, &tmpKey.PublicKey)
 
 	var prm pool.PrmContainerSetEACL
-	table, err := tokens.AllowKeyPutRead(cnrID, *specifiedTargetRole)
+	table, err := tokens.AllowGetPut(cnrID, *specifiedTargetRole)
 	if err != nil {
 		log.Fatal("couldn't create eacl table", err)
 	}
