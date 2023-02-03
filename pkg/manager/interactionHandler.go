@@ -6,7 +6,6 @@ import (
 	"path"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
-	"io"
 	"os"
 )
 
@@ -144,8 +143,7 @@ func (m *Manager) Download(filename, objectID, containerID string) error {
 	//	m.SetProgressPercentage(end)
 	//	fmt.Println("\rdownload is completed")
 	//}()
-	WW := (io.Writer)(f)
-	byt, err := m.Get(objectID, containerID, &WW)
+	byt, err := m.Get(objectID, containerID, f)
 	if err != nil {
 		tmp := NewToastMessage(&UXMessage{
 			Title:       "Error downloading",

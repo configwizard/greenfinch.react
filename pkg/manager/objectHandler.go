@@ -20,7 +20,6 @@ import (
 	"github.com/nspcc-dev/neofs-sdk-go/session"
 	"github.com/nspcc-dev/neofs-sdk-go/user"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -285,7 +284,7 @@ func (m *Manager) GetObjectMetaData(objectID, containerID string) (object.Object
 	return hdr, nil
 }
 
-func (m *Manager) Get(objectID, containerID string, writer *io.Writer) ([]byte, error) {
+func (m *Manager) Get(objectID, containerID string, writer io.Writer) ([]byte, error) {
 	objID := oid.ID{}
 	if err := objID.DecodeString(objectID); err != nil {
 		fmt.Println("wrong object id", err)
@@ -306,58 +305,92 @@ func (m *Manager) Get(objectID, containerID string, writer *io.Writer) ([]byte, 
 
 	pKey := &keys.PrivateKey{PrivateKey: tmpKey}
 
-
-	var addr oid.Address
-	addr.SetContainer(cnrID)
-	addr.SetObject(objID)
-
-	var prmGet pool.PrmObjectGet
-	prmGet.SetAddress(addr)
 	pl, err := m.Pool()
 	if err != nil {
 		return nil, err
 	}
-
 	iAt, exp, err := gspool.TokenExpiryValue(m.ctx, pl, 100)
-	bt, err := tokens.BuildBearerToken(pKey, &eacl.Table{}, iAt, iAt,exp, pKey.PublicKey())
 	if err != nil {
-		log.Println("error creating bearer token to download a object")
+		fmt.Println("error getting expiry ", err)
 		return nil, err
 	}
 
-	if bt != nil {
-		prmGet.UseBearer(*bt)
-	} else {
-		//todo: this should be removec
-		prmGet.UseKey(&tmpKey)
+	cfg, err := config.ReadConfig("cfg", m.configLocation)
+	if err != nil {
+		return nil, err
+	}
+	addr := cfg.Peers["0"].Address //we need to find the top priority addr really here
+
+	prmCli := client.PrmInit{}
+	prmCli.SetDefaultPrivateKey(tmpKey)
+	var prmDial client.PrmDial
+	prmDial.SetServerURI(addr)
+	cli := client.Client{}
+	cli.Init(prmCli)
+	cli.Dial(prmDial)
+
+	prmSession := client.PrmSessionCreate{}
+	prmSession.UseKey(tmpKey)
+	prmSession.SetExp(exp)
+	resSession, err := cli.SessionCreate(m.ctx, prmSession)
+	if err != nil {
+		return nil, err
 	}
 
-	rObj, err := pl.GetObject(m.ctx, prmGet)
+	sc, err := tokens.BuildObjectSessionToken(pKey, iAt, iAt, exp, session.VerbObjectGet, cnrID, resSession)
 	if err != nil {
-		reason, ok := isErrAccessDenied(err)
-		if ok {
-			fmt.Printf("%w: %s\r\n", err, reason)
+		log.Println("error creating session token to create a container", err)
+		return nil, err
+	}
+	getInit := client.PrmObjectGet{}
+	getInit.WithinSession(*sc)
+	getInit.FromContainer(cnrID)
+	//getInit.WithBearerToken(*bt)
+	getInit.ByID(objID)
+	dstObject := &object.Object{}
+	objReader, err := cli.ObjectGetInit(m.ctx, getInit)
+	if err != nil {
+		log.Println("error creating object reader ", err)
+		return nil, err
+	}
+	if !objReader.ReadHeader(dstObject) {
+		res, err := objReader.Close()
+		if err != nil {
+			log.Println("could not close object reader ", err)
 			return nil, err
 		}
-		fmt.Errorf("init full payload range reading via connection pool: %w", err)
-		return nil, err
+		log.Println("res for failure to read header ", res.Status())
+		return nil, errors.New(fmt.Sprintf("error with reading header %s\r\n", res.Status()))
 	}
-	for _, attr := range rObj.Header.Attributes() {
-		key := attr.Key()
-		val := attr.Value()
-		fmt.Println(key, val)
-		switch key {
-		case object.AttributeFileName:
-		case object.AttributeTimestamp:
-		case object.AttributeContentType:
+	c := progress.NewWriter(writer)
+	wg := sync.WaitGroup{}
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		progressChan := progress.NewTicker(m.ctx, c, int64(dstObject.PayloadSize()), 50*time.Millisecond)
+		for p := range progressChan {
+			fmt.Printf("\r%v remaining...", p.Remaining().Round(50*time.Millisecond))
+		}
+	}()
+	buf := make([]byte, 1024)
+	for {
+		n, err := objReader.Read(buf)
+		// get total size from object header and update progress bar based on n bytes received
+		if errors.Is(err, io.EOF) {
+			fmt.Println("end of file")
+			break
+		}
+		if _, err := (*c).Write(buf[:n]); err != nil {
+			fmt.Println("error writing buffer ", err)
+			break
 		}
 	}
-	body, err := ioutil.ReadAll(rObj.Payload)
+	res, err := objReader.Close()
 	if err != nil {
-		fmt.Println("could not read content of object", err)
 		return nil, err
 	}
-	return body, nil
+	fmt.Println("res error", res.Status())
+	return []byte{}, nil
 }
 
 type TmpObjectMeta struct {

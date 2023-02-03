@@ -11,6 +11,8 @@ import (
 var once sync.Once
 var db *bolt.DB
 
+const recentWallets = "recent_wallets"
+
 func DB(dbPath string) *bolt.DB {
 	once.Do(func() {
 		var err error
@@ -24,7 +26,7 @@ func DB(dbPath string) *bolt.DB {
 
 func CreateWalletBucket(wallet, walletLocation string) error {
 	return db.Update(func(tx *bolt.Tx) error {
-		recentWallets, err := tx.CreateBucketIfNotExists([]byte("recent_wallets"))
+		recentWallets, err := tx.CreateBucketIfNotExists([]byte(recentWallets))
 		if err != nil {
 			return err
 		}
@@ -36,27 +38,30 @@ func CreateWalletBucket(wallet, walletLocation string) error {
 		if err != nil {
 			return err
 		}
-		_, err = userBucket.CreateBucketIfNotExists([]byte("containers"))
+		_, err = userBucket.CreateBucketIfNotExists([]byte(containerBucket))
 		if err != nil {
 			return fmt.Errorf("creating bucket failed: %s", err)
 		}
-		_, err = userBucket.CreateBucketIfNotExists([]byte("shared_container_bucket"))
+		_, err = userBucket.CreateBucketIfNotExists([]byte(sharedContainerBucket))
 		if err != nil {
 			return fmt.Errorf("creating bucket failed: %s", err)
 		}
-		_, err = userBucket.CreateBucketIfNotExists([]byte("shared_object_bucket"))
+		_, err = userBucket.CreateBucketIfNotExists([]byte(sharedObjectBucket))
 		if err != nil {
 			return fmt.Errorf("creating bucket failed: %s", err)
 		}
-		_, err = userBucket.CreateBucketIfNotExists([]byte("objects"))
+		_, err = userBucket.CreateBucketIfNotExists([]byte(objectBucket))
 		if err != nil {
 			return fmt.Errorf("creating bucket failed: %s", err)
 		}
-		_, err = userBucket.CreateBucketIfNotExists([]byte("address_book"))
+		_, err = userBucket.CreateBucketIfNotExists([]byte(addressBookBucket))
 		if err != nil {
 			return fmt.Errorf("creating bucket failed: %s", err)
 		}
-
+		_, err = userBucket.CreateBucketIfNotExists([]byte(notificationBucket))
+		if err != nil {
+			return fmt.Errorf("creating bucket failed: %s", err)
+		}
 		return err
 	})
 }
@@ -64,9 +69,9 @@ func CreateWalletBucket(wallet, walletLocation string) error {
 func RecentWallets() (map[string]string, error) {
 	wallets := make(map[string]string)
 	err := db.View(func(tx *bolt.Tx) error {
-		ub := tx.Bucket([]byte("recent_wallets"))
+		ub := tx.Bucket([]byte(recentWallets))
 		if ub == nil {
-			return errors.New("no bucket for recent_wallets")
+			return errors.New("no bucket for recent wallets")
 		}
 		c := ub.Cursor()
 		for k, v := c.First(); k != nil; k, v = c.Next() {

@@ -6,7 +6,7 @@ import (
 	"github.com/boltdb/bolt"
 )
 
-const address_book_bucket = "address_book"
+const addressBookBucket = "address_book"
 
 func StoreContact(wallet, id string, contact []byte) error {
 	return db.Update(func(tx *bolt.Tx) error {
@@ -15,7 +15,7 @@ func StoreContact(wallet, id string, contact []byte) error {
 		if ub == nil {
 			return errors.New("no bucket for " + wallet)
 		}
-		b := ub.Bucket([]byte(address_book_bucket))
+		b := ub.Bucket([]byte(addressBookBucket))
 		err := b.Put([]byte(id), contact)
 		return err
 	})
@@ -28,7 +28,7 @@ func RetrieveContact(wallet, id string) ([]byte, error) {
 		if ub == nil {
 			return errors.New("no bucket for " + wallet)
 		}
-		b := ub.Bucket([]byte(address_book_bucket))
+		b := ub.Bucket([]byte(addressBookBucket))
 		contact = b.Get([]byte(id))
 		return nil
 	})
@@ -41,7 +41,7 @@ func DeleteContact(wallet, id string) error {
 		if ub == nil {
 			return errors.New("no bucket for " + wallet)
 		}
-		b := ub.Bucket([]byte(address_book_bucket))
+		b := ub.Bucket([]byte(addressBookBucket))
 		err := b.Delete([]byte(id))
 		return err
 	})
@@ -53,7 +53,7 @@ func RetrieveContacts(wallet string) (map[string][]byte, error) {
 		if ub == nil {
 			return errors.New("no bucket for " + wallet)
 		}
-		b := ub.Bucket([]byte(address_book_bucket))
+		b := ub.Bucket([]byte(addressBookBucket))
 		c := b.Cursor()
 		for k, v := c.First(); k != nil; k, v = c.Next() {
 			contacts[string(k)] = v

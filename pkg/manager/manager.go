@@ -25,6 +25,21 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
+type NotificationMessage struct {
+	Id          int
+	User		string //who is this message for so we can store it in the database
+	Title       string
+	Type        string
+	Description string
+	MarkRead     bool
+}
+
+func NewNotificationMessage(p *NotificationMessage) NotificationMessage {
+	p.Id = rand.Intn(101-1) + 1
+	//store it in the database against the current user
+	return *p
+}
+
 type ProgressMessage struct {
 	Id       int
 	Title    string
