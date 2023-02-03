@@ -22,6 +22,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"path"
 	"path/filepath"
 	"sort"
 	"strconv"
@@ -45,7 +46,20 @@ func isErrAccessDenied(err error) (string, bool) {
 		return err.Reason(), true
 	}
 }
-
+func setMimeType(filename string, filtered *map[string]string) {
+	if _, ok := (*filtered)["Content-Type"]; ok {
+		return
+	}
+	ext := filepath.Ext(filename)
+	var m []Mimes
+	json.Unmarshal([]byte(mimes), &m)
+	for _, v := range m {
+		if v.Extension == ext {
+			(*filtered)["Content-Type"] = v.MimeType
+			return
+		}
+	}
+}
 func (m *Manager) UploadObject(containerID, fp string, filtered map[string]string) ([]Element, error) {
 
 	tmpWallet, err := m.retrieveWallet()
@@ -62,6 +76,11 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 		return nil, err
 	}
 	attributes := make([]object.Attribute, 0, len(filtered))
+
+	_, filename := filepath.Split(fp)
+
+	//auto set the content type
+	setMimeType(filename, &filtered)
 	// prepares attributes from filtered headers
 	for key, val := range filtered {
 		attribute := object.NewAttribute()
@@ -70,10 +89,10 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 		attributes = append(attributes, *attribute)
 	}
 	if _, ok := filtered[object.AttributeFileName]; !ok {
-		filename := object.NewAttribute()
-		filename.SetKey(object.AttributeFileName)
-		filename.SetValue(fp) //todo change this to the shortend filename
-		attributes = append(attributes, *filename)
+		fileNameAttr := object.NewAttribute()
+		fileNameAttr.SetKey(object.AttributeFileName)
+		fileNameAttr.SetValue(filename) //todo change this to the shortend filename
+		attributes = append(attributes, *fileNameAttr)
 	}
 	if _, ok := filtered[object.AttributeTimestamp]; !ok {
 		timestamp := object.NewAttribute()
@@ -115,13 +134,6 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 	wg := sync.WaitGroup{}
 	wg.Add(1)
 	fmt.Println("file size ", fileStats.Size())
-	go func() {
-		defer wg.Done()
-		progressChan := progress.NewTicker(m.ctx, reader, fileStats.Size(), 50*time.Millisecond)
-		for p := range progressChan {
-			fmt.Printf("\r%v remaining...", p.Remaining().Round(50*time.Millisecond))
-		}
-	}()
 
 	obj.SetPayloadSize(uint64(fileStats.Size()))
 
@@ -166,6 +178,34 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 		log.Println("error writing object header ", err)
 		return nil, err
 	}
+	go func() {
+		defer wg.Done()
+		progressChan := progress.NewTicker(m.ctx, reader, fileStats.Size(), 50*time.Millisecond)
+		for p := range progressChan {
+			fmt.Printf("\r%v remaining...", p.Remaining().Round(50*time.Millisecond))
+			tmp := NewProgressMessage(&ProgressMessage{
+				Title:    "Uploading object",
+				Progress: int(p.Percent()),
+				Show:     true,
+			})
+			m.SetProgressPercentage(tmp)
+		}
+		end := NewProgressMessage(&ProgressMessage{
+			Title: "Uploading object",
+			Show:  false,
+		})
+		//auto close the progress bar
+		m.SetProgressPercentage(end)
+		tmp := NewToastMessage(&UXMessage{
+			Title:       "Uploading complete",
+			Type:        "success",
+			Description: "Uploading " + filename + " complete",
+		})
+		var o interface{}
+		m.SendSignal("freshUpload", o)
+		m.MakeToast(tmp)
+		fmt.Println("\rupload is completed")
+	}()
 	buf := make([]byte, 1024) // 1 MiB
 	for {
 		// update progress bar
@@ -284,7 +324,7 @@ func (m *Manager) GetObjectMetaData(objectID, containerID string) (object.Object
 	return hdr, nil
 }
 
-func (m *Manager) Get(objectID, containerID string, writer io.Writer) ([]byte, error) {
+func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byte, error) {
 	objID := oid.ID{}
 	if err := objID.DecodeString(objectID); err != nil {
 		fmt.Println("wrong object id", err)
@@ -370,7 +410,26 @@ func (m *Manager) Get(objectID, containerID string, writer io.Writer) ([]byte, e
 		progressChan := progress.NewTicker(m.ctx, c, int64(dstObject.PayloadSize()), 50*time.Millisecond)
 		for p := range progressChan {
 			fmt.Printf("\r%v remaining...", p.Remaining().Round(50*time.Millisecond))
-		}
+				tmp := NewProgressMessage(&ProgressMessage{
+					Title:    "Downloading object",
+					Progress: int(p.Percent()),
+					Show:     true,
+				})
+				m.SetProgressPercentage(tmp)
+			}
+			tmp := NewToastMessage(&UXMessage{
+				Title:       "Download complete",
+				Type:        "success",
+				Description: "Downloading " + path.Base(fp) + " complete",
+			})
+			m.MakeToast(tmp)
+			//auto close the progress bar
+			end := NewProgressMessage(&ProgressMessage{
+				Title: "Downloading object",
+				Show:  false,
+			})
+			m.SetProgressPercentage(end)
+			fmt.Println("\rdownload is completed")
 	}()
 	buf := make([]byte, 1024)
 	for {
@@ -633,12 +692,8 @@ func (m *Manager) DeleteObject(objectID, containerID string) ([]Element, error) 
 	if err != nil {
 		log.Fatal("error creating bearer token to upload object")
 	}
+	prmDelete.UseBearer(*bt)
 
-	if bt != nil {
-		prmDelete.UseBearer(*bt)
-	} else {
-		prmDelete.UseKey(&tmpKey)
-	}
 	//do we need to 'dial' the pool
 	if err := pl.DeleteObject(m.ctx, prmDelete); err != nil {
 		reason, ok := isErrAccessDenied(err)

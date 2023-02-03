@@ -121,6 +121,7 @@ func GetNep17Balances(walletAddress string, network RPC_NETWORK) (map[string]Nep
 		return map[string]Nep17Tokens{}, err
 	}
 	balances, err := cli.GetNEP17Balances(recipient)
+
 	tokens := make(map[string]Nep17Tokens)
 	for _, v := range balances.Balances {
 		tokInfo := Nep17Tokens{}

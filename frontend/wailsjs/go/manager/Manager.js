@@ -38,8 +38,8 @@ export function ForceSync() {
   return window['go']['manager']['Manager']['ForceSync']();
 }
 
-export function Get(arg1, arg2, arg3) {
-  return window['go']['manager']['Manager']['Get'](arg1, arg2, arg3);
+export function Get(arg1, arg2, arg3, arg4) {
+  return window['go']['manager']['Manager']['Get'](arg1, arg2, arg3, arg4);
 }
 
 export function GetAccountInformation() {

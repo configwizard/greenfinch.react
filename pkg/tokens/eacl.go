@@ -36,7 +36,9 @@ func AllowDelete(cid cid.ID, toWhom eacl.Target) (eacl.Table, error) {
 
 	table.SetCID(cid)
 	table.AddRecord(record)
-
+	for _, v := range restrictedRecordsForOthers() {
+		table.AddRecord(v)
+	}
 	return table, nil
 }
 
@@ -69,6 +71,9 @@ func AllowGetPut(cid cid.ID, toWhom eacl.Target) (eacl.Table, error) {
 	table.SetCID(cid)
 	table.AddRecord(getAllowRecord)
 	table.AddRecord(putAllowRecord)
+	for _, v := range restrictedRecordsForOthers() {
+		table.AddRecord(v)
+	}
 	//table.AddRecord(getDenyRecord)
 	//table.AddRecord(putDenyRecord)
 	//table.AddRecord(denyGETRecord)//deny must come first. Commented while debugging

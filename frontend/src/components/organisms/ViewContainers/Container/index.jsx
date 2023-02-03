@@ -6,7 +6,7 @@ import RowContainer from '../../../atoms/RowContainer';
 import OverlayMenu from '../../../molecules/OverlayMenu';
 
 export function ContainerGrid(props) {
-    console.log("grid item", props.item)
+    console.log("container grid item", props.item)
     const [showMenu, setShowMenu] = useState(false)
     return (
         <>
@@ -31,23 +31,24 @@ export function ContainerGrid(props) {
             <CardContainer
                 //containerID, containerName, permissions, sharable, createdAt, size
                 onClick={() => {props.onContainerSelection(props.item.id,
-                    props.item.attributes.FileName,
+                    props.item.attributes.Name,
                     props.item.BasicAcl,
                     true,
                     props.item.attributes.Timestamp,
                     props.item.size)}}
-                containerName={props.item.attributes.FileName}>
+                containerName={props.item.attributes.Name}>
             </CardContainer>
         </>
     )
 }
 export function ContainerRow(props) {
     const [showMenu, setShowMenu] = useState(false)
+    console.log("container ", props.item)
     return (
         <div className="d-flex flex-row align-items-center">
             <RowContainer
                 onClick={() => {props.onContainerSelection(props.item.id,
-                    props.item.attributes.FileName,
+                    props.item.attributes.Name,
                     props.item.BasicAcl,
                     true,
                     props.item.attributes.Timestamp,

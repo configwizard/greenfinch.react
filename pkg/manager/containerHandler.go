@@ -3,6 +3,7 @@ package manager
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/amlwwalker/greenfinch.react/pkg/cache"
 	gspool "github.com/amlwwalker/greenfinch.react/pkg/pool"
@@ -235,11 +236,12 @@ func populateContainerList(ctx context.Context, pl *pool.Pool, containerID cid.I
 
 	cont.BasicAcl = cnr.BasicACL()
 	cnr.IterateAttributes(func(k string, v string) {
+		fmt.Println("populating for ", k, v)
 		cont.Attributes[k] = v
 	})
-	if _, ok := cont.Attributes[obj.AttributeFileName]; !ok {
-		cont.Attributes[obj.AttributeFileName] = "no-container-name"
-	}
+	//if _, ok := cont.Attributes[obj.AttributeFileName]; !ok {
+	//	cont.Attributes[obj.AttributeFileName] = "no-container-name"
+	//}
 	return cont
 }
 //generateObjectStruct returns an array of elements containing all the objects owned by the contianer ID
@@ -420,10 +422,13 @@ func (m *Manager) DeleteContainer(id string) ([]Element, error) {
 	}
 	var prm pool.PrmContainerDelete
 	prm.SetContainerID(cnrID)
-
-	if sc != nil {
-		prm.SetSessionToken(*sc)
+	prm.SetSessionToken(*sc)
+	if err := pl.DeleteContainer(m.ctx, prm); err != nil {
+		fmt.Errorf("delete container via connection pool: %w", err)
+	} else {
+		fmt.Println("pool deleted container", cnrID)
 	}
+
 	if err != nil {
 		fmt.Println("error deleting container", err)
 		tmp := UXMessage{
@@ -433,7 +438,7 @@ func (m *Manager) DeleteContainer(id string) ([]Element, error) {
 		}
 		m.MakeToast(NewToastMessage(&tmp))
 	} else {
-		//now mark deleted
+		////now mark deleted
 		cacheContainer, err := cache.RetrieveContainer(tmpWallet.Accounts[0].Address, id)
 		if err != nil {
 			fmt.Println("error retrieving container??", err)
@@ -441,6 +446,8 @@ func (m *Manager) DeleteContainer(id string) ([]Element, error) {
 		}
 		if cacheContainer == nil {
 			//there is no container
+			fmt.Println("error as no container exists in the cache")
+			return []Element{}, errors.New("error as no container exists in the cache")
 		}
 		tmp := Element{}
 		if err := json.Unmarshal(cacheContainer, &tmp); err != nil {
@@ -577,9 +584,12 @@ func (m *Manager) RestrictContainer(id string, publicKey string) error {
 	//}
 	return nil
 }
-
+const (
+	attributeName      = "Name"
+	attributeTimestamp = "Timestamp"
+)
 func (m *Manager) CreateContainer(name string, permission string, block bool) error {
-	var containerAttributes = make(map[string]string)
+	var containerAttributes = make(map[string]string) //todo shift this up to the javascript side
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
 		return err
@@ -592,7 +602,6 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 		return err
 	}
 	log.Println("creating container with name", name)
-
 	userID := user.ID{}
 	user.IDFromKey(&userID, tmpKey.PublicKey)
 
@@ -625,21 +634,23 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 		customAcl = acl.PublicRWExtended //BasicACL(0x0FFFCFFF) //0x0FFFCFFF -> 268423167
 	}
 
+	creationTime := time.Now()
 	cnr.SetBasicACL(customAcl) //acl.PublicRWExtended)
-	container.SetCreationTime(&cnr, time.Now())
+	container.SetCreationTime(&cnr, creationTime)
 
-	// todo: what is the difference between domain name and container name??
-	var d container.Domain
-	d.SetName("domain-name")
-
-	container.WriteDomain(&cnr, d)
-	container.SetName(&cnr, name)
-
+	//this should set user specific attributes and not default attributes. I.e block attributes that are 'reserved
 	for k, v := range containerAttributes {
 		cnr.SetAttribute(k, v)
 	}
 
-	fmt.Println("pool retrieved")
+	fmt.Println("time check ", creationTime, string(creationTime.Unix()), strconv.FormatInt(time.Now().Unix(), 10))
+	containerAttributes[attributeTimestamp] = strconv.FormatInt(time.Now().Unix(), 10)
+	// todo: what is the difference between domain name and container name??
+	//var d container.Domain
+	//d.SetName("domain-name")
+	//container.WriteDomain(&cnr, d)
+	container.SetName(&cnr, name)
+	containerAttributes[attributeName] = name
 	if err := pool.SyncContainerWithNetwork(m.ctx, &cnr, pl); err != nil {
 		fmt.Errorf("sync container with the network state: %w", err)
 		return err
@@ -663,7 +674,7 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 	//todo - do this on a routine so that we don't hang
 	idCnr, err := pl.PutContainer(m.ctx, prmPut) //see SetWaitParams to change wait times
 	if err != nil {
-		fmt.Println("save container via connection pool: %w", err)
+		fmt.Printf("save container via connection pool: %w\r\n", err)
 		tmp := UXMessage{
 			Title:       "Container Error",
 			Type:        "error",

@@ -143,7 +143,7 @@ func (m *Manager) Download(filename, objectID, containerID string) error {
 	//	m.SetProgressPercentage(end)
 	//	fmt.Println("\rdownload is completed")
 	//}()
-	byt, err := m.Get(objectID, containerID, f)
+	byt, err := m.Get(objectID, containerID, filepath, f)
 	if err != nil {
 		tmp := NewToastMessage(&UXMessage{
 			Title:       "Error downloading",

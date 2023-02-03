@@ -79,6 +79,7 @@ type Manager struct {
 	wallet   *wal.Wallet
 	password string //warning this is not a good idea
 	DEBUG    bool
+	disableCaching bool
 }
 
 const (

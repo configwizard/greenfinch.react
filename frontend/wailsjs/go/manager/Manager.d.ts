@@ -23,7 +23,7 @@ export function Download(arg1:string,arg2:string,arg3:string):Promise<void>;
 
 export function ForceSync():Promise<void>;
 
-export function Get(arg1:string,arg2:string,arg3:io.Writer):Promise<Array<number>>;
+export function Get(arg1:string,arg2:string,arg3:string,arg4:io.Writer):Promise<Array<number>>;
 
 export function GetAccountInformation():Promise<manager.Account>;
 
