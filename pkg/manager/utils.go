@@ -68,12 +68,15 @@ func thumbnail(ioReader io.Reader) ([]byte, error) {
 	srcImage, format, err := image.Decode(bytes.NewReader(rawBody))
 	fmt.Println("format detected", format, err)
 	if err != nil {
-		if err == image.ErrFormat {
-			fmt.Println("error format is ", err)
-			return nil, image.ErrFormat
-		}
-		fmt.Println(" otherwise responding with ", err)
+		//if err == image.ErrFormat {
+		//	fmt.Println("error format is ", err)
+		//	return nil, image.ErrFormat
+		//}
+		//fmt.Println(" otherwise responding with ", err)
 		return nil, err
+	}
+	if format != "jpeg" && format != "png" {
+		return nil, image.ErrFormat
 	}
 	bounds := srcImage.Bounds()
 	point := bounds.Size()
@@ -99,6 +102,7 @@ func thumbnail(ioReader io.Reader) ([]byte, error) {
 	img = imaging.Thumbnail(srcImage, int(width), int(height), imaging.CatmullRom)
 	//now convert to bytes based on type of image
 	buf := new(bytes.Buffer)
+
 	if format == "jpeg" {
 		err := jpeg.Encode(buf, img, nil)
 		if err != nil {

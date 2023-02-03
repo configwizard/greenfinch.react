@@ -1,6 +1,7 @@
 package manager
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -19,6 +20,7 @@ import (
 	"github.com/nspcc-dev/neofs-sdk-go/pool"
 	"github.com/nspcc-dev/neofs-sdk-go/session"
 	"github.com/nspcc-dev/neofs-sdk-go/user"
+	"image"
 	"io"
 	"log"
 	"os"
@@ -81,6 +83,26 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 
 	//auto set the content type
 	setMimeType(filename, &filtered)
+
+	{
+		f, err := os.Open(fp)
+		if err != nil {
+			return nil, err
+		}
+		thumbnailData, err := thumbnail(f)
+		fmt.Println("thumbnail err is ", err, err == invalidImageError)
+		if err != nil {
+			if err != image.ErrFormat {
+				fmt.Println("1. error retrieved from thumbnail was ", err)
+				return nil, err
+			}
+			//todo - get any file thumbnail
+			fmt.Println("2. error retrieved from thumbnail was ", err)
+		} else {
+			filtered["Thumbnail"] = base64.StdEncoding.EncodeToString(thumbnailData)
+		}
+		f.Close() //can only read the file once
+	}
 	// prepares attributes from filtered headers
 	for key, val := range filtered {
 		attribute := object.NewAttribute()
@@ -116,20 +138,7 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 	if err != nil {
 		return nil, errors.New("could not retrieve stats" + err.Error())
 	}
-	//thumbnailData, err := thumbnail(f)
-	//fmt.Println("thumbnail err is ", err, err == invalidImageError)
-	//if err != nil {
-	//	if err != image.ErrFormat {
-	//		return nil, err
-	//	}
-	//	//todo - get any file thumbnail
-	//} else {
-	//	sEnc := base64.StdEncoding.EncodeToString(thumbnailData)
-	//	thumbNailAttr := object.NewAttribute()
-	//	thumbNailAttr.SetKey("Thumbnail")
-	//	thumbNailAttr.SetValue(sEnc)
-	//	attributes = append(attributes, *thumbNailAttr)
-	//}
+
 	reader := progress.NewReader(f)
 	wg := sync.WaitGroup{}
 	wg.Add(1)
