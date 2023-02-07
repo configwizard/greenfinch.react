@@ -59,18 +59,24 @@ const NavbarSide = (props) => {
                             faClass={"fal fa-hexagon"}
                             label={"NFT Management"} />
                     </Tooltip>
+                    <Tooltip content="NFT Management" direction="right">
+                        <NavlinkSide
+                            to={"/wconnect"}
+                            faClass={"fal fa-tick"}
+                            label={"Wallet Connect"} />
+                    </Tooltip>
                 </ul>
             </div>
             <div>
                 <ul className="d-flex flex-column justify-content-center">
-                    {/*
+
                         <Tooltip content="Notifications" direction="right">
                             <NavlinkSide
                                 to={"/toassign01"}
                                 faClass={"fal fa-bell"}
                                 label={"Notifications"} />
                         </Tooltip>
-                    */}
+
                     <Tooltip content="Wallet" direction="right">
                         <button type="button" className="navbarSide" data-bs-toggle="offcanvas" data-bs-target="#offcanvasLeft" aria-controls="offcanvasLeft"><i className="fal fa-wallet" /></button>
                         <DrawerWallet refreshAccount={props.refreshAccount} account={props.account} topUpWallet={topUpWallet}></DrawerWallet>
