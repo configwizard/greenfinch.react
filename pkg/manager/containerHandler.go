@@ -88,9 +88,10 @@ func (m *Manager) NewListReadOnlyContainerContents(since int64) ([]Element, erro
 		go func(v Element) {
 			defer wg.Done()
 			fmt.Println("serving container", v.ID, v.BasicAcl, acl.PublicROExtended)
-			if v.BasicAcl != acl.PublicROExtended {
-				return
-			}
+			fmt.Println("warning disabled RO check for endpoint")
+			//if v.BasicAcl != acl.PublicROExtended {
+			//	return
+			//}
 			//now we need the metadata for the objects in this container.
 			objects, err := m.ListContainerObjects(v.ID, false)
 			if err != nil {
@@ -151,9 +152,6 @@ func populateContainerList(ctx context.Context, pl *pool.Pool, containerID cid.I
 		fmt.Println("populating for ", k, v)
 		cont.Attributes[k] = v
 	})
-	//if _, ok := cont.Attributes[obj.AttributeFileName]; !ok {
-	//	cont.Attributes[obj.AttributeFileName] = "no-container-name"
-	//}
 	return cont
 }
 //generateObjectStruct returns an array of elements containing all the objects owned by the contianer ID
@@ -261,6 +259,18 @@ func (m *Manager) prepareAndAppendContainer(vID cid.ID) (Element, error) {
 	return tmpContainer, nil
 }
 
+//this is going to be a bit of a hack whilst working out the best way to do size
+func (m Manager) getContainerSize(containerID string) (uint64, error) {
+	objects, err := m.ListContainerObjects(containerID, true) //in sync so just grab from file system
+	if err != nil {
+		return 0, err
+	}
+	var size = uint64(0)
+	for _, v := range objects {
+		size += v.Size
+	}
+	return size, nil
+}
 // ListContainers populates from cache
 func (m *Manager) ListContainers(synchronised bool) ([]Element, error) {
 	tmpWallet, err := m.retrieveWallet()
@@ -285,6 +295,10 @@ func (m *Manager) ListContainers(synchronised bool) ([]Element, error) {
 		if err != nil {
 			fmt.Println("warning - could not unmarshal container", k)
 			continue
+		}
+		if tmp.Size, err = m.getContainerSize(tmp.ID); err != nil {
+			fmt.Println("could no get container size ", err)
+			return nil, err
 		}
 		fmt.Println("checking", tmp.ID, tmp.PendingDeleted)
 		if !tmp.PendingDeleted { //don't return deleted containers

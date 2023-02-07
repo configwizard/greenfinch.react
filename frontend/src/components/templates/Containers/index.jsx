@@ -79,6 +79,12 @@ class Containers extends React.Component {
 
         this.setState({...state, selectedContainer, objectsLoaded: false})
         const objectList = await listObjects(containerID)
+        let containerSize = 0
+        objectList.forEach((x => {
+            console.log("retrieving object ", x)
+            containerSize += x.size
+        }))
+        selectedContainer.size = containerSize
         console.log("container selected object list", objectList)
         this.setState({...state, selectedContainer, objectList, objectsLoaded: true})
     }
