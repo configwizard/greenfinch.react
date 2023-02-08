@@ -53,7 +53,7 @@ const RowAddress = ({first, contact, deleteContact}) => {
                                 <CompModalStandard
                                     title={"Delete contact"}
                                     buttonTextPrimary={"Yes"}
-                                    buttonTextSecondary={"no"}
+                                    buttonTextSecondary={"No"}
                                     primaryClicked={async () => {await deleteContact(contact.walletAddress); await unSetModal()}}
                                     secondaryClicked={async () => unSetModal()}>
                                         <p>Are you sure you want to delete this contact?</p>
