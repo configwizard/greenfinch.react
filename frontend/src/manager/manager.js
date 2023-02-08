@@ -8,6 +8,15 @@ const getNotifications = async()=> {
         console.log("error retrieving notifications from database ", e)
     }
 }
+
+export const deleteNotifications = async() => {
+    try {
+        await window.go.manager.Manager.MarkAllNotificationsRead()
+    } catch(e) {
+        console.log("could not clear notifications ", err)
+    }
+
+}
 const getAccountInformation = async () => {
     try {
     let b = await window.go.manager.Manager.GetAccountInformation().then((balance, error) => {
