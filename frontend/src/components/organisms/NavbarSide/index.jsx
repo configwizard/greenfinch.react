@@ -63,7 +63,7 @@ const NavbarSide = (props) => {
                         <NavlinkSide
                             to={"/walletconnect"}
                             faClass={"fak fa-walletconnect"}
-                            label={"Wallet Connect"} />
+                            label={"Wallet Connect"} /> 
                     </Tooltip>
                 </ul>
             </div>
