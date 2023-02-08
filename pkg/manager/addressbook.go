@@ -80,5 +80,11 @@ func (m *Manager) DeleteContact(walletAddress string) ([]contact, error) {
 	if err != nil {
 		return []contact{}, err
 	}
+	m.MakeToast(NewToastMessage(&UXMessage{
+		Title:       "Contact deleted",
+		Type:        "success",
+		Description: "Deleted " + walletAddress,
+		Closure:     false,
+	}))
 	return m.RetrieveContacts()
 }
