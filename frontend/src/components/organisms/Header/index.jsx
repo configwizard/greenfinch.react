@@ -18,6 +18,9 @@ class Header extends React.Component {
                 <header>
                     <div className="header-content d-flex">
                         <div className="atmStatus">
+                            <span className="utUCSmall d-block">Logo</span><span>Badge</span>
+                        </div>
+                        <div className="atmStatus">
                             <span className="utUCSmall d-block">Net</span><span>Testnet</span>
                         </div>
                         <div className="atmStatus">

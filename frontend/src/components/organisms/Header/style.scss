@@ -8,7 +8,8 @@ header {
     min-height: $heightHeader;
     background-color: $brandColorDark;
     color: $brandColorPrimary;
-    border-bottom: 3px solid darken($brandColorDark, 5%);
+    // border-bottom: 3px solid darken($brandColorDark, 5%); If re-introduced, increase height of header by stroke width
+    box-shadow: 0 0 12px rgba(0,0,0,0.9);
     & .header-content {
         padding: $paddingSmall;
     }
