@@ -130,7 +130,7 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                                                     }
                                                                     secondaryClicked={async () => unSetModal()}>
                                                                     <Form.Group className="form-div">
-                                                                        <Form.Label>To load a recent wallet, enter wallet password:</Form.Label>
+                                                                        <Form.Label>Enter wallet password for <strong>{walletName}</strong>:</Form.Label>
                                                                         <Form.Control id="loadWalletFromPathPassword" type="password" placeholder="Password" />
                                                                     </Form.Group>
                                                                 </CompModalStandard>)

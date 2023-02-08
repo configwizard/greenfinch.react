@@ -46,7 +46,18 @@ const RowAddress = ({first, contact, deleteContact}) => {
                     hasIcon={true}
                     faClass={"fas fa-trash-alt"}
                     text={"Delete"}
-                onClick={() => {deleteContact(contact.walletAddress)}}/>
+                /* onClick={() => {deleteContact(contact.walletAddress)}} */ 
+                    onClick={
+                        () => {
+                            setModal(
+                                <CompModalStandard
+                                    title={"Delete contact"}
+                                    buttonTextPrimary={"Yes"}
+                                    buttonTextSecondary={"no"}
+                                    primaryClicked={async () => {await deleteContact(contact.walletAddress); await unSetModal()}}
+                                    secondaryClicked={async () => unSetModal()}>
+                                </CompModalStandard>)
+                        }}/>
                 <ButtonText
                     size={"small"}
                     type={"clean"}
