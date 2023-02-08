@@ -14,6 +14,7 @@ import PageContainers from './pages/Containers';
 import PageWebsites from './pages/Websites';
 import PageContacts from './pages/Contacts';
 import PageNFTs from './pages/NFTs';
+import PageWalletConnect from './pages/WalletConnect';
 
 import Footer from './components/organisms/Footer';
 import Header from './components/organisms/Header';
@@ -126,6 +127,7 @@ class App extends React.Component {
                                     <Route path="/websites" exact element={<PageWebsites/>} />
                                     <Route path="/nfts" exact element={<PageNFTs/>} />
                                     {/*<Route path="/test" exact element={<PageTest/>} />*/}
+                                    <Route path="/walletconnect" exact element={<PageWalletConnect/>} />
                                 </Routes>
                             </div>
                         </div>
