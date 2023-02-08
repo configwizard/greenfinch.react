@@ -3,7 +3,7 @@ import React from 'react';
 import './style.scss';
 
 const runtime = require('@wailsapp/runtime');
-const name = 'freshtoast';
+const toastEventName = 'freshtoast';
 
 const iconSelector = (type) => {
     console.log("type selected ", type)
@@ -35,7 +35,7 @@ export default class ToastMessage extends React.Component {
     }
     async componentDidMount () {
         console.log("mounting")
-        window.runtime.EventsOn(name, async (message) => {
+        window.runtime.EventsOn(toastEventName, async (message) => {
             console.log(message)
             await this.makeToast(message)
         })

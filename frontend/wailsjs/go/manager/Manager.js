@@ -98,6 +98,10 @@ export function NewWallet(arg1) {
   return window['go']['manager']['Manager']['NewWallet'](arg1);
 }
 
+export function Notifications() {
+  return window['go']['manager']['Manager']['Notifications']();
+}
+
 export function OpenInDefaultBrowser(arg1) {
   return window['go']['manager']['Manager']['OpenInDefaultBrowser'](arg1);
 }

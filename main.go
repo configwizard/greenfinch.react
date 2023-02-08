@@ -7,6 +7,7 @@ import (
 	"github.com/amlwwalker/greenfinch.react/pkg/manager"
 	"github.com/amlwwalker/greenfinch.react/pkg/plugins/localserve"
 	"github.com/amlwwalker/greenfinch.react/pkg/wallet"
+	"time"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/logger"
@@ -117,7 +118,7 @@ func main() {
 	if err != nil {
 		log.Fatal("could not get home directory", err)
 	}
-	manager, err := manager.NewFileSystemManager(version, filepath.Join(databaseLocation, "greenfinch.db"), false)
+	mg, err := manager.NewFileSystemManager(version, filepath.Join(databaseLocation, "greenfinch.db"), false)
 	if err != nil {
 		log.Fatal("can't create a manager", err)
 	}
@@ -129,12 +130,26 @@ func main() {
 	//	fmt.Printf("balance: %d, precision %d\r\n", balance.NeoFS.Balance, balance.NeoFS.Precision)
 	//}
 	//mocker := mocker.Mocker{BasePath: path.Join("frontend", "src")} //mocker for frontend
-	go localserve.SetupServer(manager)
+	go localserve.SetupServer(mg)
+
+	go func() {
+		for {
+			fmt.Println("sending out notification")
+			mg.MakeNotification(manager.NewNotificationMessage(&manager.NotificationMessage{
+				User:        "address",
+				Title:       "testing notifications",
+				Type:        "success",
+				Description: "just some test notifications",
+				MarkRead:    false,
+			}))
+			time.Sleep(2 * time.Second)
+		}
+	}()
 	//manager.PopToast()
 	// Create application with options
 	//here ---
 	err = wails.Run(&options.App{
-		// Title:  "Greenfinch",
+		Title:  "Greenfinch",
 		Width:     1280,
 		Height:    960,
 		MinWidth:  960,
@@ -149,11 +164,11 @@ func main() {
 		//RGBA:              &options.RGBA{255, 255, 255, 255},
 		Assets:            assets,
 		LogLevel:          logger.DEBUG,
-		OnStartup:         manager.Startup, //todo update these to the manager scripts
-		OnDomReady:        manager.DomReady,
-		OnShutdown:        manager.Shutdown,
+		OnStartup:         mg.Startup,
+		OnDomReady:        mg.DomReady,
+		OnShutdown:        mg.Shutdown,
 		Bind: []interface{}{
-			manager,
+			mg,
 			//&mocker,
 		},
 		// Windows platform specific options

@@ -10,6 +10,7 @@ import (
 	gspool "github.com/amlwwalker/greenfinch.react/pkg/pool"
 	"github.com/amlwwalker/greenfinch.react/pkg/wallet"
 	"github.com/blang/semver/v4"
+	"github.com/google/uuid"
 	"github.com/nspcc-dev/neofs-sdk-go/pool"
 	"github.com/nspcc-dev/neofs-sdk-go/user"
 	"io/ioutil"
@@ -17,6 +18,7 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -26,16 +28,19 @@ import (
 )
 
 type NotificationMessage struct {
-	Id          int
+	Id          string
 	User		string //who is this message for so we can store it in the database
 	Title       string
 	Type        string
 	Description string
+	CreatedAt string
 	MarkRead     bool
 }
 
 func NewNotificationMessage(p *NotificationMessage) NotificationMessage {
-	p.Id = rand.Intn(101-1) + 1
+	uuid, _ := uuid.NewUUID()
+	p.Id = uuid.String()//rand.Intn(10001-1) + 1
+	p.CreatedAt = strconv.FormatInt(time.Now().Unix(), 10)
 	//store it in the database against the current user
 	return *p
 }
@@ -75,10 +80,10 @@ type Manager struct {
 	//key                    *ecdsa.PrivateKey
 	version string
 	//c                      *cache.Cache
-	ctx      context.Context
-	wallet   *wal.Wallet
-	password string //warning this is not a good idea
-	DEBUG    bool
+	ctx            context.Context
+	Wallet         *wal.Wallet
+	password       string //warning this is not a good idea
+	DEBUG          bool
 	disableCaching bool
 }
 
@@ -87,7 +92,7 @@ const (
 )
 
 func (m *Manager) UnlockWallet() error {
-	return m.wallet.Accounts[0].Decrypt(m.password, m.wallet.Scrypt)
+	return m.Wallet.Accounts[0].Decrypt(m.password, m.Wallet.Scrypt)
 }
 
 // startup is called at application startup
@@ -100,7 +105,7 @@ func (m *Manager) Startup(ctx context.Context) {
 // domReady is called after the front-end dom has been loaded
 func (m *Manager) DomReady(ctx context.Context) {
 	m.checkForVersion()
-	if m.wallet == nil {
+	if m.Wallet == nil {
 		tmp := NewToastMessage(&UXMessage{
 			Title:       "Get started",
 			Type:        "info",
@@ -168,7 +173,53 @@ func (m *Manager) MakeToast(message UXMessage) {
 	runtime.EventsEmit(m.ctx, "freshtoast", message)
 }
 
-func (m *Manager) MakeNotification(message UXMessage) {
+func (m Manager) Notifications() ([]NotificationMessage, error){
+	notificationBytes, err := cache.RetrieveNotifications(m.Wallet.Accounts[0].Address)
+	if err != nil {
+		return nil, err
+	}
+	var notifications []NotificationMessage
+	for _, n := range notificationBytes {
+		var notification NotificationMessage
+		if err := json.Unmarshal(n, &notification); err == nil {
+			notifications = append(notifications, notification)
+		} else {
+			fmt.Println("error unmarshalling notification ", err)
+		}
+	}
+	return notifications, nil
+}
+
+func (m Manager) MarkAllNotificationsRead() error {
+	address := m.Wallet.Accounts[0].Address
+	if err := cache.DeleteNotications(address); err != nil {
+		return err
+	}
+	return nil
+}
+func (m Manager) MarkNotification(uuid string) error {
+	address := m.Wallet.Accounts[0].Address
+	if err := cache.DeleteNotification(address, uuid); err != nil {
+		return err
+	}
+	return nil
+}
+func (m *Manager) MakeNotification(message NotificationMessage) {
+	if m.Wallet == nil {
+		fmt.Println("no wallet found")
+		return //no wallet yet to connect notifications with
+	}
+	message.User = m.Wallet.Accounts[0].Address
+	message = NewNotificationMessage(&message)
+	marshal, err := json.Marshal(message)
+	if err != nil {
+		fmt.Println("error marshalling notification", err)
+	}
+	err = cache.UpsertNotification(message.User, message.Id, marshal)
+	if err != nil {
+		fmt.Println("error upserting notifiation")
+	}
+	fmt.Println("notification message ", message)
 	runtime.EventsEmit(m.ctx, "freshnotification", message)
 }
 
@@ -237,16 +288,22 @@ func (m *Manager) SetWalletDebugging(walletPath, password string) error {
 	m.walletPath = walletPath
 	w, err := wal.NewWalletFromFile(walletPath)
 	if err != nil {
+		m.MakeNotification(NotificationMessage{
+			Title:       "Error reading wallet",
+			Type:        "error",
+			Description: fmt.Sprintf("Reading wallet failing %s", err.Error()),
+			MarkRead:    false,
+		})
 		tmp := UXMessage{
 			Title:       "Error reading wallet",
 			Type:        "error",
-			Description: err.Error(),
+			Description: "failing to read wallet",
 		}
 		m.MakeToast(NewToastMessage(&tmp))
 		return err
 	}
-	m.wallet = w
-	err = m.wallet.Accounts[0].Decrypt(password, w.Scrypt)
+	m.Wallet = w
+	err = m.Wallet.Accounts[0].Decrypt(password, w.Scrypt)
 	if err != nil {
 		return err
 	}
@@ -261,11 +318,16 @@ func (m *Manager) Pool() (*pool.Pool, error) {
 	if m.pool == nil {
 		config, err := config.ReadConfig("cfg", m.configLocation)
 		if err != nil {
-			fmt.Println("error reading config ", err)
+			m.MakeNotification(NotificationMessage{
+				Title:       "Error reading pool config",
+				Type:        "error",
+				Description: fmt.Sprintf("Reading pool config failing %s", err.Error()),
+				MarkRead:    false,
+			})
 			return nil, err
 		}
 		//todo: this should be wallet connect pool
-		pl, err := gspool.GetPool(m.ctx, m.wallet.Accounts[0].PrivateKey().PrivateKey, config.Peers)
+		pl, err := gspool.GetPool(m.ctx, m.Wallet.Accounts[0].PrivateKey().PrivateKey, config.Peers)
 		if err != nil {
 			fmt.Println("error getting pool with key ", err)
 			return nil, err
@@ -288,7 +350,7 @@ type Account struct {
 var NotFound = errors.New("wallet not found")
 
 func (m *Manager) retrieveWallet() (*wal.Wallet, error) {
-	if m.wallet == nil {
+	if m.Wallet == nil {
 		//tmp := NewToastMessage(&UXMessage{
 		//	Title:       "Lets get started",
 		//	Type:        "info",
@@ -298,7 +360,7 @@ func (m *Manager) retrieveWallet() (*wal.Wallet, error) {
 
 		return nil, NotFound
 	}
-	return m.wallet, nil
+	return m.Wallet, nil
 }
 
 func (m *Manager) GetAccountInformation() (Account, error) {
@@ -326,7 +388,7 @@ func (m *Manager) GetAccountInformation() (Account, error) {
 	//get.SetAccount(*id)
 
 	userID := user.ID{}
-	user.IDFromKey(&userID, m.wallet.Accounts[0].PrivateKey().PrivateKey.PublicKey)
+	user.IDFromKey(&userID, m.Wallet.Accounts[0].PrivateKey().PrivateKey.PublicKey)
 	blGet := pool.PrmBalanceGet{}
 	blGet.SetAccount(userID)
 
@@ -343,7 +405,7 @@ func (m *Manager) GetAccountInformation() (Account, error) {
 	//now create an account object
 	var b = Account{
 		Address:   w.Accounts[0].Address,
-		PublicKey: wallet.ByteArrayToString(m.wallet.Accounts[0].PrivateKey().PublicKey().Bytes()),
+		PublicKey: wallet.ByteArrayToString(m.Wallet.Accounts[0].PrivateKey().PublicKey().Bytes()),
 		NeoFS: struct {
 			Balance   int64  `json:"balance"`
 			Precision uint32 `json:"precision"`

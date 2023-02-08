@@ -23,10 +23,21 @@ func (m *Manager) Upload(containerID string, attributes map[string]string) ([]El
 		TreatPackagesAsDirectories: false,
 	})
 	if err != nil {
+		m.MakeNotification(NotificationMessage{
+			Title:       "Open file error",
+			Type:        "error",
+			Description: fmt.Sprintf("Opening a local file error %s", err.Error()),
+			MarkRead:    false,
+		})
 		return nil, err
 	}
 	if filepath == "" {
-		fmt.Println("no upload filepath. Bailing out")
+		m.MakeNotification(NotificationMessage{
+			Title:       "Open file error",
+			Type:        "error",
+			Description: "No file selected",
+			MarkRead:    false,
+		})
 		return nil, err
 	}
 
@@ -35,6 +46,12 @@ func (m *Manager) Upload(containerID string, attributes map[string]string) ([]El
 		end := NewProgressMessage(&ProgressMessage{
 			Title: "Uploading object",
 			Show:  false,
+		})
+		m.MakeNotification(NotificationMessage{
+			Title:       "Error uploading object",
+			Type:        "error",
+			Description: "Uploading failed due to " + err.Error(),
+			MarkRead:    false,
 		})
 		//auto close the progress bar
 		m.SetProgressPercentage(end)
@@ -63,19 +80,42 @@ func (m *Manager) Download(filename, objectID, containerID string) error {
 		TreatPackagesAsDirectories: false,
 	})
 	if err != nil {
+		m.MakeNotification(NotificationMessage{
+			Title:       "Save file error",
+			Type:        "error",
+			Description: fmt.Sprintf("Saving to a local file error %s", err.Error()),
+			MarkRead:    false,
+		})
 		return err
 	}
 	if filepath == "" {
+		m.MakeNotification(NotificationMessage{
+			Title:       "Open file error",
+			Type:        "error",
+			Description: "No file selected",
+			MarkRead:    false,
+		})
 		return errors.New("no filepath detected")
 	}
-	metaData, err := m.GetObjectMetaData(objectID, containerID)
-	if err != nil {
-		return err
-	}
-	fmt.Println("meta data - ", metaData.Attributes())
+	//metaData, err := m.GetObjectMetaData(objectID, containerID)
+	//if err != nil {
+	//	m.MakeNotification(NotificationMessage{
+	//		Title:       "Retrieving object metadata error",
+	//		Type:        "error",
+	//		Description: "Retieving object metadata failing " + err.Error(),
+	//		MarkRead:    false,
+	//	})
+	//	return err
+	//}
 	f, err := os.Create(filepath)
 	defer f.Close()
 	if err != nil {
+		m.MakeNotification(NotificationMessage{
+			Title:       "Creating file object error",
+			Type:        "error",
+			Description: "Creating file object failing " + err.Error(),
+			MarkRead:    false,
+		})
 		return err
 	}
 
@@ -107,10 +147,16 @@ func (m *Manager) Download(filename, objectID, containerID string) error {
 	//}()
 	byt, err := m.Get(objectID, containerID, filepath, f)
 	if err != nil {
+		m.MakeNotification(NotificationMessage{
+			Title:       "Retrieving object error",
+			Type:        "error",
+			Description: fmt.Sprintf("Retrieving object at path %s failing %s", path.Base(filepath), err.Error()),
+			MarkRead:    false,
+		})
 		tmp := NewToastMessage(&UXMessage{
 			Title:       "Error downloading",
 			Type:        "error",
-			Description: "Downloading " + path.Base(filepath) + " failed: " + err.Error(),
+			Description: "Downloading file failed",
 		})
 		m.MakeToast(tmp)
 	}

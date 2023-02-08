@@ -38,7 +38,7 @@ func (m *Manager) TransferToken(recipient string, amount float64) (string, error
 	if err != nil {
 		return "", err
 	}
-	a, err := actor.NewSimple(c, m.wallet.Accounts[0])
+	a, err := actor.NewSimple(c, m.Wallet.Accounts[0])
 	if err != nil {
 		return "", err
 	}
@@ -59,12 +59,19 @@ func (m *Manager) TransferToken(recipient string, amount float64) (string, error
 		m.MakeToast(NewToastMessage(&tmp))
 		return "", err
 	}
-	tmp := UXMessage{
-		Title:       "Transfer successful",
+	///0x00b423ecc65fe04573b3c3d972497913ee247c476a7db95d8575cf74cf1b5039
+	m.MakeNotification(NotificationMessage{
+		Title:       "Transaction started",
+		Type:        "error",
+		Description: fmt.Sprintf("Transaction can be viewed at https://explorer.onegate.space/transactionInfo/%s", txid.StringLE()),
+		MarkRead:    false,
+	})
+	m.MakeToast(NewToastMessage(&UXMessage{
+		Title:       "Transfer started",
 		Type:        "success",
-		Description: "TxID: " + txid.StringLE(),
-	}
-	m.MakeToast(NewToastMessage(&tmp))
+		Description: "Wait for transaction to complete",
+	}))
+
 	fmt.Println("txid ", txid.StringLE())
 	return txid.StringLE(), err
 }
@@ -112,8 +119,8 @@ func (m *Manager) NewWallet(password string) error {
 		return err
 	}
 	m.password = password
-	m.wallet = w
-	if err := cache.CreateWalletBucket(m.wallet.Accounts[0].Address, filepath); err != nil {
+	m.Wallet = w
+	if err := cache.CreateWalletBucket(m.Wallet.Accounts[0].Address, filepath); err != nil {
 		tmp := UXMessage{
 			Title:       "Error setting wallet database",
 			Type:        "error",
@@ -160,9 +167,9 @@ func (m *Manager) LoadWalletWithPath(password, filepath string) error {
 		return err
 	}
 	m.password = password
-	m.wallet = w
+	m.Wallet = w
 
-	if err := cache.CreateWalletBucket(m.wallet.Accounts[0].Address, filepath); err != nil {
+	if err := cache.CreateWalletBucket(m.Wallet.Accounts[0].Address, filepath); err != nil {
 		tmp := UXMessage{
 			Title:       "Error setting wallet database",
 			Type:        "error",

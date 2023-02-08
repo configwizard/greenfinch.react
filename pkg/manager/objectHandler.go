@@ -90,14 +90,11 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 			return nil, err
 		}
 		thumbnailData, err := thumbnail(f)
-		fmt.Println("thumbnail err is ", err, err == invalidImageError)
 		if err != nil {
 			if err != image.ErrFormat {
-				fmt.Println("1. error retrieved from thumbnail was ", err)
 				return nil, err
 			}
 			//todo - get any file thumbnail
-			fmt.Println("2. error retrieved from thumbnail was ", err)
 		} else {
 			filtered["Thumbnail"] = base64.StdEncoding.EncodeToString(thumbnailData)
 		}
@@ -178,7 +175,12 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 	}
 	sc, err := tokens.BuildObjectSessionToken(pKey, iAt, iAt, exp, session.VerbObjectPut, cnrID, resSession)
 	if err != nil {
-		log.Fatal("error creating session token to create a container")
+		m.MakeToast(UXMessage{
+			Title:       "Object Error",
+			Type:        "error",
+			Description: "Could not retrieve session token",
+		})
+		return nil, err
 	}
 	putInit := client.PrmObjectPutInit{}
 	putInit.WithinSession(*sc)
@@ -230,10 +232,8 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("res error", res.Status())
 	objectID := res.StoredObjectID()
 	wg.Wait()
-	fmt.Println("uploaded object with id ", objectID.String())
 	el := Element{
 		ID:         objectID.String(),
 		Type:       "object",
@@ -265,13 +265,21 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 func (m *Manager) GetObjectMetaData(objectID, containerID string) (object.Object, error) {
 	objID := oid.ID{}
 	if err := objID.DecodeString(objectID); err != nil {
-		fmt.Println("wrong object id", err)
+		m.MakeToast(UXMessage{
+			Title:       "Object Error",
+			Type:        "error",
+			Description: "Could not decode object ID" + err.Error(),
+		})
 		return object.Object{}, err
 	}
 	cnrID := cid.ID{}
 
 	if err := cnrID.DecodeString(containerID); err != nil {
-		fmt.Println("wrong object id", err)
+		m.MakeToast(UXMessage{
+			Title:       "Object Error",
+			Type:        "error",
+			Description: "Could not decode container ID" + err.Error(),
+		})
 		return object.Object{}, err
 	}
 
@@ -284,6 +292,11 @@ func (m *Manager) GetObjectMetaData(objectID, containerID string) (object.Object
 
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
+		m.MakeToast(UXMessage{
+			Title:       "Object Error",
+			Type:        "error",
+			Description: "Could not retrieve wallet" + err.Error(),
+		})
 		return object.Object{}, err
 	}
 	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
@@ -297,26 +310,38 @@ func (m *Manager) GetObjectMetaData(objectID, containerID string) (object.Object
 	target.SetBinaryKeys([][]byte{pKey.Bytes()})
 	table, err := tokens.AllowGetPut(cnrID, target)
 	if err != nil {
-		log.Fatal("error retrieving table ", err)
+		m.MakeToast(UXMessage{
+			Title:       "Object Error",
+			Type:        "error",
+			Description: "Could not decode table" + err.Error(),
+		})
 	}
 	iAt, exp, err := gspool.TokenExpiryValue(m.ctx, pl, 100)
 	bt, err := tokens.BuildBearerToken(pKey, &table, iAt, iAt, exp, pKey.PublicKey())
 	if err != nil {
-		log.Fatal("error creating bearer token to upload object")
+		m.MakeToast(UXMessage{
+			Title:       "Object Error",
+			Type:        "error",
+			Description: "Could not retrieve bearer token" + err.Error(),
+		})
+		return object.Object{}, err
 	}
-	if bt != nil {
-		fmt.Println("using bearer token")
-		prmHead.UseBearer(*bt)
-	} else {
-		prmHead.UseKey(&tmpKey)
-	}
+	prmHead.UseBearer(*bt)
 	hdr, err := pl.HeadObject(m.ctx, prmHead)
 	if err != nil {
 		if reason, ok := isErrAccessDenied(err); ok {
-			fmt.Printf("%w: %s\r\n", err, reason)
+			m.MakeToast(UXMessage{
+				Title:       "Object Error",
+				Type:        "error",
+				Description: "access is denied" + reason,
+			})
 			return object.Object{}, err
 		}
-		fmt.Errorf("read object header via connection pool: %w", err)
+		m.MakeToast(UXMessage{
+			Title:       "Object Error",
+			Type:        "error",
+			Description: "Could not request metadata" + err.Error(),
+		})
 		return object.Object{}, err
 	}
 
@@ -336,18 +361,31 @@ func (m *Manager) GetObjectMetaData(objectID, containerID string) (object.Object
 func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byte, error) {
 	objID := oid.ID{}
 	if err := objID.DecodeString(objectID); err != nil {
-		fmt.Println("wrong object id", err)
+		m.MakeToast(UXMessage{
+			Title:       "Object Error",
+			Type:        "error",
+			Description: "Could not decode object ID" + err.Error(),
+		})
 		return nil, err
 	}
 	cnrID := cid.ID{}
 
 	if err := cnrID.DecodeString(containerID); err != nil {
-		fmt.Println("wrong object id", err)
+		m.MakeToast(UXMessage{
+			Title:       "Object Error",
+			Type:        "error",
+			Description: "Could not decode container ID" + err.Error(),
+		})
 		return nil, err
 	}
 
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
+		m.MakeToast(UXMessage{
+			Title:       "Object Error",
+			Type:        "error",
+			Description: "Could not retrieve wallet" + err.Error(),
+		})
 		return nil, err
 	}
 	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
@@ -360,12 +398,21 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 	}
 	iAt, exp, err := gspool.TokenExpiryValue(m.ctx, pl, 100)
 	if err != nil {
-		fmt.Println("error getting expiry ", err)
+		m.MakeToast(UXMessage{
+			Title:       "Object Error",
+			Type:        "error",
+			Description: "Could not retrieve expiry" + err.Error(),
+		})
 		return nil, err
 	}
 
 	cfg, err := config.ReadConfig("cfg", m.configLocation)
 	if err != nil {
+		m.MakeToast(UXMessage{
+			Title:       "Object Error",
+			Type:        "error",
+			Description: "Could not read configuration" + err.Error(),
+		})
 		return nil, err
 	}
 	addr := cfg.Peers["0"].Address //we need to find the top priority addr really here
@@ -383,12 +430,22 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 	prmSession.SetExp(exp)
 	resSession, err := cli.SessionCreate(m.ctx, prmSession)
 	if err != nil {
+		m.MakeToast(UXMessage{
+			Title:       "Object Error",
+			Type:        "error",
+			Description: "Could not create client session" + err.Error(),
+		})
 		return nil, err
 	}
 
 	sc, err := tokens.BuildObjectSessionToken(pKey, iAt, iAt, exp, session.VerbObjectGet, cnrID, resSession)
 	if err != nil {
 		log.Println("error creating session token to create a container", err)
+		m.MakeToast(UXMessage{
+			Title:       "Object Error",
+			Type:        "error",
+			Description: "Could not retrieve session token" + err.Error(),
+		})
 		return nil, err
 	}
 	getInit := client.PrmObjectGet{}
@@ -399,16 +456,28 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 	dstObject := &object.Object{}
 	objReader, err := cli.ObjectGetInit(m.ctx, getInit)
 	if err != nil {
-		log.Println("error creating object reader ", err)
+		m.MakeToast(UXMessage{
+			Title:       "Object Error",
+			Type:        "error",
+			Description: "Could not retrieve object" + err.Error(),
+		})
 		return nil, err
 	}
 	if !objReader.ReadHeader(dstObject) {
 		res, err := objReader.Close()
 		if err != nil {
-			log.Println("could not close object reader ", err)
+			m.MakeToast(UXMessage{
+				Title:       "Object Error",
+				Type:        "error",
+				Description: "Error closing meta information" + err.Error(),
+			})
 			return nil, err
 		}
-		log.Println("res for failure to read header ", res.Status())
+		m.MakeToast(UXMessage{
+			Title:       "Object Error",
+			Type:        "error",
+			Description: "Could not read meta information" + err.Error(),
+		})
 		return nil, errors.New(fmt.Sprintf("error with reading header %s\r\n", res.Status()))
 	}
 	c := progress.NewWriter(writer)
@@ -455,8 +524,19 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 	}
 	res, err := objReader.Close()
 	if err != nil {
+		m.MakeToast(UXMessage{
+			Title:       "Object Error",
+			Type:        "error",
+			Description: "Could not close reader" + res.Status().(string),
+		})
 		return nil, err
 	}
+	m.MakeNotification(NotificationMessage{
+		Title:       "Object downloaded",
+		Type:        "success",
+		Description: "Success!!",
+		MarkRead:    false,
+	})
 	fmt.Println("res error", res.Status())
 	return []byte{}, nil
 }
@@ -471,19 +551,33 @@ func (m *Manager) listObjectsAsync(containerID string) ([]Element, error) {
 	cnrID := cid.ID{}
 
 	if err := cnrID.DecodeString(containerID); err != nil {
-		fmt.Println("wrong object id", err)
+		m.MakeToast(UXMessage{
+			Title:       "Object Error",
+			Type:        "error",
+			Description: "Could not decode container ID" + err.Error(),
+		})
 		return nil, err
 	}
 
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
+		m.MakeToast(UXMessage{
+			Title:       "Object Error",
+			Type:        "error",
+			Description: "Could not retrieve wallet" + err.Error(),
+		})
 		return nil, err
 	}
 	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
 
 	pl, err := m.Pool()
 	if err != nil {
-		return []Element{}, err
+		m.MakeToast(UXMessage{
+			Title:       "Object Error",
+			Type:        "error",
+			Description: "Could not retrieve wallet" + err.Error(),
+		})
+		return nil, err
 	}
 
 	pKey := &keys.PrivateKey{PrivateKey: tmpKey}
@@ -492,19 +586,27 @@ func (m *Manager) listObjectsAsync(containerID string) ([]Element, error) {
 	target.SetBinaryKeys([][]byte{pKey.Bytes()})
 	table, err := tokens.AllowGetPut(cnrID, target)
 	if err != nil {
-		log.Fatal("error retrieving table ", err)
+		m.MakeToast(UXMessage{
+			Title:       "Object Error",
+			Type:        "error",
+			Description: "Could not decode table" + err.Error(),
+		})
+		return nil, err
 	}
 	iAt, exp, err := gspool.TokenExpiryValue(m.ctx, pl, 100)
 	bt, err := tokens.BuildBearerToken(pKey, &table, iAt, iAt, exp, pKey.PublicKey())
 	if err != nil {
-		log.Fatal("error creating bearer token to upload object")
+		m.MakeToast(UXMessage{
+			Title:       "Object Error",
+			Type:        "error",
+			Description: "Could not retrieve bearer token" + err.Error(),
+		})
+		return nil, err
 	}
 
 	prms := pool.PrmObjectSearch{}
 	if bt != nil {
 		prms.UseBearer(*bt)
-	} else {
-		prms.UseKey(&tmpKey)
 	}
 
 	prms.SetContainerID(cnrID)
@@ -514,6 +616,11 @@ func (m *Manager) listObjectsAsync(containerID string) ([]Element, error) {
 	prms.SetFilters(filter)
 	objects, err := pl.SearchObjects(m.ctx, prms)
 	if err != nil {
+		m.MakeToast(UXMessage{
+			Title:       "Object Error",
+			Type:        "error",
+			Description: "Could not find filter matches" + err.Error(),
+		})
 		return nil, err
 	}
 	var list []oid.ID
@@ -521,7 +628,12 @@ func (m *Manager) listObjectsAsync(containerID string) ([]Element, error) {
 		list = append(list, id)
 		return false
 	}); err != nil {
-		log.Fatalf("error listing objects %s\r\n", err)
+		m.MakeToast(UXMessage{
+			Title:       "Object Error",
+			Type:        "error",
+			Description: "Could not iterate objects" + err.Error(),
+		})
+		return nil, err
 	}
 	fmt.Printf("list objects %+v\r\n", list)
 	wg := sync.WaitGroup{}
@@ -568,6 +680,14 @@ func (m *Manager) listObjectsAsync(containerID string) ([]Element, error) {
 		wg.Wait()
 	}
 	objectList, err := m.ListContainerObjects(containerID, true)
+	if err != nil {
+		m.MakeToast(UXMessage{
+			Title:       "Object Error",
+			Type:        "error",
+			Description: "Could not list objects" + err.Error(),
+		})
+		return nil, err
+	}
 	fmt.Println("async returning", objectList)
 	return objectList, err
 }
@@ -576,10 +696,20 @@ func (m *Manager) listObjectsAsync(containerID string) ([]Element, error) {
 func (m *Manager) ListContainerObjects(containerID string, synchronised bool) ([]Element, error) {
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
-		return []Element{}, err
+		m.MakeToast(UXMessage{
+			Title:       "Object Error",
+			Type:        "error",
+			Description: "Could not retrieve wallet" + err.Error(),
+		})
+		return nil, err
 	}
 	tmpObjects, err := cache.RetrieveObjects(tmpWallet.Accounts[0].Address)
 	if err != nil {
+		m.MakeToast(UXMessage{
+			Title:       "Object Error",
+			Type:        "error",
+			Description: "Could not retrieve objects from cache" + err.Error(),
+		})
 		return nil, err
 	}
 	if len(tmpObjects) == 0 && !synchronised {
@@ -655,19 +785,32 @@ func (m *Manager) ListContainerObjects(containerID string, synchronised bool) ([
 func (m *Manager) DeleteObject(objectID, containerID string) ([]Element, error) {
 	objID := oid.ID{}
 	if err := objID.DecodeString(objectID); err != nil {
-		fmt.Println("wrong object id", err)
+		m.MakeToast(UXMessage{
+			Title:       "Object Error",
+			Type:        "error",
+			Description: "Could not decode object ID" + err.Error(),
+		})
 		return nil, err
 	}
 	cnrID := cid.ID{}
 
 	if err := cnrID.DecodeString(containerID); err != nil {
-		fmt.Println("wrong object id", err)
+		m.MakeToast(UXMessage{
+			Title:       "Object Error",
+			Type:        "error",
+			Description: "Could not decode container ID" + err.Error(),
+		})
 		return nil, err
 	}
 
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
-		return []Element{}, err
+		m.MakeToast(UXMessage{
+			Title:       "Object Error",
+			Type:        "error",
+			Description: "Could not retrieve wallet" + err.Error(),
+		})
+		return nil, err
 	}
 	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
 
@@ -679,7 +822,11 @@ func (m *Manager) DeleteObject(objectID, containerID string) ([]Element, error) 
 	target.SetBinaryKeys([][]byte{pKey.Bytes()})
 	table, err := tokens.AllowDelete(cnrID, target)
 	if err != nil {
-		log.Println("error retrieving table ", err)
+		m.MakeToast(UXMessage{
+			Title:       "Object Error",
+			Type:        "error",
+			Description: "Could not retrieve table" + err.Error(),
+		})
 		return nil, err
 	}
 
@@ -692,21 +839,35 @@ func (m *Manager) DeleteObject(objectID, containerID string) ([]Element, error) 
 
 	pl, err := m.Pool()
 	if err != nil {
-		log.Println("error retrieving pool ", err)
+		m.MakeToast(UXMessage{
+			Title:       "Object Error",
+			Type:        "error",
+			Description: "Could not retrieve pool" + err.Error(),
+		})
 		return nil, err
 	}
 
 	iAt, exp, err := gspool.TokenExpiryValue(m.ctx, pl, 100)
 	bt, err := tokens.BuildBearerToken(pKey, &table, iAt, iAt, exp, pKey.PublicKey())
 	if err != nil {
-		log.Fatal("error creating bearer token to upload object")
+		m.MakeToast(UXMessage{
+			Title:       "Object Error",
+			Type:        "error",
+			Description: "Could not retrieve token" + err.Error(),
+		})
+		return nil, err
 	}
 	prmDelete.UseBearer(*bt)
 
 	//do we need to 'dial' the pool
 	if err := pl.DeleteObject(m.ctx, prmDelete); err != nil {
 		reason, ok := isErrAccessDenied(err)
-		if ok {
+		if ok { //ok means it was denied
+			m.MakeToast(UXMessage{
+				Title:       "Object Error",
+				Type:        "error",
+				Description: "Could not delete object" + reason,
+			})
 			fmt.Printf("%w: %s\r\n", err, reason)
 			return nil, err
 		}
@@ -715,21 +876,40 @@ func (m *Manager) DeleteObject(objectID, containerID string) ([]Element, error) 
 		//now mark deleted
 		cacheObject, err := cache.RetrieveObject(tmpWallet.Accounts[0].Address, objectID)
 		if err != nil {
-			fmt.Println("error retrieving container??", err)
-			return []Element{}, err
+			m.MakeToast(UXMessage{
+				Title:       "Object Error",
+				Type:        "error",
+				Description: "Could not retrieve object from cache" + err.Error(),
+			})
+			return nil, err
 		}
 		if cacheObject == nil {
 			//there is no container
-			return []Element{}, err
+			m.MakeToast(UXMessage{
+				Title:       "Object Error",
+				Type:        "error",
+				Description: "No container in cache",
+			})
+			return nil, err
 		}
 		tmp := Element{}
 		if err := json.Unmarshal(cacheObject, &tmp); err != nil {
-			return []Element{}, err
+			m.MakeToast(UXMessage{
+				Title:       "Object Error",
+				Type:        "error",
+				Description: "Could not decode object from cache" + err.Error(),
+			})
+			return nil, err
 		}
 		tmp.PendingDeleted = true
 		del, err := json.Marshal(tmp)
-		if err := json.Unmarshal(cacheObject, &tmp); err != nil {
-			return []Element{}, err
+		if err != nil {
+			m.MakeToast(UXMessage{
+				Title:       "Object Error",
+				Type:        "error",
+				Description: "Could not encode object for cache" + err.Error(),
+			})
+			return nil, err
 		}
 		if err := cache.PendObjectDeleted(tmpWallet.Accounts[0].Address, objectID, del); err != nil {
 			return []Element{}, err

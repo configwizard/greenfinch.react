@@ -3,7 +3,6 @@ package manager
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/amlwwalker/greenfinch.react/pkg/cache"
 	gspool "github.com/amlwwalker/greenfinch.react/pkg/pool"
@@ -60,6 +59,18 @@ func (m *Manager) ListContainerIDs() ([]string, error) {
 	var stringIds []string
 	ids, err := m.listContainerIDs()
 	if err != nil {
+		m.MakeNotification(NotificationMessage{
+			User:        m.Wallet.Accounts[0].Address,
+			Title:       "Listing container IDs",
+			Type:        "error",
+			Description: "attempting to list conainer IDs failed due to " + err.Error(),
+			MarkRead:    false,
+		})
+		m.MakeToast(UXMessage{
+			Title:       "Listing error",
+			Type:        "error",
+			Description: "Could not list containers",
+		})
 		return stringIds, err
 	}
 	for _, v := range ids {
@@ -95,7 +106,13 @@ func (m *Manager) NewListReadOnlyContainerContents(since int64) ([]Element, erro
 			//now we need the metadata for the objects in this container.
 			objects, err := m.ListContainerObjects(v.ID, false)
 			if err != nil {
-				fmt.Println("failed to process container ", v.ID)
+				m.MakeNotification(NotificationMessage{
+					User:        m.Wallet.Accounts[0].Address,
+					Title:       "Listing read only container endpoint failure",
+					Type:        "error",
+					Description: "a request to list read only container contens failed " + err.Error(),
+					MarkRead:    false,
+				})
 				return
 			}
 			fmt.Println("number of objects in container ", v.ID, len(objects))
@@ -127,12 +144,11 @@ func (m *Manager) NewListReadOnlyContainerContents(since int64) ([]Element, erro
 		}(cnt)
 	}
 	wg.Wait()
-	fmt.Println("resulting in ", resultCounter)
 	return validContainers, nil
 }
 
 //// PopulateContainerList returns a container with its attributes as an Element (used by GenerateFileSystemFromContainer)
-func populateContainerList(ctx context.Context, pl *pool.Pool, containerID cid.ID) Element {
+func (m Manager) populateContainerList(ctx context.Context, pl *pool.Pool, containerID cid.ID) Element {
 	cont := Element{
 		Type: "container",
 		ID: containerID.String(),
@@ -143,13 +159,18 @@ func populateContainerList(ctx context.Context, pl *pool.Pool, containerID cid.I
 
 	cnr, err := pl.GetContainer(ctx, prmGet)
 	if err != nil {
+		m.MakeNotification(NotificationMessage{
+			Title:       "Retrieving pool failed",
+			Type:        "error",
+			Description: fmt.Sprintf("Populate container list has failed to retrieve the pool %s", err.Error()),
+			MarkRead:    false,
+		})
 		cont.Errors = append(cont.Errors, err)
 		return cont
 	}
 
 	cont.BasicAcl = cnr.BasicACL()
 	cnr.IterateAttributes(func(k string, v string) {
-		fmt.Println("populating for ", k, v)
 		cont.Attributes[k] = v
 	})
 	return cont
@@ -161,6 +182,12 @@ func (m *Manager) generateObjectStruct(objs []Element, containerID cid.ID) (uint
 	for _, o := range objs {
 		head, err := m.GetObjectMetaData(o.ID, containerID.String())
 		if err != nil {
+			m.MakeNotification(NotificationMessage{
+				Title:       "Retrieving object meta data failed",
+				Type:        "error",
+				Description: fmt.Sprintf("Retrieving the metadata for %s failed %s", o.ID, err.Error()),
+				MarkRead:    false,
+			})
 			o.Errors = append(o.Errors, err)
 		}
 		for _, a := range head.Attributes() {
@@ -181,9 +208,13 @@ func (m *Manager) generateObjectStruct(objs []Element, containerID cid.ID) (uint
 func (m *Manager) ForceSync() {
 	fmt.Println("force syncing")
 	if _, err := m.listContainersAsync(); err != nil {
-		fmt.Println("force sync error ", err)
+		m.MakeNotification(NotificationMessage{
+			Title:       "Force Sync is failing",
+			Type:        "error",
+			Description: fmt.Sprintf("Force sync failing due to %s", err.Error()),
+			MarkRead:    false,
+		})
 	}
-
 }
 
 //listContainersAsync should be purely used to refresh the database cache
@@ -193,11 +224,17 @@ func (m *Manager) listContainersAsync() ([]Element, error) {
 	runtime.EventsEmit(m.ctx, "clearContainer", nil)
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
-		return []Element{}, err
+		return nil, err
 	}
 	ids, err := m.listContainerIDs()
 	if err != nil {
-		return []Element{}, err
+		m.MakeNotification(NotificationMessage{
+			Title:       "Force Syncing containers is failing",
+			Type:        "error",
+			Description: fmt.Sprintf("Force sync failing due to %s", err.Error()),
+			MarkRead:    false,
+		})
+		return nil, err
 	}
 	fmt.Println("container ids,", len(ids), ids)
 	wg := sync.WaitGroup{}
@@ -209,12 +246,24 @@ func (m *Manager) listContainersAsync() ([]Element, error) {
 			tmpContainer, err := m.prepareAndAppendContainer(vID)
 			str, err := json.MarshalIndent(tmpContainer, "", "  ")
 			if err != nil {
-				fmt.Println(err)
+				m.MakeNotification(NotificationMessage{
+					Title:       "Cannot encode container",
+					Type:        "error",
+					Description: fmt.Sprintf("Encoding container %s is failing %s", vID, err.Error()),
+					MarkRead:    false,
+				})
+				return
 			}
 			fmt.Println("retrieved containers", tmpContainer)
 			//store in database
 			fmt.Println("storing container", tmpContainer.ID)
 			if err = cache.StoreContainer(tmpWallet.Accounts[0].Address, tmpContainer.ID, str); err != nil {
+				m.MakeNotification(NotificationMessage{
+					Title:       "Storing container in cache is failing",
+					Type:        "error",
+					Description: fmt.Sprintf("Storing failing due to %s", err.Error()),
+					MarkRead:    false,
+				})
 				fmt.Println("MASSIVE ERROR could not store container in database", err)
 			}
 		}(v)
@@ -224,34 +273,47 @@ func (m *Manager) listContainersAsync() ([]Element, error) {
 		DebugSaveJson("ListContainers.json", containers)
 	}
 	containerList, err := m.ListContainers(true)
-	fmt.Println("async returning", containerList)
+	if err != nil {
+		m.MakeNotification(NotificationMessage{
+			Title:       "Retrieve container list is failing",
+			Type:        "error",
+			Description: fmt.Sprintf("Retrieving the container list failed due to %s", err.Error()),
+			MarkRead:    false,
+		})
+	}
 	return containerList, err
 }
 
 // prepareAndAppendContainer only used to update cache. Never as part of cache
 func (m *Manager) prepareAndAppendContainer(vID cid.ID) (Element, error) {
-	//c, err := m.Client()
-	//if err != nil {
-	//	log.Fatal("SERIOUS ERROR , could not retrieve client - in Go routine", err)
-	//	return Element{}, err
-	//}
+
 	pl, err := m.Pool()
 	if err != nil {
+		m.MakeNotification(NotificationMessage{
+			Title:       "Retrieving the pool is failing",
+			Type:        "error",
+			Description: fmt.Sprintf("Retrieving pool failing due to %s", err.Error()),
+			MarkRead:    false,
+		})
 		return Element{}, err
 	}
 	fmt.Println("prepare and append container ", vID.String())
-	tmpContainer := populateContainerList(m.ctx, pl, vID) // todo - why does this not return an error on a container?
+	tmpContainer := m.populateContainerList(m.ctx, pl, vID) // todo - why does this not return an error on a container?
 	//
 	//var filters = obj.SearchFilters{}
 	//filters.AddRootFilter()
 	fmt.Printf("tmpContainer 1 %+v\r\n", tmpContainer)
 	list, err := m.ListContainerObjects(vID.String(), false)//object.QueryObjects(m.ctx, c, vID, filters, nil, sessionToken)
 	if err != nil {
-		fmt.Println("error querying objects of container", err)
+		m.MakeNotification(NotificationMessage{
+			Title:       "Listing container objects failing",
+			Type:        "error",
+			Description: fmt.Sprintf("Listing objects for %s failing %s", vID.String(), err.Error()),
+			MarkRead:    false,
+		})
 		tmpContainer.Errors = append(tmpContainer.Errors, err)
 		return tmpContainer, err
 	}
-	fmt.Printf("tmpContainer 2 %+v\r\n", tmpContainer)
 	//is this inefficient? the expensive part is the request, but we are throwing away the whole object
 	size, _ := m.generateObjectStruct(list, vID)
 	tmpContainer.Size = size
@@ -275,10 +337,32 @@ func (m Manager) getContainerSize(containerID string) (uint64, error) {
 func (m *Manager) ListContainers(synchronised bool) ([]Element, error) {
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
-		return []Element{}, err
+		m.MakeNotification(NotificationMessage{
+			Title:       "Retrieving wallet failed",
+			Type:        "error",
+			Description: fmt.Sprintf("Retrieving wallet failing due to %s", err.Error()),
+			MarkRead:    false,
+		})
+		m.MakeToast(UXMessage{
+			Title:       "Container Error",
+			Type:        "error",
+			Description: "Could not retrieve wallet",
+		})
+		return nil, err
 	}
 	tmpContainers, err := cache.RetrieveContainers(tmpWallet.Accounts[0].Address)
 	if err != nil {
+		m.MakeNotification(NotificationMessage{
+			Title:       "Retrieving containers failed",
+			Type:        "error",
+			Description: fmt.Sprintf("Retrieving containers failing due to %s", err.Error()),
+			MarkRead:    false,
+		})
+		m.MakeToast(UXMessage{
+			Title:       "Container Error",
+			Type:        "error",
+			Description: "Could not retrieve containers",
+		})
 		return nil, err
 	}
 	if len(tmpContainers) == 0 {
@@ -293,106 +377,181 @@ func (m *Manager) ListContainers(synchronised bool) ([]Element, error) {
 		tmp := Element{}
 		err := json.Unmarshal(v, &tmp)
 		if err != nil {
-			fmt.Println("warning - could not unmarshal container", k)
+			m.MakeNotification(NotificationMessage{
+				Title:       "Decoding container failed",
+				Type:        "error",
+				Description: fmt.Sprintf("Decoding container %s failing due to %s",k, err.Error()),
+				MarkRead:    false,
+			})
 			continue
 		}
 		if tmp.Size, err = m.getContainerSize(tmp.ID); err != nil {
 			fmt.Println("could no get container size ", err)
+			m.MakeNotification(NotificationMessage{
+				Title:       "Retrieving container size failed",
+				Type:        "error",
+				Description: fmt.Sprintf("Retrieving container %s size failing due to %s", tmp.ID, err.Error()),
+				MarkRead:    false,
+			})
+			m.MakeToast(UXMessage{
+				Title:       "Container Error",
+				Type:        "error",
+				Description: "Could not retrieve container size" + err.Error(),
+			})
 			return nil, err
 		}
-		fmt.Println("checking", tmp.ID, tmp.PendingDeleted)
 		if !tmp.PendingDeleted { //don't return deleted containers
-			fmt.Println("adding ", tmp.ID)
 			unsortedContainers = append(unsortedContainers, tmp)
-
-		} else {
-			fmt.Println("not adding ", tmp.ID)
 		}
 	}
-	fmt.Println("ended up with", len(unsortedContainers))
-
-	fmt.Println("finally", len(unsortedContainers))
 	return unsortedContainers, nil
 }
 
 // DeleteContainer must mark the container in the cache as deleted
 // and delete it from neoFS
 func (m *Manager) DeleteContainer(id string) ([]Element, error) {
-	fmt.Println("deleting container ", id)
 	cnrID := cid.ID{}
 	if err := cnrID.DecodeString(id); err != nil {
-		tmp := UXMessage{
+		m.MakeNotification(NotificationMessage{
+			Title:       "Deleting wallet failed",
+			Type:        "error",
+			Description: fmt.Sprintf("Container ID %s could not be decoded due to %s", id, err.Error()),
+			MarkRead:    false,
+		})
+		m.MakeToast(NewToastMessage(&UXMessage{
 			Title:       "Container Error",
 			Type:        "error",
-			Description: "Container does not exist " + err.Error(),
-		}
-		m.MakeToast(NewToastMessage(&tmp))
-		return []Element{}, err
+			Description: "Container could not be decoded",
+		}))
+		return nil, err
 	}
 
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
-		return []Element{}, err
+		m.MakeNotification(NotificationMessage{
+			Title:       "Retrieving wallet failed",
+			Type:        "error",
+			Description: fmt.Sprintf("Retrieving wallet failing due to %s", err.Error()),
+			MarkRead:    false,
+		})
+		m.MakeToast(UXMessage{
+			Title:       "Container Error",
+			Type:        "error",
+			Description: "Could not retrieve wallet",
+		})
+		return nil, err
 	}
 	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
 	pKey := &keys.PrivateKey{PrivateKey: tmpKey}
 	pl, err := m.Pool()
 	if err != nil {
-		return []Element{}, err
+		m.MakeNotification(NotificationMessage{
+			Title:       "Retrieving pool failed",
+			Type:        "error",
+			Description: fmt.Sprintf("Retrieving pool failing due to %s", err.Error()),
+			MarkRead:    false,
+		})
+		m.MakeToast(UXMessage{
+			Title:       "Container Error",
+			Type:        "error",
+			Description: "Could not retrieve pool",
+		})
+		return nil, err
 	}
 
 	iAt, exp, err := gspool.TokenExpiryValue(m.ctx, pl, 100)
 	sc, err := tokens.BuildContainerSessionToken(pKey, iAt, iAt, exp, cnrID, session.VerbContainerDelete, *pKey.PublicKey())
 	if err != nil {
-		log.Fatal("error creating session token to create a container")
+		m.MakeNotification(NotificationMessage{
+			Title:       "Retrieving session token failed",
+			Type:        "error",
+			Description: fmt.Sprintf("Retrieving session oken failing due to %s", err.Error()),
+			MarkRead:    false,
+		})
+		m.MakeToast(UXMessage{
+			Title:       "Container Error",
+			Type:        "error",
+			Description: "Could not retrieve token",
+		})
+		return nil, err
 	}
 	var prm pool.PrmContainerDelete
 	prm.SetContainerID(cnrID)
 	prm.SetSessionToken(*sc)
 	if err := pl.DeleteContainer(m.ctx, prm); err != nil {
-		fmt.Errorf("delete container via connection pool: %w", err)
-	} else {
-		fmt.Println("pool deleted container", cnrID)
-	}
-
-	if err != nil {
-		fmt.Println("error deleting container", err)
-		tmp := UXMessage{
-			Title:       "Container Error",
+		m.MakeNotification(NotificationMessage{
+			Title:       "Deleting container failed",
 			Type:        "error",
-			Description: "Container could not be deleted " + err.Error(),
-		}
-		m.MakeToast(NewToastMessage(&tmp))
+			Description: fmt.Sprintf("Deleting container failing due to %s", err.Error()),
+			MarkRead:    false,
+		})
 	} else {
 		////now mark deleted
 		cacheContainer, err := cache.RetrieveContainer(tmpWallet.Accounts[0].Address, id)
 		if err != nil {
-			fmt.Println("error retrieving container??", err)
-			return []Element{}, err
+			m.MakeNotification(NotificationMessage{
+				Title:       "Retrieving container from cache failed",
+				Type:        "error",
+				Description: fmt.Sprintf("Retrieving container from cache failing due to %s", err.Error()),
+				MarkRead:    false,
+			})
+			m.MakeToast(NewToastMessage(&UXMessage{ //todo make this a notification
+				Title:       "Deletion Error",
+				Type:        "error",
+				Description: "Could not retrieve container",
+			}))
+			return nil, err
 		}
 		if cacheContainer == nil {
-			//there is no container
-			fmt.Println("error as no container exists in the cache")
-			return []Element{}, errors.New("error as no container exists in the cache")
+			m.MakeNotification(NotificationMessage{
+				Title:       "Retrieving container from cache failed",
+				Type:        "error",
+				Description: fmt.Sprintf("No container in cache %s", err.Error()),
+				MarkRead:    false,
+			})
+			m.MakeToast(NewToastMessage(&UXMessage{ //todo make this a notification
+				Title:       "Deletion Error",
+				Type:        "error",
+				Description: "Container does not exist locally. ",
+			}))
 		}
 		tmp := Element{}
 		if err := json.Unmarshal(cacheContainer, &tmp); err != nil {
-			return []Element{}, err
+			m.MakeNotification(NotificationMessage{
+				Title:       "Decoding container failed",
+				Type:        "error",
+				Description: fmt.Sprintf("Decoding container failing due to %s", err.Error()),
+				MarkRead:    false,
+			})
+			m.MakeToast(NewToastMessage(&UXMessage{
+				Title:       "Deletion Error",
+				Type:        "error",
+				Description: "Error decoding container",
+			}))
+			return nil, err
 		}
 		tmp.PendingDeleted = true
 		del, err := json.Marshal(tmp)
-		if err := json.Unmarshal(cacheContainer, &tmp); err != nil {
-			return []Element{}, err
-		}
 		if err := cache.PendContainerDeleted(tmpWallet.Accounts[0].Address, id, del); err != nil {
-			return []Element{}, err
+			m.MakeNotification(NotificationMessage{
+				Title:       "Deleting container failed",
+				Type:        "error",
+				Description: fmt.Sprintf("Deleting container failing due to %s", err.Error()),
+				MarkRead:    false,
+			})
+			m.MakeToast(NewToastMessage(&UXMessage{
+				Title:       "Deletion Error",
+				Type:        "error",
+				Description: "Could not delete container",
+			}))
+			return nil, err
 		}
-		t := UXMessage{
+
+		m.MakeToast(NewToastMessage(&UXMessage{
 			Title:       "Container Deleted",
 			Type:        "success",
 			Description: "Container successfully deleted",
-		}
-		m.MakeToast(NewToastMessage(&t))
+		}))
 	}
 	return m.ListContainers(false)
 }
@@ -400,24 +559,39 @@ func (m *Manager) DeleteContainer(id string) ([]Element, error) {
 //ultimately, you want to do this with containers that can be restricted (i.e eaclpublic)
 
 func (m *Manager) RestrictContainer(id string, publicKey string) error {
-	tmp := UXMessage{
+	m.MakeToast(NewToastMessage(&UXMessage{
 		Title:       "Sharing pending",
 		Type:        "info",
 		Description: "please wait",
-	}
-	m.MakeToast(NewToastMessage(&tmp))
+	}))
 	cnrID := cid.ID{}
 	if err := cnrID.DecodeString(id); err != nil {
-		tmp := UXMessage{
+		m.MakeNotification(NotificationMessage{
+			Title:       "Decoding container failed",
+			Type:        "error",
+			Description: fmt.Sprintf("Decoding container failing due to %s", err.Error()),
+			MarkRead:    false,
+		})
+		m.MakeToast(NewToastMessage(&UXMessage{
 			Title:       "Sharing Error",
 			Type:        "error",
-			Description: "Could not find a container " + err.Error(),
-		}
-		m.MakeToast(NewToastMessage(&tmp))
+			Description: "Could not find a container",
+		}))
 		return err
 	}
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
+		m.MakeNotification(NotificationMessage{
+			Title:       "Retrieving wallet failed",
+			Type:        "error",
+			Description: fmt.Sprintf("Retrieving wallet failing due to %s", err.Error()),
+			MarkRead:    false,
+		})
+		m.MakeToast(NewToastMessage(&UXMessage{
+			Title:       "Sharing Error",
+			Type:        "error",
+			Description: "Could not retrieve wallet",
+		}))
 		return err
 	}
 
@@ -428,7 +602,17 @@ func (m *Manager) RestrictContainer(id string, publicKey string) error {
 	//todo: how do you attach a new session to a session Container?
 	sc, err := tokens.BuildContainerSessionToken(pKey, 500, 500, 500, cnrID, session.VerbContainerPut, *pKey.PublicKey())
 	if err != nil {
-		log.Fatal("error creating session token to create a container")
+		m.MakeNotification(NotificationMessage{
+			Title:       "Retrieving session token failed",
+			Type:        "error",
+			Description: fmt.Sprintf("Retrieving session token failing due to %s", err.Error()),
+			MarkRead:    false,
+		})
+		m.MakeToast(NewToastMessage(&UXMessage{
+			Title:       "Sharing Error",
+			Type:        "error",
+			Description: "Could not retrieve session token ",
+		}))
 	}
 
 	//for the time being, this is the same key
@@ -436,9 +620,19 @@ func (m *Manager) RestrictContainer(id string, publicKey string) error {
 	eacl.SetTargetECDSAKeys(specifiedTargetRole, &tmpKey.PublicKey)
 
 	var prm pool.PrmContainerSetEACL
-	table, err := tokens.AllowGetPut(cnrID, *specifiedTargetRole)
+	table, err := tokens.AllowGetPut(cnrID, *specifiedTargetRole) //todo - open this up for other key types
 	if err != nil {
-		log.Fatal("couldn't create eacl table", err)
+		m.MakeNotification(NotificationMessage{
+			Title:       "Retrieving table failed",
+			Type:        "error",
+			Description: fmt.Sprintf("Retrieving table failing due to %s", err.Error()),
+			MarkRead:    false,
+		})
+		m.MakeToast(NewToastMessage(&UXMessage{
+			Title:       "Sharing Error",
+			Type:        "error",
+			Description: "Could not retrieve EACL table" + err.Error(),
+		}))
 	}
 	prm.SetTable(table)
 	if sc != nil {
@@ -446,16 +640,25 @@ func (m *Manager) RestrictContainer(id string, publicKey string) error {
 	}
 	pl, err := m.Pool()
 	if err != nil {
-		fmt.Errorf("%w", err)
+		m.MakeToast(NewToastMessage(&UXMessage{
+			Title:       "Sharing Error",
+			Type:        "error",
+			Description: "Could not retrieve pool" + err.Error(),
+		}))
 		return err
 	}
 
 	if err := pl.SetEACL(m.ctx, prm); err != nil {
-		fmt.Errorf("save eACL via connection pool: %w", err)
+		m.MakeNotification(NotificationMessage{
+			Title:       "Setting container EACL failed",
+			Type:        "error",
+			Description: fmt.Sprintf("Setting container EACL failing due to %s", err.Error()),
+			MarkRead:    false,
+		})
 		tmp := UXMessage{
 			Title:       "Container Error",
 			Type:        "error",
-			Description: "EACL failed" + err.Error(),
+			Description: "Could not set EACL on container",
 		}
 		m.MakeToast(NewToastMessage(&tmp))
 		return err
@@ -510,6 +713,8 @@ func (m *Manager) RestrictContainer(id string, publicKey string) error {
 	//}
 	return nil
 }
+
+//presets within the neofs-sdk that are not exposed so recreating here
 const (
 	attributeName      = "Name"
 	attributeTimestamp = "Timestamp"
@@ -518,6 +723,17 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 	var containerAttributes = make(map[string]string) //todo shift this up to the javascript side
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
+		m.MakeNotification(NotificationMessage{
+			Title:       "Retrieving wallet failed",
+			Type:        "error",
+			Description: fmt.Sprintf("Retrieving wallet failing due to %s", err.Error()),
+			MarkRead:    false,
+		})
+		m.MakeToast(NewToastMessage(&UXMessage{
+			Title:       "Container Error",
+			Type:        "error",
+			Description: "Retrieving wallet failed ",
+		}))
 		return err
 	}
 	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
@@ -525,9 +741,19 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 
 	pl, err := m.Pool()
 	if err != nil {
+		m.MakeNotification(NotificationMessage{
+			Title:       "Retrieving pool failed",
+			Type:        "error",
+			Description: fmt.Sprintf("Retrieving pool failing due to %s", err.Error()),
+			MarkRead:    false,
+		})
+		m.MakeToast(NewToastMessage(&UXMessage{
+			Title:       "Container Error",
+			Type:        "error",
+			Description: "Retrieving pool failed ",
+		}))
 		return err
 	}
-	log.Println("creating container with name", name)
 	userID := user.ID{}
 	user.IDFromKey(&userID, tmpKey.PublicKey)
 
@@ -538,7 +764,17 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 
 	policy := netmap.PlacementPolicy{}
 	if err := policy.DecodeString(placementPolicy); err != nil {
-		fmt.Errorf("failed to build placement policy: %w", err)
+		m.MakeNotification(NotificationMessage{
+			Title:       "Decoding placement policy failed",
+			Type:        "error",
+			Description: fmt.Sprintf("Decoding placement policy failing due to %s", err.Error()),
+			MarkRead:    false,
+		})
+		m.MakeToast(NewToastMessage(&UXMessage{
+			Title:       "Container Error",
+			Type:        "error",
+			Description: "Decoding policy failed",
+		}))
 		return err
 	}
 
@@ -579,6 +815,17 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 	containerAttributes[attributeName] = name
 	if err := pool.SyncContainerWithNetwork(m.ctx, &cnr, pl); err != nil {
 		fmt.Errorf("sync container with the network state: %w", err)
+		m.MakeNotification(NotificationMessage{
+			Title:       "Syncing container with network failed",
+			Type:        "error",
+			Description: fmt.Sprintf("Syncing container with network failing due to %s", err.Error()),
+			MarkRead:    false,
+		})
+		m.MakeToast(NewToastMessage(&UXMessage{
+			Title:       "Container Error",
+			Type:        "error",
+			Description: "Syncing with failed",
+		}))
 		return err
 	}
 	var prmPut pool.PrmContainerPut
@@ -587,55 +834,88 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 	iAt, exp, err := gspool.TokenExpiryValue(m.ctx, pl, 100)
 	sc, err := tokens.BuildContainerSessionToken(pKey, iAt, iAt, exp, cid.ID{}, session.VerbContainerPut, *pKey.PublicKey())
 	if err != nil {
-		log.Fatal("error creating session token to create a container")
+		m.MakeNotification(NotificationMessage{
+			Title:       "Retrieving session token failed",
+			Type:        "error",
+			Description: fmt.Sprintf("Retrieving session token failing due to %s", err.Error()),
+			MarkRead:    false,
+		})
+		m.MakeToast(UXMessage{
+			Title:       "Container Error",
+			Type:        "error",
+			Description: "Could not retrieve session token",
+		})
+		return err
 	}
 	if sc != nil {
 		prmPut.WithinSession(*sc)
-	} else {
-		//todo: what about just providing a key or a bearer token?
 	}
-
 	fmt.Println("about to put container")
-	// send request to save the container
-	//todo - do this on a routine so that we don't hang
-	idCnr, err := pl.PutContainer(m.ctx, prmPut) //see SetWaitParams to change wait times
-	if err != nil {
-		fmt.Printf("save container via connection pool: %w\r\n", err)
-		tmp := UXMessage{
-			Title:       "Container Error",
-			Type:        "error",
-			Description: "Container '" + name + "' failed " + err.Error(),
+
+	go func() {
+		// send request to save the container
+		//todo - do this on a routine so that we don't hang
+		idCnr, err := pl.PutContainer(m.ctx, prmPut) //see SetWaitParams to change wait times
+		if err != nil {
+			m.MakeNotification(NotificationMessage{
+				Title:       "Creating new container failed",
+				Type:        "error",
+				Description: fmt.Sprintf("Creating new container %s failing due to %s", name, err.Error()),
+				MarkRead:    false,
+			})
+			m.MakeToast(NewToastMessage(&UXMessage{
+				Title:       "Container Error",
+				Type:        "error",
+				Description: "Creating container failed ",
+			}))
+			return
 		}
-		m.MakeToast(NewToastMessage(&tmp))
-		return err
-	}
-	fmt.Println("container putted")
-	fmt.Println("container created ", idCnr)
 
-	tmp := UXMessage{
-		Title:       "Container Created",
-		Type:        "success",
-		Description: "Container '" + name + "' created",
-	}
-	el := Element{
-		ID:         idCnr.String(),
-		Type:       "container",
-		Size:       0,
-		BasicAcl:   customAcl,
-		Attributes: make(map[string]string),
-	}
-	for k, v := range containerAttributes {
-		el.Attributes[k] = v
-	}
-	marshal, err := json.Marshal(el)
-	if err != nil {
-		return err
-	}
-	err = cache.StoreContainer(tmpWallet.Accounts[0].Address, idCnr.String(), marshal)
-	if err != nil {
-		return err
-	}
-	m.MakeToast(NewToastMessage(&tmp))
+		el := Element{
+			ID:         idCnr.String(),
+			Type:       "container",
+			Size:       0,
+			BasicAcl:   customAcl,
+			Attributes: make(map[string]string),
+		}
+		for k, v := range containerAttributes {
+			el.Attributes[k] = v
+		}
+		marshal, err := json.Marshal(el)
+		if err != nil {
+			m.MakeNotification(NotificationMessage{
+				Title:       "Creating new container failed",
+				Type:        "error",
+				Description: fmt.Sprintf("Creating new container %s failing due to %s", name, err.Error()),
+				MarkRead:    false,
+			})
+			m.MakeToast(UXMessage{
+				Title:       "Container Error",
+				Type:        "error",
+				Description: "Storing container failed ",
+			})
+			return
+		}
+		err = cache.StoreContainer(tmpWallet.Accounts[0].Address, idCnr.String(), marshal)
+		if err != nil {
+			m.MakeNotification(NotificationMessage{
+				Title:       "Creating new container failed",
+				Type:        "error",
+				Description: fmt.Sprintf("Creating new container %s failing due to %s", name, err.Error()),
+				MarkRead:    false,
+			})
+			m.MakeToast(UXMessage{
+				Title:       "Container Error",
+				Type:        "error",
+				Description: "Storing container failed",
+			})
+			return
+		}
+		m.MakeToast(NewToastMessage(&UXMessage{
+			Title:       "Container Created",
+			Type:        "success",
+			Description: "Container '" + name + "' created",
+		}))
+	}()
 	return nil
-
 }

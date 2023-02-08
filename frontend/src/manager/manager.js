@@ -1,3 +1,13 @@
+
+const getNotifications = async()=> {
+    try {
+        let n = await window.go.manager.Manager.Notifications()
+        console.log("received notifications ", n)
+        return n
+    } catch(e) {
+        console.log("error retrieving notifications from database ", e)
+    }
+}
 const getAccountInformation = async () => {
     try {
     let b = await window.go.manager.Manager.GetAccountInformation().then((balance, error) => {
@@ -93,6 +103,7 @@ const getVersion = async() => {
     }
 }
 export {
+    getNotifications,
     transferGasToContact,
     copyTextToClipboard,
     openInDefaultBrowser,
