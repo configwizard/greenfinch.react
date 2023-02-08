@@ -7,7 +7,6 @@ import (
 	"github.com/amlwwalker/greenfinch.react/pkg/manager"
 	"github.com/amlwwalker/greenfinch.react/pkg/plugins/localserve"
 	"github.com/amlwwalker/greenfinch.react/pkg/wallet"
-	"time"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/logger"
@@ -132,19 +131,19 @@ func main() {
 	//mocker := mocker.Mocker{BasePath: path.Join("frontend", "src")} //mocker for frontend
 	go localserve.SetupServer(mg)
 
-	go func() {
-		for {
-			fmt.Println("sending out notification")
-			mg.MakeNotification(manager.NewNotificationMessage(&manager.NotificationMessage{
-				User:        "address",
-				Title:       "testing notifications",
-				Type:        "success",
-				Description: "just some test notifications",
-				MarkRead:    false,
-			}))
-			time.Sleep(2 * time.Second)
-		}
-	}()
+	//go func() {
+	//	for {
+	//		fmt.Println("sending out notification")
+	//		mg.MakeNotification(manager.NewNotificationMessage(&manager.NotificationMessage{
+	//			User:        "address",
+	//			Title:       "testing notifications",
+	//			Type:        "success",
+	//			Description: "just some test notifications",
+	//			MarkRead:    false,
+	//		}))
+	//		time.Sleep(2 * time.Second)
+	//	}
+	//}()
 	//manager.PopToast()
 	// Create application with options
 	//here ---

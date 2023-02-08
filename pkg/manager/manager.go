@@ -27,11 +27,15 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
+
+//const explorerUrl = "https://testnet.explorer.onegate.space/transactionInfo"
+const explorerUrl = "https://dora.coz.io/transaction/neo3/testnet"
 type NotificationMessage struct {
 	Id          string
 	User		string //who is this message for so we can store it in the database
 	Title       string
 	Type        string
+	Action string
 	Description string
 	CreatedAt string
 	MarkRead     bool
@@ -197,8 +201,9 @@ func (m Manager) MarkAllNotificationsRead() error {
 	}
 	return nil
 }
-func (m Manager) MarkNotification(uuid string) error {
+func (m Manager) MarkNotificationRead(uuid string) error {
 	address := m.Wallet.Accounts[0].Address
+	fmt.Println("deleting notification ", uuid)
 	if err := cache.DeleteNotification(address, uuid); err != nil {
 		return err
 	}

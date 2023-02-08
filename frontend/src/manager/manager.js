@@ -9,13 +9,20 @@ const getNotifications = async()=> {
     }
 }
 
-export const deleteNotifications = async() => {
+const deleteNotification = async(id) => {
+    try {
+        console.log("deleting id ", id)
+        await window.go.manager.Manager.MarkNotificationRead(id)
+    } catch(e) {
+        console.log("could not clear notifications ", e)
+    }
+}
+const deleteNotifications = async() => {
     try {
         await window.go.manager.Manager.MarkAllNotificationsRead()
     } catch(e) {
-        console.log("could not clear notifications ", err)
+        console.log("could not clear notifications ", e)
     }
-
 }
 const getAccountInformation = async () => {
     try {
@@ -113,6 +120,8 @@ const getVersion = async() => {
 }
 export {
     getNotifications,
+    deleteNotification,
+    deleteNotifications,
     transferGasToContact,
     copyTextToClipboard,
     openInDefaultBrowser,

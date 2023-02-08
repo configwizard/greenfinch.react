@@ -1,7 +1,9 @@
 import React from 'react';
+import JSONPretty from 'react-json-pretty';
+import QRCode from "react-qr-code";
 import HeaderPage from "../../components/organisms/HeaderPage";
 import NoContent from "../../components/atoms/NoContent";
-import {getNotifications, deleteNotifications} from "../../manager/manager";
+import {getNotifications, deleteNotifications, deleteNotification} from "../../manager/manager";
 import styled from "styled-components";
 const runtime = require('@wailsapp/runtime');
 const notificationsEventName = 'freshnotification';
@@ -25,18 +27,35 @@ export default class PageNotifications extends React.Component {
 
     }
 
+    async onDeleteNotification(id) {
+        try {
+            console.log("id ", id)
+            await deleteNotification(id)
+            await this.retrieveList()
+        } catch(e) {
+            console.log("error deleting notifications ", e)
+        }
+    }
     async onClearNotifications() {
         try {
             await deleteNotifications()
+            await this.retrieveList()
         } catch(e) {
             console.log("error deleting notifications ", e)
+        }
+    }
+    async retrieveList () {
+        const currentNotifications = await getNotifications()
+        if (currentNotifications != null) {
+            await this.setState({list: currentNotifications})
+        } else {
+            await this.setState({list: []})
         }
     }
     async componentDidMount () {
         console.log("mounting notifications")
         try {
-            const currentNotifications = await getNotifications()
-            await this.setState({list: currentNotifications})
+            await this.retrieveList()
         } catch(e) {
             console.log("could not receive current notifications ", e)
         }
@@ -67,9 +86,16 @@ export default class PageNotifications extends React.Component {
                                     </Button>
                                     <div className="templateContainer">
                                         {
-                                            this.state.list.map(l => {
-                                                return <div ref={l.ID}>{JSON.stringify(l)}</div>
-                                            })
+                                            this.state.list.length > 0 ? this.state.list.map(l => {
+                                                return (
+                                                <div>
+                                                    <Button onClick={() => this.onDeleteNotification(l.Id)}>
+                                                        Delete notification
+                                                    </Button>
+                                                    <div ref={l.Id}><JSONPretty id="json-pretty" data={l}></JSONPretty></div>
+                                                    { l.Action != undefined && l.Action == "qr-code" ? <QRCode size={128} value={l.Description} /> : null }
+                                                </div>)
+                                            }) : <NoContent text={"No notifications"}/>
                                         }
                                     </div>
                                 </div>

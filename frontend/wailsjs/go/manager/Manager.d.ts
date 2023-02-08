@@ -49,6 +49,10 @@ export function MakeNotification(arg1:manager.NotificationMessage):Promise<void>
 
 export function MakeToast(arg1:manager.UXMessage):Promise<void>;
 
+export function MarkAllNotificationsRead():Promise<void>;
+
+export function MarkNotificationRead(arg1:string):Promise<void>;
+
 export function NewListReadOnlyContainerContents(arg1:number):Promise<Array<manager.Element>>;
 
 export function NewWallet(arg1:string):Promise<void>;

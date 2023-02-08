@@ -90,6 +90,14 @@ export function MakeToast(arg1) {
   return window['go']['manager']['Manager']['MakeToast'](arg1);
 }
 
+export function MarkAllNotificationsRead() {
+  return window['go']['manager']['Manager']['MarkAllNotificationsRead']();
+}
+
+export function MarkNotificationRead(arg1) {
+  return window['go']['manager']['Manager']['MarkNotificationRead'](arg1);
+}
+
 export function NewListReadOnlyContainerContents(arg1) {
   return window['go']['manager']['Manager']['NewListReadOnlyContainerContents'](arg1);
 }

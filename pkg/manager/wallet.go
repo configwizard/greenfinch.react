@@ -10,6 +10,7 @@ import (
 	"github.com/nspcc-dev/neo-go/pkg/rpcclient/gas"
 	"github.com/nspcc-dev/neo-go/pkg/rpcclient/nep17"
 	"math/big"
+	"path"
 
 	"github.com/nspcc-dev/neo-go/pkg/rpcclient"
 	wal "github.com/nspcc-dev/neo-go/pkg/wallet"
@@ -62,8 +63,9 @@ func (m *Manager) TransferToken(recipient string, amount float64) (string, error
 	///0x00b423ecc65fe04573b3c3d972497913ee247c476a7db95d8575cf74cf1b5039
 	m.MakeNotification(NotificationMessage{
 		Title:       "Transaction started",
-		Type:        "error",
-		Description: fmt.Sprintf("Transaction can be viewed at https://explorer.onegate.space/transactionInfo/%s", txid.StringLE()),
+		Action: 	"qr-code",
+		Type:        "success",
+		Description: fmt.Sprintf(path.Join(explorerUrl, "0x%s"), txid.StringLE()),
 		MarkRead:    false,
 	})
 	m.MakeToast(NewToastMessage(&UXMessage{
