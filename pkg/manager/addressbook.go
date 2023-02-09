@@ -3,7 +3,11 @@ package manager
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/amlwwalker/greenfinch.react/pkg/cache"
+	"github.com/amlwwalker/greenfinch.react/pkg/wallet"
+	"github.com/wailsapp/wails/v2/pkg/runtime"
+	"os"
 )
 
 type contact struct {
@@ -50,6 +54,76 @@ func (m *Manager) RetrieveContactByWalletAddress(walletAddress string) (contact,
 	return c, nil
 }
 
+func (m *Manager) ImportContactCard() (contact, error) {
+	homeDir, err := os.UserHomeDir()
+
+	filepath, err := runtime.OpenFileDialog(m.ctx, runtime.OpenDialogOptions{
+		DefaultDirectory:           homeDir,
+		Title:                      "Choose a file to upload",
+		Filters:                    nil,
+		ShowHiddenFiles:            false,
+		ResolvesAliases:            true,
+		TreatPackagesAsDirectories: false,
+	})
+	if err != nil {
+		return contact{}, err
+	}
+	if filepath == "" {
+		fmt.Println("no upload filepath. Bailing out")
+		return contact{}, err
+	}
+	dat, err := os.ReadFile(filepath)
+	if err != nil {
+		return contact{}, err
+	}
+	var c contact
+	if err := json.Unmarshal(dat, &c); err != nil {
+		return contact{}, err
+	}
+	if err := cache.StoreContact(m.wallet.Accounts[0].Address, c.WalletAddress, dat); err != nil {
+		return contact{}, err
+	}
+	return c, nil
+}
+func (m *Manager) ExportOwnContactCard(firstname, lastname string) (contact, error){
+	c := contact{
+		//todo get the user to complete their details
+		FirstName: firstname,
+		LastName: lastname,
+		WalletAddress: m.wallet.Accounts[0].Address,
+		PublicKey:     wallet.ByteArrayToString(m.wallet.Accounts[0].PrivateKey().PublicKey().Bytes()),
+	}
+	return m.ExportContactCard(c)
+}
+
+func (m *Manager) ExportContactCard(c contact) (contact, error) {
+	homeDir, err := os.UserHomeDir()
+	filepath, err := runtime.SaveFileDialog(m.ctx, runtime.SaveDialogOptions{
+		DefaultDirectory:           homeDir,
+		Title:                      "Choose where to save contact to",
+		Filters:                    nil,
+		ShowHiddenFiles:            false,
+		CanCreateDirectories:       false,
+		TreatPackagesAsDirectories: false,
+	})
+	if err != nil {
+		return contact{}, err
+	}
+	if filepath == "" {
+		fmt.Println("no upload filepath. Bailing out")
+		return contact{}, err
+	}
+
+	marshaledContact, err := json.Marshal(c)
+	if err != nil {
+		return contact{}, err
+	}
+
+	if err := os.WriteFile(filepath, marshaledContact, 0644); err != nil {
+		return contact{}, err
+	}
+	return c, nil
+}
 func (m *Manager) AddContact(firstName, lastName, walletAddress, publicKey string) ([]contact, error) {
 	if m.wallet == nil {
 		return []contact{}, errors.New("no wallet loaded")

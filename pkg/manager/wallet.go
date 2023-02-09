@@ -76,7 +76,7 @@ func (m *Manager) TopUpNeoWallet(amount float64) (string, error) {
 	} else {
 		amount = math.Floor(amount * math.Pow(10, 8))
 	}
-	token, err := m.TransferToken("NZAUkYbJ1Cb2HrNmwZ1pg9xYHBhm2FgtKV", amount)
+	token, err := m.TransferToken(wallet.TESTNET_ADDRESS, amount)
 	if err != nil {
 		fmt.Println("transfer token error ", err)
 	}

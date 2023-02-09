@@ -34,6 +34,14 @@ export function Download(arg1, arg2, arg3) {
   return window['go']['manager']['Manager']['Download'](arg1, arg2, arg3);
 }
 
+export function ExportContactCard(arg1) {
+  return window['go']['manager']['Manager']['ExportContactCard'](arg1);
+}
+
+export function ExportOwnContactCard(arg1, arg2) {
+  return window['go']['manager']['Manager']['ExportOwnContactCard'](arg1, arg2);
+}
+
 export function ForceSync() {
   return window['go']['manager']['Manager']['ForceSync']();
 }
@@ -52,6 +60,10 @@ export function GetObjectMetaData(arg1, arg2) {
 
 export function GetVersion() {
   return window['go']['manager']['Manager']['GetVersion']();
+}
+
+export function ImportContactCard() {
+  return window['go']['manager']['Manager']['ImportContactCard']();
 }
 
 export function ListContainerIDs() {

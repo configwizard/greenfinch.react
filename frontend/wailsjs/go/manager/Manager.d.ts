@@ -21,6 +21,10 @@ export function DeleteObject(arg1:string,arg2:string):Promise<Array<manager.Elem
 
 export function Download(arg1:string,arg2:string,arg3:string):Promise<void>;
 
+export function ExportContactCard(arg1:manager.contact):Promise<manager.contact>;
+
+export function ExportOwnContactCard(arg1:string,arg2:string):Promise<manager.contact>;
+
 export function ForceSync():Promise<void>;
 
 export function Get(arg1:string,arg2:string,arg3:string,arg4:io.Writer):Promise<Array<number>>;
@@ -30,6 +34,8 @@ export function GetAccountInformation():Promise<manager.Account>;
 export function GetObjectMetaData(arg1:string,arg2:string):Promise<object.Object>;
 
 export function GetVersion():Promise<string>;
+
+export function ImportContactCard():Promise<manager.contact>;
 
 export function ListContainerIDs():Promise<Array<string>>;
 
