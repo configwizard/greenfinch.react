@@ -1,0 +1,55 @@
+@import "../../../assets/dashboard-variables.scss";
+@import "../../../assets/greenfinch-variables.scss";
+
+/* Element: Dropdown (this will become a component)
+- - - - - - - - - - - - - - - - - - */
+.atmDropdownContent {
+    position: relative;
+    & button.utToggle {
+        color: $brandColorWhite;
+        background-color: $brandColorDark;
+        border-radius: 5px;
+        width: 250px;
+        &:after {
+            display: inline-block;
+            margin-left: .255em;
+            vertical-align: .255em;
+            content: "";
+            border-top: .3em solid;
+            border-right: .3em solid transparent;
+            border-bottom: 0;
+            border-left: .3em solid transparent;
+        }
+    }
+}
+
+ul.atmDropdownMenu {
+    position: absolute;
+    list-style-type: none;
+    margin: 5px 0;
+    padding: 0;
+    width: 250px;
+}
+
+ul.atmDropdownMenu > li {    
+    margin: 0;
+    width: 250px;
+    background-color: white;
+}
+
+ul.atmDropdownMenu > li:hover {
+    background-color: lightgray;
+}
+
+ul.atmDropdownMenu > li > button {
+    width: 100%;
+    height: 100%;
+    text-align: left;
+    background: none;
+    color: inherit;
+    border: none;
+    padding: 5px;
+    margin: 0;
+    font: inherit;
+    cursor: pointer;
+}

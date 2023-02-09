@@ -2,25 +2,25 @@ import React from 'react';
 import {openInDefaultBrowser, getVersion} from "../../../../manager/manager"
 
 // Components
+import ButtonToggle from '../../../atoms/ButtonToggle';
+import ButtonDropdown from '../../../atoms/ButtonDropdown';
 
 // Central style sheet for drawers
 import '../_settings/style.scss';
 
 const DrawerSettings = (props) => {
-
-    const [open, setOpen] = React.useState(false);
-    const handleOpen = () => {
-        setOpen(!open);
+    const handleMenuOne = () => {
+        console.log('clicked one');
+    };
+    const handleMenuTwo = () => {
+        console.log('clicked two');
+    };
+    const handleMenuThree = () => {
+        console.log('clicked three');
     };
 
     return (
         <>
-            {/* This is what was needed for the a drawer to appear on click of cog:
-                    <button type="button" className="atmButtonIconClean" data-bs-toggle="offcanvas" data-bs-target="#offcanvasLeft" aria-controls="offcanvasLeft"><i className="far fa-cog" /></button>
-            */}
-
-            {/* To sort: Offcanvas left; need to do classes and text */}
-
             <div className="offcanvas offcanvas-end" tabIndex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
                 <div className="offcanvas-header d-flex align-items-center">
                     <h4 id="offcanvasRightLabel"><i className="fas fa-lg fa-cog"/>&nbsp;Account Settings</h4>
@@ -28,39 +28,65 @@ const DrawerSettings = (props) => {
                 </div>
                 <div className="offcanvas-body">
 
-                    {/* Switch toggle element, to become a component */}
-                    <div className="molBlockSwitch d-flex">
-                        <div className="atmSwitchContent">
-                            <h5>Mainnet</h5>
-                        </div>
-                        <div className="atmSwitchToggle ms-auto">
-                            <label className="switch">
-                                <input type="checkbox"/>
-                                <span className="slider round"></span>
-                            </label>
-                        </div>
-                    </div>
-
+                    {/* Switch toggle element, to become a component 
+                    {/* 
+                    <ButtonToggle
+                        size={"small"}
+                        type={"default"}
+                        hasIcon={hasIcon}
+                        faClass={faClass}
+                        text={buttonText}
+                        onClick={() => {}
+                    }/>
+                    */}
+                    
                     {/* Dropdown element, to become a component 
                     https://www.robinwieruch.de/react-dropdown/ */}
-                    <div className="molBlockDropdown d-flex">
-                        <div className="atmDropdownContent">
-                            <button onClick={handleOpen}>Dropdown</button>
-                            {open ? (
-                                <ul className="atmDropdownMenu">
-                                    <li className="atmDropdownMenuItem">
-                                        <button>Menu 1</button>
-                                    </li>
-                                    <li className="atmDropdownMenuItem">
-                                        <button>Menu 2</button>
-                                    </li>
-                                </ul>
-                            ) : null}
+
+                    <ButtonDropdown
+                        size={"small"}
+                        type={"default"}
+                        trigger={<button className="utToggle">Dropdown</button>}
+                        menu={[
+                        <button onClick={handleMenuOne}>Menu 1</button>,
+                        <button onClick={handleMenuTwo}>Menu 2</button>,
+                        <button onClick={handleMenuThree}>Menu 3</button>,
+                        ]} />
+
+                    {/* 
+                        <div className="molBlockDropdown d-flex">
+                            <div className="atmDropdownContent">
+                                <button className="utToggle" onClick={handleOpen}>Dropdown</button>
+                                {open ? (
+                                    <ul className="atmDropdownMenu">
+                                        <li className="atmDropdownMenuItem">
+                                            <button onClick={handleMenuOne}>Menu 1</button>
+                                        </li>
+                                        <li className="atmDropdownMenuItem">
+                                            <button onClick={handleMenuTwo}>Menu 2</button>
+                                        </li>
+                                    </ul>
+                                ) : null}
+                            </div>
+                            <div className="atmSwitchToggle ms-auto">
+                                {open ? <div>Is Open</div> : <div>Is Closed</div>}
+                            </div>
                         </div>
-                        <div className="atmSwitchToggle ms-auto">
-                            {open ? <div>Is Open</div> : <div>Is Closed</div>}
-                        </div>
+                    */}
+                    
+                    {/* Boostrap 
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Dropdown button
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">Action</a></li>
+                            <li><a class="dropdown-item" href="#">Another action</a></li>
+                            <li><a class="dropdown-item" href="#">Something else here</a></li>
+                        </ul>
                     </div>
+                    */}
+
                     <div className="molBlockSwitch d-flex">
                         <div className="atmSwitchContent">
                             <h5>Local server API</h5>
