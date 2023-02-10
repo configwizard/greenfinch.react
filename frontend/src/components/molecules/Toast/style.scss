@@ -22,18 +22,21 @@
 .toastColumn {
     position: fixed;
     width: 500px;
+    right: 20px;
+    top: 40px;
     display: flex;
     flex-direction: column;
 }
 
 .toastWrapper {
-    position: fixed;
-    top: 40px;
-    right: 40px;
+    //position: fixed;
+    //top: 40px;
+    //right: 40px;
+    position: relative;
     margin: 0 auto;
+    margin-bottom: 10px;
     width: 500px;
     min-height: 70px;
-
     & .toastInner {
         min-height: 70px;
         width: 100%;

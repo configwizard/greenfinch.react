@@ -64,7 +64,7 @@ export default class ToastMessage extends React.Component {
         console.log("this.state.list", this.state.list)
         return (
             <>
-                <div class="ToastColumn">
+                <div class="toastColumn">
                 {
                     this.state.list.map((toast, i) => {
                         const faIcon = iconSelector(toast.Type)
