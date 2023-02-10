@@ -13,15 +13,19 @@ export const ToggleType = {
     CLEAN: 'clean'
 }
 
-const ButtonToggle = ({ type, size, buttonClass, disabled, onClick, faClass }) => {
+const ButtonToggle = ({ size, type, toggleText, toggleName, toggleId, disabled, onClick }) => {
     return (
         <div className="molBlockSwitch d-flex">
             <div className="atmSwitchContent">
-                <h5>Mainnet</h5>
+                <h5>{toggleText}</h5>
             </div>
             <div className="atmSwitchToggle ms-auto">
                 <label className="switch">
-                    <input type="checkbox" class="toggle-switch-checkbox" name="toggleSwitch" id="toggleSwitch"/>
+                    <input  
+                        type="checkbox" 
+                        class="atmInputToggle" 
+                        name={toggleName}
+                        id={toggleId}/>
                     <span className="slider round"></span>
                 </label>
             </div>
@@ -34,16 +38,16 @@ export default ButtonToggle;
 ButtonToggle.propTypes = {
     type: PropTypes.oneOf(Object.keys(ToggleType)),
     size: PropTypes.oneOf(Object.keys(ToggleSize)),
-    buttonClass: PropTypes.string,
     disabled: PropTypes.bool,
     onClick: PropTypes.func,
-    faClass: PropTypes.string
+    toggleText: PropTypes.string,
+    toggleName: PropTypes.string,
+    toggleId: PropTypes.string 
 };
 
 ButtonToggle.defaultProps = {
     type: ToggleType.DEFAULT,
     size: ToggleSize.MEDIUM,
-    buttonClass: '',
-    disabled: false,
-    faClass: "fas fa-flag"
+    toggleText: "Toggle Me",
+    disabled: false
 };     

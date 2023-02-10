@@ -21,7 +21,7 @@ const ButtonDropdown = ({ trigger, menu }) => {
     };
   
     return (
-        <div className="dropdown">
+        <div className="atmDropdownContent">
             {React.cloneElement(trigger, {
                 onClick: handleOpen,
             })}

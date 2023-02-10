@@ -24,35 +24,29 @@ const DrawerSettings = (props) => {
             <div className="offcanvas offcanvas-end" tabIndex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
                 <div className="offcanvas-header d-flex align-items-center">
                     <h4 id="offcanvasRightLabel"><i className="fas fa-lg fa-cog"/>&nbsp;Account Settings</h4>
-                    <button type="button" className="button-offcanvas" data-bs-dismiss="offcanvas" aria-label="Close"><i className="fas fa-times"/></button>
+                    <button type="button" className="button-offcanvas" data-bs-dismiss="offcanvas" aria-label="Close"><i className="fas fa-lg fa-times"/></button>
                 </div>
                 <div className="offcanvas-body">
 
-                    <div className="molDrawerRow d-flex">
+                    <div className="molDrawerRow">
                         {/* Switch toggle element, to become a component 
                         https://www.sitepoint.com/react-toggle-switch-reusable-component/
-
-                        {/* 
-                        <ButtonToggle
-                            size={"small"}
-                            type={"default"}
-                            hasIcon={hasIcon}
-                            faClass={faClass}
-                            text={buttonText}
-                            onClick={() => {}
-                        }/>
                         */}
-                        Toggle
-                        <buttonToggle />
+                        <ButtonToggle 
+                           size={"small"}
+                           type={"default"}
+                           toggleText={"Main Net"}
+                           toogleName={"default"}
+                           toggleId={"default"} />
                     </div>
 
-                    <div className="molDrawerRow d-flex">
+                    <div className="molDrawerRow">
                         {/* Dropdown element, to become a component 
                         https://www.robinwieruch.de/react-dropdown/ */}
                         <ButtonDropdown
                             size={"small"}
                             type={"default"}
-                            trigger={<button className="utToggle">Dropdown</button>}
+                            trigger={<button className="utDropdown">Select...</button>}
                             menu={[
                             <button onClick={handleMenuOne}>Menu 1</button>,
                             <button onClick={handleMenuTwo}>Menu 2</button>,
@@ -73,14 +67,14 @@ const DrawerSettings = (props) => {
                         */}
                     </div>
 
-                    <div className="molDrawerRow d-flex">
+                    <div className="molDrawerRow">
                         <div className="atmSwitchContent">
                             <h5>Local server API</h5>
                             <p className="temp-small">Expose locally public read containers content. This allows other applications to access your public objects. To access it, visit <button onClick={() => openInDefaultBrowser("http://localhost:43520/api/v1/readonly?since=0")}>http://localhost:43520/api/v1/readonly?since=0</button>,<br />where <b>since=...</b> can be used to filter objects by a unix timestamp (in seconds).</p>
                         </div>
                     </div>
 
-                    <div className="molDrawerRow d-flex">
+                    <div className="molDrawerRow">
                         <div className="atmSwitchContent">
                             <h5>Version</h5>
                             <p>{props.version}</p>

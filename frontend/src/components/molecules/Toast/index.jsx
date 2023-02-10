@@ -64,20 +64,21 @@ export default class ToastMessage extends React.Component {
         console.log("this.state.list", this.state.list)
         return (
             <>
+                <div class="ToastColumn">
                 {
                     this.state.list.map((toast, i) => {
                         const faIcon = iconSelector(toast.Type)
                         console.log("toastType ", toast.type)
                         return (
 
-                            <div key={i} className="toast-molecule">
-                                <div className="toast-container">
-                                    <div className={`toast-wrapper ${toast.Type}`}>
-                                        <div className="toast-inner d-flex">
+                            <div key={i} className="toastMolecule">
+                                <div className="toastContainer">
+                                    <div className={`toastWrapper ${toast.Type}`}>
+                                        <div className="toastInner d-flex">
                                             <div className="toast-icon d-flex align-items-center justify-content-center">
                                                 <i className={`fad ${faIcon}`}/>
                                             </div>
-                                            <div className="toast-content d-flex flex-column justify-content-center">
+                                            <div className="toastContent d-flex flex-column justify-content-center">
                                                 <i className="fa fa-times" onClick={() => this.deleteToast(toast.id)}/>
                                                 <span className="atmToastTitle">{toast.Title}</span>
                                                 <span className="atmToastMessage">{toast.Description}</span>
@@ -89,6 +90,7 @@ export default class ToastMessage extends React.Component {
                         )
                     })
                 }
+                </div>
             </>
         )
     }

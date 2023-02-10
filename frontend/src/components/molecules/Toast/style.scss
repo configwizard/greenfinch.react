@@ -19,23 +19,29 @@
 	  transform: translateX(0);
 	}
 }*/
+.toastColumn {
+    position: fixed;
+    width: 500px;
+    display: flex;
+    flex-direction: column;
+}
 
-.toast-wrapper {
+.toastWrapper {
     position: fixed;
     top: 40px;
     right: 40px;
     margin: 0 auto;
-    width: 400px;
+    width: 500px;
     min-height: 70px;
-    z-index: 20000;
-    & .toast-inner {
+
+    & .toastInner {
         min-height: 70px;
         width: 100%;
         & .toast-icon {
             min-height: 70px;
             width: 60px;
         }
-        & .toast-content {
+        & .toastContent {
             min-height: 70px;
             width: 100%;
             padding: $paddingSmall;
@@ -46,32 +52,34 @@
     }
 }
 
-i.fa-times { // close button
-    transition: $brandTransitionSpeed;
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    color: rgba($brandColorDark, 0.5);
-    font-size: 1.1rem;
-    &:hover {
-        color: rgba($brandColorDark, 0.8);
+.toastWrapper {
+    & i.fa-times { // close button
+        transition: $brandTransitionSpeed;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        color: rgba($brandColorDark, 0.5);
+        font-size: 1.1rem;
+        &:hover {
+            color: rgba($brandColorDark, 0.8);
+        }
     }
 }
 
 /* Component: Toast
 - - - - - - - - - - - - - - - - - - */
-.toast-wrapper {
+.toastWrapper {
     font-family: $brandFontSemi;
     background: $brandColorWhite;
     box-shadow: $brandBoxShadow;
-    & .toast-inner {
+    & .toastInner {
         & .toast-icon {
             & i {
                 font-size: 1.6rem;
                 color: rgba(255,255,255,0.7);
             }
         }
-        & .toast-content {
+        & .toastContent {
             background-color: $brandColorWhite;
             & span.atmToastTitle {
                 letter-spacing: $brandLetterSpacing;

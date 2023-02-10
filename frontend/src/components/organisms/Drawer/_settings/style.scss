@@ -13,10 +13,6 @@
     background-color: $brandColorLight;
 }
 
-.molBlockSwitch, .molBlockDropdown {
-    margin-bottom: $marginMedium;
-}
-
 h4 {
     margin-top: $marginSmall;
     margin-bottom: $marginSmall;
@@ -58,7 +54,10 @@ h4 {
 }
 
 .molDrawerRow {
-    background-color: rgba(0,0,0,0.2);
-    padding: $paddingSmall 0;
-    margin-bottom: $marginMedium;
+    background-color: rgba(0,0,0,0.05);
+    padding: $paddingSmall;
+    margin-bottom: $marginSmall;
+    &:last-child {
+        margin-bottom: 0;
+    }
 }

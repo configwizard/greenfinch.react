@@ -5,10 +5,10 @@
 - - - - - - - - - - - - - - - - - - */
 .atmDropdownContent {
     position: relative;
-    & button.utToggle {
-        color: $brandColorWhite;
-        background-color: $brandColorDark;
-        border-radius: 5px;
+    & button.utDropdown {
+        color: $brandColorDark;
+        background-color: rgba(0,0,0,0.1);
+        border-radius: 2px;
         width: 250px;
         &:after {
             display: inline-block;
@@ -24,11 +24,11 @@
 }
 
 ul.atmDropdownMenu {
+    border-radius: 3px;
     position: absolute;
     list-style-type: none;
     margin: 5px 0;
     padding: 0;
-    width: 250px;
 }
 
 ul.atmDropdownMenu > li {    
@@ -38,10 +38,11 @@ ul.atmDropdownMenu > li {
 }
 
 ul.atmDropdownMenu > li:hover {
-    background-color: lightgray;
+    background-color: #eeeeee;
 }
 
 ul.atmDropdownMenu > li > button {
+    font-family: $brandFontReg;
     width: 100%;
     height: 100%;
     text-align: left;
