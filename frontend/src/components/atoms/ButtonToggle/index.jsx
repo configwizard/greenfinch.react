@@ -21,7 +21,7 @@ const ButtonToggle = ({ type, size, buttonClass, disabled, onClick, faClass }) =
             </div>
             <div className="atmSwitchToggle ms-auto">
                 <label className="switch">
-                    <input type="checkbox"/>
+                    <input type="checkbox" class="toggle-switch-checkbox" name="toggleSwitch" id="toggleSwitch"/>
                     <span className="slider round"></span>
                 </label>
             </div>

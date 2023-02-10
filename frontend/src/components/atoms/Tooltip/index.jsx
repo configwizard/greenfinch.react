@@ -23,7 +23,9 @@ const Tooltip = (props) => {
             className="Tooltip-Wrapper"
             // When to show the tooltip
             onMouseEnter={showTip}
-            onMouseLeave={hideTip}>
+            onMouseLeave={hideTip}
+            onClick={hideTip}  
+            >
                 {/* Wrapping */}
                 {props.children}
                 {active && (

@@ -56,3 +56,9 @@ h4 {
         color: $brandColorSecondary-dark;
     }
 }
+
+.molDrawerRow {
+    background-color: rgba(0,0,0,0.2);
+    padding: $paddingSmall 0;
+    margin-bottom: $marginMedium;
+}

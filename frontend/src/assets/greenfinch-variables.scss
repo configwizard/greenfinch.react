@@ -106,6 +106,17 @@ button {
     border-radius: none;
 }
 
+// Reset on additional outline (Bootstrap)
+.button:active, 
+ button:active,
+.button:focus, 
+ button:focus,
+.button:hover, 
+ button:hover{
+    border:none !important;
+    outline:none !important;
+}
+
 
 /* Mixins
 - - - - - - - - - - - - - - - - - - */
