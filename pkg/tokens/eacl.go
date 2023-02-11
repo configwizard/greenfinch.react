@@ -51,6 +51,15 @@ func AllowGetPut(cid cid.ID, toWhom eacl.Target) (eacl.Table, error) {
 	headAllowRecord.SetAction(eacl.ActionAllow)
 	headAllowRecord.SetTargets(toWhom)
 
+	rangeAllowRecord := eacl.NewRecord()
+	rangeAllowRecord.SetOperation(eacl.OperationRange)
+	rangeAllowRecord.SetAction(eacl.ActionAllow)
+	rangeAllowRecord.SetTargets(toWhom)
+
+	searchAllowRecord := eacl.NewRecord()
+	searchAllowRecord.SetOperation(eacl.OperationSearch)
+	searchAllowRecord.SetAction(eacl.ActionAllow)
+	searchAllowRecord.SetTargets(toWhom)
 
 	getAllowRecord := eacl.NewRecord()
 	getAllowRecord.SetOperation(eacl.OperationGet)
@@ -66,9 +75,9 @@ func AllowGetPut(cid cid.ID, toWhom eacl.Target) (eacl.Table, error) {
 	table.AddRecord(getAllowRecord)
 	table.AddRecord(headAllowRecord)
 	table.AddRecord(putAllowRecord)
-	for _, v := range restrictedRecordsForOthers() {
-		table.AddRecord(v)
-	}
+	//for _, v := range restrictedRecordsForOthers() {
+	//	table.AddRecord(v)
+	//}
 
 	return table, nil
 }

@@ -138,8 +138,7 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 	}
 
 	reader := progress.NewReader(f)
-	wg := sync.WaitGroup{}
-	wg.Add(1)
+
 	fmt.Println("file size ", fileStats.Size())
 
 	obj.SetPayloadSize(uint64(fileStats.Size()))
@@ -161,6 +160,7 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 	addr := cfg.Peers["0"].Address //we need to find the top priority addr really here
 	prmCli := client.PrmInit{}
 	prmCli.SetDefaultPrivateKey(m.gateAccount.PrivateKey().PrivateKey)
+	prmCli.ResolveNeoFSFailures()
 	var prmDial client.PrmDial
 	prmDial.SetServerURI(addr)
 	cli := client.Client{}
@@ -172,22 +172,29 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 	prmSession.SetExp(exp)
 	resSession, err := cli.SessionCreate(m.ctx, prmSession)
 	if err != nil {
+		fmt.Println("creating res session err", err)
 		return nil, err
 	}
+	fmt.Println("just created resSession ", resSession.Status())
 	sc, err := tokens.BuildUnsignedObjectSessionToken(iAt, iAt, exp, session.VerbObjectPut, cnrID, resSession)
 	if err != nil {
+		fmt.Println("creting token err", err)
 		return nil, err
 	}
 	if err := m.TemporarySignObjectTokenWithPrivateKey(sc); err != nil {
+		fmt.Println("signing token err", err)
 		return nil, err
 	}
 	putInit := client.PrmObjectPutInit{}
 	putInit.WithinSession(*sc)
+
 	objWriter, err := cli.ObjectPutInit(m.ctx, putInit)
 	if !objWriter.WriteHeader(*obj) || err != nil {
 		log.Println("error writing object header ", err)
 		return nil, err
 	}
+	wg := sync.WaitGroup{}
+	wg.Add(1)
 	go func() {
 		defer wg.Done()
 		progressChan := progress.NewTicker(m.ctx, reader, fileStats.Size(), 50*time.Millisecond)
@@ -229,6 +236,7 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 	}
 	res, err := objWriter.Close()
 	if err != nil {
+		fmt.Println("error closing object writer ", err)
 		return nil, err
 	}
 	fmt.Println("res error", res.Status())
@@ -293,6 +301,7 @@ func (m *Manager) GetObjectMetaData(objectID, containerID string) (object.Object
 		log.Fatal("error retrieving table ", err)
 	}
 	iAt, exp, err := gspool.TokenExpiryValue(m.ctx, pl, 100)
+
 	bt, err := tokens.BuildUnsignedBearerToken(&table, iAt, iAt, exp, m.gateAccount.PublicKey())
 	if err != nil {
 		return object.Object{}, err
@@ -574,7 +583,9 @@ func (m *Manager) ListContainerObjects(containerID string, synchronised bool) ([
 	if len(tmpObjects) == 0 && !synchronised {
 		//we need to check there aren't any on the network
 		//todo notify frontend of database sync
-		return m.listObjectsAsync(containerID)
+		elements, err := m.listObjectsAsync(containerID)
+		fmt.Println("attempted to list objects async, got err", err)
+		return elements, err
 	}
 	fmt.Println("len unsorted", len(tmpObjects))
 	//filter for this container
@@ -607,7 +618,9 @@ func (m *Manager) ListContainerObjects(containerID string, synchronised bool) ([
 	if len(unsortedObjects) == 0 && !synchronised {
 		//we need to check there aren't any on the network
 		//todo notify frontend of database sync
-		return m.listObjectsAsync(containerID)
+		elements, err := m.listObjectsAsync(containerID)
+		fmt.Println("2 attempted to list objects async, got err", err)
+		return elements, err
 	}
 	fmt.Println("len unsorted", len(unsortedObjects))
 	//sort keys

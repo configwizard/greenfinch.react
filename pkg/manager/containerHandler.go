@@ -537,7 +537,7 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 	var customAcl acl.Basic //0x0FFFCFFF
 	switch permission {
 	case "PRIVATE":
-		customAcl = acl.Private //0x1C8C8CCC -> 478973132
+		customAcl = acl.PrivateExtended //0x1C8C8CCC -> 478973132
 	case "PUBLICREAD":
 		customAcl = acl.PublicROExtended //EACLReadOnlyBasicRule //0x0FBF8CFF -> 264211711
 	case "PUBLICBASIC":
