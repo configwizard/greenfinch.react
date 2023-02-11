@@ -45,7 +45,38 @@ func BuildObjectSessionToken(key *keys.PrivateKey, lIat, lNbf, lExp uint64, verb
 	tok.BindContainer(cnrID)
 	return tok, tok.Sign(key.PrivateKey)
 }
+func BuildUnsignedObjectSessionToken(lIat, lNbf, lExp uint64, verb session.ObjectVerb, cnrID cid.ID, gateSession *client.ResSessionCreate) (*session.Object, error) {
 
+	tok := new(session.Object)
+	tok.ForVerb(verb)
+	var idSession uuid.UUID
+	if err := idSession.UnmarshalBinary(gateSession.ID()); err != nil {
+		return nil, err
+	}
+	// decode session public key
+	var keySession neofsecdsa.PublicKey
+	if err := keySession.Decode(gateSession.PublicKey()); err != nil {
+		return nil, err
+	}
+	tok.SetAuthKey(&keySession)
+	tok.SetID(idSession)
+	tok.SetIat(lIat) //is there a way to dynamically get these at runtime see CalculateEpochsForTime commented above. Can this be done?
+	tok.SetNbf(lNbf)
+	tok.SetExp(lExp)
+	tok.BindContainer(cnrID)
+	return tok, nil
+}
+func BuildUnsignedContainerSessionToken(lIat, lNbf, lExp uint64, cnrID cid.ID, verb session.ContainerVerb, gateKey keys.PublicKey) *session.Container {
+	tok := new(session.Container)
+	tok.ForVerb(verb)
+	tok.AppliedTo(cnrID)
+	tok.SetID(uuid.New())
+	tok.SetAuthKey((*neofsecdsa.PublicKey)(&gateKey))
+	tok.SetIat(lIat)
+	tok.SetNbf(lNbf)
+	tok.SetExp(lExp)
+	return tok
+}
 
 func BuildContainerSessionToken(key *keys.PrivateKey, lIat, lNbf, lExp uint64, cnrID cid.ID, verb session.ContainerVerb, gateKey keys.PublicKey) (*session.Container, error) {
 
@@ -57,6 +88,5 @@ func BuildContainerSessionToken(key *keys.PrivateKey, lIat, lNbf, lExp uint64, c
 	tok.SetIat(lIat)
 	tok.SetNbf(lNbf)
 	tok.SetExp(lExp)
-	tok.Sign(key.PrivateKey)
 	return tok, tok.Sign(key.PrivateKey)
 }

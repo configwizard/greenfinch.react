@@ -4,6 +4,9 @@ import {manager} from '../models';
 import {io} from '../models';
 import {object} from '../models';
 import {pool} from '../models';
+import {bearer} from '../models';
+import {session} from '../models';
+import {ecdsa} from '../models';
 
 export function AddContact(arg1:string,arg2:string,arg3:string,arg4:string):Promise<Array<manager.contact>>;
 
@@ -72,6 +75,14 @@ export function SendSignal(arg1:string,arg2:any):Promise<void>;
 export function SetProgressPercentage(arg1:manager.ProgressMessage):Promise<void>;
 
 export function SetWalletDebugging(arg1:string,arg2:string):Promise<void>;
+
+export function TemporarySignBearerTokenWithPrivateKey(arg1:bearer.Token):Promise<void>;
+
+export function TemporarySignContainerTokenWithPrivateKey(arg1:session.Container):Promise<void>;
+
+export function TemporarySignObjectTokenWithPrivateKey(arg1:session.Object):Promise<void>;
+
+export function TemporaryUserPublicKeySolution():Promise<ecdsa.PublicKey>;
 
 export function TopUpNeoWallet(arg1:number):Promise<string>;
 

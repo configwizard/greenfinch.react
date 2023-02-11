@@ -5,11 +5,15 @@ import (
 	"fmt"
 	"github.com/amlwwalker/greenfinch.react/pkg/cache"
 	"github.com/amlwwalker/greenfinch.react/pkg/wallet"
+	"github.com/nspcc-dev/neo-go/pkg/core/block"
+	"github.com/nspcc-dev/neo-go/pkg/core/state"
 	"github.com/nspcc-dev/neo-go/pkg/encoding/address"
+	"github.com/nspcc-dev/neo-go/pkg/neorpc"
 	"github.com/nspcc-dev/neo-go/pkg/rpcclient/actor"
 	"github.com/nspcc-dev/neo-go/pkg/rpcclient/gas"
 	"github.com/nspcc-dev/neo-go/pkg/rpcclient/nep17"
 	"math/big"
+	"sync"
 
 	"github.com/nspcc-dev/neo-go/pkg/rpcclient"
 	wal "github.com/nspcc-dev/neo-go/pkg/wallet"
@@ -33,12 +37,49 @@ func (m *Manager) TransferToken(recipient string, amount float64) (string, error
 		return "", err
 	}
 
-	c, err := rpcclient.New(context.Background(), string(wallet.RPC_TESTNET), rpcclient.Options{})
+	c2, err := rpcclient.NewWS(context.Background(), string(wallet.RPC_WEBSOCKET), rpcclient.Options{})
+
+	if err != nil {
+		fmt.Println("error creating ws ", err)
+		return "", err
+	}
+
+	st := "HALT"
+	id, err := c2.SubscribeForTransactionExecutions(&st)
+	if err != nil {
+		return "", err
+	}
+
+	wg := sync.WaitGroup{}
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		tr := <- c2.Notifications
+		switch tr.Type {
+			case neorpc.BlockEventID:
+				notification := tr.Value.(block.Block)
+				fmt.Printf("BlockEventID %+v - %s\r\n", notification, id)
+			case neorpc.TransactionEventID:
+				//is this where i can confirm a transaction has been attached to the blockchain?
+				notification := tr.Value.(rpcclient.Notification)
+				fmt.Printf("TransactionEventID %+v - %s\r\n", notification, id)
+				//c2.Unsubscribe(id)
+			case neorpc.NotificationEventID:
+				notification := tr.Value.(rpcclient.Notification)
+				fmt.Printf("NotificationEventID %+v - %s\r\n", notification, id)
+			case neorpc.ExecutionEventID:
+				notification := tr.Value.(*state.AppExecResult)
+				fmt.Printf("ExecutionEventID %+v - %s\r\n", notification, id)
+		}
+	}()
+
+	//c, err := rpcclient.New(context.Background(), string(wallet.RPC_TESTNET), rpcclient.Options{})
+
 
 	if err != nil {
 		return "", err
 	}
-	a, err := actor.NewSimple(c, m.wallet.Accounts[0])
+	a, err := actor.NewSimple(c2, m.wallet.Accounts[0])
 	if err != nil {
 		return "", err
 	}
@@ -66,6 +107,7 @@ func (m *Manager) TransferToken(recipient string, amount float64) (string, error
 	}
 	m.MakeToast(NewToastMessage(&tmp))
 	fmt.Println("txid ", txid.StringLE())
+	wg.Wait()
 	return txid.StringLE(), err
 }
 

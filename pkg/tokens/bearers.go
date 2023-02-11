@@ -11,6 +11,19 @@ import (
 
 // see here if you want to convert a time to an epoch https://github.com/nspcc-dev/neofs-s3-gw/blob/master/internal/neofs/neofs.go
 
+func BuildUnsignedBearerToken(table *eacl.Table, lIat, lNbf, lExp uint64, gateKey *keys.PublicKey) (*bearer.Token, error) {
+	var userID user.ID
+	user.IDFromKey(&userID, (ecdsa.PublicKey)(*gateKey)) //my understanding is the gateKey is who you want to be able to use this key to access containers?
+
+	var bearerToken bearer.Token
+
+	bearerToken.SetEACLTable(*table)
+	bearerToken.ForUser(userID)
+	bearerToken.SetExp(lExp)
+	bearerToken.SetIat(lIat)
+	bearerToken.SetNbf(lNbf)
+	return &bearerToken, nil
+}
 
 func BuildBearerToken(key *keys.PrivateKey, table *eacl.Table, lIat, lNbf, lExp uint64, gateKey *keys.PublicKey) (*bearer.Token, error) {
 	var userID user.ID

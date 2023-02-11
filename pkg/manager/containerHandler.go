@@ -8,7 +8,6 @@ import (
 	"github.com/amlwwalker/greenfinch.react/pkg/cache"
 	gspool "github.com/amlwwalker/greenfinch.react/pkg/pool"
 	"github.com/amlwwalker/greenfinch.react/pkg/tokens"
-	"github.com/nspcc-dev/neo-go/pkg/crypto/keys"
 	"github.com/nspcc-dev/neofs-sdk-go/container/acl"
 	"github.com/nspcc-dev/neofs-sdk-go/eacl"
 	"github.com/nspcc-dev/neofs-sdk-go/netmap"
@@ -33,13 +32,8 @@ type Container struct {
 }
 
 func (m *Manager) listContainerIDs() ([]cid.ID, error) {
-	tmpWallet, err := m.retrieveWallet()
-	if err != nil {
-		return nil, err
-	}
-	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
 	userID := user.ID{}
-	user.IDFromKey(&userID, tmpKey.PublicKey)
+	user.IDFromKey(&userID, m.TemporaryUserPublicKeySolution())
 
 	// UserContainers implements neofs.NeoFS interface method.
 	var prm pool.PrmContainerList
@@ -191,7 +185,7 @@ func (m *Manager) ForceSync() {
 func (m *Manager) listContainersAsync() ([]Element, error) {
 	var containers []Element
 	runtime.EventsEmit(m.ctx, "clearContainer", nil)
-	tmpWallet, err := m.retrieveWallet()
+	walletAddress, err := m.retrieveWallet()
 	if err != nil {
 		return []Element{}, err
 	}
@@ -214,7 +208,7 @@ func (m *Manager) listContainersAsync() ([]Element, error) {
 			fmt.Println("retrieved containers", tmpContainer)
 			//store in database
 			fmt.Println("storing container", tmpContainer.ID)
-			if err = cache.StoreContainer(tmpWallet.Accounts[0].Address, tmpContainer.ID, str); err != nil {
+			if err = cache.StoreContainer(walletAddress, tmpContainer.ID, str); err != nil {
 				fmt.Println("MASSIVE ERROR could not store container in database", err)
 			}
 		}(v)
@@ -230,11 +224,6 @@ func (m *Manager) listContainersAsync() ([]Element, error) {
 
 // prepareAndAppendContainer only used to update cache. Never as part of cache
 func (m *Manager) prepareAndAppendContainer(vID cid.ID) (Element, error) {
-	//c, err := m.Client()
-	//if err != nil {
-	//	log.Fatal("SERIOUS ERROR , could not retrieve client - in Go routine", err)
-	//	return Element{}, err
-	//}
 	pl, err := m.Pool()
 	if err != nil {
 		return Element{}, err
@@ -273,11 +262,11 @@ func (m Manager) getContainerSize(containerID string) (uint64, error) {
 }
 // ListContainers populates from cache
 func (m *Manager) ListContainers(synchronised bool) ([]Element, error) {
-	tmpWallet, err := m.retrieveWallet()
+	walletAddress, err := m.retrieveWallet()
 	if err != nil {
 		return []Element{}, err
 	}
-	tmpContainers, err := cache.RetrieveContainers(tmpWallet.Accounts[0].Address)
+	tmpContainers, err := cache.RetrieveContainers(walletAddress)
 	if err != nil {
 		return nil, err
 	}
@@ -327,24 +316,23 @@ func (m *Manager) DeleteContainer(id string) ([]Element, error) {
 			Description: "Container does not exist " + err.Error(),
 		}
 		m.MakeToast(NewToastMessage(&tmp))
-		return []Element{}, err
+		return nil, err
 	}
 
-	tmpWallet, err := m.retrieveWallet()
+	walletAddress, err := m.retrieveWallet()
 	if err != nil {
 		return []Element{}, err
 	}
-	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
-	pKey := &keys.PrivateKey{PrivateKey: tmpKey}
 	pl, err := m.Pool()
 	if err != nil {
 		return []Element{}, err
 	}
 
 	iAt, exp, err := gspool.TokenExpiryValue(m.ctx, pl, 100)
-	sc, err := tokens.BuildContainerSessionToken(pKey, iAt, iAt, exp, cnrID, session.VerbContainerDelete, *pKey.PublicKey())
-	if err != nil {
-		log.Fatal("error creating session token to create a container")
+	sc := tokens.BuildUnsignedContainerSessionToken(iAt, iAt, exp, cnrID, session.VerbContainerDelete, *m.gateAccount.PublicKey())
+	if err := m.TemporarySignContainerTokenWithPrivateKey(sc); err != nil {
+		fmt.Errorf("%w", err)
+		return nil, err
 	}
 	var prm pool.PrmContainerDelete
 	prm.SetContainerID(cnrID)
@@ -365,7 +353,7 @@ func (m *Manager) DeleteContainer(id string) ([]Element, error) {
 		m.MakeToast(NewToastMessage(&tmp))
 	} else {
 		////now mark deleted
-		cacheContainer, err := cache.RetrieveContainer(tmpWallet.Accounts[0].Address, id)
+		cacheContainer, err := cache.RetrieveContainer(walletAddress, id)
 		if err != nil {
 			fmt.Println("error retrieving container??", err)
 			return []Element{}, err
@@ -384,7 +372,7 @@ func (m *Manager) DeleteContainer(id string) ([]Element, error) {
 		if err := json.Unmarshal(cacheContainer, &tmp); err != nil {
 			return []Element{}, err
 		}
-		if err := cache.PendContainerDeleted(tmpWallet.Accounts[0].Address, id, del); err != nil {
+		if err := cache.PendContainerDeleted(walletAddress, id, del); err != nil {
 			return []Element{}, err
 		}
 		t := UXMessage{
@@ -399,7 +387,7 @@ func (m *Manager) DeleteContainer(id string) ([]Element, error) {
 
 //ultimately, you want to do this with containers that can be restricted (i.e eaclpublic)
 
-func (m *Manager) RestrictContainer(id string, publicKey string) error {
+func (m *Manager) RestrictContainer(id string, l string) error {
 	tmp := UXMessage{
 		Title:       "Sharing pending",
 		Type:        "info",
@@ -416,24 +404,29 @@ func (m *Manager) RestrictContainer(id string, publicKey string) error {
 		m.MakeToast(NewToastMessage(&tmp))
 		return err
 	}
-	tmpWallet, err := m.retrieveWallet()
+	//tmpWallet, err := m.retrieveWallet()
+	//if err != nil {
+	//	return err
+	//}
+	pl, err := m.Pool()
 	if err != nil {
+		fmt.Errorf("%w", err)
 		return err
 	}
 
-	//this doesn't feel correct??
-	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
-	pKey := &keys.PrivateKey{PrivateKey: tmpKey}
-
-	//todo: how do you attach a new session to a session Container?
-	sc, err := tokens.BuildContainerSessionToken(pKey, 500, 500, 500, cnrID, session.VerbContainerPut, *pKey.PublicKey())
+	iAt, exp, err := gspool.TokenExpiryValue(m.ctx, pl, 100)
 	if err != nil {
-		log.Fatal("error creating session token to create a container")
+		fmt.Errorf("%w", err)
+		return err
 	}
-
+	sc := tokens.BuildUnsignedContainerSessionToken(iAt, iAt, exp, cnrID, session.VerbContainerPut, *m.gateAccount.PublicKey())
+	if err := m.TemporarySignContainerTokenWithPrivateKey(sc); err != nil {
+		log.Println("error creating session token to create a container")
+		return err
+	}
 	//for the time being, this is the same key
 	specifiedTargetRole := eacl.NewTarget()
-	eacl.SetTargetECDSAKeys(specifiedTargetRole, &tmpKey.PublicKey)
+	//eacl.SetTargetECDSAKeys(specifiedTargetRole, &tmpKey.PublicKey) //todo - comment back in
 
 	var prm pool.PrmContainerSetEACL
 	table, err := tokens.AllowGetPut(cnrID, *specifiedTargetRole)
@@ -444,11 +437,7 @@ func (m *Manager) RestrictContainer(id string, publicKey string) error {
 	if sc != nil {
 		prm.WithinSession(*sc) //todo = what if the sc is nil? Why continue?
 	}
-	pl, err := m.Pool()
-	if err != nil {
-		fmt.Errorf("%w", err)
-		return err
-	}
+
 
 	if err := pl.SetEACL(m.ctx, prm); err != nil {
 		fmt.Errorf("save eACL via connection pool: %w", err)
@@ -516,12 +505,10 @@ const (
 )
 func (m *Manager) CreateContainer(name string, permission string, block bool) error {
 	var containerAttributes = make(map[string]string) //todo shift this up to the javascript side
-	tmpWallet, err := m.retrieveWallet()
+	walletAddress, err := m.retrieveWallet()
 	if err != nil {
 		return err
 	}
-	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
-	pKey := &keys.PrivateKey{PrivateKey: tmpKey}
 
 	pl, err := m.Pool()
 	if err != nil {
@@ -529,7 +516,7 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 	}
 	log.Println("creating container with name", name)
 	userID := user.ID{}
-	user.IDFromKey(&userID, tmpKey.PublicKey)
+	user.IDFromKey(&userID, m.TemporaryUserPublicKeySolution())
 
 	placementPolicy := `REP 2 IN X 
 	CBF 2
@@ -585,16 +572,12 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 	prmPut.SetContainer(cnr)
 
 	iAt, exp, err := gspool.TokenExpiryValue(m.ctx, pl, 100)
-	sc, err := tokens.BuildContainerSessionToken(pKey, iAt, iAt, exp, cid.ID{}, session.VerbContainerPut, *pKey.PublicKey())
-	if err != nil {
-		log.Fatal("error creating session token to create a container")
+	sc  := tokens.BuildUnsignedContainerSessionToken(iAt, iAt, exp, cid.ID{}, session.VerbContainerPut, *m.gateAccount.PublicKey())
+	if err := m.TemporarySignContainerTokenWithPrivateKey(sc); err != nil {
+		fmt.Errorf("%w", err)
+		return err
 	}
-	if sc != nil {
-		prmPut.WithinSession(*sc)
-	} else {
-		//todo: what about just providing a key or a bearer token?
-	}
-
+	prmPut.WithinSession(*sc)
 	fmt.Println("about to put container")
 	// send request to save the container
 	//todo - do this on a routine so that we don't hang
@@ -631,7 +614,7 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 	if err != nil {
 		return err
 	}
-	err = cache.StoreContainer(tmpWallet.Accounts[0].Address, idCnr.String(), marshal)
+	err = cache.StoreContainer(walletAddress, idCnr.String(), marshal)
 	if err != nil {
 		return err
 	}
