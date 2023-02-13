@@ -15,6 +15,8 @@ import PageWebsites from './pages/Websites';
 import PageContacts from './pages/Contacts';
 import PageNFTs from './pages/NFTs';
 import PageNotifications from './pages/Notifications';
+import PageTest from './pages/Test';
+
 import Footer from './components/organisms/Footer';
 import Header from './components/organisms/Header';
 import NavbarSide from './components/organisms/NavbarSide';
@@ -133,6 +135,7 @@ class App extends React.Component {
                                     <Route path="/nfts" exact element={<PageNFTs/>} />
                                     <Route path="/notifications" exact element={<PageNotifications/>} />
                                     {/*<Route path="/test" exact element={<PageTest/>} />*/}
+                                    <Route path="/test" exact element={<PageTest/>} />
                                 </Routes>
                             </div>
                         </div>
