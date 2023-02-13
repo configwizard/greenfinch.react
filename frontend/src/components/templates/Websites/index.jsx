@@ -3,7 +3,6 @@ import React from 'react';
 // Components
 import NoContent from '../../atoms/NoContent';
 import HeaderPage from '../../organisms/HeaderPage';
-//import TestHomepage from '../../organisms/TestHomepage';
 
 // Central style sheet for templates
 import '../_settings/style.scss';
@@ -28,7 +27,7 @@ const TemplateWebsites = () => {
                     <div class="row">
                         <div class="col-12">
                             <div className="templateWrapper">
-                                <div className="templateContainer">
+                                <div className="templateInner">
                                     <NoContent
                                         text={"This functionality is currently in development and is coming soon."}/>
                                 </div>

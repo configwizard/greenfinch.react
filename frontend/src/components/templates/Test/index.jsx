@@ -27,15 +27,15 @@ const TemplateTest = () => {
                         <div class="col-6">
                             <div className="templateWrapper">
                                 <div className="templateInner">
-                                <p>A page to test components + design.</p>
-                                <TestHomePage></TestHomePage>
+                                    <p>A page to test components + design.</p>
+                                    <TestHomePage></TestHomePage>
                                 </div>
                             </div>
                         </div>
                         <div class="col-6">
                             <div className="templateWrapper">
                                 <div className="templateInner">
-                                <TestHomePage></TestHomePage>
+                                    <TestHomePage></TestHomePage>
                                 </div>
                             </div>
                         </div>

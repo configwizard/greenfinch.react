@@ -14,7 +14,7 @@ import PageContainers from './pages/Containers';
 import PageWebsites from './pages/Websites';
 import PageContacts from './pages/Contacts';
 import PageNFTs from './pages/NFTs';
-import PageTest from './pages/Test';
+// import PageTest from './pages/Test';
 
 import Footer from './components/organisms/Footer';
 import Header from './components/organisms/Header';
@@ -126,7 +126,7 @@ class App extends React.Component {
                                     <Route path="/shared" exact element={<PageShared/>} />
                                     <Route path="/websites" exact element={<PageWebsites/>} />
                                     <Route path="/nfts" exact element={<PageNFTs/>} />
-                                    <Route path="/test" exact element={<PageTest/>} />
+                                    {/* <Route path="/test" exact element={<PageTest/>} /> */}
                                 </Routes>
                             </div>
                         </div>

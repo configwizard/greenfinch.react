@@ -14,7 +14,9 @@ $marginMedium: $baseSizing * 1.5;
 $marginLarge: $baseSizing * 2;
 $marginXLarge: $baseSizing * 3;
 
+//Explicit layout heights, to allow for scroll
 $heightHeader: 72px;
+$heightPageHeader: 70px;
 $heightFooter: 15px;
 
 /* Reset + Base

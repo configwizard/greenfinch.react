@@ -22,7 +22,7 @@ const TemplateHome = ({ account, recentWallets, refreshRecentWallets }) => {
                     <div class="row">
                         <div class="col-6">
                             <div className="templateWrapper">
-                                <div className="templateContainer">
+                                <div className="templateInner">
                                     <SectionHomepage
                                         titleLevel={"h3"}
                                         sectionTitle={"Get started"} />
@@ -49,7 +49,7 @@ const TemplateHome = ({ account, recentWallets, refreshRecentWallets }) => {
                         </div>
                         <div class="col-6">
                             <div className="templateWrapper">
-                                <div className="templateContainer">
+                                <div className="templateInner">
                                     <div className="d-flex">
                                         <div>
                                             <HeadingGeneral 
