@@ -11,19 +11,15 @@
     padding: $paddingMedium;
     height: calc(100% - $heightFooter);
 }
- 
+
 .templateWrapper {
-    display: flex;
-    flex-flow: column;
-    height: 100%; // Has to be 100% otherwise it's 90% of available div
+    height: calc(100vh - $heightHeader - $heightPageHeader - $heightFooter - $marginSmall);
+    margin-right: $marginSmall; // To allow for scroll-bar width
+    overflow-y: scroll;
 }
 
-.templateContainer {
-    padding-right: $paddingSmall;
-    min-height: 0; // without min-height/height:0 flex:1 doesn't works
-	flex: 1;
-    //white-space: nowrap;
-	overflow: auto;
+.templateInner {
+    margin: 0 $marginSmall;
 }
 
 .containerOptions {

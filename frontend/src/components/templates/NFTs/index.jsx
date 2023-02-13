@@ -27,7 +27,7 @@ const TemplateNFTs = () => {
                     <div class="row">
                         <div class="col-12">
                             <div className="templateWrapper">
-                                <div className="templateContainer">
+                                <div className="templateInner">
                                     <NoContent
                                         text={"This functionality is currently in development and is coming soon."}/>
                                 </div>
