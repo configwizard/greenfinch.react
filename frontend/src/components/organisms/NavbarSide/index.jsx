@@ -59,37 +59,23 @@ const NavbarSide = (props) => {
                             faClass={"fal fa-hexagon"}
                             label={"NFT Management"} />
                     </Tooltip>
+                    <Tooltip content="Test Page" direction="right">
+                        <NavlinkSide
+                            to={"/test"}
+                            faClass={"fal fa-vial"}
+                            label={"Test"} />
+                    </Tooltip>
                 </ul>
             </div>
             <div>
                 <ul className="d-flex flex-column justify-content-center">
-                    {/*
-                        <Tooltip content="Notifications" direction="right">
-                            <NavlinkSide
-                                to={"/toassign01"}
-                                faClass={"fal fa-bell"}
-                                label={"Notifications"} />
-                        </Tooltip>
-                    */}
                     <Tooltip content="Wallet" direction="right">
                         <button type="button" className="navbarSide" data-bs-toggle="offcanvas" data-bs-target="#offcanvasLeft" aria-controls="offcanvasLeft"><i className="fal fa-wallet" /></button>
                         <DrawerWallet refreshAccount={props.refreshAccount} account={props.account} topUpWallet={topUpWallet}></DrawerWallet>
-                        {/*
-                            <NavlinkSide
-                                to={"/toassign02"}
-                                faClass={"fal fa-wallet"}
-                                label={"Wallet"} />
-                        */}
                     </Tooltip>
                     <Tooltip content="Settings" direction="right">
                         <button type="button" className="navbarSide" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"><i className="fal fa-cog" /></button>
                         <DrawerSettings version={props.version}></DrawerSettings>
-                        {/*
-                        <NavlinkSide
-                            to={"/toassign03"}
-                            faClass={"fal fa-cog"}
-                            label={"Settings"} />
-                        */}
                     </Tooltip>
                 </ul>
             </div>
