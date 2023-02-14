@@ -8,6 +8,7 @@ import OverlayMenu from '../../../molecules/OverlayMenu';
 export function ContainerGrid(props) {
     console.log("container grid item", props.item)
     const [showMenu, setShowMenu] = useState(false)
+
     return (
         <>
             {/* whole thing is an organism */}
@@ -53,7 +54,7 @@ export function ContainerRow(props) {
                     true,
                     props.item.attributes.Timestamp,
                     props.item.size)}}
-                containerName={props.item.attributes.FileName}
+                containerName={props.item.attributes.Name}
                 containerSize={props.item.size}
                 containerOrigin={props.item.attributes.Timestamp}>
             </RowContainer>
