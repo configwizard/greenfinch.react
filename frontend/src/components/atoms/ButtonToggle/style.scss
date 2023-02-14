@@ -7,6 +7,12 @@
     padding-right: 40px;
 }
 
+.atmSwitchContent {
+    & h5 {
+        margin: 0;
+    }
+}
+
 .switch {
     position: relative;
     display: inline-block;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import './style.scss';
@@ -14,10 +14,16 @@ export const ToggleType = {
 }
 
 const ButtonToggle = ({ size, type, toggleText, toggleName, toggleId, disabled, onClick }) => {
+
+    const [isToggled, setIsToggled] = useState(false);
+    const onToggle = () => setIsToggled(!isToggled);
+
+    useEffect(() => console.log('UseEffect says:',isToggled))
+    
     return (
         <div className="molBlockSwitch d-flex">
-            <div className="atmSwitchContent">
-                <h5>{toggleText}</h5>
+            <div className="atmSwitchContent d-flex">
+                <h5 className="align-self-center">{toggleText}</h5>
             </div>
             <div className="atmSwitchToggle ms-auto">
                 <label className="switch">
@@ -25,7 +31,10 @@ const ButtonToggle = ({ size, type, toggleText, toggleName, toggleId, disabled, 
                         type="checkbox" 
                         class="atmInputToggle" 
                         name={toggleName}
-                        id={toggleId}/>
+                        id={toggleId}
+                        checked={isToggled} 
+                        onChange={onToggle}
+                        />
                     <span className="slider round"></span>
                 </label>
             </div>
