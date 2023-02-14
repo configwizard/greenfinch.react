@@ -45,8 +45,10 @@ export default class PageNotifications extends React.Component {
         }
     }
     async retrieveList () {
+        console.log("retrieving list of notifications")
         const currentNotifications = await getNotifications()
         if (currentNotifications != null) {
+            console.log("current notifications are not null they are ", currentNotifications)
             await this.setState({list: currentNotifications})
         } else {
             await this.setState({list: []})

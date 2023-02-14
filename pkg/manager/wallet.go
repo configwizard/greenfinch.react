@@ -2,6 +2,7 @@ package manager
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/amlwwalker/greenfinch.react/pkg/cache"
 	"github.com/amlwwalker/greenfinch.react/pkg/wallet"
@@ -24,6 +25,9 @@ func (m *Manager) RecentWallets() (map[string]string, error) {
 }
 
 func (m *Manager) TransferToken(recipient string, amount float64) (string, error) {
+	if m.Wallet == nil {
+		return "", errors.New("no wallet selected")
+	}
 	if err := m.UnlockWallet(); err != nil {
 		tmp := UXMessage{
 			Title:       "Error unlocking wallet",

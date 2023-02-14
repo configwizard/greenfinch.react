@@ -178,6 +178,9 @@ func (m *Manager) MakeToast(message UXMessage) {
 }
 
 func (m Manager) Notifications() ([]NotificationMessage, error){
+	if m.Wallet == nil {
+		return nil, errors.New("no wallet loaded")
+	}
 	notificationBytes, err := cache.RetrieveNotifications(m.Wallet.Accounts[0].Address)
 	if err != nil {
 		return nil, err

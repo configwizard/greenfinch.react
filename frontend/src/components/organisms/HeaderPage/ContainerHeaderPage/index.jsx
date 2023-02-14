@@ -41,7 +41,7 @@ const ContainerHeaderPage = ({ pageTitle, hasButton, hasIcon, faClass, buttonTex
                                     title={"Create new container"}
                                     buttonTextPrimary={"Create"}
                                     buttonTextSecondary={"Cancel"}
-                                    primaryClicked={async () => {await createContainer(document.getElementById("containerName").value, document.getElementById("containerPermission").value); unSetModal()}}
+                                    primaryClicked={async () => {await createContainer(document.getElementById("containerName").value, document.getElementById("containerPermission").value); console.log("unsetting container modal"); unSetModal()}}
                                     secondaryClicked={async () => unSetModal()}>
                                         <Form.Group className="form-div">
                                             <Form.Label>Container name</Form.Label>

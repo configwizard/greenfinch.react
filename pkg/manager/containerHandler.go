@@ -337,17 +337,6 @@ func (m Manager) getContainerSize(containerID string) (uint64, error) {
 func (m *Manager) ListContainers(synchronised bool) ([]Element, error) {
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
-		m.MakeNotification(NotificationMessage{
-			Title:       "Retrieving wallet failed",
-			Type:        "error",
-			Description: fmt.Sprintf("Retrieving wallet failing due to %s", err.Error()),
-			MarkRead:    false,
-		})
-		m.MakeToast(UXMessage{
-			Title:       "Container Error",
-			Type:        "error",
-			Description: "Could not retrieve wallet",
-		})
 		return nil, err
 	}
 	tmpContainers, err := cache.RetrieveContainers(tmpWallet.Accounts[0].Address)
@@ -410,6 +399,17 @@ func (m *Manager) ListContainers(synchronised bool) ([]Element, error) {
 // DeleteContainer must mark the container in the cache as deleted
 // and delete it from neoFS
 func (m *Manager) DeleteContainer(id string) ([]Element, error) {
+	m.MakeNotification(NotificationMessage{
+		Title:       "Pending deletion of container",
+		Type:        "info",
+		Description: "A container is pending deletion. Please check back",
+		MarkRead:    false,
+	})
+	m.MakeToast(NewToastMessage(&UXMessage{
+		Title:       "Container deletion pending",
+		Type:        "info",
+		Description: "Container being deleted",
+	}))
 	cnrID := cid.ID{}
 	if err := cnrID.DecodeString(id); err != nil {
 		m.MakeNotification(NotificationMessage{
@@ -485,6 +485,11 @@ func (m *Manager) DeleteContainer(id string) ([]Element, error) {
 			Description: fmt.Sprintf("Deleting container failing due to %s", err.Error()),
 			MarkRead:    false,
 		})
+		m.MakeToast(NewToastMessage(&UXMessage{ //todo make this a notification
+			Title:       "Deletion Error",
+			Type:        "error",
+			Description: "Could not delete container",
+		}))
 	} else {
 		////now mark deleted
 		cacheContainer, err := cache.RetrieveContainer(tmpWallet.Accounts[0].Address, id)
@@ -855,6 +860,17 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 	go func() {
 		// send request to save the container
 		//todo - do this on a routine so that we don't hang
+		m.MakeNotification(NotificationMessage{
+			Title:       "Pending new container",
+			Type:        "info",
+			Description: fmt.Sprintf("container in process of being created. Check back for any issues"),
+			MarkRead:    false,
+		})
+		m.MakeToast(NewToastMessage(&UXMessage{
+			Title:       "Container creation pending",
+			Type:        "info",
+			Description: "Container '" + name + "' being created.",
+		}))
 		idCnr, err := pl.PutContainer(m.ctx, prmPut) //see SetWaitParams to change wait times
 		if err != nil {
 			m.MakeNotification(NotificationMessage{
@@ -870,7 +886,6 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 			}))
 			return
 		}
-
 		el := Element{
 			ID:         idCnr.String(),
 			Type:       "container",
