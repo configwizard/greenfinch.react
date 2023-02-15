@@ -3,39 +3,33 @@ import PropTypes from 'prop-types';
 
 import './style.scss';
 
-export const ToggleSize = {
-    SMALL: 'small',
-    MEDIUM: 'medium'
-}
-
 export const ToggleType = {
-    DEFAULT: 'default', 
-    CLEAN: 'clean'
+    DEFAULT: 'default'
 }
 
-const ButtonToggle = ({ size, type, toggleText, toggleName, toggleId, disabled, onClick }) => {
+const ButtonToggle = ({ type, toggleHeading, toggleName, toggleId }) => {
 
     const [isToggled, setIsToggled] = useState(false);
-    const onToggle = () => setIsToggled(!isToggled);
+    const handleToggle = () => setIsToggled(!isToggled);
 
-    useEffect(() => console.log('UseEffect says:',isToggled))
+    useEffect(() => console.log('UseEffect says Toggle Slider is active:',isToggled))
     
     return (
-        <div className="molBlockSwitch d-flex">
-            <div className="atmSwitchContent d-flex">
-                <h5 className="align-self-center">{toggleText}</h5>
+        <div className="switchWrapper d-flex">
+            <div className="atmSwitchHeading d-flex">
+                <h5 className="align-self-center">{toggleHeading}</h5>
             </div>
             <div className="atmSwitchToggle ms-auto">
-                <label className="switch">
+                <label className="atmSwitchLabel">
                     <input  
-                        type="checkbox" 
-                        class="atmInputToggle" 
+                        type="checkbox"
+                        class={`atmInputToggle ${[type]}`}
                         name={toggleName}
                         id={toggleId}
                         checked={isToggled} 
-                        onChange={onToggle}
+                        onChange={handleToggle}
                         />
-                    <span className="slider round"></span>
+                    <span className="atmSwitchSlider utRound"></span>
                 </label>
             </div>
         </div>
@@ -46,17 +40,14 @@ export default ButtonToggle;
 
 ButtonToggle.propTypes = {
     type: PropTypes.oneOf(Object.keys(ToggleType)),
-    size: PropTypes.oneOf(Object.keys(ToggleSize)),
-    disabled: PropTypes.bool,
-    onClick: PropTypes.func,
-    toggleText: PropTypes.string,
+    toggleHeading: PropTypes.string,
     toggleName: PropTypes.string,
     toggleId: PropTypes.string 
 };
 
 ButtonToggle.defaultProps = {
     type: ToggleType.DEFAULT,
-    size: ToggleSize.MEDIUM,
-    toggleText: "Toggle Me",
-    disabled: false
+    toggleHeading: "Toggle Me",
+    toggleName: "name",
+    toggleId: "id"
 };     

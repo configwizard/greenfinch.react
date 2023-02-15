@@ -72,17 +72,15 @@ export default class ToastMessage extends React.Component {
                         return (
 
                             <div key={i} className="toastMolecule">
-                                <div className="toastContainer">
-                                    <div className={`toastWrapper ${toast.Type}`}>
-                                        <div className="toastInner d-flex">
-                                            <div className="toast-icon d-flex align-items-center justify-content-center">
-                                                <i className={`fad ${faIcon}`}/>
-                                            </div>
-                                            <div className="toastContent d-flex flex-column justify-content-center">
-                                                <i className="fa fa-times" onClick={() => this.deleteToast(toast.id)}/>
-                                                <span className="atmToastTitle">{toast.Title}</span>
-                                                <span className="atmToastMessage">{toast.Description}</span>
-                                            </div>
+                                <div className={`toastWrapper ${toast.Type}`}>
+                                    <div className="toastInner d-flex">
+                                        <div className="molToastIcon d-flex align-items-center justify-content-center">
+                                            <i className={`fad ${faIcon}`}/>
+                                        </div>
+                                        <div className="molToastContent d-flex flex-column justify-content-center">
+                                            <i className="fa fa-times" onClick={() => this.deleteToast(toast.id)}/>
+                                            <span className="atmToastTitle">{toast.Title}</span>
+                                            <span className="atmToastMessage">{toast.Description}</span>
                                         </div>
                                     </div>
                                 </div>

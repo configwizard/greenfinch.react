@@ -16,7 +16,14 @@ li.home-link {
             color: $brandColorSecondary;
         }
         & i {
-            margin-right: $marginSmall;
+            margin-right: $marginXSmall;
         }
+    }
+}
+
+.fa-youtube {
+    color: $youtubeRed;
+    &:hover {
+        color: darken($youtubeRed, 10%);
     }
 }

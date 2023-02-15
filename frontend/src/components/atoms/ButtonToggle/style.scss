@@ -1,30 +1,33 @@
 @import "../../../assets/dashboard-variables.scss";
 @import "../../../assets/greenfinch-variables.scss";
 
-/* Element: Toggle switch (this will become a component)
+/* Component: Toggle Switch
 - - - - - - - - - - - - - - - - - - */
-.atmSwitchContent {
-    padding-right: 40px;
-}
-
-.atmSwitchContent {
+.atmSwitchHeading {
     & h5 {
         margin: 0;
     }
 }
 
-.switch {
+.atmSwitchLabel {
     position: relative;
     display: inline-block;
     width: 46px;
     height: 26px;
-    & input { 
+    & input.atmInputToggle {
+        opacity: 0;
         width: 0;
         height: 0;
+        &:checked + .atmSwitchSlider {
+            background-color: $brandColorPrimary;
+        }
+        &:checked + .atmSwitchSlider:before {
+            transform: translateX(20px);
+        }
     }
 }
 
-.slider {
+.atmSwitchSlider {
     position: absolute;
     top: 0;
     left: 0;
@@ -43,26 +46,10 @@
         background-color: $brandColorWhite;
         transition: $brandTransitionSpeed;
     }
-    &.round {
+    &.utRound {
         border-radius: 34px;
         &:before {
             border-radius: 50%;
         }
     }
 }
-
-.switch input { 
-    opacity: 0;
-}
-
-.switch input:checked + .slider {
-    background-color: $brandColorPrimary;
-}
-
-.switch input:checked + .slider:before {
-    transform: translateX(20px);
-}
-
-/* ,switch input:focus + .slider {
-    box-shadow: 0 0 1px $brandColorDark;
-} */

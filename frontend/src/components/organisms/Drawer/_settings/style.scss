@@ -54,9 +54,9 @@ h4 {
 }
 
 .molDrawerRow {
-    background-color: rgba(0,0,0,0.05);
+    background-color: rgba(0,0,0,0.02);
     padding: $paddingSmall;
-    margin-bottom: $marginSmall;
+    margin-bottom: $marginXSmall;
     &:last-child {
         margin-bottom: 0;
     }

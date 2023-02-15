@@ -3,22 +3,6 @@
 
 /* Component: Toast
 - - - - - - - - - - - - - - - - - - */
-/*
-.toast-container {
-    transition: transform .6s ease-in-out;
-    animation: toast-in-right .7s;
-}
-*/
-
-/*
-@keyframes toast-in-right {
-	from {
-	  transform: translateX(100%);
-	}
-	to {
-	  transform: translateX(0);
-	}
-}*/
 .toastColumn {
     position: fixed;
     width: 500px;
@@ -29,33 +13,46 @@
 }
 
 .toastWrapper {
-    //position: fixed;
-    //top: 40px;
-    //right: 40px;
     position: relative;
     margin: 0 auto;
     margin-bottom: 10px;
     width: 500px;
     min-height: 70px;
+    font-family: $brandFontSemi;
+    background: $brandColorWhite;
+    box-shadow: $brandBoxShadow;
     & .toastInner {
         min-height: 70px;
         width: 100%;
-        & .toast-icon {
+        & .molToastIcon {
             min-height: 70px;
             width: 60px;
+            & i {
+                font-size: 1.6rem;
+                color: rgba(255,255,255,0.7);
+            }
         }
-        & .toastContent {
+        & .molToastContent {
             min-height: 70px;
             width: 100%;
             padding: $paddingSmall;
+            background-color: $brandColorWhite;
             & span.atmToastTitle {
                 margin-bottom: 7px;
+                letter-spacing: $brandLetterSpacing;
+                font-size: 0.8rem;
+                line-height: 1.2;
+                text-transform: uppercase;
+                font-family: $brandFontBold;
+            }
+            & span.atmToastMessage {
+                color: $toastColorBody;
+                font-size: 0.8rem;
+                line-height: 1.2;
+                font-family: $brandFontSemi;
             }
         }
     }
-}
-
-.toastWrapper {
     & i.fa-times { // close button
         transition: $brandTransitionSpeed;
         position: absolute;
@@ -73,34 +70,6 @@
 /* Component: Toast
 - - - - - - - - - - - - - - - - - - */
 .toastWrapper {
-    font-family: $brandFontSemi;
-    background: $brandColorWhite;
-    box-shadow: $brandBoxShadow;
-    & .toastInner {
-        & .toast-icon {
-            & i {
-                font-size: 1.6rem;
-                color: rgba(255,255,255,0.7);
-            }
-        }
-        & .toastContent {
-            background-color: $brandColorWhite;
-            & span.atmToastTitle {
-                letter-spacing: $brandLetterSpacing;
-                font-size: 0.8rem;
-                line-height: 1.2;
-                text-transform: uppercase;
-                font-family: $brandFontBold;
-            }
-            & span.atmToastMessage {
-                color: $toastColorBody;
-                font-size: 0.8rem;
-                line-height: 1.2;
-                font-family: $brandFontSemi;
-            }
-
-        }
-    }
     &.success {
         background-color: $toastColorSuccess;
         & span.atmToastTitle {
@@ -126,3 +95,18 @@
         }
     }
 }
+
+/*
+.toastContainer {
+    transition: transform .6s ease-in-out;
+    animation: toast-in-right .7s; }
+*/
+
+/* @keyframes toast-in-right {
+	from {
+	  transform: translateX(100%);
+	}
+	to {
+	  transform: translateX(0);
+	}
+} */

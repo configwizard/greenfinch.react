@@ -29,20 +29,15 @@ const DrawerSettings = (props) => {
                 <div className="offcanvas-body">
 
                     <div className="molDrawerRow">
-                        {/* Switch toggle element, to become a component 
-                        https://www.sitepoint.com/react-toggle-switch-reusable-component/
-                        */}
                         <ButtonToggle 
                            size={"small"}
                            type={"default"}
-                           toggleText={"Main Net"}
+                           toggleHeading={"Main Net"}
                            toogleName={"default"}
                            toggleId={"default"} />
                     </div>
 
                     <div className="molDrawerRow">
-                        {/* Dropdown element, to become a component 
-                        https://www.robinwieruch.de/react-dropdown/ */}
                         <ButtonDropdown
                             size={"small"}
                             type={"default"}
@@ -52,19 +47,6 @@ const DrawerSettings = (props) => {
                             <button onClick={handleMenuTwo}>Menu 2</button>,
                             <button onClick={handleMenuThree}>Menu 3</button>,
                             ]} />
-                        
-                        {/* Boostrap 
-                        <div class="dropdown">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Dropdown button
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">Action</a></li>
-                                <li><a class="dropdown-item" href="#">Another action</a></li>
-                                <li><a class="dropdown-item" href="#">Something else here</a></li>
-                            </ul>
-                        </div>
-                        */}
                     </div>
 
                     <div className="molDrawerRow">
