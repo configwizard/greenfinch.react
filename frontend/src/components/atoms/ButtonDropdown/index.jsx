@@ -3,17 +3,19 @@ import PropTypes from 'prop-types';
 
 import './style.scss';
 
+
+
 export const DropdownSize = {
+    DEFAULT: 'default'
+}
+
+export const DropdownType = {
     ICON: 'icon',
     TEXT: 'text'
 }
 
-export const DropdownType = {
-    DEFAULT: 'default'
-}
+const ButtonDropdown = ({ triggerText, menu }) => {
 
-const ButtonDropdown = ({ trigger, menu }) => {
-    
     const [isOpen, setIsOpen] = React.useState(false);
     const handleOpen = () => { setIsOpen(!isOpen); };
 
@@ -21,7 +23,7 @@ const ButtonDropdown = ({ trigger, menu }) => {
   
     return (
         <div className="atmDropdownContent">
-            {React.cloneElement(trigger, {
+            {React.cloneElement(<button className="buttonDropdown">{triggerText}</button>, {
                 onClick: handleOpen,
             })}
             {isOpen ? (
@@ -45,8 +47,8 @@ const ButtonDropdown = ({ trigger, menu }) => {
 export default ButtonDropdown;
 
 ButtonDropdown.propTypes = {
-    type: PropTypes.oneOf(Object.keys(DropdownType)),
     size: PropTypes.oneOf(Object.keys(DropdownSize)),
+    type: PropTypes.oneOf(Object.keys(DropdownType)),
     buttonClass: PropTypes.string,
     disabled: PropTypes.bool,
     onClick: PropTypes.func,
@@ -54,8 +56,8 @@ ButtonDropdown.propTypes = {
 };
 
 ButtonDropdown.defaultProps = {
-    type: DropdownType.DEFAULT,
-    size: DropdownSize.TEXT,
+    size: DropdownType.DEFAULT,
+    text: DropdownSize.TEXT,
     buttonClass: '',
     disabled: false,
     faClass: "fas fa-flag"

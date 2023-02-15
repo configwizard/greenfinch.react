@@ -37,15 +37,31 @@ const DrawerSettings = (props) => {
                            toggleId={"default"} />
                     </div>
 
+                    {/* We might want something closer to this 
+                    Another option: https://codesandbox.io/s/ueccx?file=/src/App.js */}
+
+                    {/* And this... https://blog.logrocket.com/getting-started-react-select/ */}
+
                     <div className="molDrawerRow">
                         <ButtonDropdown
-                            size={"small"}
-                            type={"default"}
-                            trigger={<button className="utDropdown">Select...</button>}
+                            size={"default"}
+                            type={"size"}
+                            triggerText={"Select..."}
                             menu={[
-                            <button onClick={handleMenuOne}>Menu 1</button>,
-                            <button onClick={handleMenuTwo}>Menu 2</button>,
-                            <button onClick={handleMenuThree}>Menu 3</button>,
+                                <button className="buttonList" onClick={handleMenuOne}>Menu 1</button>,
+                                <button className="buttonList" onClick={handleMenuTwo}>Menu 2</button>,
+                                <button className="buttonList" onClick={handleMenuThree}>Menu 3</button>
+                            ]} />
+                    </div>
+                    {/* Helfpul: https://www.educative.io/answers/how-to-get-the-selected-value-from-a-dropdown-in-react */}
+                    <div className="molDrawerRow">
+                        <ButtonDropdown
+                            size={"default"}
+                            type={"size"}
+                            triggerText={"New dropdown..."}
+                            menu={[
+                                <button className="buttonList" onClick={handleMenuOne}>Menu 1</button>,
+                                <button className="buttonList" onClick={handleMenuTwo}>Menu 2</button>
                             ]} />
                     </div>
 
