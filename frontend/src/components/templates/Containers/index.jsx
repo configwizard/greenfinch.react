@@ -95,7 +95,7 @@ class Containers extends React.Component {
         console.log("container selected object list", objectList)
         this.setState({...state, selectedContainer, objectList, objectsLoaded: true})
     }
-    onObjectSelection = async (objectID, objectName) => {
+    onObjectSelection = async (objectID, objectName, objectFile) => {
         if (this.state.selectedContainer == null) {
             throw new Error("cannot retrieve an object from non existent container")
         }
@@ -103,7 +103,8 @@ class Containers extends React.Component {
         //we will need to call the function to get the objects for a specific container ID and update the objectList
         const selectedObject = {
             objectID,
-            objectName
+            objectName,
+            objectFile
         }
         let state = this.state
         this.setState({...state, selectedObject})
@@ -140,7 +141,6 @@ class Containers extends React.Component {
         let objectList = await deleteObject(objectId, containerId)
         console.log("deleting object ", objectId, containerId, objectList)
         this.setState({...this.state, objectList})
-
     }
     resetBreadcrumb = async () => {
         let state = this.state
