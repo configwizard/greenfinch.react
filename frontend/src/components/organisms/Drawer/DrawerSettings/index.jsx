@@ -55,9 +55,9 @@ const DrawerSettings = (props) => {
                     {/* React Bootstrap version */}
                     <div className="molDrawerRow">
                         <select class="form-select" aria-label="Default select example">
-                            <option selected>Select..3</option>
-                            <option value="1">One</option>
-                            <option value="2">Two</option>
+                            <option selected>Select...</option>
+                            <option value="1">Menu 1</option>
+                            <option value="2">Menu 2</option>
                         </select>
                     </div>
 
