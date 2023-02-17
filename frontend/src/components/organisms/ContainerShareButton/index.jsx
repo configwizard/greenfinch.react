@@ -1,11 +1,11 @@
 import React from 'react';
 import { Form } from 'react-bootstrap';
 import {shareContainerWithContact} from "../../../manager/contacts"
+
 // Components
 import ButtonText from '../../atoms/ButtonText';
 import { useModal } from '../Modal/ModalContext';
 import CompModalStandard from '../Modal/ModalStandard';
-import {NavLink} from "react-router-dom";
 
 // const shareContainer = async (shareContact) => {
 //     console.log(shareContact);

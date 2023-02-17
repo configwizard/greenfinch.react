@@ -12,13 +12,9 @@ import ViewObjects, {ContainerPreviewButton} from "../../organisms/ViewObjects";
 
 import ContainerInfoButton from "../../organisms/ContainerInfoButton";
 import ContainerShareButton from "../../organisms/ContainerShareButton";
+import ContainerDeleteButton from "../../organisms/ContainerDeleteButton";
 import ObjectInfoButton from "../../organisms/ObjectInfoButton";
 import {openInDefaultBrowser} from "../../../manager/manager";
-
-import { useModal } from '../../organisms/Modal/ModalContext';
-import CompModalStandard from '../../organisms/Modal/ModalStandard';
-
-
 
 // Central style sheet for templates
 import '../_settings/style.scss';
@@ -57,7 +53,7 @@ function retrieveCorrectComponent(state, onObjectSelection, onObjectDelete, onOb
     } else {
         return (
             <>
-                <div className="container-data col-4">
+                <div className="container-data col-3">
                     <ContainerIcon
                         size={"medium"}/>
                     <HeadingGeneral
@@ -93,52 +89,62 @@ function retrieveCorrectComponent(state, onObjectSelection, onObjectDelete, onOb
                             containerSize={fileSize(state.selectedContainer.size)} />
                         { !state.shared ? <>
                         <ContainerPreviewButton
-
                             icon="fas fa-upload"
                             text="Upload to this container"
                             onClick={onObjectUpload}/>
                         <ContainerShareButton
                             containerId={state.selectedContainer.containerID}
                             contacts={state.contacts}/>
+                        <ContainerDeleteButton
+                            containerName={state.selectedContainer.containerName}/>
                         </> : null }
-                            {
-                            state.selectedObject ?
-                                <>
-                                    <div className="object-data" id={"objectData"}>
-                                        <HeadingGeneral
-                                            level={"h5"}
-                                            isUppercase={false}
-                                            text={state.selectedObject.objectName || null}/>
-                                        <HeadingGeneral
-                                            level={"h6"}
-                                            isUppercase={true}
-                                            text={"Object ID"}/>
-                                            <span>{state.selectedObject.objectID || null}</span>
-                                        <ObjectInfoButton
-                                            objectName={state.selectedObject.objectName}
-                                            objectId={state.selectedObject.objectID} />
-                                        <ContainerPreviewButton icon="fas fa-download" text="Download this object" onClick={onObjectDownload}></ContainerPreviewButton>
-                                        
-                                        { state.selectedContainer.permissions === 264211711 || 264224767 ?
-                                            <ButtonText 
-                                                type="clean"
-                                                size="small"
-                                                hasIcon={true}
-                                                faClass={"fas fa-external-link"}
-                                                text={"Click to view file in web browser"}
-                                                onClick={() => openInDefaultBrowser(`https://http.t5.fs.neo.org/${state.selectedContainer.containerID}/${state.selectedObject.objectID}`)} />
-                                        : null }
-                                    </div>
-                                </> : null
-                            }
                     </div>
                 </div>
-                <div className="col-8">
+                <div className="col-6">
                     <div className="orgContainersGrid">
                         <div className="row">
                             <ViewObjects shared={state.shared} objectsLoaded={state.objectsLoaded} onDelete={onObjectDelete} objectList={state.objectList} viewMode={state.viewMode} onObjectSelection={onObjectSelection}></ViewObjects>
                         </div>
                     </div>
+                </div>
+                <div className="col-3">
+                    { state.selectedObject ?
+                        <>
+                            <div className="object-data" id={"objectData"}>
+                                <figure>
+                                    <img className="mw-100" src={`data:image/png;base64,${state.selectedObject.objectFile}`} alt={state.selectedObject.objectName} />
+                                </figure>
+                                <HeadingGeneral
+                                    level={"h5"}
+                                    isUppercase={false}
+                                    text={state.selectedObject.objectName || null}/>
+                                <HeadingGeneral
+                                    level={"h6"}
+                                    isUppercase={true}
+                                    text={"Object ID"}/>
+                                    <span>{state.selectedObject.objectID || null}</span>
+                                <div class="buttonStack">
+                                    <ObjectInfoButton
+                                        objectFile={state.selectedObject.objectFile}
+                                        objectName={state.selectedObject.objectName}
+                                        objectId={state.selectedObject.objectID} />
+                                    <ContainerPreviewButton 
+                                        icon="fas fa-download" 
+                                        text="Download this object" 
+                                        onClick={onObjectDownload} />
+                                    { state.selectedContainer.permissions === 264211711 || 264224767 ?
+                                        <ButtonText 
+                                            type="clean"
+                                            size="small"
+                                            hasIcon={true}
+                                            faClass={"fas fa-external-link"}
+                                            text={"Click to view file in web browser"}
+                                            onClick={() => openInDefaultBrowser(`https://http.t5.fs.neo.org/${state.selectedContainer.containerID}/${state.selectedObject.objectID}`)} />
+                                    : null }
+                                </div>
+                            </div>
+                        </> : null
+                    }
                 </div>
             </>
         )

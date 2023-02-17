@@ -45,7 +45,7 @@ const ContainerHeaderPage = ({ pageTitle, hasButton, hasIcon, faClass, buttonTex
                                     secondaryClicked={async () => unSetModal()}>
                                         <Form.Group className="form-div">
                                             <Form.Label>Container name</Form.Label>
-                                            <Form.Control id="containerName" type="text" />
+                                            <Form.Control id="containerName" type="text" placeholder="e.g. Family Photos"/>
                                             <Form.Text muted>NB. This cannot be changed</Form.Text>
                                         </Form.Group>
                                         <Form.Group>

@@ -28,7 +28,7 @@ export function ObjectGrid({showOverlayMenu, onDelete, onObjectSelection, item})
                 </button>
             </div> : null }
             <CardObject
-                onClick={() => onObjectSelection(item.id, item.attributes.FileName)}
+                onClick={() => onObjectSelection(item.id, item.attributes.FileName, item.attributes.Thumbnail)}
                 objectFile={item.attributes.Thumbnail}
                 dataType={item.attributes.X_EXT}
                 objectName={item.attributes.FileName}>
