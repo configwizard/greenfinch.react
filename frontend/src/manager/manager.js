@@ -7,7 +7,31 @@ const setNetwork = async (network) => {
         console.log("error setting network", e)
     }
 }
+const getNotifications = async()=> {
+    try {
+        let n = await window.go.manager.Manager.Notifications()
+        console.log("received notifications ", n)
+        return n
+    } catch(e) {
+        console.log("error retrieving notifications from database ", e)
+    }
+}
 
+const deleteNotification = async(id) => {
+    try {
+        console.log("deleting id ", id)
+        await window.go.manager.Manager.MarkNotificationRead(id)
+    } catch(e) {
+        console.log("could not clear notifications ", e)
+    }
+}
+const deleteNotifications = async() => {
+    try {
+        await window.go.manager.Manager.MarkAllNotificationsRead()
+    } catch(e) {
+        console.log("could not clear notifications ", e)
+    }
+}
 const getAccountInformation = async () => {
     try {
     let b = await window.go.manager.Manager.GetAccountInformation().then((balance, error) => {
@@ -104,6 +128,9 @@ const getVersion = async() => {
 }
 export {
     setNetwork,
+    getNotifications,
+    deleteNotifications,
+    deleteNotification,
     transferGasToContact,
     copyTextToClipboard,
     openInDefaultBrowser,

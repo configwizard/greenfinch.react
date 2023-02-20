@@ -31,7 +31,17 @@ func RetrieveNotifications(wallet string) (map[string][]byte, error) {
 	})
 	return objects, err
 }
+func DeleteNotications(wallet string) error {
+	return db.Update(func(tx *bolt.Tx) error {
+		ub := tx.Bucket([]byte(wallet))
+		b := ub.Bucket([]byte(notificationBucket))
+		err := b.ForEach(func(k []byte, v []byte) error {
+			return b.Delete(k)
+		})
+		return err
+	})
 
+}
 func DeleteNotification(wallet, id string) error {
 	return db.Update(func(tx *bolt.Tx) error {
 		ub := tx.Bucket([]byte(wallet))

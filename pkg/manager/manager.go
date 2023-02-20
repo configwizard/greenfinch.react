@@ -9,6 +9,7 @@ import (
 	gspool "github.com/amlwwalker/greenfinch.react/pkg/pool"
 	"github.com/amlwwalker/greenfinch.react/pkg/wallet"
 	"github.com/blang/semver/v4"
+	"github.com/google/uuid"
 	"github.com/nspcc-dev/neofs-sdk-go/pool"
 	"github.com/nspcc-dev/neofs-sdk-go/user"
 	"io/ioutil"
@@ -16,6 +17,7 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -23,18 +25,23 @@ import (
 	//"github.com/patrickmn/go-cache"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
-
+//const explorerUrl = "https://testnet.explorer.onegate.space/transactionInfo"
+const explorerUrl = "https://dora.coz.io/transaction/neo3/testnet"
 type NotificationMessage struct {
-	Id          int
+	Id          string
 	User		string //who is this message for so we can store it in the database
 	Title       string
 	Type        string
+	Action string
 	Description string
+	CreatedAt string
 	MarkRead     bool
 }
 
 func NewNotificationMessage(p *NotificationMessage) NotificationMessage {
-	p.Id = rand.Intn(101-1) + 1
+	uuid, _ := uuid.NewUUID()
+	p.Id = uuid.String()//rand.Intn(10001-1) + 1
+	p.CreatedAt = strconv.FormatInt(time.Now().Unix(), 10)
 	//store it in the database against the current user
 	return *p
 }
@@ -109,6 +116,56 @@ func (m *Manager) DomReady(ctx context.Context) {
 		m.MakeToast(tmp)
 		runtime.EventsEmit(m.ctx, "select_wallet", true)
 	}
+}
+func (m Manager) Notifications() ([]NotificationMessage, error){
+	notificationBytes, err := cache.RetrieveNotifications(m.wallet.Accounts[0].Address)
+	if err != nil {
+		return nil, err
+	}
+	var notifications []NotificationMessage
+	for _, n := range notificationBytes {
+		var notification NotificationMessage
+		if err := json.Unmarshal(n, &notification); err == nil {
+			notifications = append(notifications, notification)
+		} else {
+			fmt.Println("error unmarshalling notification ", err)
+		}
+	}
+	return notifications, nil
+}
+
+func (m Manager) MarkAllNotificationsRead() error {
+	address := m.wallet.Accounts[0].Address
+	if err := cache.DeleteNotications(address); err != nil {
+		return err
+	}
+	return nil
+}
+func (m Manager) MarkNotificationRead(uuid string) error {
+	address := m.wallet.Accounts[0].Address
+	fmt.Println("deleting notification ", uuid)
+	if err := cache.DeleteNotification(address, uuid); err != nil {
+		return err
+	}
+	return nil
+}
+func (m *Manager) MakeNotification(message NotificationMessage) {
+	if m.wallet == nil {
+		fmt.Println("no wallet found")
+		return //no wallet yet to connect notifications with
+	}
+	message.User = m.wallet.Accounts[0].Address
+	message = NewNotificationMessage(&message)
+	marshal, err := json.Marshal(message)
+	if err != nil {
+		fmt.Println("error marshalling notification", err)
+	}
+	err = cache.UpsertNotification(message.User, message.Id, marshal)
+	if err != nil {
+		fmt.Println("error upserting notifiation")
+	}
+	fmt.Println("notification message ", message)
+	runtime.EventsEmit(m.ctx, "freshnotification", message)
 }
 //return the network addresses for the selected network
 func (m *Manager) SetSelectedNetwork(network string) (NetworkData, error) {
@@ -185,9 +242,9 @@ func (m *Manager) MakeToast(message UXMessage) {
 	runtime.EventsEmit(m.ctx, "freshtoast", message)
 }
 
-func (m *Manager) MakeNotification(message UXMessage) {
-	runtime.EventsEmit(m.ctx, "freshnotification", message)
-}
+//func (m *Manager) MakeNotification(message UXMessage) {
+//	runtime.EventsEmit(m.ctx, "freshnotification", message)
+//}
 func (m *Manager) NetworkChangeNotification() {
 	runtime.EventsEmit(m.ctx, "networkchanged", m.selectedNetwork)
 }
@@ -237,6 +294,12 @@ func (m *Manager) SetWalletDebugging(walletPath, password string) error {
 	m.walletPath = walletPath
 	w, err := wal.NewWalletFromFile(walletPath)
 	if err != nil {
+		m.MakeNotification(NotificationMessage{
+			Title:       "Error reading wallet",
+			Type:        "error",
+			Description: fmt.Sprintf("Reading wallet failing %s", err.Error()),
+			MarkRead:    false,
+		})
 		tmp := UXMessage{
 			Title:       "Error reading wallet",
 			Type:        "error",

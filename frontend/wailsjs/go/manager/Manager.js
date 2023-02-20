@@ -90,6 +90,14 @@ export function MakeToast(arg1) {
   return window['go']['manager']['Manager']['MakeToast'](arg1);
 }
 
+export function MarkAllNotificationsRead() {
+  return window['go']['manager']['Manager']['MarkAllNotificationsRead']();
+}
+
+export function MarkNotificationRead(arg1) {
+  return window['go']['manager']['Manager']['MarkNotificationRead'](arg1);
+}
+
 export function NetworkChangeNotification() {
   return window['go']['manager']['Manager']['NetworkChangeNotification']();
 }
@@ -100,6 +108,10 @@ export function NewListReadOnlyContainerContents(arg1) {
 
 export function NewWallet(arg1) {
   return window['go']['manager']['Manager']['NewWallet'](arg1);
+}
+
+export function Notifications() {
+  return window['go']['manager']['Manager']['Notifications']();
 }
 
 export function OpenInDefaultBrowser(arg1) {

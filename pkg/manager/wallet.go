@@ -2,6 +2,7 @@ package manager
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/amlwwalker/greenfinch.react/pkg/cache"
 	"github.com/amlwwalker/greenfinch.react/pkg/wallet"
@@ -10,6 +11,7 @@ import (
 	"github.com/nspcc-dev/neo-go/pkg/rpcclient/gas"
 	"github.com/nspcc-dev/neo-go/pkg/rpcclient/nep17"
 	"math/big"
+	"path"
 
 	"github.com/nspcc-dev/neo-go/pkg/rpcclient"
 	wal "github.com/nspcc-dev/neo-go/pkg/wallet"
@@ -23,6 +25,9 @@ func (m *Manager) RecentWallets() (map[string]string, error) {
 }
 
 func (m *Manager) TransferToken(recipient string, amount float64) (string, error) {
+	if m.wallet == nil {
+		return "", errors.New("no wallet provided")
+	}
 	if err := m.UnlockWallet(); err != nil {
 		tmp := UXMessage{
 			Title:       "Error unlocking wallet",
@@ -59,6 +64,13 @@ func (m *Manager) TransferToken(recipient string, amount float64) (string, error
 		m.MakeToast(NewToastMessage(&tmp))
 		return "", err
 	}
+	m.MakeNotification(NotificationMessage{
+		Title:       "Transaction started",
+		Action: 	"qr-code",
+		Type:        "success",
+		Description: fmt.Sprintf(path.Join(explorerUrl, "0x%s"), txid.StringLE()),
+		MarkRead:    false,
+	})
 	tmp := UXMessage{
 		Title:       "Transfer successful",
 		Type:        "success",

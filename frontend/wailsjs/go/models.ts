@@ -78,6 +78,7 @@ export namespace manager {
 	
 	
 	
+	
 	export class contact {
 	    firstName: string;
 	    lastName: string;
