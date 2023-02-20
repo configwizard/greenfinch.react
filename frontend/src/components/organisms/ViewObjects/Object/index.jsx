@@ -21,8 +21,10 @@ export function ObjectGrid({showOverlayMenu, onDelete, onObjectSelection, item})
                         <OverlayMenu 
                             onDelete={onDelete} 
                             onObjectSelection={onObjectSelection} 
-                            id={item.id} filename={item.attributes.FileName} 
-                            type={item.type} setShowMenu={setShowMenu} 
+                            id={item.id}
+                            filename={item.attributes.FileName} 
+                            type={item.type} 
+                            setShowMenu={setShowMenu} 
                             show={showMenu}>
                         </OverlayMenu>
                 </button>
@@ -41,7 +43,8 @@ export function ObjectRow({showOverlayMenu, onDelete, onObjectSelection, item}) 
     return (
         <div className="d-flex flex-row align-items-center">
             <RowObject
-                onClick={() => onObjectSelection(item.id, item.attributes.FileName)}
+                onClick={() => onObjectSelection(item.id, item.attributes.FileName, item.attributes.Thumbnail)}
+                objectFile={item.attributes.Thumbnail}
                 objectName={item.attributes.FileName}
                 objectSize={item.size}
                 objectOrigin={item.attributes.Timestamp}>

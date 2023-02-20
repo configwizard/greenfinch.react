@@ -1,11 +1,8 @@
 import React from 'react';
-import { fileSize } from "humanize-plus";
-import Moment from "react-moment";
 
 // Actual
 import { deleteContainer, listContainers } from '../../../manager/containers.js';
 import { deleteObject, getObject, listObjects, uploadObject } from '../../../manager/objects.js';
-import { openInDefaultBrowser } from "../../../manager/manager.js";
 import { listContacts } from "../../../manager/contacts";
 
 // Mocker
@@ -13,13 +10,9 @@ import { listContacts } from "../../../manager/contacts";
 // import { deleteObject, getObject, listObjects, uploadObject } from '../../../mocker/objects.js';
 
 // Components
-import HeadingGeneral from '../../atoms/HeadingGeneral';
 import ControlBar from '../../molecules/ControlBar';
 import BreadCrumb from '../../organisms/Breadcrumb';
 import ContainerHeaderPage from '../../organisms/HeaderPage/ContainerHeaderPage';
-import ViewContainers from '../../organisms/ViewContainers';
-import ViewObjects, { ContainerPreviewButton, FileUpload } from '../../organisms/ViewObjects';
-import ContainerShareButton from '../../organisms/ContainerShareButton';
 
 // Central style sheet for templates
 import '../_settings/style.scss';
@@ -31,7 +24,6 @@ class Containers extends React.Component {
         this.state = {shared: false, contacts: [], containerList: [], objectList: [], selectedObject: null, selectedContainer: null, viewMode: "grid", objectsLoaded: false, requestNewWallet: false};
     }
     async componentDidMount() {
-
         const contacts = await listContacts()
         console.log("share contacts", contacts)
         console.log("received wallet", this.props.account)
