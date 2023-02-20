@@ -49,6 +49,8 @@ export function MakeNotification(arg1:manager.UXMessage):Promise<void>;
 
 export function MakeToast(arg1:manager.UXMessage):Promise<void>;
 
+export function NetworkChangeNotification():Promise<void>;
+
 export function NewListReadOnlyContainerContents(arg1:number):Promise<Array<manager.Element>>;
 
 export function NewWallet(arg1:string):Promise<void>;
@@ -70,6 +72,8 @@ export function RetrieveContacts():Promise<Array<manager.contact>>;
 export function SendSignal(arg1:string,arg2:any):Promise<void>;
 
 export function SetProgressPercentage(arg1:manager.ProgressMessage):Promise<void>;
+
+export function SetSelectedNetwork(arg1:string):Promise<manager.NetworkData>;
 
 export function SetWalletDebugging(arg1:string,arg2:string):Promise<void>;
 

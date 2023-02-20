@@ -90,6 +90,10 @@ export function MakeToast(arg1) {
   return window['go']['manager']['Manager']['MakeToast'](arg1);
 }
 
+export function NetworkChangeNotification() {
+  return window['go']['manager']['Manager']['NetworkChangeNotification']();
+}
+
 export function NewListReadOnlyContainerContents(arg1) {
   return window['go']['manager']['Manager']['NewListReadOnlyContainerContents'](arg1);
 }
@@ -132,6 +136,10 @@ export function SendSignal(arg1, arg2) {
 
 export function SetProgressPercentage(arg1) {
   return window['go']['manager']['Manager']['SetProgressPercentage'](arg1);
+}
+
+export function SetSelectedNetwork(arg1) {
+  return window['go']['manager']['Manager']['SetSelectedNetwork'](arg1);
 }
 
 export function SetWalletDebugging(arg1, arg2) {

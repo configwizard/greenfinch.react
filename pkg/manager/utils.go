@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/amlwwalker/greenfinch.react/pkg/config"
 	"github.com/atotto/clipboard"
 	"github.com/disintegration/imaging"
 	"github.com/nspcc-dev/neofs-sdk-go/container/acl"
@@ -20,6 +21,95 @@ import (
 	"time"
 )
 
+
+
+type Network string
+
+const mainnet Network = "mainnet"
+const testnet Network = "testnet"
+type NetworkData struct{
+	address string
+	sidechainRPC []string
+	storageNodes map[string]config.Peer
+	rpcNodes []string
+}
+
+var networks = map[Network]NetworkData{
+	"mainnet": {
+		address: "NNxVrKjLsRkWsmGgmuNXLcMswtxTGaNQLk",
+		sidechainRPC: []string{
+			"https://rpc1.morph.fs.neo.org:40341",
+			"https://rpc2.morph.fs.neo.org:40341",
+			"https://rpc3.morph.fs.neo.org:40341",
+			"https://rpc4.morph.fs.neo.org:40341",
+			"https://rpc5.morph.fs.neo.org:40341",
+			"https://rpc6.morph.fs.neo.org:40341",
+			"https://rpc7.morph.fs.neo.org:40341",
+		},
+		storageNodes: map[string]config.Peer{
+			"0": {
+				Address: "grpcs://st1.storage.fs.neo.org:8082",
+				Priority: 1,
+				Weight: 1,
+			},
+			"1": {
+				Address: "grpcs://st2.storage.fs.neo.org:8082",
+				Priority: 2,
+				Weight: 1,
+			},
+			"2": {
+				Address: "grpcs://st3.storage.fs.neo.org:8082",
+				Priority: 3,
+				Weight: 1,
+			},
+			"3": {
+				Address: "grpcs://st4.storage.fs.neo.org:8082",
+				Priority: 4,
+				Weight: 1,
+			},
+		},
+		rpcNodes: []string{
+			"https://rpc10.n3.nspcc.ru:10331",
+		},
+	},
+	"testnet": {
+		address: "NZAUkYbJ1Cb2HrNmwZ1pg9xYHBhm2FgtKV",
+		sidechainRPC: []string{
+			"https://rpc1.morph.t5.fs.neo.org:51331",
+			"https://rpc2.morph.t5.fs.neo.org:51331",
+			"https://rpc3.morph.t5.fs.neo.org:51331",
+			"https://rpc4.morph.t5.fs.neo.org:51331",
+			"https://rpc5.morph.t5.fs.neo.org:51331",
+			"https://rpc6.morph.t5.fs.neo.org:51331",
+			"https://rpc7.morph.t5.fs.neo.org:51331",
+		},
+		storageNodes: map[string]config.Peer{
+			"0": {
+				Address:  "grpcs://st1.t5.fs.neo.org:8082",
+				Priority: 1,
+				Weight:   1,
+			},
+			"1": {
+				Address:  "grpcs://st2.t5.fs.neo.org:8082",
+				Priority: 2,
+				Weight:   1,
+			},
+			"2": {
+				Address:  "grpcs://st3.t5.fs.neo.org:8082",
+				Priority: 3,
+				Weight:   1,
+			},
+			"3": {
+				Address:  "grpcs://st4.t5.fs.neo.org:8082",
+				Priority: 4,
+				Weight:   1,
+			},
+		},
+		rpcNodes: []string{
+			"https://rpc.t5.n3.nspcc.ru:20331",
+		},
+	},
+}
 func (m Manager) OpenInDefaultBrowser(txt string) error {
 	var err error
 	switch runtime.GOOS {

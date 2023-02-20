@@ -22,11 +22,11 @@ import (
 )
 
 type RPC_NETWORK string
-
-const (
-	RPC_TESTNET RPC_NETWORK = "https://rpc.t5.n3.nspcc.ru:20331/"
-	RPC_MAINNET RPC_NETWORK = "https://rpc.t5.n3.nspcc.ru:20331/"
-)
+//
+//const (
+//	RPC_TESTNET RPC_NETWORK = "https://rpc.t5.n3.nspcc.ru:20331/"
+//	RPC_MAINNET RPC_NETWORK = "https://rpc.t5.n3.nspcc.ru:20331/"
+//)
 
 func GenerateNewWallet(path string) (*wallet.Wallet, error) {
 	acc, err := wallet.NewAccount()

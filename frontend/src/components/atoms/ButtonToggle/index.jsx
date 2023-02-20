@@ -2,17 +2,35 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import './style.scss';
+import {setNetwork} from "../../../manager/manager";
 
 export const ToggleType = {
     DEFAULT: 'default'
 }
 
-const ButtonToggle = ({ type, toggleHeading, toggleName, toggleId }) => {
+const ButtonToggle = ({ type, toggleName, toggleId }) => {
 
     const [isToggled, setIsToggled] = useState(false);
-    const handleToggle = () => setIsToggled(!isToggled);
+    const [toggleHeading, setToggleHeading] = useState(isToggled ? "Main Net" : "Test Net")
+    const handleToggle = async () => {
+        console.log("value before setting ", isToggled)
+        await setIsToggled(!isToggled);
+    }
 
-    useEffect(() => console.log('UseEffect says Toggle Slider is active:',isToggled))
+    useEffect(async () => {
+        console.log('UseEffect says Toggle Slider is active:', isToggled)
+        console.log("value after setting ", isToggled)
+        //if its true, that means mainnet, if its false, that means testnet
+        if (isToggled) {
+            console.log("setting mainnet")
+            await setToggleHeading("Main Net")
+            await setNetwork("mainnet")
+        } else {
+            console.log("setting testnet")
+            await setToggleHeading("Test Net")
+            await setNetwork("testnet")
+        }
+    })
     
     return (
         <div className="switchWrapper d-flex">

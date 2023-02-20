@@ -32,7 +32,6 @@ const DrawerSettings = (props) => {
                         <ButtonToggle 
                            size={"small"}
                            type={"default"}
-                           toggleHeading={"Main Net"}
                            toogleName={"default"}
                            toggleId={"default"} />
                     </div>

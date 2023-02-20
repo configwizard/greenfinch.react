@@ -1,3 +1,13 @@
+const setNetwork = async (network) => {
+    try {
+        console.log("setting network to ", network)
+        let networkSettings = await window.go.manager.Manager.SetSelectedNetwork(network)
+        console.log("selected network ", networkSettings)
+    } catch (e) {
+        console.log("error setting network", e)
+    }
+}
+
 const getAccountInformation = async () => {
     try {
     let b = await window.go.manager.Manager.GetAccountInformation().then((balance, error) => {
@@ -93,6 +103,7 @@ const getVersion = async() => {
     }
 }
 export {
+    setNetwork,
     transferGasToContact,
     copyTextToClipboard,
     openInDefaultBrowser,

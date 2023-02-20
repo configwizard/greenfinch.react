@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/amlwwalker/greenfinch.react/pkg/cache"
-	"github.com/amlwwalker/greenfinch.react/pkg/config"
 	gspool "github.com/amlwwalker/greenfinch.react/pkg/pool"
 	"github.com/amlwwalker/greenfinch.react/pkg/tokens"
 	"github.com/machinebox/progress"
@@ -156,11 +155,11 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 		return nil, err
 	}
 	//for the time being we have to use a client directly
-	cfg, err := config.ReadConfig("cfg", m.configLocation)
-	if err != nil {
-		return nil, err
-	}
-	addr := cfg.Peers["0"].Address //we need to find the top priority addr really here
+	//cfg, err := config.ReadConfig("cfg", m.configLocation)
+	//if err != nil {
+	//	return nil, err
+	//}
+	addr := m.selectedNetwork.storageNodes["0"].Address//cfg.Peers["0"].Address //we need to find the top priority addr really here
 	prmCli := client.PrmInit{}
 	prmCli.SetDefaultPrivateKey(tmpKey)
 	var prmDial client.PrmDial
@@ -364,11 +363,11 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 		return nil, err
 	}
 
-	cfg, err := config.ReadConfig("cfg", m.configLocation)
-	if err != nil {
-		return nil, err
-	}
-	addr := cfg.Peers["0"].Address //we need to find the top priority addr really here
+	//cfg, err := config.ReadConfig("cfg", m.configLocation)
+	//if err != nil {
+	//	return nil, err
+	//}
+	addr := m.selectedNetwork.storageNodes["0"].Address
 
 	prmCli := client.PrmInit{}
 	prmCli.SetDefaultPrivateKey(tmpKey)

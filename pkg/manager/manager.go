@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/amlwwalker/greenfinch.react/pkg/cache"
-	"github.com/amlwwalker/greenfinch.react/pkg/config"
 	gspool "github.com/amlwwalker/greenfinch.react/pkg/pool"
 	"github.com/amlwwalker/greenfinch.react/pkg/wallet"
 	"github.com/blang/semver/v4"
@@ -71,6 +70,7 @@ type Manager struct {
 	walletPath, walletAddr string
 	gateAccount wal.Account
 	pool                   *pool.Pool
+	selectedNetwork NetworkData
 	//fsCli                  *neofscli.Client
 	//key                    *ecdsa.PrivateKey
 	version string
@@ -109,6 +109,23 @@ func (m *Manager) DomReady(ctx context.Context) {
 		m.MakeToast(tmp)
 		runtime.EventsEmit(m.ctx, "select_wallet", true)
 	}
+}
+//return the network addresses for the selected network
+func (m *Manager) SetSelectedNetwork(network string) (NetworkData, error) {
+	var ok bool
+	fmt.Println("received network ", network)
+	m.selectedNetwork, ok = networks[Network(network)]
+	if !ok {
+		return NetworkData{}, errors.New("no network with that name")
+	}
+	fmt.Println("selected network is network ", m.selectedNetwork)
+	//here, everything should be reset, new pool etc, any clients referencing should now get from the managers networkData object.
+	m.NetworkChangeNotification()//update the front end of network change
+	m.pool = nil //reload the pool for the new network
+	if _, err := m.Pool(); err != nil {
+		return NetworkData{}, err
+	}
+	return m.selectedNetwork, nil
 }
 
 func (m *Manager) GetVersion() string {
@@ -171,7 +188,9 @@ func (m *Manager) MakeToast(message UXMessage) {
 func (m *Manager) MakeNotification(message UXMessage) {
 	runtime.EventsEmit(m.ctx, "freshnotification", message)
 }
-
+func (m *Manager) NetworkChangeNotification() {
+	runtime.EventsEmit(m.ctx, "networkchanged", m.selectedNetwork)
+}
 func (m *Manager) SetProgressPercentage(progressMessage ProgressMessage) {
 	runtime.EventsEmit(m.ctx, "percentageProgress", progressMessage)
 }
@@ -185,22 +204,6 @@ func (m *Manager) Shutdown(ctx context.Context) {
 	// Perform your teardown here
 }
 
-//func (m *Manager) Search(search string) ([]filesystem.Element, error) {
-//	tmpFS, found := m.c.Get(CACHE_FILE_SYSTEM)
-//	if !found {
-//		return []filesystem.Element{}, errors.New("no filesystem in cache")
-//	}
-//	var results []filesystem.Element
-//	//now search the filesystem for a string comparison
-//	for _, v := range tmpFS.([]filesystem.Element) {
-//		if fnAttr, ok := v.Attributes[obj.AttributeFileName]; ok {
-//			if strings.Contains(fnAttr, search) {
-//				results = append(results, v)
-//			}
-//		}
-//	}
-//	return results, nil
-//}
 func NewFileSystemManager(version string, dbLocation string, DEBUG bool) (*Manager, error) {
 
 	//move config location to database for development if not set?
@@ -222,12 +225,9 @@ func NewFileSystemManager(version string, dbLocation string, DEBUG bool) (*Manag
 	return &Manager{
 		configLocation: wd,
 		gateAccount: *ephemeralAccount, //used to make requests to RPC endpoints and works on behalf of the user so never to expose their key anywhere
-		//walletPath: walletPath,
-		//walletAddr: walletAddr,
+		selectedNetwork: networks[Network("testnet")], //this should be set/stored in the database when the user selects it and once they have logged in update it.
 		version: version,
 		pool:    nil,
-		//key:        key, //this is holding the private key in memory - not good?
-		//c:          cache.New(1*time.Minute, 10*time.Minute),
 		ctx:   nil,
 		DEBUG: DEBUG,
 	}, nil
@@ -258,14 +258,17 @@ func (m *Manager) SetWalletDebugging(walletPath, password string) error {
 // todo we will want to have things dependent on the wallet controlled elsewhere with singletons and no other way of getting the value
 // todo remove the need to pass the private key to the api (usually for getOwnerID - however this should be passed into the backend
 func (m *Manager) Pool() (*pool.Pool, error) {
+	if m.wallet == nil { //i wonder if the pool can be the ephemeral wallet so we can make these requests quickly
+		return nil, errors.New("no wallet selected yet")
+	}
 	if m.pool == nil {
-		config, err := config.ReadConfig("cfg", m.configLocation)
-		if err != nil {
-			fmt.Println("error reading config ", err)
-			return nil, err
-		}
+		//config, err := config.ReadConfig("cfg", m.configLocation)
+		//if err != nil {
+		//	fmt.Println("error reading config ", err)
+		//	return nil, err
+		//}
 		//todo: this should be wallet connect pool
-		pl, err := gspool.GetPool(m.ctx, m.wallet.Accounts[0].PrivateKey().PrivateKey, config.Peers)
+		pl, err := gspool.GetPool(m.ctx, m.wallet.Accounts[0].PrivateKey().PrivateKey, m.selectedNetwork.storageNodes)
 		if err != nil {
 			fmt.Println("error getting pool with key ", err)
 			return nil, err
@@ -311,7 +314,7 @@ func (m *Manager) GetAccountInformation() (Account, error) {
 		runtime.EventsEmit(m.ctx, "select_wallet", true)
 		return Account{}, nil
 	}
-	balances, err := wallet.GetNep17Balances(w.Accounts[0].Address, wallet.RPC_TESTNET)
+	balances, err := wallet.GetNep17Balances(w.Accounts[0].Address, wallet.RPC_NETWORK(m.selectedNetwork.rpcNodes[0]))
 	if err != nil {
 		return Account{}, err
 	}

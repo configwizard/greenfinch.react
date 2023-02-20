@@ -33,7 +33,7 @@ func (m *Manager) TransferToken(recipient string, amount float64) (string, error
 		return "", err
 	}
 
-	c, err := rpcclient.New(context.Background(), string(wallet.RPC_TESTNET), rpcclient.Options{})
+	c, err := rpcclient.New(context.Background(), m.selectedNetwork.rpcNodes[0], rpcclient.Options{})
 
 	if err != nil {
 		return "", err
@@ -76,7 +76,7 @@ func (m *Manager) TopUpNeoWallet(amount float64) (string, error) {
 	} else {
 		amount = math.Floor(amount * math.Pow(10, 8))
 	}
-	token, err := m.TransferToken("NZAUkYbJ1Cb2HrNmwZ1pg9xYHBhm2FgtKV", amount)
+	token, err := m.TransferToken(m.selectedNetwork.address, amount)
 	if err != nil {
 		fmt.Println("transfer token error ", err)
 	}
@@ -128,10 +128,7 @@ func (m *Manager) NewWallet(password string) error {
 		Description: "You will need to transfer the wallet some gas. Then you will need to transfer to NeoFS. Your wallet",
 	}
 	m.MakeToast(NewToastMessage(&tmp))
-	//if _, err = m.Client(); err != nil {
-	//	fmt.Println("error retrieving client: ", err)
-	//	return err
-	//}
+
 	runtime.EventsEmit(m.ctx, "fresh_wallet", w.Accounts[0])
 	runtime.EventsEmit(m.ctx, "select_wallet", false)
 
