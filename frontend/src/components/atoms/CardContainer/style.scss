@@ -1,6 +1,14 @@
 @import "../../../assets/dashboard-variables.scss";
 @import "../../../assets/greenfinch-variables.scss";
 
+.atmButtonGridHeader {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    border-radius: 0;
+    background: none;
+}
+
 /* Styles: File icons
 - - - - - - - - - - - - - - - - - - */
 .file-icon {
@@ -46,42 +54,3 @@
     }
 }
 
-.atmButtonGridHeader {
-    width: 100%;
-    padding: 0;
-    margin: 0;
-    border-radius: 0;
-    background: none;
-}
-
-.atmButtonGridContent {
-    width: 100%;
-    padding-top: $paddingXSmall;
-    padding-bottom: $paddingSmall;
-    border-radius: 0;
-    background: none;
-    & .atmButtonGridName {
-        color: $brandColorSecondary-dark;
-        font-size: 0.75rem;
-        font-family: $brandFontSemi;
-        margin-top: $marginXSmall;
-        margin-bottom: 2px;
-        max-width: 150px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        &:hover {
-            cursor: pointer;
-        }
-        & i {
-            color: $brandColorPrimary;
-        }
-    }
-}
-
-.atmButtonGridContent {
-    & img {
-        border: 3px $brandColorWhite solid;
-        box-shadow: 0 0 5px rgba(0,0,0,0.2);
-    }
-}

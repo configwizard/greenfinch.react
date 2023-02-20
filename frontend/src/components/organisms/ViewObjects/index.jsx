@@ -5,7 +5,7 @@ import { ObjectGrid, ObjectRow } from './Object';
 
 import './style.scss';
 
-function ViewObjects({shared, onDelete, objectList, onObjectSelection, objectsLoaded, viewMode}) {
+function ViewObjects({shared, onDelete, objectList, onObjectSelection, objectsLoaded, viewMode }) {
     console.log("objectList", objectList)
 
     if (viewMode === "grid") {

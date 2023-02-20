@@ -102,8 +102,14 @@ function retrieveCorrectComponent(state, onObjectSelection, onObjectDelete, onOb
                 </div>
                 <div className="col-6">
                     <div className="orgContainersGrid">
-                        <div className="row">
-                            <ViewObjects shared={state.shared} objectsLoaded={state.objectsLoaded} onDelete={onObjectDelete} objectList={state.objectList} viewMode={state.viewMode} onObjectSelection={onObjectSelection}></ViewObjects>
+                        <div className="templateWrapper">
+                            <div className="templateInner">
+
+                                <div className="row">
+                                    <ViewObjects shared={state.shared} objectsLoaded={state.objectsLoaded} onDelete={onObjectDelete} objectList={state.objectList} viewMode={state.viewMode} onObjectSelection={onObjectSelection}></ViewObjects>
+                                </div>
+
+                            </div>
                         </div>
                     </div>
                 </div>
