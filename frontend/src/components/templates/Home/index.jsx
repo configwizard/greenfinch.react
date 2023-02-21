@@ -13,14 +13,14 @@ import '../_settings/style.scss';
 
 const TemplateHome = ({ account, recentWallets, refreshRecentWallets }) => {
     return (
-        <div class="templatePage d-flex flex-column flex-grow-1">
-            <div class="row">
+        <div className="templatePage d-flex flex-column flex-grow-1">
+            <div className="row">
                 <div className="col-12">
                     <HeaderPage 
                         pageTitle={"Welcome to Greenfinch"} 
                         hasButton={false}/>
-                    <div class="row">
-                        <div class="col-6">
+                    <div className="row">
+                        <div className="col-6">
                             <div className="templateWrapper">
                                 <div className="templateInner">
                                     <SectionHomepage
@@ -47,7 +47,7 @@ const TemplateHome = ({ account, recentWallets, refreshRecentWallets }) => {
                                 </div>
                             </div>
                         </div>
-                        <div class="col-6">
+                        <div className="col-6">
                             <div className="templateWrapper">
                                 <div className="templateInner">
                                     <div className="d-flex">

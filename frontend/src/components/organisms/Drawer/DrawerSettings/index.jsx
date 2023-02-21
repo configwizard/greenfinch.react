@@ -25,9 +25,9 @@ const DrawerSettings = (props) => {
                         {/*
                             <Dropdown></Dropdown>
                         */}
-                        {/* <div class="dropdown">
-                            <button onclick="myFunction()" class="dropbtn">Dropdown</button>
-                            <div id="myDropdown" class="dropdown-content">
+                        {/* <div className="dropdown">
+                            <button onclick="myFunction()" className="dropbtn">Dropdown</button>
+                            <div id="myDropdown" className="dropdown-content">
                                 <a href="#server01">Server 01</a>
                                 <a href="#server02">Server 02</a>
                                 <a href="#contact03">Server 03</a>

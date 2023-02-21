@@ -135,8 +135,8 @@ class Containers extends React.Component {
     render() {
         console.log("props/state account", this.props.account, this.state.account)
         return (
-            <div class="templatePage d-flex flex-column flex-grow-1">
-                <div class="row">
+            <div className="templatePage d-flex flex-column flex-grow-1">
+                <div className="row">
                     <div className="col-12">
                         <ContainerHeaderPage 
                             pageTitle={"Containers"} 

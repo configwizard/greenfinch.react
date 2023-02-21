@@ -15,7 +15,7 @@ function OverlayMenu(props) {
         props.show ? 
             <div onClick={() => props.setShowMenu(false)}>
                 <div className="utOverlayMenuSmall" onClick={e => e.stopPropagation()}>
-                    <nav class="nav flex-column align-items-start">
+                    <nav className="nav flex-column align-items-start">
                         { props.type === "object" ?  
                             <>
                                 {/* <button className="atmButtonBase nav-link" onClick={props.view}><i className="fas fa-eye"/>&nbsp;View</button>*/}

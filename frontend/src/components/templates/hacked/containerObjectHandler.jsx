@@ -43,9 +43,15 @@ function retrieveCorrectComponent(state, onObjectSelection, onObjectDelete, onOb
                 </div>
                 <div className="col-9">
                     <div className="orgContainersGrid">
-                        <div className="row">
-                            <ViewContainers containerList={state.containerList} onDelete={onContainerDelete} viewMode={state.viewMode} onContainerSelection={onContainerSelection}></ViewContainers>
+
+                        <div className="templateWrapper">
+                            <div className="templateInner">
+                                <div className="row">
+                                    <ViewContainers containerList={state.containerList} onDelete={onContainerDelete} viewMode={state.viewMode} onContainerSelection={onContainerSelection}></ViewContainers>
+                                </div>
+                            </div>
                         </div>
+
                     </div>
                 </div>
             </>
@@ -80,7 +86,7 @@ function retrieveCorrectComponent(state, onObjectSelection, onObjectDelete, onOb
                         isUppercase={true}
                         text={"Container size"}/>
                     <span>{fileSize(state.selectedContainer.size)}</span>
-                    <div class="buttonStack">
+                    <div className="buttonStack">
                         <ContainerInfoButton
                             containerName={state.selectedContainer.containerName}
                             containerId={state.selectedContainer.containerID}
@@ -101,23 +107,23 @@ function retrieveCorrectComponent(state, onObjectSelection, onObjectDelete, onOb
                     </div>
                 </div>
                 <div className="col-6">
-                    <div className="orgContainersGrid">
+                    <div className="orgObjectsGrid">
+
                         <div className="templateWrapper">
                             <div className="templateInner">
-
                                 <div className="row">
                                     <ViewObjects shared={state.shared} objectsLoaded={state.objectsLoaded} onDelete={onObjectDelete} objectList={state.objectList} viewMode={state.viewMode} onObjectSelection={onObjectSelection}></ViewObjects>
                                 </div>
-
                             </div>
                         </div>
+
                     </div>
                 </div>
                 <div className="col-3">
                     { state.selectedObject ?
                         <>
                             <div className="object-data" id={"objectData"}>
-                                <figure>
+                                <figure class="atmObjectThumbnail">
                                     <img className="mw-100" src={`data:image/png;base64,${state.selectedObject.objectFile}`} alt={state.selectedObject.objectName} />
                                 </figure>
                                 <HeadingGeneral
@@ -129,7 +135,7 @@ function retrieveCorrectComponent(state, onObjectSelection, onObjectDelete, onOb
                                     isUppercase={true}
                                     text={"Object ID"}/>
                                     <span>{state.selectedObject.objectID || null}</span>
-                                <div class="buttonStack">
+                                <div className="buttonStack">
                                     <ObjectInfoButton
                                         objectFile={state.selectedObject.objectFile}
                                         objectName={state.selectedObject.objectName}
