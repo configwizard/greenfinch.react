@@ -18,6 +18,7 @@
     "react-bootstrap": "^2.1.1",
     "react-dom": "^17.0.2",
     "react-json-view": "^1.21.3",
+    "react-middle-ellipsis": "^1.2.2",
     "react-moment": "^1.1.1",
     "react-onclickoutside": "^6.12.1",
     "react-router-dom": "^6.3.0",
