@@ -83,7 +83,7 @@ func thumbnail(ioReader io.Reader) ([]byte, error) {
 	width := float64(point.Y)
 	height := float64(point.X)
 	var ratio float64
-	fixedSize := 80.
+	fixedSize := 180.
 	if width > height {
 		fmt.Println("width > height")
 		ratio = fixedSize / width

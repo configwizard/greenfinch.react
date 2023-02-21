@@ -80,16 +80,18 @@ class Containers extends React.Component {
         console.log("container selected object list", objectList)
         this.setState({...state, selectedContainer, objectList, objectsLoaded: true})
     }
-    onObjectSelection = async (objectID, objectName, objectFile) => {
+    onObjectSelection = async (objectID, objectName, objectFile, size, objectOrigin) => {
         if (this.state.selectedContainer == null) {
             throw new Error("cannot retrieve an object from non existent container")
         }
-        console.log("selected", objectID, objectName)
+        console.log("selected", objectID, objectName, objectOrigin)
         //we will need to call the function to get the objects for a specific container ID and update the objectList
         const selectedObject = {
             objectID,
             objectName,
-            objectFile
+            objectFile,
+            size,
+            objectOrigin
         }
         let state = this.state
         this.setState({...state, selectedObject})

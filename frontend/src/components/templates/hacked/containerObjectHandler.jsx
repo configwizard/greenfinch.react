@@ -16,7 +16,6 @@ import ContainerDeleteButton from "../../organisms/ContainerDeleteButton";
 import ObjectInfoButton from "../../organisms/ObjectInfoButton";
 import {openInDefaultBrowser} from "../../../manager/manager";
 
-// Central style sheet for templates
 import '../_settings/style.scss';
 
 const selectPermission = (rawPermission) => {
@@ -123,7 +122,7 @@ function retrieveCorrectComponent(state, onObjectSelection, onObjectDelete, onOb
                     { state.selectedObject ?
                         <>
                             <div className="object-data" id={"objectData"}>
-                                <figure class="atmObjectThumbnail">
+                                <figure className="atmObjectThumbnail">
                                     <img className="mw-100" src={`data:image/png;base64,${state.selectedObject.objectFile}`} alt={state.selectedObject.objectName} />
                                 </figure>
                                 <HeadingGeneral
@@ -135,11 +134,23 @@ function retrieveCorrectComponent(state, onObjectSelection, onObjectDelete, onOb
                                     isUppercase={true}
                                     text={"Object ID"}/>
                                     <span>{state.selectedObject.objectID || null}</span>
+                                <HeadingGeneral
+                                    level={"h6"}
+                                    isUppercase={true}
+                                    text={"Object Size"}/>
+                                    <span>{fileSize(state.selectedObject.size)}</span>
+                                <HeadingGeneral
+                                    level={"h6"}
+                                    isUppercase={true}
+                                    text={"Object Timestamp"}/>
+                                    <span><Moment unix format="DD MMM YY">{state.selectedObject.objectOrigin}</Moment></span>
                                 <div className="buttonStack">
                                     <ObjectInfoButton
+                                        objectId={state.selectedObject.objectID}
                                         objectFile={state.selectedObject.objectFile}
                                         objectName={state.selectedObject.objectName}
-                                        objectId={state.selectedObject.objectID} />
+                                        objectOrigin={state.selectedObject.objectOrigin}
+                                        objectSize={state.selectedObject.size} />
                                     <ContainerPreviewButton 
                                         icon="fas fa-download" 
                                         text="Download this object" 

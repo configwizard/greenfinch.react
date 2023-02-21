@@ -4,8 +4,10 @@ import React from 'react';
 import ButtonText from '../../atoms/ButtonText';
 import { useModal } from '../Modal/ModalContext';
 import CompModalStandard from '../Modal/ModalStandard';
+import Moment from "react-moment";
+import {fileSize} from "humanize-plus";
 
-const ObjectInfo = ({ objectName, objectId, objectFile }) => {
+const ObjectInfo = ({ objectName, objectId, objectFile, objectSize, objectOrigin }) => {
     const { setModal, unSetModal } = useModal()
     return (
         <ButtonText
@@ -27,6 +29,10 @@ const ObjectInfo = ({ objectName, objectId, objectFile }) => {
                         <p>{objectName}</p>
                         <h6>Object ID:</h6>
                         <p>{objectId}</p>
+                        <h6>Object Size:</h6>
+                        <p>{fileSize(objectSize)}</p>
+                        <h6>Object Timestamp:</h6>
+                        <p><Moment unix format="DD MMM YY">{objectOrigin}</Moment></p>
                 </CompModalStandard>)
             }} />
     )

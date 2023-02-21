@@ -1,14 +1,11 @@
 import React from 'react';
-import { Form } from 'react-bootstrap';
 
 // Components
-import HeaderPage from '../../organisms/HeaderPage';
-import { useModal } from '../../organisms/Modal/ModalContext';
-import CompModalStandard from '../../organisms/Modal/ModalStandard';
-// import ViewContainers from '../../organisms/ViewContainers';
 import SharedContainerHeaderPage from '../../organisms/HeaderPage/SharedContainerHeaderPage';
+
 // Central style sheet for templates
 import '../_settings/style.scss';
+
 import {addSharedContainer, removeSharedContainer, listSharedContainers} from "../../../manager/sharedContainers";
 import ViewContainers from "../../organisms/ViewContainers";
 import {getObject, listObjects} from "../../../manager/objects";
