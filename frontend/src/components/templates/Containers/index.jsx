@@ -109,7 +109,7 @@ class Containers extends React.Component {
             objectOrigin
         }
         let state = this.state
-        this.setState({...state, selectedObject})
+        await this.setState({...state, selectedObject})
         // await getObject(objectName, objectID, this.state.selectedContainer.containerID)
         console.log('state after selecting object', this.state)
     }

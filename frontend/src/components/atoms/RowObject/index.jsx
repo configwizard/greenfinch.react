@@ -6,21 +6,25 @@ import { fileSize } from 'humanize-plus';
 
 import './style.scss';
 
-const RowObject = ({ onClick, objectName, objectSize, objectOrigin }) => {
+const RowObject = ({ onClick, dataType, objectFile, objectName, objectSize, objectOrigin }) => {
     return (
         <>
-             <div className="atmRowList">
-                <button 
-                    type="button" 
-                    className="atmButtonRowContent"
-                    onClick={onClick}
-                    >
-                        <i className="fas fa-folder"/>
+            <button 
+                type="button" 
+                className="atmButtonRowContent"
+                onClick={onClick}>
+                
+                <div className="atmRowList d-flex flex-row flex-grow-1">
+                    <div class="imagewrapper d-flex align-items-center">
+                        { objectFile ? <figure className="atmRowFile d-flex align-items-center justify-content-center"><img className="mw-100 mh-100" src={`data:image/png;base64,${objectFile}`} alt={objectName} /></figure> : <i className="fas fa-folder" data-type={dataType}/> }
+                    </div>
+                    <div>    
                         <span className="atmButtonRowName">{objectName}</span>
-                </button>
-            </div>
-            <div className="atmRowList">{fileSize(objectSize)}</div>
-            <div className="atmRowList"><Moment unix format="DD MMM YY">{objectOrigin}</Moment></div>
+                    </div>
+                    <div>{fileSize(objectSize)}</div>
+                    <div><Moment unix format="DD MMM YY">{objectOrigin}</Moment></div>
+                </div>
+            </button>  
         </>
     )
 }

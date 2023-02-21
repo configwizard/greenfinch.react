@@ -2,6 +2,9 @@
 @import "../../../assets/greenfinch-variables.scss";
 
 // TO SORT This is replicated in ViewContainers
+
+$rowdimension: 36px;
+
 .molButtonGrid {
     margin-bottom: $marginXSmall;
     background-color: rgba($brandColorSecondary, 0.03);
@@ -16,8 +19,8 @@
         }
     }
     & .atmButtonOptions {
-        width: 30px;
-        height: 30px;
+        width: $rowdimension;
+        height: $rowdimension;
         position: relative;
         border-radius: 0;
         background-color: rgba($brandColorSecondary, 0.04);
@@ -41,9 +44,10 @@
 }
 
 .molButtonRow {
+    height: calc($rowdimension + 2px);
     & .atmButtonOptions {
-        width: 30px;
-        height: 30px;
+        width: $rowdimension;
+        height: $rowdimension;
         position: relative;
         border-radius: 0;
         background-color: rgba($brandColorSecondary, 0.04);
@@ -65,13 +69,50 @@
         text-align: left;
         color: $brandColorDark;
     }
-    & .atmRowList {
-        width: 200px;
-        font-family: $brandFontSemi;
-        color: $brandColorDark;
-        font-size: 0.7rem;
-        &:first-child {
-            width: 400px;
+    /*
+        & .atmRowList {
+            width: 200px;
+            font-family: $brandFontSemi;
+            color: $brandColorDark;
+            font-size: 0.7rem;
+            &:first-child {
+                width: 400px;
+            }
+        }
+    */
+    & .atmButtonRowContent {
+        width: 100%;
+        height: $rowdimension;
+        padding: 0;
+        &:hover {
+            cursor:pointer;
         }
     }
+}
+
+
+
+.atmRowList {
+    font-family: $brandFontSemi;
+    color: $brandColorDark;
+    font-size: 0.7rem;
+}
+
+.atmRowCheck {
+    width: $rowdimension;
+}
+
+.atmRowMenu {
+    width: $rowdimension;
+}
+
+.atmRowFile {
+    height: $rowdimension;
+    width: $rowdimension;
+}
+
+.imagewrapper {
+    background-color: rgba(0,0,0,0.2);
+    height: $rowdimension;
+    margin-right: 7px;
 }
