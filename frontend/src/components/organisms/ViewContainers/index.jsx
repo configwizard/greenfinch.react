@@ -13,7 +13,7 @@ class ViewContainers extends React.Component {
         console.log("containerList", containerList)
         if (viewMode === "grid") {
         return (
-            <div className="row g-1">
+            <div className="row g-2">
                 {containerList.map((item, i) =>
                     <div className="col-6 col-md-4 col-xl-3" key={i}>
                         <div className="molButtonGrid">
@@ -25,7 +25,7 @@ class ViewContainers extends React.Component {
         )
         } else {
             return (
-                <div className="row">
+                <div className="row g-2">
                     {containerList.map((item, i) =>
                         <div className="col-12" key={i}>
                             <div className="molButtonRow">
