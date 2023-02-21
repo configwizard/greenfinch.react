@@ -10,6 +10,13 @@ class PageContacts extends React.Component {
         this.state = {contacts: []}
     }
     async componentDidMount() {
+        window.runtime.EventsOn("networkchanged", async (message) => {
+            console.log("refreshing contacts")
+            await this.refreshContacts()
+        })
+        await this.refreshContacts()
+    }
+    async refreshContacts() {
         const contacts = await listContacts()
         console.log("mounted and received", contacts)
         this.setState({contacts})

@@ -186,17 +186,35 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 		log.Println("error writing object header ", err)
 		return nil, err
 	}
+	var cancelUpload chan bool
 	go func() {
 		defer wg.Done()
 		progressChan := progress.NewTicker(m.ctx, reader, fileStats.Size(), 50*time.Millisecond)
 		for p := range progressChan {
-			fmt.Printf("\r%v remaining...", p.Remaining().Round(50*time.Millisecond))
-			tmp := NewProgressMessage(&ProgressMessage{
-				Title:    "Uploading object",
-				Progress: int(p.Percent()),
-				Show:     true,
-			})
-			m.SetProgressPercentage(tmp)
+			select {
+				case <-cancelUpload:
+					tmp := NewProgressMessage(&ProgressMessage{
+						Title:    "Uploading object",
+						Show:     false,
+					})
+					m.SetProgressPercentage(tmp)
+					var o interface{}
+					m.SendSignal("freshUpload", o)
+					m.MakeToast(NewToastMessage(&UXMessage{
+						Title:       "Uploading cancelled",
+						Type:        "error",
+						Description: "Uploading " + filename + " failed",
+					}))
+					return
+			default:
+				fmt.Printf("\r%v remaining...", p.Remaining().Round(50*time.Millisecond))
+				tmp := NewProgressMessage(&ProgressMessage{
+					Title:    "Uploading object",
+					Progress: int(p.Percent()),
+					Show:     true,
+				})
+				m.SetProgressPercentage(tmp)
+			}
 		}
 		end := NewProgressMessage(&ProgressMessage{
 			Title: "Uploading object",
@@ -227,6 +245,13 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 	}
 	res, err := objWriter.Close()
 	if err != nil {
+		cancelUpload <- true
+		m.MakeNotification(NotificationMessage{
+			Title:       "Upload failed",
+			Type:        "error",
+			Description: fmt.Sprintf("Failed to create object due to: %s", err.Error()),
+			MarkRead:    false,
+		})
 		return nil, err
 	}
 	fmt.Println("res error", res.Status())
@@ -248,6 +273,12 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 		return []Element{}, err
 	} else {
 		if err := cache.StoreObject(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID, objectID.String(), data); err != nil {
+			m.MakeNotification(NotificationMessage{
+				Title:       "Upload failed",
+				Type:        "error",
+				Description: fmt.Sprintf("Failed to store object due to: %s", err.Error()),
+				MarkRead:    false,
+			})
 			return []Element{}, err
 		}
 	}
@@ -410,6 +441,7 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 		log.Println("res for failure to read header ", res.Status())
 		return nil, errors.New(fmt.Sprintf("error with reading header %s\r\n", res.Status()))
 	}
+	var cancelDownload chan bool
 	c := progress.NewWriter(writer)
 	wg := sync.WaitGroup{}
 	wg.Add(1)
@@ -417,7 +449,22 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 		defer wg.Done()
 		progressChan := progress.NewTicker(m.ctx, c, int64(dstObject.PayloadSize()), 50*time.Millisecond)
 		for p := range progressChan {
-			fmt.Printf("\r%v remaining...", p.Remaining().Round(50*time.Millisecond))
+
+			select {
+			case <-cancelDownload:
+				tmp := NewProgressMessage(&ProgressMessage{
+					Title: "Downloading object",
+					Show:  false,
+				})
+				m.SetProgressPercentage(tmp)
+				m.MakeToast(NewToastMessage(&UXMessage{
+					Title:       "Downloading cancelled",
+					Type:        "error",
+					Description: "Downloading " + path.Base(fp) + " failed",
+				}))
+				return
+			default:
+				fmt.Printf("\r%v remaining...", p.Remaining().Round(50*time.Millisecond))
 				tmp := NewProgressMessage(&ProgressMessage{
 					Title:    "Downloading object",
 					Progress: int(p.Percent()),
@@ -425,19 +472,20 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 				})
 				m.SetProgressPercentage(tmp)
 			}
-			tmp := NewToastMessage(&UXMessage{
-				Title:       "Download complete",
-				Type:        "success",
-				Description: "Downloading " + path.Base(fp) + " complete",
-			})
-			m.MakeToast(tmp)
-			//auto close the progress bar
-			end := NewProgressMessage(&ProgressMessage{
-				Title: "Downloading object",
-				Show:  false,
-			})
-			m.SetProgressPercentage(end)
-			fmt.Println("\rdownload is completed")
+		}
+		tmp := NewToastMessage(&UXMessage{
+			Title:       "Download complete",
+			Type:        "success",
+			Description: "Downloading " + path.Base(fp) + " complete",
+		})
+		m.MakeToast(tmp)
+		//auto close the progress bar
+		end := NewProgressMessage(&ProgressMessage{
+			Title: "Downloading object",
+			Show:  false,
+		})
+		m.SetProgressPercentage(end)
+		fmt.Println("\rdownload is completed")
 	}()
 	buf := make([]byte, 1024)
 	for {
@@ -454,6 +502,13 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 	}
 	res, err := objReader.Close()
 	if err != nil {
+		cancelDownload <- true
+		m.MakeNotification(NotificationMessage{
+			Title:       "Download failed",
+			Type:        "error",
+			Description: fmt.Sprintf("Failed to download object due to: %s", err.Error()),
+			MarkRead:    false,
+		})
 		return nil, err
 	}
 	fmt.Println("res error", res.Status())
