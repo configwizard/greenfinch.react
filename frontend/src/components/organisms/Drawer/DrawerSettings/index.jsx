@@ -29,7 +29,7 @@ const DrawerSettings = (props) => {
                 <div className="offcanvas-body">
 
                     <div className="molDrawerRow">
-                        <ButtonToggle 
+                        <ButtonToggle
                            size={"small"}
                            type={"default"}
                            toogleName={"default"}

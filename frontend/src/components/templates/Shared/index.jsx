@@ -75,8 +75,8 @@ class SharedContainers extends React.Component {
 // const TemplateShared = () => {
 //     const { setModal, unSetModal } = useModal()
         return (
-            <div class="templatePage d-flex flex-column flex-grow-1">
-                <div class="row">
+            <div className="templatePage d-flex flex-column flex-grow-1">
+                <div className="row">
                     <div className="col-12">
                         <SharedContainerHeaderPage
                             pageTitle={"Containers shared with me"}

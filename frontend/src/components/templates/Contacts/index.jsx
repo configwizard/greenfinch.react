@@ -14,8 +14,8 @@ import '../_settings/style.scss';
 const TemplateContacts = ({contacts, createContact, deleteContact}) => {
     const { setModal, unSetModal } = useModal()
     return (
-        <div class="templatePage d-flex flex-column flex-grow-1">
-            <div class="row">
+        <div className="templatePage d-flex flex-column flex-grow-1">
+            <div className="row">
                 <div className="col-12">
                     <HeaderPage 
                         pageTitle={"Greenfinch contacts"}
@@ -70,8 +70,8 @@ const TemplateContacts = ({contacts, createContact, deleteContact}) => {
                                         </Form.Group>
                             </CompModalStandard>)
                         }}/>
-                    <div class="row">
-                        <div class="col-12">
+                    <div className="row">
+                        <div className="col-12">
                             <div className="templateWrapper">
                                 <div className="templateInner">
                                     {contacts.length > 0 ? <AddressBook contacts={contacts} deleteContact={deleteContact}/>

@@ -13,17 +13,18 @@
 }
 
 .templateWrapper {
-    height: calc(100vh - $heightHeader - $heightPageHeader - $heightFooter - $marginSmall);
+    height: calc(100vh - $heightHeader - $heightPageHeader - $heightFooter - 80px);
     margin-right: $marginSmall; // To allow for scroll-bar width
     overflow-y: scroll;
 }
 
 .templateInner {
     margin: 0 $marginSmall;
+    margin-bottom: $marginSmall;
 }
 
 .containerOptions {
-    margin-right: $marginSmall;
+    margin-right: $marginMedium;
     margin-bottom: $marginMedium;
 }
 
@@ -71,4 +72,8 @@ ol.home-ol {
     font-size: 0.8rem;
     line-height: 1.2;
     font-family: $brandFontSemi;
+}
+
+.atmObjectThumbnail {
+    margin: 12px auto 8px;
 }

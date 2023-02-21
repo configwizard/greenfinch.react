@@ -9,7 +9,7 @@ const CardObject = ({ onClick, dataType, objectFile, objectName }) => {
             type="button"
             className="atmButtonGridContent d-flex flex-column align-items-center justify-content-between"
             onClick={onClick}>
-            { objectFile ? <img src={`data:image/png;base64,${objectFile}`} alt={objectName} /> : <div className="file-icon file-icon-lg" data-type={dataType}></div> }
+            { objectFile ? <figure className="d-flex align-items-center justify-content-center"><img src={`data:image/png;base64,${objectFile}`} alt={objectName} /></figure> : <div className="file-icon file-icon-lg" data-type={dataType}></div> }
                 <span className="atmButtonGridName">{objectName}</span>
         </button>
     )
