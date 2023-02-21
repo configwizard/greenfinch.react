@@ -43,10 +43,6 @@
     }
 }
 
-.object-data {
-    // margin-top: $marginLarge;
-}
-
 ol.home-ol {
     margin-top: $marginSmall;
     margin-left: $marginLarge;
@@ -75,5 +71,8 @@ ol.home-ol {
 }
 
 .atmObjectThumbnail {
-    margin: 12px auto 8px;
+    margin: 8px auto 24px;
+    & img {
+        border: 1px solid rgba($brandColorDark, 0.1);
+    }
 }

@@ -134,8 +134,8 @@ func main() {
 	// Create application with options
 	//here ---
 	err = wails.Run(&options.App{
-		// Title:  "Greenfinch",
-		Width:     1280,
+		// Title:  "Greenfinch", origin width: 1280
+		Width:     1440,
 		Height:    960,
 		MinWidth:  960,
 		MinHeight: 660,
