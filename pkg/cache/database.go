@@ -12,6 +12,8 @@ var once sync.Once
 var db *bolt.DB
 
 const recentWallets = "recent_wallets"
+const mainnetBucket = "mainnet"
+const testnetBucket = "testnet"
 
 func DB(dbPath string) *bolt.DB {
 	once.Do(func() {
@@ -34,36 +36,51 @@ func CreateWalletBucket(wallet, walletLocation string) error {
 		if err != nil {
 			return err
 		}
-		userBucket, err := tx.CreateBucketIfNotExists([]byte(wallet))
+		mainNetBucket, err := tx.CreateBucketIfNotExists([]byte(mainnetBucket))
 		if err != nil {
 			return err
 		}
-		_, err = userBucket.CreateBucketIfNotExists([]byte(containerBucket))
+		createChildBucketsForNetwork(wallet, mainNetBucket)
 		if err != nil {
-			return fmt.Errorf("creating bucket failed: %s", err)
+			return err
 		}
-		_, err = userBucket.CreateBucketIfNotExists([]byte(sharedContainerBucket))
+		testNetBucket, err := tx.CreateBucketIfNotExists([]byte(testnetBucket))
 		if err != nil {
-			return fmt.Errorf("creating bucket failed: %s", err)
+			return err
 		}
-		_, err = userBucket.CreateBucketIfNotExists([]byte(sharedObjectBucket))
-		if err != nil {
-			return fmt.Errorf("creating bucket failed: %s", err)
-		}
-		_, err = userBucket.CreateBucketIfNotExists([]byte(objectBucket))
-		if err != nil {
-			return fmt.Errorf("creating bucket failed: %s", err)
-		}
-		_, err = userBucket.CreateBucketIfNotExists([]byte(addressBookBucket))
-		if err != nil {
-			return fmt.Errorf("creating bucket failed: %s", err)
-		}
-		_, err = userBucket.CreateBucketIfNotExists([]byte(notificationBucket))
-		if err != nil {
-			return fmt.Errorf("creating bucket failed: %s", err)
-		}
-		return err
+		return createChildBucketsForNetwork(wallet, testNetBucket)
 	})
+}
+func createChildBucketsForNetwork(wallet string, network *bolt.Bucket) error {
+	userBucket, err := network.CreateBucketIfNotExists([]byte(wallet))
+	if err != nil {
+		return err
+	}
+	_, err = userBucket.CreateBucketIfNotExists([]byte(containerBucket))
+	if err != nil {
+		return fmt.Errorf("creating bucket failed: %s", err)
+	}
+	_, err = userBucket.CreateBucketIfNotExists([]byte(sharedContainerBucket))
+	if err != nil {
+		return fmt.Errorf("creating bucket failed: %s", err)
+	}
+	_, err = userBucket.CreateBucketIfNotExists([]byte(sharedObjectBucket))
+	if err != nil {
+		return fmt.Errorf("creating bucket failed: %s", err)
+	}
+	_, err = userBucket.CreateBucketIfNotExists([]byte(objectBucket))
+	if err != nil {
+		return fmt.Errorf("creating bucket failed: %s", err)
+	}
+	_, err = userBucket.CreateBucketIfNotExists([]byte(addressBookBucket))
+	if err != nil {
+		return fmt.Errorf("creating bucket failed: %s", err)
+	}
+	_, err = userBucket.CreateBucketIfNotExists([]byte(notificationBucket))
+	if err != nil {
+		return fmt.Errorf("creating bucket failed: %s", err)
+	}
+	return err
 }
 
 func RecentWallets() (map[string]string, error) {

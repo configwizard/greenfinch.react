@@ -1,25 +1,34 @@
 package cache
 
 import (
+	"errors"
 	"fmt"
 	"github.com/boltdb/bolt"
 )
 
 const containerBucket = "containers"
 
-func StoreContainer(wallet, id string, container []byte) error {
+func StoreContainer(wallet, network, id string, container []byte) error {
 	return db.Update(func(tx *bolt.Tx) error {
-		ub := tx.Bucket([]byte(wallet))
+		nb := tx.Bucket([]byte(network))
+		if nb == nil {
+			return errors.New("no bucket for " + network)
+		}
+		ub := nb.Bucket([]byte(wallet))
 		b := ub.Bucket([]byte(containerBucket))
 		err := b.Put([]byte(id), container)
 		return err
 	})
 }
 
-func RetrieveContainer(wallet, id string) ([]byte, error) {
+func RetrieveContainer(wallet, network, id string) ([]byte, error) {
 	var container []byte
 	err := db.View(func(tx *bolt.Tx) error {
-		ub := tx.Bucket([]byte(wallet))
+		nb := tx.Bucket([]byte(network))
+		if nb == nil {
+			return errors.New("no bucket for " + network)
+		}
+		ub := nb.Bucket([]byte(wallet))
 		b := ub.Bucket([]byte(containerBucket))
 		container = b.Get([]byte(id))
 		return nil
@@ -27,26 +36,38 @@ func RetrieveContainer(wallet, id string) ([]byte, error) {
 	return container, err
 }
 
-func PendContainerDeleted(wallet, id string, container []byte) error {
+func PendContainerDeleted(wallet, network, id string, container []byte) error {
 	return db.Update(func(tx *bolt.Tx) error {
-		ub := tx.Bucket([]byte(wallet))
+		nb := tx.Bucket([]byte(network))
+		if nb == nil {
+			return errors.New("no bucket for " + network)
+		}
+		ub := nb.Bucket([]byte(wallet))
 		b := ub.Bucket([]byte(containerBucket))
 		err := b.Put([]byte(id), container)
 		return err
 	})
 }
-func DeleteContainer(wallet, id string) error {
+func DeleteContainer(wallet, network, id string) error {
 	return db.Update(func(tx *bolt.Tx) error {
-		ub := tx.Bucket([]byte(wallet))
+		nb := tx.Bucket([]byte(network))
+		if nb == nil {
+			return errors.New("no bucket for " + network)
+		}
+		ub := nb.Bucket([]byte(wallet))
 		b := ub.Bucket([]byte(containerBucket))
 		err := b.Delete([]byte(id))
 		return err
 	})
 }
-func RetrieveContainers(wallet string) (map[string][]byte, error) {
+func RetrieveContainers(wallet, network string) (map[string][]byte, error) {
 	containers := make(map[string][]byte)
 	err := db.View(func(tx *bolt.Tx) error {
-		ub := tx.Bucket([]byte(wallet))
+		nb := tx.Bucket([]byte(network))
+		if nb == nil {
+			return errors.New("no bucket for " + network)
+		}
+		ub := nb.Bucket([]byte(wallet))
 		b := ub.Bucket([]byte(containerBucket))
 		c := b.Cursor()
 

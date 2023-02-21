@@ -36,7 +36,7 @@ func (m *Manager) ListSharedContainers() ([]Element, error) {
 		return []Element{}, err
 	}
 	fmt.Println("finding shared for ", tmpWallet.Accounts[0].Address)
-	tmpContainers, err := cache.RetrieveSharedContainers(tmpWallet.Accounts[0].Address)
+	tmpContainers, err := cache.RetrieveSharedContainers(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -180,7 +180,7 @@ func (m *Manager) listSharedContainerObjectsAsync(containerID string) ([]Element
 				fmt.Println(err)
 			}
 			//store in database
-			if err = cache.StoreSharedObject(tmpWallet.Accounts[0].Address, vID.String(), str); err != nil {
+			if err = cache.StoreSharedObject(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID, vID.String(), str); err != nil {
 				fmt.Println("MASSIVE ERROR could not store container in database", err)
 			}
 		}(v)
@@ -200,7 +200,7 @@ func (m *Manager) ListSharedContainerObjects(containerID string, synchronised bo
 	if err != nil {
 		return []Element{}, err
 	}
-	tmpObjects, err := cache.RetrieveSharedObjects(tmpWallet.Accounts[0].Address)
+	tmpObjects, err := cache.RetrieveSharedObjects(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID)
 	if err != nil {
 		return nil, err
 	}

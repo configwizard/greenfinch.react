@@ -189,7 +189,7 @@ func (m *Manager) ForceSync() {
 //listContainersAsync should be purely used to refresh the database cache
 //todo: this needs to clean out the database as its a refresh of everything
 func (m *Manager) listContainersAsync() ([]Element, error) {
-	var containers []Element
+	//var containers []Element
 	runtime.EventsEmit(m.ctx, "clearContainer", nil)
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
@@ -214,16 +214,18 @@ func (m *Manager) listContainersAsync() ([]Element, error) {
 			fmt.Println("retrieved containers", tmpContainer)
 			//store in database
 			fmt.Println("storing container", tmpContainer.ID)
-			if err = cache.StoreContainer(tmpWallet.Accounts[0].Address, tmpContainer.ID, str); err != nil {
+			if err = cache.StoreContainer(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID, tmpContainer.ID, str); err != nil {
 				fmt.Println("MASSIVE ERROR could not store container in database", err)
 			}
 		}(v)
 	}
-	wg.Wait()
-	if m.DEBUG {
-		DebugSaveJson("ListContainers.json", containers)
+	if len(ids) > 0 {
+		wg.Wait()
 	}
-	containerList, err := m.ListContainers(true)
+	//if m.DEBUG {
+	//	DebugSaveJson("ListContainers.json", containers)
+	//}
+	containerList, err := m.ListContainers(false)
 	fmt.Println("async returning", containerList)
 	return containerList, err
 }
@@ -277,13 +279,14 @@ func (m *Manager) ListContainers(synchronised bool) ([]Element, error) {
 	if err != nil {
 		return []Element{}, err
 	}
-	tmpContainers, err := cache.RetrieveContainers(tmpWallet.Accounts[0].Address)
+	tmpContainers, err := cache.RetrieveContainers(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID)
 	if err != nil {
 		return nil, err
 	}
-	if len(tmpContainers) == 0 {
+	if len(tmpContainers) == 0 && synchronised {
 		//we need to check there aren't any on the network
 		//todo notify frontend of database sync
+		fmt.Println(GetCurrentFunctionName(), " ListContainers caller is ", GetCallerFunctionName())
 		return m.listContainersAsync()
 	}
 	var unsortedContainers []Element
@@ -365,7 +368,7 @@ func (m *Manager) DeleteContainer(id string) ([]Element, error) {
 		m.MakeToast(NewToastMessage(&tmp))
 	} else {
 		////now mark deleted
-		cacheContainer, err := cache.RetrieveContainer(tmpWallet.Accounts[0].Address, id)
+		cacheContainer, err := cache.RetrieveContainer(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID, id)
 		if err != nil {
 			fmt.Println("error retrieving container??", err)
 			return []Element{}, err
@@ -384,7 +387,7 @@ func (m *Manager) DeleteContainer(id string) ([]Element, error) {
 		if err := json.Unmarshal(cacheContainer, &tmp); err != nil {
 			return []Element{}, err
 		}
-		if err := cache.PendContainerDeleted(tmpWallet.Accounts[0].Address, id, del); err != nil {
+		if err := cache.PendContainerDeleted(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID, id, del); err != nil {
 			return []Element{}, err
 		}
 		t := UXMessage{
@@ -597,45 +600,67 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 
 	fmt.Println("about to put container")
 	// send request to save the container
-	//todo - do this on a routine so that we don't hang
-	idCnr, err := pl.PutContainer(m.ctx, prmPut) //see SetWaitParams to change wait times
-	if err != nil {
-		fmt.Printf("save container via connection pool: %w\r\n", err)
+	go func() {
+		//todo - do this on a routine so that we don't hang
+		idCnr, err := pl.PutContainer(m.ctx, prmPut) //see SetWaitParams to change wait times
+		if err != nil {
+			fmt.Printf("save container via connection pool: %w\r\n", err)
+			tmp := UXMessage{
+				Title:       "Container Error",
+				Type:        "error",
+				Description: "Container '" + name + "' failed",
+			}
+			m.MakeNotification(NotificationMessage{
+				Title:       "Container Error",
+				Type:        "error",
+				Description: fmt.Sprintf("Failed to create container %s - %s", name, err.Error()),
+				MarkRead:    false,
+			})
+			m.MakeToast(NewToastMessage(&tmp))
+			return
+		}
+		fmt.Println("container putted")
+		fmt.Println("container created ", idCnr)
+
 		tmp := UXMessage{
-			Title:       "Container Error",
-			Type:        "error",
-			Description: "Container '" + name + "' failed " + err.Error(),
+			Title:       "Container Created",
+			Type:        "success",
+			Description: "Container '" + name + "' created",
+		}
+		el := Element{
+			ID:         idCnr.String(),
+			Type:       "container",
+			Size:       0,
+			BasicAcl:   customAcl,
+			Attributes: make(map[string]string),
+		}
+		for k, v := range containerAttributes {
+			el.Attributes[k] = v
+		}
+		marshal, err := json.Marshal(el)
+		if err != nil {
+			return
+		}
+		fmt.Println("creating container and storing in network ", m.selectedNetwork, m.selectedNetwork.ID)
+		err = cache.StoreContainer(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID, idCnr.String(), marshal)
+		if err != nil {
+			m.MakeNotification(NotificationMessage{
+				Title:       "Container Error",
+				Type:        "error",
+				Description: fmt.Sprintf("Failed to store container %s - %s", name, err.Error()),
+				MarkRead:    false,
+			})
+			return
 		}
 		m.MakeToast(NewToastMessage(&tmp))
-		return err
-	}
-	fmt.Println("container putted")
-	fmt.Println("container created ", idCnr)
-
+		m.ContainersChanged()
+	}()
 	tmp := UXMessage{
-		Title:       "Container Created",
-		Type:        "success",
-		Description: "Container '" + name + "' created",
-	}
-	el := Element{
-		ID:         idCnr.String(),
-		Type:       "container",
-		Size:       0,
-		BasicAcl:   customAcl,
-		Attributes: make(map[string]string),
-	}
-	for k, v := range containerAttributes {
-		el.Attributes[k] = v
-	}
-	marshal, err := json.Marshal(el)
-	if err != nil {
-		return err
-	}
-	err = cache.StoreContainer(tmpWallet.Accounts[0].Address, idCnr.String(), marshal)
-	if err != nil {
-		return err
+		Title:       "Container being created",
+		Type:        "info",
+		Description: "Container '" + name + "' is currently being created. Please wait",
 	}
 	m.MakeToast(NewToastMessage(&tmp))
-	return nil
 
+	return nil
 }

@@ -31,7 +31,14 @@ class Containers extends React.Component {
         this.state = {shared: false, contacts: [], containerList: [], objectList: [], selectedObject: null, selectedContainer: null, viewMode: "grid", objectsLoaded: false, requestNewWallet: false};
     }
     async componentDidMount() {
-
+        window.runtime.EventsOn("networkchanged", async (message) => {
+            console.log("refreshing containers")
+            await this.onRefresh()
+        })
+        window.runtime.EventsOn("containerschanged", async (message) => {
+            console.log("refreshing containers")
+            await this.onRefresh()
+        })
         const contacts = await listContacts()
         console.log("share contacts", contacts)
         console.log("received wallet", this.props.account)

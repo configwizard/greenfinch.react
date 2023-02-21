@@ -9,6 +9,8 @@ export function AddContact(arg1:string,arg2:string,arg3:string,arg4:string):Prom
 
 export function AddSharedContainer(arg1:string):Promise<void>;
 
+export function ContainersChanged():Promise<void>;
+
 export function CopyToClipboard(arg1:string):Promise<void>;
 
 export function CreateContainer(arg1:string,arg2:string,arg3:boolean):Promise<void>;

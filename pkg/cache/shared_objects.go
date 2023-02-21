@@ -1,24 +1,33 @@
 package cache
 
 import (
+	"errors"
 	"github.com/boltdb/bolt"
 )
 
 const sharedObjectBucket = "shared_object_bucket"
 
-func StoreSharedObject(wallet, id string, container []byte) error {
+func StoreSharedObject(wallet, network, id string, container []byte) error {
 	return db.Update(func(tx *bolt.Tx) error {
-		ub := tx.Bucket([]byte(wallet))
+		nb := tx.Bucket([]byte(network))
+		if nb == nil {
+			return errors.New("no bucket for " + network)
+		}
+		ub := nb.Bucket([]byte(wallet))
 		b := ub.Bucket([]byte(sharedObjectBucket))
 		err := b.Put([]byte(id), container)
 		return err
 	})
 }
 
-func RetrieveSharedObject(wallet, id string) ([]byte, error) {
+func RetrieveSharedObject(wallet, network, id string) ([]byte, error) {
 	var object []byte
 	err := db.View(func(tx *bolt.Tx) error {
-		ub := tx.Bucket([]byte(wallet))
+		nb := tx.Bucket([]byte(network))
+		if nb == nil {
+			return errors.New("no bucket for " + network)
+		}
+		ub := nb.Bucket([]byte(wallet))
 		b := ub.Bucket([]byte(sharedObjectBucket))
 		object = b.Get([]byte(id))
 		return nil
@@ -26,10 +35,14 @@ func RetrieveSharedObject(wallet, id string) ([]byte, error) {
 	return object, err
 }
 
-func RetrieveSharedObjects(wallet string) (map[string][]byte, error) {
+func RetrieveSharedObjects(wallet, network string) (map[string][]byte, error) {
 	objects := make(map[string][]byte)
 	err := db.View(func(tx *bolt.Tx) error {
-		ub := tx.Bucket([]byte(wallet))
+		nb := tx.Bucket([]byte(network))
+		if nb == nil {
+			return errors.New("no bucket for " + network)
+		}
+		ub := nb.Bucket([]byte(wallet))
 		b := ub.Bucket([]byte(sharedObjectBucket))
 		c := b.Cursor()
 
@@ -40,17 +53,25 @@ func RetrieveSharedObjects(wallet string) (map[string][]byte, error) {
 	})
 	return objects, err
 }
-func PendSharedObjectDeleted(wallet, id string, object []byte) error {
+func PendSharedObjectDeleted(wallet, network, id string, object []byte) error {
 	return db.Update(func(tx *bolt.Tx) error {
-		ub := tx.Bucket([]byte(wallet))
+		nb := tx.Bucket([]byte(network))
+		if nb == nil {
+			return errors.New("no bucket for " + network)
+		}
+		ub := nb.Bucket([]byte(wallet))
 		b := ub.Bucket([]byte(sharedObjectBucket))
 		err := b.Put([]byte(id), object)
 		return err
 	})
 }
-func DeleteSharedObject(wallet, id string) error {
+func DeleteSharedObject(wallet, network, id string) error {
 	return db.Update(func(tx *bolt.Tx) error {
-		ub := tx.Bucket([]byte(wallet))
+		nb := tx.Bucket([]byte(network))
+		if nb == nil {
+			return errors.New("no bucket for " + network)
+		}
+		ub := nb.Bucket([]byte(wallet))
 		b := ub.Bucket([]byte(sharedObjectBucket))
 		err := b.Delete([]byte(id))
 		return err

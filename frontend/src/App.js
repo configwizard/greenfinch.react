@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { useLocation, Routes, Route } from 'react-router-dom';
 
 import './App.css';
@@ -84,6 +84,12 @@ class App extends React.Component {
             const account = prepareWalletData(walletData)
             console.log("setting wallet details to ", account)
             await this.setState({account})
+        })
+        // const [selectedNetwork, setSelectedNetwork] = useState({Name: "Test Net"});
+        // const [count, setCount] = React.useState(0);
+        window.runtime.EventsOn("networkchanged", async (message) => {
+            console.log("networkchanged", message)
+            await this.setStatusAccount()
         })
         const recentWallets = await retrieveRecentWallets()
         const version = await getVersion()

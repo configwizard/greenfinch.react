@@ -8,10 +8,14 @@ import (
 
 const addressBookBucket = "address_book"
 
-func StoreContact(wallet, id string, contact []byte) error {
+func StoreContact(wallet, network, id string, contact []byte) error {
 	return db.Update(func(tx *bolt.Tx) error {
 		fmt.Println("retrieving address book for ", id)
-		ub := tx.Bucket([]byte(wallet))
+		nb := tx.Bucket([]byte(network))
+		if nb == nil {
+			return errors.New("no bucket for " + network)
+		}
+		ub := nb.Bucket([]byte(wallet))
 		if ub == nil {
 			return errors.New("no bucket for " + wallet)
 		}
@@ -21,10 +25,14 @@ func StoreContact(wallet, id string, contact []byte) error {
 	})
 }
 
-func RetrieveContact(wallet, id string) ([]byte, error) {
+func RetrieveContact(wallet, network, id string) ([]byte, error) {
 	var contact []byte
 	err := db.View(func(tx *bolt.Tx) error {
-		ub := tx.Bucket([]byte(wallet))
+		nb := tx.Bucket([]byte(network))
+		if nb == nil {
+			return errors.New("no bucket for " + network)
+		}
+		ub := nb.Bucket([]byte(wallet))
 		if ub == nil {
 			return errors.New("no bucket for " + wallet)
 		}
@@ -35,9 +43,13 @@ func RetrieveContact(wallet, id string) ([]byte, error) {
 	return contact, err
 }
 
-func DeleteContact(wallet, id string) error {
+func DeleteContact(wallet, network, id string) error {
 	return db.Update(func(tx *bolt.Tx) error {
-		ub := tx.Bucket([]byte(wallet))
+		nb := tx.Bucket([]byte(network))
+		if nb == nil {
+			return errors.New("no bucket for " + network)
+		}
+		ub := nb.Bucket([]byte(wallet))
 		if ub == nil {
 			return errors.New("no bucket for " + wallet)
 		}
@@ -46,10 +58,14 @@ func DeleteContact(wallet, id string) error {
 		return err
 	})
 }
-func RetrieveContacts(wallet string) (map[string][]byte, error) {
+func RetrieveContacts(wallet, network string) (map[string][]byte, error) {
 	contacts := make(map[string][]byte)
 	err := db.View(func(tx *bolt.Tx) error {
-		ub := tx.Bucket([]byte(wallet))
+		nb := tx.Bucket([]byte(network))
+		if nb == nil {
+			return errors.New("no bucket for " + network)
+		}
+		ub := nb.Bucket([]byte(wallet))
 		if ub == nil {
 			return errors.New("no bucket for " + wallet)
 		}

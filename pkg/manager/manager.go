@@ -118,7 +118,10 @@ func (m *Manager) DomReady(ctx context.Context) {
 	}
 }
 func (m Manager) Notifications() ([]NotificationMessage, error){
-	notificationBytes, err := cache.RetrieveNotifications(m.wallet.Accounts[0].Address)
+	if m.wallet == nil {
+		return nil, errors.New("no wallet selected")
+	}
+	notificationBytes, err := cache.RetrieveNotifications(m.wallet.Accounts[0].Address, m.selectedNetwork.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -135,16 +138,22 @@ func (m Manager) Notifications() ([]NotificationMessage, error){
 }
 
 func (m Manager) MarkAllNotificationsRead() error {
+	if m.wallet == nil {
+		return errors.New("no wallet selected")
+	}
 	address := m.wallet.Accounts[0].Address
-	if err := cache.DeleteNotications(address); err != nil {
+	if err := cache.DeleteNotications(address, m.selectedNetwork.ID); err != nil {
 		return err
 	}
 	return nil
 }
 func (m Manager) MarkNotificationRead(uuid string) error {
+	if m.wallet == nil {
+		return errors.New("no wallet selected")
+	}
 	address := m.wallet.Accounts[0].Address
 	fmt.Println("deleting notification ", uuid)
-	if err := cache.DeleteNotification(address, uuid); err != nil {
+	if err := cache.DeleteNotification(address, m.selectedNetwork.ID, uuid); err != nil {
 		return err
 	}
 	return nil
@@ -160,7 +169,7 @@ func (m *Manager) MakeNotification(message NotificationMessage) {
 	if err != nil {
 		fmt.Println("error marshalling notification", err)
 	}
-	err = cache.UpsertNotification(message.User, message.Id, marshal)
+	err = cache.UpsertNotification(message.User, m.selectedNetwork.ID, message.Id, marshal)
 	if err != nil {
 		fmt.Println("error upserting notifiation")
 	}
@@ -242,9 +251,9 @@ func (m *Manager) MakeToast(message UXMessage) {
 	runtime.EventsEmit(m.ctx, "freshtoast", message)
 }
 
-//func (m *Manager) MakeNotification(message UXMessage) {
-//	runtime.EventsEmit(m.ctx, "freshnotification", message)
-//}
+func (m *Manager) ContainersChanged() {
+	runtime.EventsEmit(m.ctx, "containerschanged", nil)
+}
 func (m *Manager) NetworkChangeNotification() {
 	runtime.EventsEmit(m.ctx, "networkchanged", m.selectedNetwork)
 }
@@ -331,7 +340,7 @@ func (m *Manager) Pool() (*pool.Pool, error) {
 		//	return nil, err
 		//}
 		//todo: this should be wallet connect pool
-		pl, err := gspool.GetPool(m.ctx, m.wallet.Accounts[0].PrivateKey().PrivateKey, m.selectedNetwork.storageNodes)
+		pl, err := gspool.GetPool(m.ctx, m.wallet.Accounts[0].PrivateKey().PrivateKey, m.selectedNetwork.StorageNodes)
 		if err != nil {
 			fmt.Println("error getting pool with key ", err)
 			return nil, err
@@ -377,7 +386,7 @@ func (m *Manager) GetAccountInformation() (Account, error) {
 		runtime.EventsEmit(m.ctx, "select_wallet", true)
 		return Account{}, nil
 	}
-	balances, err := wallet.GetNep17Balances(w.Accounts[0].Address, wallet.RPC_NETWORK(m.selectedNetwork.rpcNodes[0]))
+	balances, err := wallet.GetNep17Balances(w.Accounts[0].Address, wallet.RPC_NETWORK(m.selectedNetwork.RpcNodes[0]))
 	if err != nil {
 		return Account{}, err
 	}
@@ -400,6 +409,7 @@ func (m *Manager) GetAccountInformation() (Account, error) {
 	res, err := pl.Balance(context.Background(), blGet)
 	if err != nil {
 		fmt.Errorf("error %w", err)
+		return Account{}, err
 	}
 
 	//result, err := pl.BalanceGet(m.ctx, get)

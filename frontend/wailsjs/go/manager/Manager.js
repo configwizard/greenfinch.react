@@ -10,6 +10,10 @@ export function AddSharedContainer(arg1) {
   return window['go']['manager']['Manager']['AddSharedContainer'](arg1);
 }
 
+export function ContainersChanged() {
+  return window['go']['manager']['Manager']['ContainersChanged']();
+}
+
 export function CopyToClipboard(arg1) {
   return window['go']['manager']['Manager']['CopyToClipboard'](arg1);
 }

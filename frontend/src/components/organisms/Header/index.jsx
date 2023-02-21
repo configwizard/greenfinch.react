@@ -5,8 +5,19 @@ import './style.scss';
 class Header extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {
+            selectedNetwork: {
+                Name: "Test Net"
+            }
+        }
     }
-
+        async componentDidMount() {
+        console.log("mounting header ", this.state.selectedNetwork)
+        window.runtime.EventsOn("networkchanged", async (message) => {
+            console.log("networkchanged", message)
+            await this.setState({selectedNetwork: message})
+        })
+    }
     render() {
         console.log("status bar updating wallet details", this.props.account)
 
@@ -21,7 +32,7 @@ class Header extends React.Component {
                             <span className="utUCSmall d-block">Logo</span><span>Badge</span>
                         </div>
                         <div className="atmStatus">
-                            <span className="utUCSmall d-block">Net</span><span>Testnet</span>
+                            <span className="utUCSmall d-block">Net</span><span>{this.state.selectedNetwork.Name}</span>
                         </div>
                         <div className="atmStatus">
                             <span className="utUCSmall d-block">Wallet</span>{this.props.account.address ? <span>{this.props.account.address}</span> : <span className="utTemp">No wallet loaded</span>}

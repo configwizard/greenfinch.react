@@ -10,6 +10,7 @@ export const ToggleType = {
 
 const ButtonToggle = ({ type, toggleName, toggleId }) => {
 
+    const [previousToggle, setPreviousToggle] = useState(false)
     const [isToggled, setIsToggled] = useState(false);
     const [toggleHeading, setToggleHeading] = useState(isToggled ? "Main Net" : "Test Net")
     const handleToggle = async () => {
@@ -21,14 +22,17 @@ const ButtonToggle = ({ type, toggleName, toggleId }) => {
         console.log('UseEffect says Toggle Slider is active:', isToggled)
         console.log("value after setting ", isToggled)
         //if its true, that means mainnet, if its false, that means testnet
-        if (isToggled) {
-            console.log("setting mainnet")
-            await setToggleHeading("Main Net")
-            await setNetwork("mainnet")
-        } else {
-            console.log("setting testnet")
-            await setToggleHeading("Test Net")
-            await setNetwork("testnet")
+        if (isToggled != previousToggle) { //hack as it keeps re rendering the useEffect function
+            await setPreviousToggle(isToggled)
+            if (isToggled) {
+                console.log("setting mainnet")
+                await setToggleHeading("Main Net")
+                await setNetwork("mainnet")
+            } else {
+                console.log("setting testnet")
+                await setToggleHeading("Test Net")
+                await setNetwork("testnet")
+            }
         }
     })
     

@@ -38,7 +38,7 @@ func (m *Manager) TransferToken(recipient string, amount float64) (string, error
 		return "", err
 	}
 
-	c, err := rpcclient.New(context.Background(), m.selectedNetwork.rpcNodes[0], rpcclient.Options{})
+	c, err := rpcclient.New(context.Background(), m.selectedNetwork.RpcNodes[0], rpcclient.Options{})
 
 	if err != nil {
 		return "", err
@@ -88,7 +88,7 @@ func (m *Manager) TopUpNeoWallet(amount float64) (string, error) {
 	} else {
 		amount = math.Floor(amount * math.Pow(10, 8))
 	}
-	token, err := m.TransferToken(m.selectedNetwork.address, amount)
+	token, err := m.TransferToken(m.selectedNetwork.Address, amount)
 	if err != nil {
 		fmt.Println("transfer token error ", err)
 	}

@@ -1,6 +1,6 @@
-import React from 'react';
 import {copyTextToClipboard} from "../../../../manager/manager"
 // Components
+import React, { useState, useEffect } from 'react';
 
 // Central style sheet for templates
 import '../_settings/style.scss';

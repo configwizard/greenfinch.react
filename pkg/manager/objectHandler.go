@@ -159,7 +159,7 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 	//if err != nil {
 	//	return nil, err
 	//}
-	addr := m.selectedNetwork.storageNodes["0"].Address//cfg.Peers["0"].Address //we need to find the top priority addr really here
+	addr := m.selectedNetwork.StorageNodes["0"].Address //cfg.Peers["0"].Address //we need to find the top priority addr really here
 	prmCli := client.PrmInit{}
 	prmCli.SetDefaultPrivateKey(tmpKey)
 	var prmDial client.PrmDial
@@ -247,7 +247,7 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 	if data, err := json.Marshal(el); err != nil {
 		return []Element{}, err
 	} else {
-		if err := cache.StoreObject(tmpWallet.Accounts[0].Address, objectID.String(), data); err != nil {
+		if err := cache.StoreObject(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID, objectID.String(), data); err != nil {
 			return []Element{}, err
 		}
 	}
@@ -367,7 +367,7 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 	//if err != nil {
 	//	return nil, err
 	//}
-	addr := m.selectedNetwork.storageNodes["0"].Address
+	addr := m.selectedNetwork.StorageNodes["0"].Address
 
 	prmCli := client.PrmInit{}
 	prmCli.SetDefaultPrivateKey(tmpKey)
@@ -547,7 +547,7 @@ func (m *Manager) listObjectsAsync(containerID string) ([]Element, error) {
 				tmp.Attributes[a.Key()] = a.Value()
 			}
 			if filename, ok := tmp.Attributes[object.AttributeFileName]; ok {
-				tmp.Attributes["X_EXT"] = filepath.Ext(filename)[1:]
+				tmp.Attributes["X_EXT"] = strings.TrimPrefix(filepath.Ext(filename), ".")
 			} else {
 				tmp.Attributes["X_EXT"] = ""
 			}
@@ -557,7 +557,7 @@ func (m *Manager) listObjectsAsync(containerID string) ([]Element, error) {
 				fmt.Println(err)
 			}
 			//store in database
-			if err = cache.StoreObject(tmpWallet.Accounts[0].Address, vID.String(), str); err != nil {
+			if err = cache.StoreObject(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID, vID.String(), str); err != nil {
 				fmt.Println("MASSIVE ERROR could not store container in database", err)
 			}
 		}(v)
@@ -577,7 +577,7 @@ func (m *Manager) ListContainerObjects(containerID string, synchronised bool) ([
 	if err != nil {
 		return []Element{}, err
 	}
-	tmpObjects, err := cache.RetrieveObjects(tmpWallet.Accounts[0].Address)
+	tmpObjects, err := cache.RetrieveObjects(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -712,7 +712,7 @@ func (m *Manager) DeleteObject(objectID, containerID string) ([]Element, error) 
 		fmt.Errorf("init full payload range reading via connection pool: %w", err)
 	} else {
 		//now mark deleted
-		cacheObject, err := cache.RetrieveObject(tmpWallet.Accounts[0].Address, objectID)
+		cacheObject, err := cache.RetrieveObject(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID, objectID)
 		if err != nil {
 			fmt.Println("error retrieving container??", err)
 			return []Element{}, err
@@ -730,7 +730,7 @@ func (m *Manager) DeleteObject(objectID, containerID string) ([]Element, error) 
 		if err := json.Unmarshal(cacheObject, &tmp); err != nil {
 			return []Element{}, err
 		}
-		if err := cache.PendObjectDeleted(tmpWallet.Accounts[0].Address, objectID, del); err != nil {
+		if err := cache.PendObjectDeleted(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID, objectID, del); err != nil {
 			return []Element{}, err
 		}
 		t := UXMessage{

@@ -36,29 +36,29 @@ const DrawerSettings = (props) => {
                            toggleId={"default"} />
                     </div>
 
-                    <div className="molDrawerRow">
-                        <ButtonDropdown
-                            size={"default"}
-                            type={"size"}
-                            triggerText={"Select..."}
-                            menu={[
-                                <button className="buttonList" onClick={handleMenuOne}>Menu 1</button>,
-                                <button className="buttonList" onClick={handleMenuTwo}>Menu 2</button>,
-                                <button className="buttonList" onClick={handleMenuThree}>Menu 3</button>
-                            ]} />
-                    </div>
+                    {/*<div className="molDrawerRow">*/}
+                    {/*    <ButtonDropdown*/}
+                    {/*        size={"default"}*/}
+                    {/*        type={"size"}*/}
+                    {/*        triggerText={"Select..."}*/}
+                    {/*        menu={[*/}
+                    {/*            <button className="buttonList" onClick={handleMenuOne}>Menu 1</button>,*/}
+                    {/*            <button className="buttonList" onClick={handleMenuTwo}>Menu 2</button>,*/}
+                    {/*            <button className="buttonList" onClick={handleMenuThree}>Menu 3</button>*/}
+                    {/*        ]} />*/}
+                    {/*</div>*/}
 
-                    {/* RG. We might want something closer to this:
-                    Another option: https://codesandbox.io/s/ueccx?file=/src/App.js */}
+                    {/*/!* RG. We might want something closer to this:*/}
+                    {/*Another option: https://codesandbox.io/s/ueccx?file=/src/App.js *!/*/}
 
-                    {/* React Bootstrap version */}
-                    <div className="molDrawerRow">
-                        <select class="form-select" aria-label="Default select example">
-                            <option selected>Select...</option>
-                            <option value="1">Menu 1</option>
-                            <option value="2">Menu 2</option>
-                        </select>
-                    </div>
+                    {/*/!* React Bootstrap version *!/*/}
+                    {/*<div className="molDrawerRow">*/}
+                    {/*    <select class="form-select" aria-label="Default select example">*/}
+                    {/*        <option selected>Select...</option>*/}
+                    {/*        <option value="1">Menu 1</option>*/}
+                    {/*        <option value="2">Menu 2</option>*/}
+                    {/*    </select>*/}
+                    {/*</div>*/}
 
                     <div className="molDrawerRow">
                         <div className="atmSwitchContent">

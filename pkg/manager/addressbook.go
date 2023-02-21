@@ -18,7 +18,7 @@ func (m *Manager) RetrieveContacts() ([]contact, error) {
 		return []contact{}, errors.New("no wallet loaded")
 	}
 	w := m.wallet.Accounts[0].Address
-	res, err := cache.RetrieveContacts(w)
+	res, err := cache.RetrieveContacts(w, m.selectedNetwork.ID)
 	if err != nil {
 		return []contact{}, err
 	}
@@ -39,7 +39,7 @@ func (m *Manager) RetrieveContactByWalletAddress(walletAddress string) (contact,
 		return contact{}, errors.New("no wallet loaded")
 	}
 	w := m.wallet.Accounts[0].Address
-	byt, err := cache.RetrieveContact(w, walletAddress)
+	byt, err := cache.RetrieveContact(w, m.selectedNetwork.ID, walletAddress)
 	var c contact
 	if err != nil {
 		return c, err
@@ -65,7 +65,7 @@ func (m *Manager) AddContact(firstName, lastName, walletAddress, publicKey strin
 	if err != nil {
 		return []contact{}, err
 	}
-	if err := cache.StoreContact(w, walletAddress, byt); err != nil {
+	if err := cache.StoreContact(w, m.selectedNetwork.ID, walletAddress, byt); err != nil {
 		return []contact{}, err
 	}
 	return m.RetrieveContacts()
@@ -76,7 +76,7 @@ func (m *Manager) DeleteContact(walletAddress string) ([]contact, error) {
 		return []contact{}, errors.New("no wallet loaded")
 	}
 	w := m.wallet.Accounts[0].Address
-	err := cache.DeleteContact(w, walletAddress)
+	err := cache.DeleteContact(w, m.selectedNetwork.ID, walletAddress)
 	if err != nil {
 		return []contact{}, err
 	}
