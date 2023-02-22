@@ -53,28 +53,58 @@ func (m *Manager) TransferToken(recipient string, amount float64) (string, error
 	if err != nil {
 		return "", err
 	}
-	txid, _, err := n17.Transfer(a.Sender(), tgtAcc, big.NewInt(int64(amount)), nil)
+	txid, u, err := n17.Transfer(a.Sender(), tgtAcc, big.NewInt(int64(amount)), nil)
 	if err != nil {
-		fmt.Println("error from transferring token function!")
-		tmp := UXMessage{
-			Title:       "Transfer failed",
-			Type:        "error",
-			Description: err.Error(),
-		}
-		m.MakeToast(NewToastMessage(&tmp))
 		return "", err
 	}
+	go func() {
+		//re-use token expiration function to set the vub
+		stateResponse, err := a.Wait(txid, u, err)
+		if err != nil {
+			m.MakeNotification(NotificationMessage{
+				Title:       "Transaction failed",
+				Type:        "error",
+				Description: fmt.Sprintf("tranasction %s failed due to %s", txid, err),
+				MarkRead:    false,
+			})
+			tmp := UXMessage{
+				Title:       "Transaction failed",
+				Type:        "error",
+				Description: "transaction failed",
+			}
+			m.MakeToast(NewToastMessage(&tmp))
+			return
+		}
+		runtime.EventsEmit(m.ctx, "fresh_wallet", nil)
+		fmt.Printf("events %s %+v\r\n", txid, stateResponse.Events)
+		fmt.Printf("stack %s %+v\r\n", txid, stateResponse.Stack)
+		fmt.Printf("fault %s exception %+v\r\n", txid, stateResponse.FaultException)
+		fmt.Printf("vm state %s %+v\r\n", txid, stateResponse.VMState)
+		m.MakeNotification(NotificationMessage{
+			Title:       "Transaction succeeded",
+			Action: 	 "qr-code",
+			Type:        "success",
+			Description: fmt.Sprintf("tranasction %s successful", stateResponse.Container.StringLE()),
+			MarkRead:    false,
+		})
+		tmp := UXMessage{
+			Title:       "Transaction succeeded",
+			Type:        "success",
+			Description: "transaction succeeded",
+		}
+		m.MakeToast(NewToastMessage(&tmp))
+	}()
 	m.MakeNotification(NotificationMessage{
 		Title:       "Transaction started",
 		Action: 	"qr-code",
-		Type:        "success",
+		Type:        "info",
 		Description: fmt.Sprintf(path.Join(explorerUrl, "0x%s"), txid.StringLE()),
 		MarkRead:    false,
 	})
 	tmp := UXMessage{
-		Title:       "Transfer successful",
-		Type:        "success",
-		Description: "TxID: " + txid.StringLE(),
+		Title:       "Transaction started",
+		Type:        "info",
+		Description: "transaction has started",
 	}
 	m.MakeToast(NewToastMessage(&tmp))
 	fmt.Println("txid ", txid.StringLE())

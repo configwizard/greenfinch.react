@@ -25,7 +25,7 @@ import '../_settings/style.scss';
 
 const selectPermission = (rawPermission) => {
     switch(rawPermission) {
-        case 478973132 :
+        case 478973132:
             return "Private"
         case 264211711:
             return "Public Read Only"

@@ -7,11 +7,12 @@ require (
 	github.com/blang/semver/v4 v4.0.0
 	github.com/boltdb/bolt v1.3.1
 	github.com/disintegration/imaging v1.6.2
+	github.com/gen2brain/go-fitz v1.20.2
 	github.com/go-chi/chi/v5 v5.0.7
 	github.com/go-chi/cors v1.2.0
 	github.com/google/uuid v1.3.0
 	github.com/machinebox/progress v0.2.0
-	github.com/nspcc-dev/neo-go v0.99.4
+	github.com/nspcc-dev/neo-go v0.101.0
 	github.com/nspcc-dev/neofs-sdk-go v1.0.0-rc.7.0.20221115140820-b4b07a3c4e11
 	github.com/spf13/viper v1.15.0
 	github.com/stretchr/testify v1.8.1
@@ -25,10 +26,9 @@ require (
 	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
 	github.com/antlr/antlr4/runtime/Go/antlr v1.4.10 // indirect
 	github.com/bep/debounce v1.2.1 // indirect
-	github.com/btcsuite/btcd v0.22.0-beta // indirect
-	github.com/coreos/go-semver v0.3.0 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.0.1 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect
@@ -81,7 +81,7 @@ require (
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
 	go.uber.org/zap v1.24.0 // indirect
-	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e // indirect
+	golang.org/x/crypto v0.4.0 // indirect
 	golang.org/x/exp v0.0.0-20220303212507-bbda1eaf7a17 // indirect
 	golang.org/x/image v0.0.0-20201208152932-35266b937fa6 // indirect
 	golang.org/x/net v0.4.0 // indirect

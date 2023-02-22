@@ -8,6 +8,7 @@ import (
 	"github.com/amlwwalker/greenfinch.react/pkg/config"
 	"github.com/atotto/clipboard"
 	"github.com/disintegration/imaging"
+	"github.com/gen2brain/go-fitz"
 	"github.com/nspcc-dev/neofs-sdk-go/container/acl"
 	"github.com/nspcc-dev/neofs-sdk-go/eacl"
 	"image"
@@ -164,12 +165,17 @@ func thumbnail(ioReader io.Reader) ([]byte, error) {
 	srcImage, format, err := image.Decode(bytes.NewReader(rawBody))
 	fmt.Println("format detected", format, err)
 	if err != nil {
-		//if err == image.ErrFormat {
-		//	fmt.Println("error format is ", err)
-		//	return nil, image.ErrFormat
-		//}
-		//fmt.Println(" otherwise responding with ", err)
-		return nil, err
+		//check if its a pdf
+		doc, err := fitz.NewFromReader(ioReader)
+		if err != nil {
+			return nil, err
+		}
+
+		if srcImage, err = doc.Image(0); err != nil {
+			return nil, err
+		}
+		format = "png" //fake it to save as a png
+		fmt.Println("saving the pdf")
 	}
 	if format != "jpeg" && format != "png" {
 		return nil, image.ErrFormat
