@@ -1,1 +1,8 @@
-{}
+{
+  "dependencies": {
+    "react-json-pretty": "^2.2.0",
+    "react-middle-ellipsis": "^1.2.2",
+    "react-qr-code": "^2.0.11",
+    "styled-components": "^5.3.6"
+  }
+}
