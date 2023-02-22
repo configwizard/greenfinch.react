@@ -29,12 +29,6 @@ class Header extends React.Component {
             <>
                 <header>
                     <div className="header-content d-flex">
-                        <div className="atmHeaderLogo">
-                            <img src={gficon} alt="Greenfinch logo"></img>
-                        </div>
-                        <div className="atmStatus">
-                            <span className="utUCSmall d-block">Logo</span><span>Badge</span>
-                        </div>
                         <div className="atmStatus">
                             <span className="utUCSmall d-block">Net</span><span>{this.state.selectedNetwork.Name}</span>
                         </div>
@@ -43,6 +37,9 @@ class Header extends React.Component {
                         </div>
                         <div className="atmStatus ms-auto">
                             <span className="utUCSmall d-block">NeoFS</span>{this.props.account.address ? <span style={{"color": this.props.account.neoFSBalance < 5 ? this.props.account.neoFSBalance < 2 ? "#E5004C": "#F47A00" : null}}>{this.props.account.neoFSBalance}</span> : <span className="utTemp">-&nbsp;-</span>}
+                        </div>
+                        <div className="atmHeaderLogo">
+                            <img src={gficon} alt="Greenfinch logo"></img>
                         </div>
                     </div>
                 </header>

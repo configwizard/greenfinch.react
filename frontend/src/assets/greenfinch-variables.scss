@@ -78,7 +78,10 @@ $brandColorSecondary: #00af92;
 $brandColorSecondary-dark: darken($brandColorSecondary, 15%);
 $brandColorWhite: #fff;
 $brandColorBlack: #000; // Change to a very dark green
+
 $brandColorDark: #2b393f;
+$brandColorDark-hint: rgba(#2b393f, 0.1);
+
 $brandColorLight: #f0f5f6;
 
 $toastColorSuccess: #00ad4b;

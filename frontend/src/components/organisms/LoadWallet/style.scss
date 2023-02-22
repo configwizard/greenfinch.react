@@ -18,7 +18,13 @@
 }
 
 .wallet-recent {
-    margin-bottom: $marginSmall;
+    padding-bottom: $marginXSmall;
+    margin-bottom: $marginXSmall;
+    border-bottom: 1px solid $brandColorDark-hint;
+    &:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+    }
 }
 
 .wallet-name + .wallet-tag {

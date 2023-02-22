@@ -8,6 +8,7 @@ header {
     height: $heightHeader;
     background-color: darken($brandColorDark, 7%);
     color: $brandColorPrimary;
+    padding-left: $paddingSmall; 
    //border-bottom: 3px solid darken($brandColorDark, 5%);
     & .atmStatus {
         padding: $paddingSmall 0;
@@ -37,7 +38,7 @@ header {
     //background-color: rgba(0,0,0,0.1);
     height: $heightHeader;
     width: $heightHeader;
-    margin-right: $marginSmall;
+    margin-left: $marginSmall;
     & img {
         opacity: 0.1;
     }
