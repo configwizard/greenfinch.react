@@ -2,7 +2,7 @@
 @import "../../../assets/greenfinch-variables.scss";
 
 .templateShell {
-    padding-top: $heightHeader + 7px; // manually added number, doesn't make sense 
+    padding-top: $heightHeader;
     height: 100vh;
 }
 
@@ -14,7 +14,7 @@
 
 .templateWrapper {
     height: calc(100vh - $heightHeader - $heightPageHeader - $heightFooter - 80px);
-    margin-right: $marginSmall; // To allow for scroll-bar width
+    margin-right: $marginMedium; // To allow for scroll-bar width
     overflow-y: scroll;
 }
 

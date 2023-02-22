@@ -16,17 +16,17 @@ const RowObject = ({ onClick, dataType, objectFile, objectName, objectSize, obje
                 className="atmButtonRowContent"
                 onClick={onClick}>
                 
-                <div className="atmRowList d-flex flex-row flex-grow-1">
-                    <div class="imagewrapper d-flex align-items-center">
+                <div className="atmRowList d-flex flex-row flex-grow-1 align-items-center">
+                    <div class="atmRowImage d-flex">
                         { objectFile ? <figure className="atmRowFile d-flex align-items-center justify-content-center"><img className="mw-100 mh-100" src={`data:image/png;base64,${objectFile}`} alt={objectName} /></figure> : <i className="fas fa-folder" data-type={dataType}/> }
                     </div>
-                    <div className="setwidth">
+                    <div className="atmRowName">
                         <MiddleEllipsis>
                             <span className="atmButtonRowName">{objectName}</span>
                         </MiddleEllipsis>
                     </div>
-                    <div>{fileSize(objectSize)}</div>
-                    <div><Moment unix format="DD MMM YY">{objectOrigin}</Moment></div>
+                    <div className="atmRowDefault">{fileSize(objectSize)}</div>
+                    <div className="atmRowDefault"><Moment unix format="DD MMM YY">{objectOrigin}</Moment></div>
                 </div>
             </button>  
         </>
