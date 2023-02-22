@@ -1,4 +1,5 @@
 import React from "react";
+import gficon from '../../../assets/svg/gf-icon.svg';
 
 import './style.scss';
 
@@ -17,6 +18,9 @@ class Header extends React.Component {
             <>
                 <header>
                     <div className="header-content d-flex">
+                        <div className="atmHeaderLogo">
+                            <img src={gficon} alt="Greenfinch logo"></img>
+                        </div>
                         <div className="atmStatus">
                             <span className="utUCSmall d-block">Net</span><span>Testnet</span>
                         </div>

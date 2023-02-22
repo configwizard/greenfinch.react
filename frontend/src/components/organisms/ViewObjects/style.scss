@@ -90,16 +90,24 @@ $rowdimension: 36px;
     }
 }
 
-
-.setwidth {
-    width: 240px;
-    white-space: nowrap;
-}
-
 .atmRowList {
     font-family: $brandFontSemi;
     color: $brandColorDark;
     font-size: 0.7rem;
+}
+
+.atmRowName {
+    width: 240px;
+    white-space: nowrap;
+    text-align: left;
+}
+
+.atmRowDefault {
+    margin-right: $marginSmall;
+    width: 72px;
+    &:last-child {
+        margin-right: 0;
+    }
 }
 
 .atmRowCheck {
@@ -110,13 +118,12 @@ $rowdimension: 36px;
     width: $rowdimension;
 }
 
-.atmRowFile {
-    height: $rowdimension;
-    width: $rowdimension;
-}
-
-.imagewrapper {
+.atmRowImage {
     background-color: rgba(0,0,0,0.2);
     height: $rowdimension;
-    margin-right: 7px;
+    margin: 0 $marginSmall;
+    & figure.atmRowFile { // shoudl we introduce a fig class?
+        height: $rowdimension;
+        width: $rowdimension;
+    }
 }

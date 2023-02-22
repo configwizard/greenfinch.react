@@ -5,14 +5,12 @@ header {
     position: fixed;
     top: 0;
     width: 100%;
-    min-height: $heightHeader;
-    background-color: $brandColorDark;
+    height: $heightHeader;
+    background-color: darken($brandColorDark, 7%);
     color: $brandColorPrimary;
-    border-bottom: 3px solid darken($brandColorDark, 5%);
-    & .header-content {
-        padding: $paddingSmall;
-    }
+   //border-bottom: 3px solid darken($brandColorDark, 5%);
     & .atmStatus {
+        padding: $paddingSmall 0;
         margin-right: $marginSmall;
         font-size: 0.9rem;
         letter-spacing: 0.07em;
@@ -33,4 +31,14 @@ header {
 
 .utTemp {
     color: rgba($brandColorPrimary, 0.3);
+}
+
+.atmHeaderLogo {
+    //background-color: rgba(0,0,0,0.1);
+    height: $heightHeader;
+    width: $heightHeader;
+    margin-right: $marginSmall;
+    & img {
+        opacity: 0.1;
+    }
 }
