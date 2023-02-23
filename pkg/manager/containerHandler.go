@@ -451,8 +451,8 @@ func (m *Manager) DeleteContainer(id string) ([]Element, error) {
 				Type:        "success",
 				Description: "Container successfully deleted",
 			}))
-			m.ContainersChanged()
 		}
+		m.ContainersChanged()
 	}()
 	return m.ListContainers(false, true)
 }
