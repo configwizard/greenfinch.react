@@ -128,12 +128,12 @@ class Containers extends React.Component {
         this.setState({...this.state, objectList})
     }
     onContainerDelete = async (containerId) => {
-        this.setState(this.setState({...this.state, containerList: []}))
-        let response = await deleteContainer(containerId)
-        console.log("deleting container ", containerId, response)
-        const containers = await listContainers()
-        console.log("listing containers 1", containers)
-        await this.setState(this.setState({...this.state, containerList: containers}))
+        this.setState({...this.state, containerList: []})
+        let containerList = await deleteContainer(containerId)
+        console.log("deleting container ", containerId, containerList)
+        // const containers = await listContainers()
+        // console.log("listing containers 1", containers)
+        await this.setState(this.setState({...this.state, containerList}))
     }
     onObjectDelete = async (objectId) => {
         if (this.state.selectedContainer == null) {

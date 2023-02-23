@@ -66,8 +66,8 @@ export function ListContainerObjects(arg1, arg2) {
   return window['go']['manager']['Manager']['ListContainerObjects'](arg1, arg2);
 }
 
-export function ListContainers(arg1) {
-  return window['go']['manager']['Manager']['ListContainers'](arg1);
+export function ListContainers(arg1, arg2) {
+  return window['go']['manager']['Manager']['ListContainers'](arg1, arg2);
 }
 
 export function ListSharedContainerObjects(arg1, arg2) {

@@ -9,9 +9,9 @@ export const IconSize = {
     LARGE: 'large',
 }
 
-const ContainerIcon = ({ size }) => {
+const ContainerIcon = ({ size, deleted }) => {
     return (
-        <div className={`neo folder-icon ${[size]}`}></div>
+        <div className={`neo folder-icon ${[size]} ${deleted ? "pending-deleted" : "" }` }></div>
     )
 }
 export default ContainerIcon;

@@ -74,7 +74,7 @@ func (m *Manager) ListContainerIDs() ([]string, error) {
 // NewListReadOnlyContainerContents lists from cache
 func (m *Manager) NewListReadOnlyContainerContents(since int64) ([]Element, error) {
 	//list the containers
-	containers, err := m.ListContainers(false)
+	containers, err := m.ListContainers(false, false)
 	if err != nil {
 		return nil, err
 	}
@@ -225,7 +225,7 @@ func (m *Manager) listContainersAsync() ([]Element, error) {
 	//if m.DEBUG {
 	//	DebugSaveJson("ListContainers.json", containers)
 	//}
-	containerList, err := m.ListContainers(false)
+	containerList, err := m.ListContainers(false, true)
 	fmt.Println("async returning", containerList)
 	return containerList, err
 }
@@ -274,7 +274,7 @@ func (m Manager) getContainerSize(containerID string) (uint64, error) {
 	return size, nil
 }
 // ListContainers populates from cache
-func (m *Manager) ListContainers(synchronised bool) ([]Element, error) {
+func (m *Manager) ListContainers(synchronised, deleted bool) ([]Element, error) {
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
 		return []Element{}, err
@@ -304,10 +304,11 @@ func (m *Manager) ListContainers(synchronised bool) ([]Element, error) {
 			return nil, err
 		}
 		fmt.Println("checking", tmp.ID, tmp.PendingDeleted)
-		if !tmp.PendingDeleted { //don't return deleted containers
+		if deleted {
+			unsortedContainers = append(unsortedContainers, tmp)
+		} else if !tmp.PendingDeleted { //don't return deleted containers
 			fmt.Println("adding ", tmp.ID)
 			unsortedContainers = append(unsortedContainers, tmp)
-
 		} else {
 			fmt.Println("not adding ", tmp.ID)
 		}
@@ -349,55 +350,87 @@ func (m *Manager) DeleteContainer(id string) ([]Element, error) {
 	if err != nil {
 		log.Fatal("error creating session token to create a container")
 	}
+	////now mark deleted
+	cacheContainer, err := cache.RetrieveContainer(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID, id)
+	if err != nil {
+		fmt.Println("error retrieving container??", err)
+		return []Element{}, err
+	}
+	if cacheContainer == nil {
+		//there is no container
+		fmt.Println("error as no container exists in the cache")
+		return []Element{}, errors.New("error as no container exists in the cache")
+	}
+	tmp := Element{}
+	if err := json.Unmarshal(cacheContainer, &tmp); err != nil {
+		return []Element{}, err
+	}
+	tmp.PendingDeleted = true
+	del, err := json.Marshal(tmp)
+	if err := json.Unmarshal(cacheContainer, &tmp); err != nil {
+		return []Element{}, err
+	}
+	if err := cache.PendContainerDeleted(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID, id, del); err != nil {
+		return []Element{}, err
+	}
+	m.MakeNotification(NotificationMessage{
+		Title:       "Pending container deletion",
+		Type:        "info",
+		Description: "Container " + tmp.ID + " pending deletion",
+	})
 	var prm pool.PrmContainerDelete
 	prm.SetContainerID(cnrID)
 	prm.SetSessionToken(*sc)
-	if err := pl.DeleteContainer(m.ctx, prm); err != nil {
-		fmt.Errorf("delete container via connection pool: %w", err)
-	} else {
-		fmt.Println("pool deleted container", cnrID)
-	}
-
-	if err != nil {
-		fmt.Println("error deleting container", err)
-		tmp := UXMessage{
-			Title:       "Container Error",
-			Type:        "error",
-			Description: "Container could not be deleted " + err.Error(),
+	go func() {
+		if err := pl.DeleteContainer(m.ctx, prm); err != nil {
+			fmt.Println("error deleting container", err)
+			m.MakeToast(NewToastMessage(&UXMessage{
+				Title:       "Container Error",
+				Type:        "error",
+				Description: "Container could not be deleted",
+			}))
+			m.MakeNotification(NotificationMessage{
+				Title:       "Pending container deletion",
+				Type:        "error",
+				Description: "Container " + tmp.ID + " could not be deleted: " + err.Error(),
+			})
+			////now mark deleted
+			cacheContainer, err := cache.RetrieveContainer(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID, id)
+			if err != nil {
+				fmt.Println("error retrieving container??", err)
+				return
+			}
+			if cacheContainer == nil {
+				//there is no container
+				fmt.Println("error as no container exists in the cache")
+				return
+			}
+			tmp := Element{}
+			if err := json.Unmarshal(cacheContainer, &tmp); err != nil {
+				return
+			}
+			tmp.PendingDeleted = false
+			del, err := json.Marshal(tmp)
+			if err := json.Unmarshal(cacheContainer, &tmp); err != nil {
+				return
+			}
+			if err := cache.PendContainerDeleted(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID, id, del); err != nil {
+				return
+			}
+		} else {
+			m.MakeNotification(NotificationMessage{
+				Title:       "Container Deleted",
+				Type:        "success",
+				Description: "Container " + tmp.ID + " was deleted successfully",
+			})
+			m.MakeToast(NewToastMessage(&UXMessage{
+				Title:       "Container Deleted",
+				Type:        "success",
+				Description: "Container successfully deleted",
+			}))
 		}
-		m.MakeToast(NewToastMessage(&tmp))
-	} else {
-		////now mark deleted
-		cacheContainer, err := cache.RetrieveContainer(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID, id)
-		if err != nil {
-			fmt.Println("error retrieving container??", err)
-			return []Element{}, err
-		}
-		if cacheContainer == nil {
-			//there is no container
-			fmt.Println("error as no container exists in the cache")
-			return []Element{}, errors.New("error as no container exists in the cache")
-		}
-		tmp := Element{}
-		if err := json.Unmarshal(cacheContainer, &tmp); err != nil {
-			return []Element{}, err
-		}
-		tmp.PendingDeleted = true
-		del, err := json.Marshal(tmp)
-		if err := json.Unmarshal(cacheContainer, &tmp); err != nil {
-			return []Element{}, err
-		}
-		if err := cache.PendContainerDeleted(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID, id, del); err != nil {
-			return []Element{}, err
-		}
-		t := UXMessage{
-			Title:       "Container Deleted",
-			Type:        "success",
-			Description: "Container successfully deleted",
-		}
-		m.MakeToast(NewToastMessage(&t))
-	}
-	return m.ListContainers(false)
+	}()
+	return m.ListContainers(false, true)
 }
 
 //ultimately, you want to do this with containers that can be restricted (i.e eaclpublic)
