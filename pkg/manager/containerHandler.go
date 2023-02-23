@@ -406,7 +406,7 @@ func (m *Manager) RestrictContainer(id string, publicKey string) error {
 	tmp := UXMessage{
 		Title:       "Sharing pending",
 		Type:        "info",
-		Description: "please wait",
+		Description: "Please wait...",
 	}
 	m.MakeToast(NewToastMessage(&tmp))
 	cnrID := cid.ID{}
@@ -658,7 +658,7 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 	tmp := UXMessage{
 		Title:       "Container being created",
 		Type:        "info",
-		Description: "Container '" + name + "' is currently being created. Please wait",
+		Description: "Container '" + name + "' is currently being created. Please wait...",
 	}
 	m.MakeToast(NewToastMessage(&tmp))
 

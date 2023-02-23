@@ -2,7 +2,7 @@ import React from 'react';
 
 import { deleteContainer, listContainers } from '../../../manager/containers.js';
 import { deleteObject, getObject, listObjects, uploadObject } from '../../../manager/objects.js';
-import { listContacts } from "../../../manager/contacts";
+import { listContacts } from '../../../manager/contacts';
 
 // Mocker
 // import { deleteContainer, listContainers} from '../../../mocker/containers.js';
@@ -13,7 +13,7 @@ import NoContent from '../../atoms/NoContent';
 import ControlBar from '../../molecules/ControlBar';
 import BreadCrumb from '../../organisms/Breadcrumb';
 import ContainerHeaderPage from '../../organisms/HeaderPage/ContainerHeaderPage';
-import filterContent from "./OrganiseContent";
+import filterContent from './OrganiseContent';
 
 // Central style sheet for templates
 import '../_settings/style.scss';
@@ -92,18 +92,18 @@ class Containers extends React.Component {
         console.log("container selected object list", objectList)
         this.setState({...state, selectedContainer, objectList, objectsLoaded: true})
     }
-    onObjectSelection = async (objectID, objectName, objectFile, size, objectOrigin) => {
+    onObjectSelection = async (objectID, objectName, objectFile, size, uploadedAt) => {
         if (this.state.selectedContainer == null) {
-            throw new Error("cannot retrieve an object from non existent container")
+            throw new Error("cannot retrieve an object from non existent container 1")
         }
-        console.log("selected", objectID, objectName, objectOrigin)
+        console.log("selected", objectID, objectName, uploadedAt)
         //we will need to call the function to get the objects for a specific container ID and update the objectList
         const selectedObject = {
             objectID,
             objectName,
             objectFile,
             size,
-            objectOrigin
+            uploadedAt
         }
         let state = this.state
         await this.setState({...state, selectedObject})
@@ -118,7 +118,7 @@ class Containers extends React.Component {
     }
     onObjectUpload = async () => {
         if (this.state.selectedContainer == null) {
-            throw new Error("cannot retrieve an object from non existent container")
+            throw new Error("cannot retrieve an object from non existent container 2")
         }
         let state = this.state
         const objectList = await uploadObject(this.state.selectedContainer.containerID)
@@ -134,7 +134,7 @@ class Containers extends React.Component {
     }
     onObjectDelete = async (objectId) => {
         if (this.state.selectedContainer == null) {
-            throw new Error("cannot retrieve an object from non existent container")
+            throw new Error("cannot retrieve an object from non existent container 3")
         }
         const containerId = this.state.selectedContainer.containerID
         let objectList = await deleteObject(objectId, containerId)
@@ -174,7 +174,7 @@ class Containers extends React.Component {
                                                 </div>
                                             </div>
                                             <div className="row">
-                                                {filterContent(this.state, this.onContainerSelection, this.onContainerDelete, this.onObjectUpload, this.onObjectDownload, this.onObjectSelection, this.onObjectDelete)}
+                                                {filterContent(this.state, this.onObjectSelection, this.onObjectDelete, this.onObjectDownload, this.onObjectUpload, this.onContainerSelection, this.onContainerDelete)}
                                             </div>
                                         </>
                                         : <NoContent

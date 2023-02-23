@@ -6,13 +6,14 @@ import {fileSize} from "humanize-plus";
 import ButtonText from '../../../atoms/ButtonText';
 import ContainerIcon from '../../../atoms/ContainerIcon';
 import HeadingGeneral from '../../../atoms/HeadingGeneral';
-import ObjectInfoButton from '../../../organisms/ObjectInfoButton';
 import ViewContainers from '../../../organisms/ViewContainers';
 import ViewObjects, {ContainerPreviewButton} from '../../../organisms/ViewObjects';
 import {openInDefaultBrowser} from '../../../../manager/manager';
+import ColumnData from '../../../organisms/nColumnData';
 
 
 // To re-allocate
+import ObjectInfoButton from '../../../organisms/ObjectInfoButton';
 import ContainerInfoButton from '../../../organisms/ContainerInfoButton';
 import ContainerShareButton from '../../../organisms/ContainerShareButton';
 import ContainerDeleteButton from '../../../organisms/ContainerDeleteButton';
@@ -64,32 +65,31 @@ function filterContent(state, onObjectSelection, onObjectDelete, onObjectDownloa
         return (
             <>
                 <div className="container-data col-3">
-                    <ContainerIcon
-                        size={"medium"}/>
-                    <HeadingGeneral
-                        level={"h5"}
-                        isUppercase={false}
-                        text={state.selectedContainer.containerName}/>
-                    <HeadingGeneral
-                        level={"h6"}
-                        isUppercase={true}
-                        text={"Container ID"}/>
-                    <span>{state.selectedContainer.containerID}</span>
-                    <HeadingGeneral
-                        level={"h6"}
-                        isUppercase={true}
-                        text={"Container permission"}/>
-                    <span>{selectPermission(state.selectedContainer.permissions)}</span>
-                    <HeadingGeneral
-                        level={"h6"}
-                        isUppercase={true}
-                        text={"Container created"}/>
-                    <span><Moment unix format="DD MMM YY">{state.selectedContainer.createdAt}</Moment></span>
-                    <HeadingGeneral
-                        level={"h6"}
-                        isUppercase={true}
-                        text={"Container size"}/>
-                    <span>{fileSize(state.selectedContainer.size)}</span>
+                    <ColumnData
+                        display="container"
+                        category="static"
+                        contentTitle={state.selectedContainer.containerName}
+                        iconSize={"medium"}
+                        data={[
+                            {
+                                contentDataTitle:"Container ID",
+                                contentDataValue: state.selectedContainer.containerID
+                            },
+                            {
+                                contentDataTitle:"Container permission",
+                                contentDataValue: selectPermission(state.selectedContainer.permissions)
+                            }, 
+                            {
+                                contentDataTitle:"Container created",
+                                contentDataValue: <Moment unix format="DD MMM YY">{state.selectedContainer.createdAt}</Moment>
+                            },
+                            {
+                                contentDataTitle:"Container size",
+                                contentDataValue: fileSize(state.selectedContainer.size)
+                            },
+                            
+                        ]} />
+
                     <div className="buttonStack">
                         <ContainerInfoButton
                             containerName={state.selectedContainer.containerName}
@@ -127,34 +127,35 @@ function filterContent(state, onObjectSelection, onObjectDelete, onObjectDownloa
                     { state.selectedObject ?
                         <>
                             <div className="object-data" id={"objectData"}>
-                                <figure className="atmObjectThumbnail">
-                                    <img className="mw-100" src={`data:image/png;base64,${state.selectedObject.objectFile}`} alt={state.selectedObject.objectName} />
-                                </figure>
-                                <HeadingGeneral
-                                    level={"h5"}
-                                    isUppercase={false}
-                                    text={state.selectedObject.objectName || null}/>
-                                <HeadingGeneral
-                                    level={"h6"}
-                                    isUppercase={true}
-                                    text={"Object ID"}/>
-                                    <span>{state.selectedObject.objectID || null}</span>
-                                <HeadingGeneral
-                                    level={"h6"}
-                                    isUppercase={true}
-                                    text={"Object Size"}/>
-                                    <span>{fileSize(state.selectedObject.size)}</span>
-                                <HeadingGeneral
-                                    level={"h6"}
-                                    isUppercase={true}
-                                    text={"Object Timestamp"}/>
-                                    <span><Moment unix format="DD MMM YY">{state.selectedObject.objectOrigin}</Moment></span>
+                                <ColumnData
+                                    display="object"
+                                    category="static"
+                                    file={state.selectedObject.objectFile}
+                                    contentTitle={state.selectedObject.objectName || null}
+                                    data={[
+                                        {
+                                            contentDataTitle:"Object ID",
+                                            contentDataValue: state.selectedObject.objectID || null
+                                        },
+                                        {
+                                            contentDataTitle:"Object created",
+                                            contentDataValue: <Moment unix format="DD MMM YY">{state.selectedObject.uploadedAt}</Moment>
+                                        },
+                                        {
+                                            contentDataTitle:"Object size",
+                                            contentDataValue: fileSize(state.selectedObject.size)
+                                        },
+                                        
+                                    ]} />
+                            </div>
+
+                            <div className="object-data" id={"objectData"}>
                                 <div className="buttonStack">
                                     <ObjectInfoButton
                                         objectId={state.selectedObject.objectID}
                                         objectFile={state.selectedObject.objectFile}
                                         objectName={state.selectedObject.objectName}
-                                        objectOrigin={state.selectedObject.objectOrigin}
+                                        uploadedAt={state.selectedObject.uploadedAt}
                                         objectSize={state.selectedObject.size} />
                                     <ContainerPreviewButton 
                                         icon="fas fa-download" 
@@ -166,7 +167,7 @@ function filterContent(state, onObjectSelection, onObjectDelete, onObjectDownloa
                                             size="small"
                                             hasIcon={true}
                                             faClass={"fas fa-external-link"}
-                                            text={"Click to view file in web browser"}
+                                            text={"Click to view object in web browser"}
                                             onClick={() => openInDefaultBrowser(`https://http.t5.fs.neo.org/${state.selectedContainer.containerID}/${state.selectedObject.objectID}`)} />
                                     : null }
                                 </div>

@@ -49,7 +49,7 @@ export function ObjectRow({showOverlayMenu, onDelete, onObjectSelection, item}) 
                     objectFile={item.attributes.Thumbnail}
                     objectName={item.attributes.FileName}
                     objectSize={item.size}
-                    objectOrigin={item.attributes.Timestamp}>
+                    uploadedAt={item.attributes.Timestamp}>
                 </RowObject>
                 {/* https://codepen.io/aaw3k/pen/zYBxEWX */}
             </div>

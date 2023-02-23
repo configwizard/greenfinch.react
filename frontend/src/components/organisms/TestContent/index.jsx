@@ -6,7 +6,7 @@ import ButtonText from '../../atoms/ButtonText';
 
 import './style.scss';
 
-const TestHomePage = () => {
+const TestContent = () => {
     return (
         <>
          <div>
@@ -143,4 +143,4 @@ const TestHomePage = () => {
     );
 }
 
-export default TestHomePage;
+export default TestContent;

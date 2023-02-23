@@ -7,7 +7,7 @@ import CompModalStandard from '../Modal/ModalStandard';
 import Moment from "react-moment";
 import {fileSize} from "humanize-plus";
 
-const ObjectInfo = ({ objectName, objectId, objectFile, objectSize, objectOrigin }) => {
+const ObjectInfo = ({ objectName, objectId, objectFile, objectSize, uploadedAt }) => {
     const { setModal, unSetModal } = useModal()
     return (
         <ButtonText
@@ -31,8 +31,8 @@ const ObjectInfo = ({ objectName, objectId, objectFile, objectSize, objectOrigin
                         <p>{objectId}</p>
                         <h6>Object Size:</h6>
                         <p>{fileSize(objectSize)}</p>
-                        <h6>Object Timestamp:</h6>
-                        <p><Moment unix format="DD MMM YY">{objectOrigin}</Moment></p>
+                        <h6>Object Created:</h6>
+                        <p><Moment unix format="DD MMM YY">{uploadedAt}</Moment></p>
                 </CompModalStandard>)
             }} />
     )

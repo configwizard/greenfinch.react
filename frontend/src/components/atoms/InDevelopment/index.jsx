@@ -5,7 +5,7 @@ import './style.scss';
 
 const InDevelopment = ({ text }) => {
     return (
-            <div class="atmInDevelopment d-flex flex-column align-items-center">
+            <div className="atmInDevelopment d-flex flex-column align-items-center">
                 <i className="fa-2x fa-solid fa-sharp fa-pen-ruler"/>
                 <span>{text}</span>
             </div>

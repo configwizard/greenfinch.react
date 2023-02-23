@@ -5,10 +5,10 @@ import './style.scss';
 
 const NoContent = ({ text, textAction, textClick }) => {
     return (
-        <div class="atmNoContent d-flex flex-column align-items-center">
+        <div className="atmNoContent d-flex flex-column align-items-center">
             <i className="fa-2x fa-solid fa-sharp fa-triangle-exclamation"/>
             <span>{text}</span>
-            <span><button type="button" class="atmSimpleText" onClick={textClick}>{textAction}</button></span>
+            <span><button type="button" className="atmSimpleText" onClick={textClick}>{textAction}</button></span>
         </div>
         )
     };

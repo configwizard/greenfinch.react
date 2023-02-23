@@ -8,7 +8,7 @@ import MiddleEllipsis from 'react-middle-ellipsis';
 
 import './style.scss';
 
-const RowObject = ({ onClick, dataType, objectFile, objectName, objectSize, objectOrigin }) => {
+const RowObject = ({ onClick, dataType, objectFile, objectName, objectSize, uploadedAt }) => {
     return (
         <>
             <button 
@@ -17,7 +17,7 @@ const RowObject = ({ onClick, dataType, objectFile, objectName, objectSize, obje
                 onClick={onClick}>
                 
                 <div className="atmRowList d-flex flex-row flex-grow-1 align-items-center">
-                    <div class="atmRowImage d-flex">
+                    <div className="atmRowImage d-flex">
                         { objectFile ? <figure className="atmRowFile d-flex align-items-center justify-content-center"><img className="mw-100 mh-100" src={`data:image/png;base64,${objectFile}`} alt={objectName} /></figure> : <i className="fas fa-folder" data-type={dataType}/> }
                     </div>
                     <div className="atmRowName">
@@ -26,7 +26,7 @@ const RowObject = ({ onClick, dataType, objectFile, objectName, objectSize, obje
                         </MiddleEllipsis>
                     </div>
                     <div className="atmRowDefault">{fileSize(objectSize)}</div>
-                    <div className="atmRowDefault"><Moment unix format="DD MMM YY">{objectOrigin}</Moment></div>
+                    <div className="atmRowDefault"><Moment unix format="DD MMM YY">{uploadedAt}</Moment></div>
                 </div>
             </button>  
         </>
@@ -38,7 +38,7 @@ RowObject.propTypes = {
     onClick: PropTypes.func,
     objectName: PropTypes.string,
     objectSize: PropTypes.number,
-    objectOrigin: PropTypes.number
+    uploadedAt: PropTypes.number
 }
 
 RowObject.defaultProps = {

@@ -45,7 +45,7 @@ const ButtonToggle = ({ type, toggleName, toggleId }) => {
                 <label className="atmSwitchLabel">
                     <input  
                         type="checkbox"
-                        class={`atmInputToggle ${[type]}`}
+                        className={`atmInputToggle ${[type]}`}
                         name={toggleName}
                         id={toggleId}
                         checked={isToggled} 

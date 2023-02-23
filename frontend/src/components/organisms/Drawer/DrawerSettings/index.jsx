@@ -53,7 +53,7 @@ const DrawerSettings = (props) => {
 
                     {/*/!* React Bootstrap version *!/*/}
                     {/*<div className="molDrawerRow">*/}
-                    {/*    <select class="form-select" aria-label="Default select example">*/}
+                    {/*    <select className="form-select" aria-label="Default select example">*/}
                     {/*        <option selected>Select...</option>*/}
                     {/*        <option value="1">Menu 1</option>*/}
                     {/*        <option value="2">Menu 2</option>*/}

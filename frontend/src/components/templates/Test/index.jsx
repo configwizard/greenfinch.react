@@ -6,7 +6,7 @@ import HeaderPage from '../../organisms/HeaderPage';
 // Central style sheet for templates
 import '../_settings/style.scss';
 
-import TestHomePage from '../../organisms/TestHomePage';
+import TestContent from '../../organisms/TestContent';
 
 function TestButtonAction() {
     console.log("Button clicked, test page")
@@ -29,14 +29,14 @@ const TemplateTest = () => {
                             <div className="templateWrapper">
                                 <div className="templateInner">
                                     <p>A page to test components + design.</p>
-                                    <TestHomePage></TestHomePage>
+                                    <TestContent></TestContent>
                                 </div>
                             </div>
                         </div>
                         <div className="col-6">
                             <div className="templateWrapper">
                                 <div className="templateInner">
-                                    <TestHomePage></TestHomePage>
+                                    <TestContent></TestContent>
                                 </div>
                             </div>
                         </div>
