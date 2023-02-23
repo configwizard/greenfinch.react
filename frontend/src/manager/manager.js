@@ -1,3 +1,10 @@
+const enableCache = async (enable) => {
+    try {
+        let networkSettings = await window.go.manager.Manager.EnableCache(enable)
+    } catch (e) {
+        console.log("error setting cache state", e)
+    }
+}
 const setNetwork = async (network) => {
     try {
         console.log("setting network to ", network)
@@ -128,6 +135,7 @@ const getVersion = async() => {
 }
 export {
     setNetwork,
+    enableCache,
     getNotifications,
     deleteNotifications,
     deleteNotification,

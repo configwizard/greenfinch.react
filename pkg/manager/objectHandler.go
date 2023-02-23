@@ -579,7 +579,7 @@ func (m *Manager) listObjectsAsync(containerID string) ([]Element, error) {
 	}
 	fmt.Printf("list objects %+v\r\n", list)
 	wg := sync.WaitGroup{}
-
+	var listObjects []Element
 	//todo: ludicrously inefficient. Its recreating sessions etc to get the metadata. Refactor.
 	for _, v := range list {
 		fmt.Println("looping", v.String())
@@ -607,10 +607,14 @@ func (m *Manager) listObjectsAsync(containerID string) ([]Element, error) {
 				tmp.Attributes["X_EXT"] = ""
 			}
 			tmp.Size = head.PayloadSize()
-			str, err := json.MarshalIndent(tmp, "", "  ")
 			if err != nil {
 				fmt.Println(err)
 			}
+			if !m.enableCaching {
+				listObjects = append(listObjects, tmp)
+			}
+			str, err := json.MarshalIndent(tmp, "", "  ")
+
 			//store in database
 			if err = cache.StoreObject(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID, vID.String(), str); err != nil {
 				fmt.Println("MASSIVE ERROR could not store container in database", err)
@@ -620,6 +624,9 @@ func (m *Manager) listObjectsAsync(containerID string) ([]Element, error) {
 	fmt.Println("length of ids", len(list))
 	if len(list) > 0 {
 		wg.Wait()
+	}
+	if !m.enableCaching {
+		return listObjects, nil
 	}
 	objectList, err := m.ListContainerObjects(containerID, true, false)
 	fmt.Println("async returning", objectList)
@@ -631,6 +638,10 @@ func (m *Manager) ListContainerObjects(containerID string, synchronised, deleted
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
 		return []Element{}, err
+	}
+	if !m.enableCaching {
+		//what do we do here then for retrieving the objects from the network?
+		return m.listObjectsAsync(containerID)
 	}
 	tmpObjects, err := cache.RetrieveObjects(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID)
 	if err != nil {

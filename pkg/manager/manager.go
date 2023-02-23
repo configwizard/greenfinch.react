@@ -82,11 +82,11 @@ type Manager struct {
 	//key                    *ecdsa.PrivateKey
 	version string
 	//c                      *cache.Cache
-	ctx      context.Context
-	wallet   *wal.Wallet
-	password string //warning this is not a good idea
-	DEBUG    bool
-	disableCaching bool
+	ctx           context.Context
+	wallet        *wal.Wallet
+	password      string //warning this is not a good idea
+	DEBUG         bool
+	enableCaching bool
 }
 
 const (
@@ -194,6 +194,10 @@ func (m *Manager) SetSelectedNetwork(network string) (NetworkData, error) {
 	return m.selectedNetwork, nil
 }
 
+func (m *Manager) EnableCache(enable bool) error {
+	m.enableCaching = enable
+	return nil
+}
 func (m *Manager) GetVersion() string {
 	return m.version
 }
@@ -293,6 +297,7 @@ func NewFileSystemManager(version string, dbLocation string, DEBUG bool) (*Manag
 		gateAccount: *ephemeralAccount, //used to make requests to RPC endpoints and works on behalf of the user so never to expose their key anywhere
 		selectedNetwork: networks[Network("testnet")], //this should be set/stored in the database when the user selects it and once they have logged in update it.
 		version: version,
+		enableCaching: true,
 		pool:    nil,
 		ctx:   nil,
 		DEBUG: DEBUG,
