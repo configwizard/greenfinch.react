@@ -93,7 +93,7 @@ func (m *Manager) NewListReadOnlyContainerContents(since int64) ([]Element, erro
 			//	return
 			//}
 			//now we need the metadata for the objects in this container.
-			objects, err := m.ListContainerObjects(v.ID, false)
+			objects, err := m.ListContainerObjects(v.ID, false, false)
 			if err != nil {
 				fmt.Println("failed to process container ", v.ID)
 				return
@@ -247,7 +247,7 @@ func (m *Manager) prepareAndAppendContainer(vID cid.ID) (Element, error) {
 	//var filters = obj.SearchFilters{}
 	//filters.AddRootFilter()
 	fmt.Printf("tmpContainer 1 %+v\r\n", tmpContainer)
-	list, err := m.ListContainerObjects(vID.String(), false)//object.QueryObjects(m.ctx, c, vID, filters, nil, sessionToken)
+	list, err := m.ListContainerObjects(vID.String(), false, false)//object.QueryObjects(m.ctx, c, vID, filters, nil, sessionToken)
 	if err != nil {
 		fmt.Println("error querying objects of container", err)
 		tmpContainer.Errors = append(tmpContainer.Errors, err)
@@ -263,7 +263,7 @@ func (m *Manager) prepareAndAppendContainer(vID cid.ID) (Element, error) {
 
 //this is going to be a bit of a hack whilst working out the best way to do size
 func (m Manager) getContainerSize(containerID string) (uint64, error) {
-	objects, err := m.ListContainerObjects(containerID, true) //in sync so just grab from file system
+	objects, err := m.ListContainerObjects(containerID, true, false) //in sync so just grab from file system
 	if err != nil {
 		return 0, err
 	}
@@ -418,6 +418,19 @@ func (m *Manager) DeleteContainer(id string) ([]Element, error) {
 				return
 			}
 		} else {
+			if err := cache.DeleteContainer(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID, id); err != nil {
+				m.MakeNotification(NotificationMessage{
+					Title:       "Container cache deletion",
+					Type:        "error",
+					Description: "failed to delete container " + id + " from the cache " + err.Error(),
+				})
+				m.MakeToast(NewToastMessage(&UXMessage{
+					Title:       "Container cache deletion",
+					Type:        "error",
+					Description: "failed to delete container from the cache",
+				}))
+				return
+			}
 			m.MakeNotification(NotificationMessage{
 				Title:       "Container Deleted",
 				Type:        "success",
@@ -428,6 +441,7 @@ func (m *Manager) DeleteContainer(id string) ([]Element, error) {
 				Type:        "success",
 				Description: "Container successfully deleted",
 			}))
+			m.ContainersChanged()
 		}
 	}()
 	return m.ListContainers(false, true)

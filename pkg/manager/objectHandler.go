@@ -288,7 +288,7 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 		Description: "Object successfully created",
 	}
 	m.MakeToast(NewToastMessage(&t))
-	return m.ListContainerObjects(containerID, false)
+	return m.ListContainerObjects(containerID, false, false)
 }
 
 // GetObjectMetaData is live not cached
@@ -621,13 +621,13 @@ func (m *Manager) listObjectsAsync(containerID string) ([]Element, error) {
 	if len(list) > 0 {
 		wg.Wait()
 	}
-	objectList, err := m.ListContainerObjects(containerID, true)
+	objectList, err := m.ListContainerObjects(containerID, true, false)
 	fmt.Println("async returning", objectList)
 	return objectList, err
 }
 
 //ListContainerObjects ets from cache
-func (m *Manager) ListContainerObjects(containerID string, synchronised bool) ([]Element, error) {
+func (m *Manager) ListContainerObjects(containerID string, synchronised, deleted bool) ([]Element, error) {
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
 		return []Element{}, err
@@ -658,8 +658,10 @@ func (m *Manager) ListContainerObjects(containerID string, synchronised bool) ([
 		} else {
 			tmp.Attributes["X_EXT"] = ""
 		}
-		//ok this needs to be an array to add the correct ones, not a map other wise we lose duplicates quickly
-		if !tmp.PendingDeleted && tmp.ParentID == containerID { //don't return deleted containers
+		if deleted && tmp.ParentID == containerID {
+			unsortedObjects = append(unsortedObjects, tmp)
+			//ok this needs to be an array to add the correct ones, not a map other wise we lose duplicates quickly
+		} else if !tmp.PendingDeleted && tmp.ParentID == containerID { //don't return deleted containers
 			unsortedObjects = append(unsortedObjects, tmp)
 			//if name, ok := tmp.Attributes[obj.AttributeFileName]; ok && name != "" {
 			//	unsortedObjects[tmp.Attributes[obj.AttributeFileName]] = tmp
@@ -756,45 +758,91 @@ func (m *Manager) DeleteObject(objectID, containerID string) ([]Element, error) 
 		log.Fatal("error creating bearer token to upload object")
 	}
 	prmDelete.UseBearer(*bt)
-
-	//do we need to 'dial' the pool
-	if err := pl.DeleteObject(m.ctx, prmDelete); err != nil {
-		reason, ok := isErrAccessDenied(err)
-		if ok {
-			fmt.Printf("%w: %s\r\n", err, reason)
-			return nil, err
-		}
-		fmt.Errorf("init full payload range reading via connection pool: %w", err)
-	} else {
-		//now mark deleted
-		cacheObject, err := cache.RetrieveObject(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID, objectID)
-		if err != nil {
-			fmt.Println("error retrieving container??", err)
-			return []Element{}, err
-		}
-		if cacheObject == nil {
-			//there is no container
-			return []Element{}, err
-		}
-		tmp := Element{}
-		if err := json.Unmarshal(cacheObject, &tmp); err != nil {
-			return []Element{}, err
-		}
-		tmp.PendingDeleted = true
-		del, err := json.Marshal(tmp)
-		if err := json.Unmarshal(cacheObject, &tmp); err != nil {
-			return []Element{}, err
-		}
-		if err := cache.PendObjectDeleted(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID, objectID, del); err != nil {
-			return []Element{}, err
-		}
-		t := UXMessage{
-			Title:       "Object Deleted",
-			Type:        "success",
-			Description: "Object successfully deleted",
-		}
-		m.MakeToast(NewToastMessage(&t))
+	//now mark deleted
+	cacheObject, err := cache.RetrieveObject(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID, objectID)
+	if err != nil {
+		fmt.Println("error retrieving container??", err)
+		return []Element{}, err
 	}
-	return m.ListContainerObjects(containerID, false)
+	if cacheObject == nil {
+		//there is no container
+		return []Element{}, err
+	}
+	tmp := Element{}
+	if err := json.Unmarshal(cacheObject, &tmp); err != nil {
+		return []Element{}, err
+	}
+	tmp.PendingDeleted = true
+	del, err := json.Marshal(tmp)
+	if err := json.Unmarshal(cacheObject, &tmp); err != nil {
+		return []Element{}, err
+	}
+	if err := cache.PendObjectDeleted(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID, objectID, del); err != nil {
+		return []Element{}, err
+	}
+
+	go func() {
+		//do we need to 'dial' the pool
+		if err := pl.DeleteObject(m.ctx, prmDelete); err != nil {
+			//reason, ok := isErrAccessDenied(err)
+			m.MakeToast(NewToastMessage(&UXMessage{
+				Title:       "Object Error",
+				Type:        "error",
+				Description: "Object could not be deleted",
+			}))
+			m.MakeNotification(NotificationMessage{
+				Title:       "Pending object deletion",
+				Type:        "error",
+				Description: "Object " + tmp.ID + " could not be deleted: " + err.Error(),
+			})
+			cacheObject, err := cache.RetrieveObject(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID, objectID)
+			if err != nil {
+				fmt.Println("error retrieving container??", err)
+				return
+			}
+			if cacheObject == nil {
+				//there is no container
+				return
+			}
+			tmp := Element{}
+			if err := json.Unmarshal(cacheObject, &tmp); err != nil {
+				return
+			}
+			tmp.PendingDeleted = false
+			del, err := json.Marshal(tmp)
+			if err := json.Unmarshal(cacheObject, &tmp); err != nil {
+				return
+			}
+			if err := cache.PendObjectDeleted(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID, objectID, del); err != nil {
+				return
+			}
+		} else {
+			if err := cache.DeleteObject(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID, objectID); err != nil {
+				m.MakeNotification(NotificationMessage{
+					Title:       "Object cache deletion",
+					Type:        "error",
+					Description: "failed to delete container " + objectID + " from the cache " + err.Error(),
+				})
+				m.MakeToast(NewToastMessage(&UXMessage{
+					Title:       "Object cache deletion",
+					Type:        "error",
+					Description: "failed to delete object from the cache",
+				}))
+				return
+			}
+			m.MakeNotification(NotificationMessage{
+				Title:       "Object Deleted",
+				Type:        "success",
+				Description: "Object " + tmp.ID + " was deleted successfully",
+			})
+			m.MakeToast(NewToastMessage(&UXMessage{
+				Title:       "Object Deleted",
+				Type:        "success",
+				Description: "Object successfully deleted",
+			}))
+			m.ContainersChanged()// should force a general update. Good for now.
+		}
+	}()
+	return m.ListContainerObjects(containerID, false, true)
 
 }
