@@ -33,13 +33,15 @@ const selectPermission = (rawPermission) => {
     }
 }
 
-function retrieveCorrectComponent(state, onObjectSelection, onObjectDelete, onObjectDownload, onObjectUpload, onContainerSelection, onContainerDelete) {
+function filterContent(state, onObjectSelection, onObjectDelete, onObjectDownload, onObjectUpload, onContainerSelection, onContainerDelete) {
     if (state.selectedContainer == null) {
         return (
             <>
+                {/* RG48. This is tainer view. */}
                 <div className="col-3">
                     <p>Select a container to open and view contents.</p>
                 </div>
+                
                 <div className="col-9">
                     <div className="orgContainersGrid">
 
@@ -174,4 +176,4 @@ function retrieveCorrectComponent(state, onObjectSelection, onObjectDelete, onOb
     }
 }
 
-export default retrieveCorrectComponent
+export default filterContent

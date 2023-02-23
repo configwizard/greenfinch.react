@@ -10,7 +10,7 @@ import {addSharedContainer, removeSharedContainer, listSharedContainers} from ".
 import ViewContainers from "../../organisms/ViewContainers";
 import {getObject, listObjects} from "../../../manager/objects";
 import {listSharedContainerObjects} from "../../../manager/sharedContainers";
-import retrieveCorrectComponent from "../hacked/containerObjectHandler";
+import filterContent from "../Containers/OrganiseContent";
 import {deleteContainer, listContainers} from "../../../manager/containers";
 
 class SharedContainers extends React.Component {
@@ -83,7 +83,7 @@ class SharedContainers extends React.Component {
                             buttonText={"Add shared container"}
                         />
                         <div className="row">
-                            {retrieveCorrectComponent(this.state, this.onObjectSelection, null, this.onObjectDownload, null, this.onSharedContainerSelection, this.onContainerDelete)}
+                            {filterContent(this.state, this.onObjectSelection, null, this.onObjectDownload, null, this.onSharedContainerSelection, this.onContainerDelete)}
                         </div>
                     </div>
                 </div>

@@ -1,15 +1,11 @@
 import React from 'react';
 
 // Components
-import NoContent from '../../atoms/NoContent';
+import InDevelopment from '../../atoms/InDevelopment';
 import HeaderPage from '../../organisms/HeaderPage';
 
 // Central style sheet for templates
 import '../_settings/style.scss';
-
-function TestButtonAction() {
-    console.log("Button clicked, website page")
-}
 
 const TemplateNFTs = () => {
     return (
@@ -18,17 +14,12 @@ const TemplateNFTs = () => {
                 <div className="col-12">
                     <HeaderPage 
                         pageTitle={"NFT Management"}
-                        hasButton={false}
-                        hasIcon={true}
-                        faClass={"fas fa-plus-circle"}
-                        buttonText={"Add new website"}
-                        buttonAction={TestButtonAction} /> 
-                        
+                        hasButton={false} /> 
                     <div className="row">
                         <div className="col-12">
                             <div className="templateWrapper">
                                 <div className="templateInner">
-                                    <NoContent
+                                    <InDevelopment
                                         text={"This functionality is currently in development and is coming soon."}/>
                                 </div>
                             </div>

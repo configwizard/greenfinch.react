@@ -121,6 +121,14 @@ button {
     outline:none !important;
 }
 
+// Global button disabled (see bootstrap for guidance, default = attribute, not class)
+button:disabled, 
+.button.disabled {
+    opacity: 0.2;
+    pointer-events: none;
+    user-select: none;
+    cursor: not-allowed; // will not show as user-select and pointer-events in place
+}
 
 /* Mixins
 - - - - - - - - - - - - - - - - - - */

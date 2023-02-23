@@ -74,17 +74,23 @@ export default class PageNotifications extends React.Component {
                     <div className="col-12">
                         <HeaderPage
                             pageTitle={"Notification Management"}
-                            hasButton={false}
-                            hasIcon={true}
-                            faClass={"fas fa-plus-circle"}/>
-
+                            hasButton={true}
+                            hasButtonIcon={true}
+                            isButtonDisabled={false}
+                            faClass={"fa-sharp fa-solid fa-broom-wide"}
+                            buttonText={"Clear notifications"}
+                            buttonAction={this.onClearNotifications} />
                         <div className="row">
                             <div className="col-12">
+                                {/*
+                                    <div>
+                                        <Button onClick={this.onClearNotifications}>
+                                            Clear notifications
+                                        </Button>
+                                    </div>
+                                */}
                                 <div className="templateWrapper">
-                                    <Button onClick={this.onClearNotifications}>
-                                        Clear notifications
-                                    </Button>
-                                    <div className="templateContainer">
+                                    <div className="templateInner">
                                         {
                                             this.state.list.length > 0 ? this.state.list.map(l => {
                                                 return (
@@ -93,9 +99,9 @@ export default class PageNotifications extends React.Component {
                                                             Delete notification
                                                         </Button>
                                                         <div ref={l.Id}><JSONPretty id="json-pretty" data={l}></JSONPretty></div>
-                                                        { l.Action != undefined && l.Action == "qr-code" ? <QRCode size={128} value={l.Description} /> : null }
+                                                        { l.Action != undefined && l.Action === "qr-code" ? <QRCode size={128} value={l.Description} /> : null }
                                                     </div>)
-                                            }) : <NoContent text={"No notifications"}/>
+                                            }) : <NoContent text={"You currently have no notifications to view."}/>
                                         }
                                     </div>
                                 </div>

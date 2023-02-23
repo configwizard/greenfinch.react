@@ -11,6 +11,10 @@ import CompModalStandard from '../../organisms/Modal/ModalStandard';
 // Central style sheet for templates
 import '../_settings/style.scss';
 
+function TextClickAction() {
+    console.log("Button clicked, add modal onClick here")
+}
+
 const TemplateContacts = ({contacts, createContact, deleteContact}) => {
     const { setModal, unSetModal } = useModal()
     return (
@@ -20,7 +24,8 @@ const TemplateContacts = ({contacts, createContact, deleteContact}) => {
                     <HeaderPage 
                         pageTitle={"Greenfinch contacts"}
                         hasButton={true}
-                        hasIcon={true}
+                        hasButtonIcon={true}
+                        isButtonDisabled={false}
                         faClass={"fas fa-plus-circle"}
                         buttonText={"Add new contact"}
                         buttonAction={() => {
@@ -76,7 +81,9 @@ const TemplateContacts = ({contacts, createContact, deleteContact}) => {
                                 <div className="templateInner">
                                     {contacts.length > 0 ? <AddressBook contacts={contacts} deleteContact={deleteContact}/>
                                         : <NoContent
-                                            text={"You currently have no contacts. Add contacts to share containers."}/>
+                                            text={"You currently have no contacts."}
+                                            textAction={"Add your first contact."}
+                                            textClick={TextClickAction} />
                                     }
                                 </div>
                             </div>

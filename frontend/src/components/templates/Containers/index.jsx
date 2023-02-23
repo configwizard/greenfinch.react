@@ -1,11 +1,7 @@
 import React from 'react';
-import { fileSize } from "humanize-plus";
-import Moment from "react-moment";
 
-// Actual
 import { deleteContainer, listContainers } from '../../../manager/containers.js';
 import { deleteObject, getObject, listObjects, uploadObject } from '../../../manager/objects.js';
-import { openInDefaultBrowser } from "../../../manager/manager.js";
 import { listContacts } from "../../../manager/contacts";
 
 // Mocker
@@ -13,17 +9,18 @@ import { listContacts } from "../../../manager/contacts";
 // import { deleteObject, getObject, listObjects, uploadObject } from '../../../mocker/objects.js';
 
 // Components
-import HeadingGeneral from '../../atoms/HeadingGeneral';
+import NoContent from '../../atoms/NoContent';
 import ControlBar from '../../molecules/ControlBar';
 import BreadCrumb from '../../organisms/Breadcrumb';
 import ContainerHeaderPage from '../../organisms/HeaderPage/ContainerHeaderPage';
-import ViewContainers from '../../organisms/ViewContainers';
-import ViewObjects, { ContainerPreviewButton, FileUpload } from '../../organisms/ViewObjects';
-import ContainerShareButton from '../../organisms/ContainerShareButton';
+import filterContent from "./OrganiseContent";
 
 // Central style sheet for templates
 import '../_settings/style.scss';
-import retrieveCorrectComponent from "../hacked/containerObjectHandler";
+
+function TextClickAction() {
+    console.log("Button clicked, add modal onClick here")
+}
 
 class Containers extends React.Component {
     constructor(props) {
@@ -162,20 +159,31 @@ class Containers extends React.Component {
                             faClass={"fas fa-plus-circle"}
                             buttonText={"Create new container"}
                         />
-                        <div className="containerOptions">
-                            <div className="row">
-                                <div className="col-6">
-                                    <BreadCrumb account={this.props.account} onRefresh={this.onRefresh} resetBreadcrumb={this.resetBreadcrumb} container={this.state.selectedContainer} object={this.state.selectedObject}></BreadCrumb>
-                                </div>
-                                <div className="col-6">
-                                    <ControlBar resetBreadcrumb={this.resetBreadcrumb} changeView={this.onViewChange} viewMode={this.state.viewMode} selectedContainer={this.state.selectedContainer}></ControlBar>
-                                </div>
+                        <div className="row">
+                            <div className="col-12">
+                                    {this.state.containerList.length > 0 ? 
+                                        <>
+                                            <div className="containerOptions">
+                                                <div className="row">
+                                                    <div className="col-6">
+                                                        <BreadCrumb account={this.props.account} onRefresh={this.onRefresh} resetBreadcrumb={this.resetBreadcrumb} container={this.state.selectedContainer} object={this.state.selectedObject}></BreadCrumb>
+                                                    </div>
+                                                    <div className="col-6">
+                                                        <ControlBar resetBreadcrumb={this.resetBreadcrumb} changeView={this.onViewChange} viewMode={this.state.viewMode} selectedContainer={this.state.selectedContainer}></ControlBar>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="row">
+                                                {filterContent(this.state, this.onContainerSelection, this.onContainerDelete, this.onObjectUpload, this.onObjectDownload, this.onObjectSelection, this.onObjectDelete)}
+                                            </div>
+                                        </>
+                                        : <NoContent
+                                            text={"You currently have no containers."}
+                                            textAction={"Create your first container."}
+                                            textClick={TextClickAction} />
+                                    }
                             </div>
                         </div>
-                        <div className="row">
-                            {retrieveCorrectComponent(this.state, this.onObjectSelection, this.onObjectDelete, this.onObjectDownload, this.onObjectUpload, this.onContainerSelection, this.onContainerDelete)}
-                        </div>
-
                     </div>
                 </div>
             </div>

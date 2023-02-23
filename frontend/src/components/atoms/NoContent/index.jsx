@@ -3,17 +3,24 @@ import PropTypes from 'prop-types';
 
 import './style.scss';
 
-const NoContent = ({ text }) => {
+const NoContent = ({ text, textAction, textClick }) => {
     return (
-            <div className="no-content"><i className="fas fa-exclamation-triangle"/>{text}</div>
+        <div class="atmNoContent d-flex flex-column align-items-center">
+            <i className="fa-2x fa-solid fa-sharp fa-triangle-exclamation"/>
+            <span>{text}</span>
+            <span><button type="button" class="atmSimpleText" onClick={textClick}>{textAction}</button></span>
+        </div>
         )
     };
 export default NoContent;
 
 NoContent.propTypes = {
-    text: PropTypes.string
+    text: PropTypes.string,
+    textAction: PropTypes.string,
+    textClick: PropTypes.func,
 };
 
 NoContent.defaultProps = {
-    text: "Homepage link"
+    text: "Instructional text",
+    textAction: "Click here to do something fun"
 };

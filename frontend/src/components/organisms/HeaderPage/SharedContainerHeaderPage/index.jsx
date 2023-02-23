@@ -16,7 +16,7 @@ import CompModalStandard from '../../../organisms/Modal/ModalStandard';
 import '../style.scss';
 import {addSharedContainer} from "../../../../manager/sharedContainers";
 
-const SharedContainerHeaderPage = ({ pageTitle, hasButton, hasIcon, faClass, buttonText, buttonAction }) => {
+const SharedContainerHeaderPage = ({ pageTitle, hasButton, hasButtonIcon, isButtonDisabled, faClass, buttonText, buttonAction }) => {
     const { setModal, unSetModal } = useModal();
     return (
         <div className="HeaderPageWrapper">
@@ -33,7 +33,8 @@ const SharedContainerHeaderPage = ({ pageTitle, hasButton, hasIcon, faClass, but
                         <ButtonText
                             size={"small"}
                             type={"default"}
-                            hasIcon={hasIcon}
+                            hasIcon={hasButtonIcon}
+                            isDisabled={isButtonDisabled}
                             faClass={faClass}
                             text={buttonText}
                             onClick={() => {
@@ -77,10 +78,12 @@ HeadingGeneral.defaultProps = {
 ButtonText.propTypes = {
     hasButton: PropTypes.bool,
     hasIcon: PropTypes.bool,
-    iconClass: PropTypes.string,
+    isDisabled: PropTypes.bool,
+    iconClass: PropTypes.string
 };
 
 ButtonText.defaultProps = {
     hasButton: true,
-    hasIcon: true
+    hasIcon: true,
+    isDisabled: false
 }

@@ -38,25 +38,25 @@ const NavbarSide = (props) => {
                     <Tooltip content="Contacts" direction="right">
                         <NavlinkSide
                             to={"/contacts"}
-                            faClass={"fal fa-address-book"}
+                            faClass={"fa-duotone fa-address-book"}
                             label={"Contacts"} />
                     </Tooltip>
                     <Tooltip content="Shared with me" direction="right">
                         <NavlinkSide
                             to={"/shared"}
-                            faClass={"fal fa-share-alt"}
+                            faClass={"fa-duotone fa-share-nodes"}
                             label={"Shared Containers"} />
                     </Tooltip>
                     <Tooltip content="Websites" direction="right">
                         <NavlinkSide
                             to={"/websites"}
-                            faClass={"fal fa-globe"}
+                            faClass={"fa-duotone fa-browser"}
                             label={"Websites"} />
                     </Tooltip>
                     <Tooltip content="NFT Management" direction="right">
                         <NavlinkSide
                             to={"/nfts"}
-                            faClass={"fal fa-hexagon"}
+                            faClass={"fa-duotone fa-hexagon-vertical-nft-slanted"}
                             label={"NFT Management"} />
                     </Tooltip>
                     <Tooltip content="Test Page" direction="right">

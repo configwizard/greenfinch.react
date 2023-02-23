@@ -19,7 +19,8 @@ const TemplateTest = () => {
                     <HeaderPage
                         pageTitle={"Test Page"}
                         hasButton={true}
-                        hasIcon={true}
+                        hasButtonIcon={true}
+                        isButtonDisabled={true}
                         faClass={"fas fa-vial"}
                         buttonText={"Test button"}
                         buttonAction={TestButtonAction} />

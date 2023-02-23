@@ -1,7 +1,7 @@
 @import "../../../assets/dashboard-variables.scss";
 @import "../../../assets/greenfinch-variables.scss";
 
-.atmNoContent {
+.atmInDevelopment {
     text-align: center;
     width: 100%;
     padding: $paddingSmall;
@@ -10,14 +10,5 @@
     font-family: $brandFontBold;
     & i {
         margin: $marginXSmall 0;
-    }
-    & button {
-        background-color: unset;
-        text-decoration: underline;
-        color: rgba($brandColorDark, 1);
-        font-size: 1.1rem;
-        &:hover {
-            color: rgba($brandColorDark, 0.5);
-        }
     }
 }

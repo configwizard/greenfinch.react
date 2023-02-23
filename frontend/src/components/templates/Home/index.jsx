@@ -18,7 +18,7 @@ const TemplateHome = ({ account, recentWallets, refreshRecentWallets }) => {
                 <div className="col-12">
                     <HeaderPage 
                         pageTitle={"Welcome to Greenfinch"} 
-                        hasButton={false}/>
+                        hasButton={false} />
                     <div className="row">
                         <div className="col-6">
                             <div className="templateWrapper">

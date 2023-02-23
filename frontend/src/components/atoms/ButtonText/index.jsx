@@ -21,12 +21,12 @@ export const ButtonType = {
     SECONDARY: 'secondary',
 }
 
-const ButtonText = ({ type, size, buttonClass, disabled, onClick, hasIcon, faClass, text }) => {
+const ButtonText = ({ type, size, buttonClass, isDisabled, onClick, hasIcon, faClass, text }) => {
   return (
     <button
         type="button"
         className={`buttonText ${[type]} ${[size]} ${buttonClass}`}
-        disabled={disabled} 
+        disabled={isDisabled} 
         onClick={onClick} >
             {
                 hasIcon && (
@@ -44,7 +44,7 @@ ButtonText.propTypes = {
     type: PropTypes.oneOf(Object.keys(ButtonType)),
     size: PropTypes.oneOf(Object.keys(ButtonSize)),
     buttonClass: PropTypes.string,
-    disabled: PropTypes.bool,
+    isDisabled: PropTypes.bool,
     onClick: PropTypes.func,
     hasIcon: PropTypes.bool,
     faClass: PropTypes.string,
@@ -54,7 +54,7 @@ ButtonText.propTypes = {
 ButtonText.defaultProps = {
     type: ButtonType.DEFAULT,
     size: ButtonSize.MEDIUM,
-    disabled: false,
+    isDisabled: false,
     hasIcon: true,
     faClass: "fas fa-flag",
     text: "lipsum vie"
