@@ -37,7 +37,7 @@ export function ListContainerIDs():Promise<Array<string>>;
 
 export function ListContainerObjects(arg1:string,arg2:boolean):Promise<Array<manager.Element>>;
 
-export function ListContainers(arg1:boolean):Promise<Array<manager.Element>>;
+export function ListContainers(arg1:boolean,arg2:boolean):Promise<Array<manager.Element>>;
 
 export function ListSharedContainerObjects(arg1:string,arg2:boolean):Promise<Array<manager.Element>>;
 

@@ -6,14 +6,15 @@ import ContainerIcon from '../../atoms/ContainerIcon';
 
 import './style.scss';
 
-const CardContainer = ({ onClick, containerName }) => {
+const CardContainer = ({ onClick, containerName, containerDeleted }) => {
     return (
         <button 
             type="button"
             className="atmButtonGridContent d-flex flex-column align-items-center justify-content-between"
             onClick={onClick}>
                 <ContainerIcon
-                    size={"medium"}/>
+                    size={"medium"}
+                deleted={containerDeleted} />
                 <span className="atmButtonGridName">{containerName}</span>
         </button>
     )

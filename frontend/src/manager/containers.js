@@ -1,6 +1,6 @@
-const listContainers = async () => {
+const listContainers = async (showDeletedContainers = false) => {
     try {
-        const containers = await window.go.manager.Manager.ListContainers(false)
+        const containers = await window.go.manager.Manager.ListContainers(false, showDeletedContainers)
         console.log("received containers ", containers)
         return containers || []
     }catch (e) {
@@ -29,7 +29,8 @@ const createContainer = async (name, permission, block) => {
 const deleteContainer = async (containerId) => {
     console.log("deleting container with id -", containerId)
     try {
-        await window.go.manager.Manager.DeleteContainer(containerId)
+        const containerList = await window.go.manager.Manager.DeleteContainer(containerId)
+        return containerList
     } catch (e) {
         console.log("error deleting containers", e)
     }
