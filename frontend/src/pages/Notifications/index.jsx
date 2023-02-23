@@ -24,7 +24,6 @@ export default class PageNotifications extends React.Component {
         this.state = {
             list: []
         }
-
     }
 
     async onDeleteNotification(id) {
@@ -38,8 +37,8 @@ export default class PageNotifications extends React.Component {
     }
     async onClearNotifications() {
         try {
-            await deleteNotifications()
-            await this.retrieveList()
+            const blank = await deleteNotifications()
+            await this.setState({list: blank})
         } catch(e) {
             console.log("error deleting notifications ", e)
         }
@@ -72,14 +71,14 @@ export default class PageNotifications extends React.Component {
             <div className="templatePage d-flex flex-column flex-grow-1">
                 <div className="row">
                     <div className="col-12">
-                        <HeaderPage
-                            pageTitle={"Notification Management"}
-                            hasButton={true}
-                            hasButtonIcon={true}
-                            isButtonDisabled={false}
-                            faClass={"fa-sharp fa-solid fa-broom-wide"}
-                            buttonText={"Clear notifications"}
-                            buttonAction={this.onClearNotifications} />
+                        {/*<HeaderPage*/}
+                        {/*    pageTitle={"Notification Management"}*/}
+                        {/*    hasButton={true}*/}
+                        {/*    hasButtonIcon={true}*/}
+                        {/*    isButtonDisabled={false}*/}
+                        {/*    faClass={"fa-sharp fa-solid fa-broom-wide"}*/}
+                        {/*    buttonText={"Clear notifications"}*/}
+                        {/*    buttonAction={this.onClearNotifications} />*/}
                         <div className="row">
                             <div className="col-12">
                                 {/*

@@ -35,6 +35,7 @@ const deleteNotification = async(id) => {
 const deleteNotifications = async() => {
     try {
         await window.go.manager.Manager.MarkAllNotificationsRead()
+        return []
     } catch(e) {
         console.log("could not clear notifications ", e)
     }
