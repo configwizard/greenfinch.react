@@ -62,8 +62,8 @@ export function ListContainerIDs() {
   return window['go']['manager']['Manager']['ListContainerIDs']();
 }
 
-export function ListContainerObjects(arg1, arg2) {
-  return window['go']['manager']['Manager']['ListContainerObjects'](arg1, arg2);
+export function ListContainerObjects(arg1, arg2, arg3) {
+  return window['go']['manager']['Manager']['ListContainerObjects'](arg1, arg2, arg3);
 }
 
 export function ListContainers(arg1, arg2) {

@@ -39,6 +39,6 @@
     background: linear-gradient(180deg, $brandColorSecondary 0%, $brandColorPrimary 76%, $brandColorSecondary 100%);
     border-top: 4px solid $brandColorPrimary;
     &:before {
-        background-color: grey;
+        background-color: red;
     }
 }

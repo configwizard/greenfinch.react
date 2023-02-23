@@ -1,6 +1,6 @@
-const listObjects = async (containerID) => {
+const listObjects = async (containerID, showDeleted=false) => {
     try {
-        let objects = await window.go.manager.Manager.ListContainerObjects(containerID, false)
+        let objects = await window.go.manager.Manager.ListContainerObjects(containerID, false, showDeleted)
         console.log("objects", objects)
         return objects || []
     } catch(e) {

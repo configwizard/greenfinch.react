@@ -34,6 +34,7 @@ export function ObjectGrid({showOverlayMenu, onDelete, onObjectSelection, item})
                 objectFile={item.attributes.Thumbnail}
                 dataType={item.attributes.X_EXT}
                 objectName={item.attributes.FileName}>
+                pendingDeleted={item.PendingDeleted}
             </CardObject>
         </>
     )

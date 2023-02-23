@@ -6,7 +6,7 @@ import ContainerIcon from '../../atoms/ContainerIcon';
 
 import './style.scss';
 
-const CardContainer = ({ onClick, containerName, containerDeleted }) => {
+const CardContainer = ({ onClick, containerName, pendingDeleted }) => {
     return (
         <button 
             type="button"
@@ -14,7 +14,7 @@ const CardContainer = ({ onClick, containerName, containerDeleted }) => {
             onClick={onClick}>
                 <ContainerIcon
                     size={"medium"}
-                deleted={containerDeleted} />
+                pendingDeleted={pendingDeleted} />
                 <span className="atmButtonGridName">{containerName}</span>
         </button>
     )

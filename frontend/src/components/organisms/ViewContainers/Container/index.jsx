@@ -38,7 +38,7 @@ export function ContainerGrid(props) {
                     props.item.attributes.Timestamp,
                     props.item.size)}}
                 containerName={props.item.attributes.Name}
-                containerDeleted={props.item.PendingDeleted}>
+                pendingDeleted={props.item.PendingDeleted}>
             </CardContainer>
         </>
     )
