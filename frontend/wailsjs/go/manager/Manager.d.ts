@@ -23,6 +23,8 @@ export function DeleteObject(arg1:string,arg2:string):Promise<Array<manager.Elem
 
 export function Download(arg1:string,arg2:string,arg3:string):Promise<void>;
 
+export function EnableCache(arg1:boolean):Promise<void>;
+
 export function ForceSync():Promise<void>;
 
 export function Get(arg1:string,arg2:string,arg3:string,arg4:io.Writer):Promise<Array<number>>;

@@ -1,5 +1,5 @@
 import React from 'react';
-import {openInDefaultBrowser, getVersion} from "../../../../manager/manager"
+import {openInDefaultBrowser, getVersion, setNetwork, enableCache, disabledCache} from "../../../../manager/manager"
 
 // Components
 import ButtonToggle from '../../../atoms/ButtonToggle';
@@ -23,7 +23,7 @@ const DrawerSettings = (props) => {
         <>
             <div className="offcanvas offcanvas-end" tabIndex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
                 <div className="offcanvas-header d-flex align-items-center">
-                    <h4 id="offcanvasRightLabel"><i className="fas fa-lg fa-cog"/>&nbsp;Account Settings</h4>
+                    <h4 id="offcanvasRightLabel"><i className="fas fa-lg fa-cog"/>&nbsp;Settings</h4>
                     <button type="button" className="button-offcanvas" data-bs-dismiss="offcanvas" aria-label="Close"><i className="fas fa-lg fa-times"/></button>
                 </div>
                 <div className="offcanvas-body">
@@ -33,9 +33,35 @@ const DrawerSettings = (props) => {
                            size={"small"}
                            type={"default"}
                            toogleName={"default"}
-                           toggleId={"default"} />
+                           toggleId={"default"}
+                           initialToggle={false}
+                           onToggle={async (isToggled) => {
+                               if (isToggled) {
+                                   await setNetwork("mainnet")
+                               } else {
+                                   await setNetwork("testnet")
+                               }
+                           }}
+                           toggleNames={["Main Net", "Test Net"]}
+                        />
                     </div>
-
+                    <div className="molDrawerRow">
+                        <ButtonToggle
+                            size={"small"}
+                            type={"default"}
+                            toogleName={"default"}
+                            toggleId={"default"}
+                            initialToggle={true}
+                            onToggle={async (isToggled) => {
+                                if (isToggled) {
+                                    await enableCache(true)
+                                } else {
+                                    await enableCache(false)
+                                }
+                            }}
+                            toggleNames={["Cache Enabled", "Cache Disabled"]}
+                        />
+                    </div>
                     {/*<div className="molDrawerRow">*/}
                     {/*    <ButtonDropdown*/}
                     {/*        size={"default"}*/}

@@ -38,6 +38,10 @@ export function Download(arg1, arg2, arg3) {
   return window['go']['manager']['Manager']['Download'](arg1, arg2, arg3);
 }
 
+export function EnableCache(arg1) {
+  return window['go']['manager']['Manager']['EnableCache'](arg1);
+}
+
 export function ForceSync() {
   return window['go']['manager']['Manager']['ForceSync']();
 }

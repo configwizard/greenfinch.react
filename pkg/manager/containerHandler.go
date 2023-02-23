@@ -19,6 +19,7 @@ import (
 	"log"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -167,11 +168,10 @@ func (m *Manager) generateObjectStruct(objs []Element, containerID cid.ID) (uint
 			o.Attributes[a.Key()] = a.Value()
 		}
 		if filename, ok := o.Attributes[obj.AttributeFileName]; ok {
-			o.Attributes["X_EXT"] = filepath.Ext(filename)[1:]
+			o.Attributes["X_EXT"] = strings.TrimPrefix(filepath.Ext(filename), ".")
 		} else {
 			o.Attributes["X_EXT"] = ""
 		}
-
 		o.Size = head.PayloadSize()
 		size += o.Size
 		newObjs = append(newObjs, o)
@@ -201,6 +201,7 @@ func (m *Manager) listContainersAsync() ([]Element, error) {
 	}
 	fmt.Println("container ids,", len(ids), ids)
 	wg := sync.WaitGroup{}
+	var listContainers []Element
 	for _, v := range ids {
 		wg.Add(1)
 		go func(vID cid.ID) {
@@ -214,6 +215,9 @@ func (m *Manager) listContainersAsync() ([]Element, error) {
 			fmt.Println("retrieved containers", tmpContainer)
 			//store in database
 			fmt.Println("storing container", tmpContainer.ID)
+			if !m.enableCaching {
+				listContainers = append(listContainers, tmpContainer)
+			}
 			if err = cache.StoreContainer(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID, tmpContainer.ID, str); err != nil {
 				fmt.Println("MASSIVE ERROR could not store container in database", err)
 			}
@@ -222,9 +226,10 @@ func (m *Manager) listContainersAsync() ([]Element, error) {
 	if len(ids) > 0 {
 		wg.Wait()
 	}
-	//if m.DEBUG {
-	//	DebugSaveJson("ListContainers.json", containers)
-	//}
+	if !m.enableCaching {
+		return listContainers, nil
+	}
+
 	containerList, err := m.ListContainers(false)
 	fmt.Println("async returning", containerList)
 	return containerList, err
@@ -278,6 +283,11 @@ func (m *Manager) ListContainers(synchronised bool) ([]Element, error) {
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
 		return []Element{}, err
+	}
+	//just go straight to getting them remotely first. Next time around will allow to retrieve from the database.
+	if !m.enableCaching { //fixme: potential issue where by this takes a while and the cache is re-enabled.....
+		fmt.Println("cache disabled, so listing from network...")
+		return m.listContainersAsync()
 	}
 	tmpContainers, err := cache.RetrieveContainers(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID)
 	if err != nil {
