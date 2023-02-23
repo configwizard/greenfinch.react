@@ -29,7 +29,7 @@ func (m *Manager) Upload(containerID string, attributes map[string]string) ([]El
 			Description: fmt.Sprintf("Opening a local file error %s", err.Error()),
 			MarkRead:    false,
 		})
-		return nil, err
+		return m.ListContainerObjects(containerID, false, false)
 	}
 	if filepath == "" {
 		m.MakeNotification(NotificationMessage{
@@ -39,7 +39,7 @@ func (m *Manager) Upload(containerID string, attributes map[string]string) ([]El
 			MarkRead:    false,
 		})
 		fmt.Println("no upload filepath. Bailing out")
-		return nil, err
+		return m.ListContainerObjects(containerID, false, false)
 	}
 
 	objects, err := m.UploadObject(containerID, filepath, attributes)
@@ -62,6 +62,7 @@ func (m *Manager) Upload(containerID string, attributes map[string]string) ([]El
 			Description: "Uploading " + path.Base(filepath) + " failed: " + err.Error(),
 		})
 		m.MakeToast(tmp)
+		return m.ListContainerObjects(containerID, false, false)
 	}
 	return objects, nil
 }
@@ -115,32 +116,6 @@ func (m *Manager) Download(filename, objectID, containerID string) error {
 		return err
 	}
 
-	//w := progress.NewWriter(f)
-	//go func() {
-	//	progressChan := progress.NewTicker(m.ctx, w, int64(metaData.PayloadSize()), 250*time.Millisecond)
-	//	for p := range progressChan {
-	//		fmt.Printf("\r%v remaining...", p.Remaining().Round(250*time.Millisecond))
-	//		tmp := NewProgressMessage(&ProgressMessage{
-	//			Title:    "Downloading object",
-	//			Progress: int(p.Percent()),
-	//			Show:     true,
-	//		})
-	//		m.SetProgressPercentage(tmp)
-	//	}
-	//	tmp := NewToastMessage(&UXMessage{
-	//		Title:       "Download complete",
-	//		Type:        "success",
-	//		Description: "Downloading " + path.Base(filepath) + " complete",
-	//	})
-	//	m.MakeToast(tmp)
-	//	//auto close the progress bar
-	//	end := NewProgressMessage(&ProgressMessage{
-	//		Title: "Downloading object",
-	//		Show:  false,
-	//	})
-	//	m.SetProgressPercentage(end)
-	//	fmt.Println("\rdownload is completed")
-	//}()
 	byt, err := m.Get(objectID, containerID, filepath, f)
 	if err != nil {
 		m.MakeNotification(NotificationMessage{

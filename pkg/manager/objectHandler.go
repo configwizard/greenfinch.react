@@ -575,7 +575,8 @@ func (m *Manager) listObjectsAsync(containerID string) ([]Element, error) {
 		list = append(list, id)
 		return false
 	}); err != nil {
-		log.Fatalf("error listing objects %s\r\n", err)
+		log.Println("error listing objects %s\r\n", err)
+		return nil, err
 	}
 	fmt.Printf("list objects %+v\r\n", list)
 	wg := sync.WaitGroup{}

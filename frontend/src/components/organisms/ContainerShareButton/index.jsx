@@ -31,8 +31,8 @@ const ContainerShare = ({containerId, contacts}) => {
                     secondaryClicked={async () => unSetModal()}>
                         <Form.Group>
                             <Form.Label>Select contact</Form.Label>
-                            <Form.Select id="shareContact" aria-label="select">
-                                <option>{contacts.length > 0 ? "Select contact to share..." : "N.B. You currently have no contacts in Greenfinch" }</option>
+                            <Form.Select id="shareContact" aria-label="select">N.B. You need to get some friends.
+                                <option>{contacts.length > 0 ? "Select contact to share..." : "" }</option>
                                 {
                                     contacts.map(c => {
                                         return <option value={c.publicKey} key={c.walletAddress}>{c.firstName + " " + c.lastName}</option>
