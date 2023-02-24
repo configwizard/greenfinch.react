@@ -1,0 +1,15 @@
+@include keyframes(fadeInAndOut) {
+	0% {opacity: 0;}
+	40% {opacity: 1;}
+	100% {opacity: 0;}
+}
+
+@mixin fadeInAndOut($count: $countDefault, $duration: $durationDefault, $delay: $delayDefault, $function: $functionDefault, $fill: $fillDefault, $visibility: $visibilityDefault) {
+	@include animation-name(fadeInAndOut);
+	@include count($count);
+	@include duration($duration);
+	@include delay($delay);
+	@include function($function);
+	@include fill-mode($fill);
+	@include visibility($visibility);
+}
