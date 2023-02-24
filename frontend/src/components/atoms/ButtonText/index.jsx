@@ -56,6 +56,7 @@ ButtonText.defaultProps = {
     size: ButtonSize.MEDIUM,
     isDisabled: false,
     hasIcon: true,
+    buttonClass: "",
     faClass: "fas fa-flag",
     text: "lipsum vie"
 };                            

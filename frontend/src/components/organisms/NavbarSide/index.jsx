@@ -26,43 +26,43 @@ const NavbarSide = (props) => {
                     <Tooltip content="Home" direction="right">
                         <NavlinkSide
                             to={"/"}
-                            faClass={"fal fa-home"}
+                            faClass={"fa-sharp fa-regular fa-house"}
                             label={"Home"} />
                     </Tooltip>
                     <Tooltip content="Containers" direction="right">
                         <NavlinkSide
                             to={"/containers"}
-                            faClass={"fal fa-copy"}
+                            faClass={"fa-sharp fa-regular fa-table-tree"}
                             label={"Containers"} />
                     </Tooltip>
                     <Tooltip content="Contacts" direction="right">
                         <NavlinkSide
                             to={"/contacts"}
-                            faClass={"fa-duotone fa-address-book"}
+                            faClass={"fa-sharp fa-regular fa-address-book"}
                             label={"Contacts"} />
                     </Tooltip>
                     <Tooltip content="Shared with me" direction="right">
                         <NavlinkSide
                             to={"/shared"}
-                            faClass={"fa-duotone fa-share-nodes"}
+                            faClass={"fa-sharp fa-regular fa-share-nodes"}
                             label={"Shared Containers"} />
                     </Tooltip>
                     <Tooltip content="Websites" direction="right">
                         <NavlinkSide
                             to={"/websites"}
-                            faClass={"fa-duotone fa-browser"}
+                            faClass={"fa-sharp fa-regular fa-globe"}
                             label={"Websites"} />
                     </Tooltip>
                     <Tooltip content="NFT Management" direction="right">
                         <NavlinkSide
                             to={"/nfts"}
-                            faClass={"fa-duotone fa-hexagon-vertical-nft-slanted"}
+                            faClass={"fa-sharp fa-regular fa-hexagon-vertical-nft-slanted"}
                             label={"NFT Management"} />
                     </Tooltip>
                     <Tooltip content="Test Page" direction="right">
                         <NavlinkSide
                             to={"/test"}
-                            faClass={"fal fa-vial"}
+                            faClass={"fa-sharp fa-regular fa-microscope"}
                             label={"Test"} />
                     </Tooltip>
                 </ul>
@@ -71,17 +71,17 @@ const NavbarSide = (props) => {
                 <ul className="d-flex flex-column justify-content-center">
                     <Tooltip content="Notifications" direction="right">
                         <NavlinkSide
-                        to={"/notifications"}
-                        faClass={"fal fa-bell"}
-                        label={"Notifications"} />
+                            to={"/notifications"}
+                            faClass={"fa-sharp fa-regular fa-bell"}
+                            label={"Notifications"} />
                     </Tooltip>
 
                     <Tooltip content="Wallet" direction="right">
-                        <button type="button" className="navbarSide" data-bs-toggle="offcanvas" data-bs-target="#offcanvasLeft" aria-controls="offcanvasLeft"><i className="fal fa-wallet" /></button>
+                        <button type="button" className="navbarSide" data-bs-toggle="offcanvas" data-bs-target="#offcanvasLeft" aria-controls="offcanvasLeft"><i className="fa-sharp fa-regular fa-wallet" /></button>
                         <DrawerWallet refreshAccount={props.refreshAccount} account={props.account} topUpWallet={topUpWallet}></DrawerWallet>
                     </Tooltip>
                     <Tooltip content="Settings" direction="right">
-                        <button type="button" className="navbarSide" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"><i className="fal fa-cog" /></button>
+                        <button type="button" className="navbarSide" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"><i className="fa-sharp fa-regular fa-gear" /></button>
                         <DrawerSettings version={props.version}></DrawerSettings>
                     </Tooltip>
                 </ul>

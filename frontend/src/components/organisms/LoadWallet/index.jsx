@@ -20,7 +20,7 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                 <div className="section-wallet">
                     <div className="row">
                         <div className="col-2">
-                            <i className="fas fa-3x fa-exclamation-triangle"/>
+                            <i className="fa-3x fa-sharp fa-solid fa-triangle-exclamation"/>
                         </div>
                         <div className="col-10">
                             <HeadingGeneral 
@@ -93,7 +93,7 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                 <div className="section-wallet">
                     <div className="row">
                         <div className="col-2">
-                            <i className="fas fa-3x fa-wallet"/>
+                            <i className="fa-3x fa-sharp fa-solid fa-wallet"/>
                         </div>
                         <div className="col-10">
                              <HeadingGeneral 
@@ -112,10 +112,17 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                             {account && account.address === obj ? <div className="wallet-tag">active</div> : ''}
                                             <div className="ms-auto">
                                                 <ButtonText
+                                                    type="secondary"
+                                                    size="small"
+                                                    hasIcon={false}
+                                                    text={"Forget wallet"}
+                                                    onClick=""
+                                                />
+                                                <ButtonText
                                                     type="default"
                                                     size="small"
                                                     hasIcon={false}
-                                                    text={"Load this wallet"}
+                                                    text={"Load wallet"}
                                                     onClick={
                                                         () => {
                                                             setModal(

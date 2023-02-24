@@ -20,7 +20,7 @@ const DrawerWallet = (props) => {
                 <button type="button" className="button-offcanvas" data-bs-dismiss="offcanvas" aria-label="Close"><i className="fas fa-lg fa-times"/></button>
             </div>
             <div className="offcanvas-body">
-                <section className="wallet-body">
+                <section className="molDrawerRow">
                     <RowWallet
                         type={"address"}
                         title={"Wallet address"}
@@ -29,7 +29,8 @@ const DrawerWallet = (props) => {
                         type={"address"}
                         title={"Public Key"}
                         value={props.account.publicKey} />
-                    <hr />
+                </section>
+                <section className="molDrawerRow">
                     <RowWallet
                         type={"number"}
                         title={"NeoFS GAS balance"}
@@ -48,9 +49,8 @@ const DrawerWallet = (props) => {
                             onClick={() => props.refreshAccount()}
                             text={"Refresh balance"}
                             faClass={"fas fa-sync-alt"} />
-                    <hr />
                 </section>
-                <section className="wallet-footer">
+                <section className="molDrawerRow">
                     {/* <h6 className="atmWallet">Top-up NeoFS GAS Balance</h6> */}
                     <HeadingGeneral
                         level={"h6"}

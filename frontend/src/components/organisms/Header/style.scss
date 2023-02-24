@@ -43,3 +43,43 @@ header {
         opacity: 0.1;
     }
 }
+
+.atmHeaderPower {
+    height: $heightHeader;
+    width: $heightHeader;
+    margin-right: $marginXSmall;
+}
+
+.testmain {
+    animation: fadein ease 6s;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+    padding: 10px;
+    background-color: rgba(0,0,0,0.2);
+    border-radius: 50%; 
+    box-shadow:
+    //inset 0 0 5px greenyellow,
+    -5px 0 10px rgba(#f0f, 0.5),
+    5px 0 10px rgba(#0ff,0.5);
+    & i {
+        color: $brandColorPrimary;
+        font-size: 1.4rem;
+    }
+}
+
+.testtest {
+    animation: fadein ease 6s;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+    padding: 10px;
+    background-color: rgba(0,0,0,0.1);
+    border-radius: 50%; 
+    box-shadow:
+    //inset 0 0 5px greenyellow,
+    -5px 0 10px rgba(#f0f, 0.05),
+    5px 0 10px rgba(#0ff,0.05);
+    & i {
+        color: rgba(black, 0.5);
+        font-size: 1.4rem;
+    }
+}

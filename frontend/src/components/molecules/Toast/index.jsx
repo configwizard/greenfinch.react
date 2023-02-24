@@ -9,20 +9,15 @@ const iconSelector = (type) => {
     console.log("type selected ", type)
     switch (type) {
         case 'success':
-            return 'fa-check-circle';
-            break;
+            return 'fa-sharp fa-solid fa-circle-check';
         case 'error':
-            return 'fa-ban';
-            break;
+            return 'fa-sharp fa-solid fa-ban';
         case 'warning':
-            return 'fa-exclamation-triangle';
-            break;
+            return 'fa-sharp fa-solid fa-triangle-exclamation';
         case 'info':
-            return 'fa-info-circle';
-            break;
+            return 'fa-sharp fa-solid fa-circle-info';
         default:
-            return 'fa-comment-alt';
-            break;
+            return 'fa-sharp fa-solid fa-messages';
     }
 }
 
@@ -75,7 +70,7 @@ export default class ToastMessage extends React.Component {
                                 <div className={`toastWrapper ${toast.Type}`}>
                                     <div className="toastInner d-flex">
                                         <div className="molToastIcon d-flex align-items-center justify-content-center">
-                                            <i className={`fad ${faIcon}`}/>
+                                            <i className={`${faIcon}`}/>
                                         </div>
                                         <div className="molToastContent d-flex flex-column justify-content-center">
                                             <i className="fa fa-times" onClick={() => this.deleteToast(toast.id)}/>

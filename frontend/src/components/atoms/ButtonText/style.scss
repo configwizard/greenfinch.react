@@ -39,26 +39,28 @@
     }
 }
 
-// TO SORT
+.me-auto {
+    & .buttonText {
+        &.default, &.clean, &.primary, &.secondary {
+            margin-right: $marginXSmall;
+        }
+    }
+}
+
+.ms-auto {
+    & .buttonText {
+        &.default, &.clean, &.primary, &.secondary {
+            margin-left: $marginXSmall;
+        }
+    }
+}
+
+// Should be attribute == disbaled
 .utInactive {
     cursor: not-allowed!important;
     opacity: 0.1;
     &:hover {
         background-color: $brandColorDark;
         color: $brandColorWhite;
-    }
-}
-
-
-// TO SORT
-.me-auto {
-    & button.default, & button.primary & button.clean, & button.secondary {
-        margin-right: $marginSmall; //temporary
-    }
-}
-
-.ms-auto {
-    & button.default, & button.primary & button.clean, & button.secondary {
-        margin-left: $marginSmall; //temporary
     }
 }

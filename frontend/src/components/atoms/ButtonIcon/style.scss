@@ -74,20 +74,25 @@
     }
 }
 
-.buttonIcon.clean {
-    &.active {
-        cursor: default; //temporary
-    }
-}
-
 .me-auto {
-    & button.default, & button.clean {
-        margin-right: $marginSmall; //temporary
+    & .buttonIcon {
+        &.default, &.clean {
+            margin-right: $marginXSmall;
+        }
     }
 }
 
 .ms-auto {
-    & button.default, & button.clean {
-        margin-left: $marginSmall; //temporary
+    & .buttonIcon {
+        &.default, &.clean {
+            margin-left: $marginXSmall;
+        }
+    }
+}
+
+// Should be attribute == disbaled
+.buttonIcon.clean {
+    &.active {
+        cursor: default; //temporary
     }
 }
