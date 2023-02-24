@@ -2,6 +2,10 @@
 @import "../../../assets/greenfinch-variables.scss";
 
 header {
+    @include fadeIn(
+        $duration: 3s,
+        $count: 1,
+    );
     position: fixed;
     top: 0;
     width: 100%;
@@ -51,9 +55,6 @@ header {
 }
 
 .testmain {
-    animation: fadein ease 6s;
-    animation-iteration-count: 1;
-    animation-fill-mode: forwards;
     padding: 10px;
     background-color: rgba(0,0,0,0.2);
     border-radius: 50%; 
@@ -68,9 +69,10 @@ header {
 }
 
 .testtest {
-    animation: fadein ease 6s;
-    animation-iteration-count: 1;
-    animation-fill-mode: forwards;
+    @include fadeIn(
+        $duration: 3s,
+        $count: 1,
+    );
     padding: 10px;
     background-color: rgba(0,0,0,0.1);
     border-radius: 50%; 

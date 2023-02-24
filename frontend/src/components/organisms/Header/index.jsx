@@ -27,7 +27,7 @@ class Header extends React.Component {
 
         return (
             <>
-                <header>
+                <header className="animate__animated animate__bounce">
                     <div className="header-content d-flex">
                         <div className="atmHeaderPower d-flex align-items-center justify-content-center">
                             {this.state.selectedNetwork.Name === "Test Net" ? <span className="testtest"><i className="mainnetOff fa-sharp fa-solid fa-power-off fa-fw"></i></span> : <span className="testmain"><i className="mainnetOff fa-sharp fa-solid fa-power-off fa-fw"></i></span> }
