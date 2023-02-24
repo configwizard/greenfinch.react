@@ -42,6 +42,10 @@ export function EnableCache(arg1) {
   return window['go']['manager']['Manager']['EnableCache'](arg1);
 }
 
+export function EnableLocalServer(arg1) {
+  return window['go']['manager']['Manager']['EnableLocalServer'](arg1);
+}
+
 export function ForceSync() {
   return window['go']['manager']['Manager']['ForceSync']();
 }
@@ -164,6 +168,10 @@ export function SetSelectedNetwork(arg1) {
 
 export function SetWalletDebugging(arg1, arg2) {
   return window['go']['manager']['Manager']['SetWalletDebugging'](arg1, arg2);
+}
+
+export function SetupServer(arg1) {
+  return window['go']['manager']['Manager']['SetupServer'](arg1);
 }
 
 export function TopUpNeoWallet(arg1) {

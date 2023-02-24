@@ -83,6 +83,7 @@ type Manager struct {
 	version string
 	//c                      *cache.Cache
 	ctx           context.Context
+	cancelContext context.CancelFunc
 	wallet        *wal.Wallet
 	password      string //warning this is not a good idea
 	DEBUG         bool
@@ -367,6 +368,16 @@ type Account struct {
 
 var NotFound = errors.New("wallet not found")
 
+
+func (m *Manager) EnableLocalServer(enable bool) {
+	if enable {
+		ctxWithCancel, cancel := context.WithCancel(m.ctx)
+		m.cancelContext = cancel
+		go m.SetupServer(ctxWithCancel)
+	} else {
+		m.cancelContext()
+	}
+}
 func (m *Manager) retrieveWallet() (*wal.Wallet, error) {
 	if m.wallet == nil {
 		//tmp := NewToastMessage(&UXMessage{
@@ -448,4 +459,3 @@ func (m *Manager) GetAccountInformation() (Account, error) {
 	}
 	return b, nil
 }
-

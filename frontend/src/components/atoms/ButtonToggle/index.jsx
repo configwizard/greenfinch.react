@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import './style.scss';
+import {openInDefaultBrowser} from "../../../manager/manager";
 
 export const ToggleType = {
     DEFAULT: 'default'
 }
 
-const ButtonToggle = ({ type, initialToggle, toggleName, toggleId, toggleNames, onToggle }) => {
+const ButtonToggle = ({ type, initialToggle, toggleName, toggleId, toggleNames, onToggle, metaContent }) => {
 
     const [previousToggle, setPreviousToggle] = useState(initialToggle)
     const [isToggled, setIsToggled] = useState(initialToggle);
@@ -16,6 +17,10 @@ const ButtonToggle = ({ type, initialToggle, toggleName, toggleId, toggleNames, 
         console.log("value before setting ", isToggled)
         await setIsToggled(!isToggled);
     }
+
+    const CustomContent = () => {
+        return metaContent || null;
+    };
 
     useEffect(async () => {
         console.log('UseEffect says Toggle Slider is active:', isToggled)
@@ -34,6 +39,7 @@ const ButtonToggle = ({ type, initialToggle, toggleName, toggleId, toggleNames, 
     })
     
     return (
+        <>
         <div className="switchWrapper d-flex">
             <div className="atmSwitchHeading d-flex">
                 <h5 className="align-self-center">{toggleHeading}</h5>
@@ -52,6 +58,8 @@ const ButtonToggle = ({ type, initialToggle, toggleName, toggleId, toggleNames, 
                 </label>
             </div>
         </div>
+        <CustomContent />
+    </>
     )
 };
 

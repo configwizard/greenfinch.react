@@ -1,5 +1,5 @@
 import React from 'react';
-import {openInDefaultBrowser, getVersion, setNetwork, enableCache, disabledCache} from "../../../../manager/manager"
+import {openInDefaultBrowser, getVersion, setNetwork, enableCache, enableLocalServer} from "../../../../manager/manager"
 
 // Components
 import ButtonToggle from '../../../atoms/ButtonToggle';
@@ -43,6 +43,11 @@ const DrawerSettings = (props) => {
                                }
                            }}
                            toggleNames={["Main Net", "Test Net"]}
+                           metaContent={
+                               <div className="atmSwitchContent">
+                                   <p className="temp-small">Flip to enable use on the Neo Main Net. Please be aware that the Main Net requires real Gas and therefore real money. Greenfinch is not responsible for any loss of funds due to enabling Main Net.</p>
+                               </div>
+                           }
                         />
                     </div>
                     <div className="molDrawerRow">
@@ -53,14 +58,34 @@ const DrawerSettings = (props) => {
                             toggleId={"default"}
                             initialToggle={true}
                             onToggle={async (isToggled) => {
-                                if (isToggled) {
-                                    await enableCache(true)
-                                } else {
-                                    await enableCache(false)
-                                }
+                                await enableCache(isToggled)
                             }}
                             toggleNames={["Cache Enabled", "Cache Disabled"]}
+                            metaContent={
+                                <div className="atmSwitchContent">
+                                    <p className="temp-small">Disable the cache to read data directly from NeoFS nodes. Although this may give you a very slightly more accurate representation of your data on the network it is significantly slower. The cache may at times not quite be in sync with the network. <b>It is recommended to keep the cache enabled at all times for the best user experience</b></p>
+                                </div>
+                            }
                         />
+                    </div>
+                    <div className="molDrawerRow">
+                        <ButtonToggle
+                            size={"small"}
+                            type={"default"}
+                            toogleName={"default"}
+                            toggleId={"default"}
+                            initialToggle={false}
+                            onToggle={async (isToggled) => {
+                                await enableLocalServer(isToggled)
+                            }}
+                            metaContent={
+                                <div className="atmSwitchContent">
+                                    <p className="temp-small">Expose locally public read containers content. This allows other applications to access your public objects. To access it, visit <button onClick={() => openInDefaultBrowser("http://localhost:43520/api/v1/readonly?since=0")}>http://localhost:43520/api/v1/readonly?since=0</button>,<br />where <b>since=...</b> can be used to filter objects by a unix timestamp (in seconds).</p>
+                                </div>
+                            }
+                            toggleNames={["Local server started", "Local server stopped"]}
+                        />
+
                     </div>
                     {/*<div className="molDrawerRow">*/}
                     {/*    <ButtonDropdown*/}
@@ -86,12 +111,7 @@ const DrawerSettings = (props) => {
                     {/*    </select>*/}
                     {/*</div>*/}
 
-                    <div className="molDrawerRow">
-                        <div className="atmSwitchContent">
-                            <h5>Local server API</h5>
-                            <p className="temp-small">Expose locally public read containers content. This allows other applications to access your public objects. To access it, visit <button onClick={() => openInDefaultBrowser("http://localhost:43520/api/v1/readonly?since=0")}>http://localhost:43520/api/v1/readonly?since=0</button>,<br />where <b>since=...</b> can be used to filter objects by a unix timestamp (in seconds).</p>
-                        </div>
-                    </div>
+
 
                     <div className="molDrawerRow">
                         <div className="atmSwitchContent">

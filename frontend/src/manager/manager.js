@@ -1,3 +1,10 @@
+const enableLocalServer = async (enable) => {
+    try {
+        await window.go.manager.Manager.EnableLocalServer(enable)
+    } catch (e) {
+        console.log("error setting server state", e)
+    }
+}
 const enableCache = async (enable) => {
     try {
         let networkSettings = await window.go.manager.Manager.EnableCache(enable)
@@ -137,6 +144,7 @@ const getVersion = async() => {
 export {
     setNetwork,
     enableCache,
+    enableLocalServer,
     getNotifications,
     deleteNotifications,
     deleteNotification,

@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"github.com/amlwwalker/greenfinch.react/pkg/manager"
-	"github.com/amlwwalker/greenfinch.react/pkg/plugins/localserve"
 	"github.com/amlwwalker/greenfinch.react/pkg/wallet"
 
 	"github.com/wailsapp/wails/v2"
@@ -129,7 +128,6 @@ func main() {
 	//	fmt.Printf("balance: %d, precision %d\r\n", balance.NeoFS.Balance, balance.NeoFS.Precision)
 	//}
 	//mocker := mocker.Mocker{BasePath: path.Join("frontend", "src")} //mocker for frontend
-	go localserve.SetupServer(manager)
 	//manager.PopToast()
 	// Create application with options
 	//here ---

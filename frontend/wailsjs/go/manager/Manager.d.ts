@@ -4,6 +4,7 @@ import {manager} from '../models';
 import {io} from '../models';
 import {object} from '../models';
 import {pool} from '../models';
+import {context} from '../models';
 
 export function AddContact(arg1:string,arg2:string,arg3:string,arg4:string):Promise<Array<manager.contact>>;
 
@@ -24,6 +25,8 @@ export function DeleteObject(arg1:string,arg2:string):Promise<Array<manager.Elem
 export function Download(arg1:string,arg2:string,arg3:string):Promise<void>;
 
 export function EnableCache(arg1:boolean):Promise<void>;
+
+export function EnableLocalServer(arg1:boolean):Promise<void>;
 
 export function ForceSync():Promise<void>;
 
@@ -86,6 +89,8 @@ export function SetProgressPercentage(arg1:manager.ProgressMessage):Promise<void
 export function SetSelectedNetwork(arg1:string):Promise<manager.NetworkData>;
 
 export function SetWalletDebugging(arg1:string,arg2:string):Promise<void>;
+
+export function SetupServer(arg1:context.Context):Promise<void>;
 
 export function TopUpNeoWallet(arg1:number):Promise<string>;
 

@@ -1,21 +1,43 @@
-package localserve
+package manager
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/amlwwalker/greenfinch.react/pkg/manager"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 	"net/http"
 	"strconv"
-	"time"
 )
 
-func dateFormat(layout string, intTime int64) time.Time {
-	t := time.Unix(intTime, 0)
-	if layout == "" {
-		layout = "2006-01-02 15:04:05"
-	}
-	fmt.Println(t.Format(layout))
-	return t
+func (m *Manager) SetupServer(ctx context.Context) error {
+	r := chi.NewRouter()
+	r.Use(cors.Handler(cors.Options{
+		AllowedOrigins: []string{"*"},
+		AllowedMethods: []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowedHeaders: []string{"*"},
+		MaxAge:         300, // Maximum value not ignored by any of major browsers
+	}))
+	r.Use(middleware.Logger)
+	r.Route("/api/v1/", func(r chi.Router) {
+		//ok so this endpoint is requesting a new bearer token to sign
+		r.Get("/readonly", m.retrieveReadOnlySinceObjectMetaData())
+	})
+	swaggerFs := http.FileServer(http.Dir("swagger"))
+	r.Handle("/swagger/", http.StripPrefix("/swagger/", swaggerFs))
+	server := &http.Server{Addr: ":43520", Handler: r}
+	go func() {
+		for {
+			select {
+			case <- ctx.Done():
+				if err := server.Shutdown(ctx); err != nil {
+					fmt.Println("error shutting server down ", err)
+				}
+			}
+		}
+	}()
+	return server.ListenAndServe()
 }
 
 // RetrieveReadOnlySinceObjectMetaData godoc
@@ -28,7 +50,7 @@ func dateFormat(layout string, intTime int64) time.Time {
 // @Success      200
 // @Failure      400  {object}  HTTPClientError
 // @Failure      502  {object}  HTTPServerError
-func RetrieveReadOnlySinceObjectMetaData(m *manager.Manager) http.HandlerFunc {
+func (m *Manager) retrieveReadOnlySinceObjectMetaData() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		sinceTimeQuery := r.URL.Query().Get("since")
 		unixTime, err := strconv.ParseInt(sinceTimeQuery, 10, 64)
