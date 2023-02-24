@@ -80,7 +80,7 @@ const SectionHomepage = ({ titleLevel, sectionTitle }) => {
                             className="d-block"
                             to="/containers"
                             label="Containers">
-                            <i className="fal fa-lg fa-copy"/>View containers... 
+                            <i className="fa-sharp fa-regular fa-table-tree"/>View containers... 
                         </NavLink>
                     </li>
                     <li className="navlink-homepage">
@@ -88,7 +88,7 @@ const SectionHomepage = ({ titleLevel, sectionTitle }) => {
                             className="d-block"
                             to="/contacts"
                             label="Contacts">
-                            <i className="fal fa-lg fa-address-book"/>View contacts...
+                            <i className="fa-sharp fa-regular fa-address-book"/>View contacts...
                         </NavLink>
                     </li>
                 </ul>

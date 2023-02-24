@@ -30,8 +30,13 @@ h4 {
         font-size: 0.8rem;
         line-height: 1.25;
         &.temp-small {
+            margin-top: $marginSmall;
             font-size: 0.7rem;
-            line-height: 1.6; 
+            line-height: 1.6;
+            & strong {
+                font-family: $brandFontSemi;
+                font-weight: normal;
+            }
         }
         & button {
             background: none;

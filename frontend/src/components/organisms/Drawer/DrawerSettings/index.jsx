@@ -3,7 +3,6 @@ import {openInDefaultBrowser, getVersion, setNetwork, enableCache, enableLocalSe
 
 // Components
 import ButtonToggle from '../../../atoms/ButtonToggle';
-import ButtonDropdown from '../../../atoms/ButtonDropdown';
 
 // Central style sheet for drawers
 import '../_settings/style.scss';
@@ -43,11 +42,7 @@ const DrawerSettings = (props) => {
                                }
                            }}
                            toggleNames={["Main Net", "Test Net"]}
-                           metaContent={
-                               <div className="atmSwitchContent">
-                                   <p className="temp-small">Flip to enable use on the Neo Main Net. Please be aware that the Main Net requires real Gas and therefore real money. Greenfinch is not responsible for any loss of funds due to enabling Main Net.</p>
-                               </div>
-                           }
+                           toggleDescription={["Toggle to enable use on the Neo Main Net. Please be aware that the Main Net requires real GAS, and therefore real money. ", <strong>Greenfinch is not responsible for any loss of funds due to enabling Main Net.</strong>]}
                         />
                     </div>
                     <div className="molDrawerRow">
@@ -60,12 +55,8 @@ const DrawerSettings = (props) => {
                             onToggle={async (isToggled) => {
                                 await enableCache(isToggled)
                             }}
-                            toggleNames={["Cache Enabled", "Cache Disabled"]}
-                            metaContent={
-                                <div className="atmSwitchContent">
-                                    <p className="temp-small">Disable the cache to read data directly from NeoFS nodes. Although this may give you a very slightly more accurate representation of your data on the network it is significantly slower. The cache may at times not quite be in sync with the network. <b>It is recommended to keep the cache enabled at all times for the best user experience</b></p>
-                                </div>
-                            }
+                            toggleNames={["Cache enabled", "Cache disabled"]}
+                            toggleDescription={["Disable the cache to read data directly from NeoFS nodes. Although this may give you a very slightly more accurate representation of your data on the network it is significantly slower. The cache may at times not quite be in sync with the network. ", <strong>It is recommended to keep the cache enabled at all times for the best user experience.</strong>]}
                         />
                     </div>
                     <div className="molDrawerRow">
@@ -78,15 +69,12 @@ const DrawerSettings = (props) => {
                             onToggle={async (isToggled) => {
                                 await enableLocalServer(isToggled)
                             }}
-                            metaContent={
-                                <div className="atmSwitchContent">
-                                    <p className="temp-small">Expose locally public read containers content. This allows other applications to access your public objects. To access it, visit <button onClick={() => openInDefaultBrowser("http://localhost:43520/api/v1/readonly?since=0")}>http://localhost:43520/api/v1/readonly?since=0</button>,<br />where <b>since=...</b> can be used to filter objects by a unix timestamp (in seconds).</p>
-                                </div>
-                            }
                             toggleNames={["Local server started", "Local server stopped"]}
+                            toggleDescription={["Expose locally public read containers content. This allows other applications to access your public objects. To access it, visit ", <button onClick={() => openInDefaultBrowser('http://localhost:43520/api/v1/readonly?since=0')}>http://localhost:43520/api/v1/readonly?since=0</button>, "where ", <strong>since=...</strong>, " can be used to filter objects by a unix timestamp (in seconds)."]}
                         />
 
                     </div>
+
                     {/*<div className="molDrawerRow">*/}
                     {/*    <ButtonDropdown*/}
                     {/*        size={"default"}*/}
@@ -110,8 +98,6 @@ const DrawerSettings = (props) => {
                     {/*        <option value="2">Menu 2</option>*/}
                     {/*    </select>*/}
                     {/*</div>*/}
-
-
 
                     <div className="molDrawerRow">
                         <div className="atmSwitchContent">
