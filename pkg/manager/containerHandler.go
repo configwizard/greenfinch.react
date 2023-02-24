@@ -101,9 +101,11 @@ func (m *Manager) NewListReadOnlyContainerContents(since int64) ([]Element, erro
 			}
 			fmt.Println("number of objects in container ", v.ID, len(objects))
 			var pendingContainer Element
-			pendingContainer.ID = cnt.ID
-			pendingContainer.Type = cnt.Type
-			pendingContainer.Attributes = cnt.Attributes
+			pendingContainer.ID = v.ID
+			pendingContainer.Type = v.Type
+			pendingContainer.Attributes = v.Attributes
+			pendingContainer.BasicAcl = v.BasicAcl
+			pendingContainer.ExtendedAcl = v.ExtendedAcl
 			size := uint64(0)
 			for _, el := range objects {
 				size += el.Size
