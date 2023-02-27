@@ -108,9 +108,9 @@ $brandBoxShadow: 0 0 10px rgba(0,0,0,0.3);
 /* Base: Buttons
 - - - - - - - - - - - - - - - - - - */
 button {
-    transition: $brandTransitionSpeed;
-    border: none;
     font-family: $brandFontBold;
+    transition: $brandTransitionSpeed;
+    border: none!important;
     border-radius: none;
 }
 
@@ -120,9 +120,9 @@ button {
 .button:focus, 
  button:focus,
 .button:hover, 
- button:hover{
-    border:none !important;
-    outline:none !important;
+ button:hover {
+    border: none!important;
+    outline: none!important;
 }
 
 // Global button disabled (see bootstrap for guidance, default = attribute, not class)
