@@ -80,3 +80,10 @@
         }
     }
 }
+
+// New and to organise
+.atmButtonGridHeader {
+    & .dropdown-toggle::after {
+        content: none;
+    }
+}
