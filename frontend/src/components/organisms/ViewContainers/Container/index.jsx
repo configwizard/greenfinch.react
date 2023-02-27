@@ -40,7 +40,7 @@ export function ContainerGrid(props) {
                         <li>
                             <button 
                                 type="button" 
-                                className="atmButtonBase dropdown-item" 
+                                className="atmButtonBase dropdown-item"
                                 onClick={() => {
                                     setModal(
                                     <CompModalStandard 
