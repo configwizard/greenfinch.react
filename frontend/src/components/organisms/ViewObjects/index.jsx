@@ -3,6 +3,11 @@ import ButtonText from '../../atoms/ButtonText';
 
 import { ObjectGrid, ObjectRow } from './Object';
 
+//import { CardContentObjectGrid, CardContentObjectRow } from '../CardContent/CardContentObject';
+
+//import CardContentGrid from '../CardContent/CardContentGrid';
+//import CardContentRow from '../CardContent/CardContentRow';
+
 import './style.scss';
 
 function ViewObjects({shared, onDelete, objectList, onObjectSelection, objectsLoaded, viewMode }) {
@@ -15,6 +20,17 @@ function ViewObjects({shared, onDelete, objectList, onObjectSelection, objectsLo
                     <div className="col-6 col-md-4 col-xl-3" key={i}>
                         <div className="molButtonGrid">
                             <ObjectGrid showOverlayMenu={!shared} onDelete={() => {onDelete(item.id)}} onObjectSelection={onObjectSelection} item={item}></ObjectGrid>
+                            {/*
+                            <CardContentObjectGrid
+                                showOverlayMenu={!shared} 
+                                onDelete={() => {onDelete(item.id)}} 
+                                onObjectSelection={onObjectSelection} 
+                                item={item}
+                                hasCheckbox={true}
+                                hasDropdown={false}
+                                display="cardgrid"
+                                isContainer={false} />
+                            */}
                         </div>
                     </div>
                 ) : objectsLoaded ? <div className="atmStatusSmall"><i className="fas fa-exclamation-triangle"/>&nbsp;There are no objects in this container.</div> : <div className="utLoading"><i className="fad fa-spinner fa-spin"/>Loading...</div>}
@@ -27,6 +43,17 @@ function ViewObjects({shared, onDelete, objectList, onObjectSelection, objectsLo
                     <div className="col-12" key={i}>
                         <div className="molButtonRow">
                             <ObjectRow showOverlayMenu={!shared} onDelete={() => {onDelete(item.id)}} onObjectSelection={onObjectSelection} item={item}></ObjectRow>
+                            {/*
+                            <CardContentObjectRow
+                                showOverlayMenu={!shared} 
+                                onDelete={() => {onDelete(item.id)}} 
+                                onObjectSelection={onObjectSelection} 
+                                item={item} 
+                                hasCheckbox={true}
+                                hasDropdown={true}
+                                display="cardrow"
+                                isContainer={true} />
+                            */}
                         </div>
                     </div>
                 ) : objectsLoaded ? <div className="atmStatusSmall"><i className="fas fa-exclamation-triangle"/>&nbsp;There are no objects in this container.</div> : <div className="utLoading"><i className="fad fa-spinner fa-spin"/>Loading...</div>}

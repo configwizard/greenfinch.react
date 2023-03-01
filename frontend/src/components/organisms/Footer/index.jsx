@@ -13,6 +13,7 @@ const Footer = ({fireToast, percentage}) => {
     const { setModal, unSetModal } = useModal()
     return (
         <footer>
+
             {/* 
                 <div className="d-flex ms-auto">
                     <ButtonText
@@ -38,14 +39,15 @@ const Footer = ({fireToast, percentage}) => {
                         text={"Click me for progress"}
                         onClick={() => setShow(true)}
                     />
-                    <ButtonText
-                        buttonClass={"atmButtonText"}
-                        hasIcon={true}
-                        faClas={"fas fa-hand-point-right"}
-                        text={"Click me for toast"}
-                        onClick={() => {fireToast({Title: "clicked", Type:"success", Description:"Toast launched."})}}
-                    />
+                   
                 </div>
+                <ButtonText
+                    buttonClass={"atmButtonText"}
+                    hasIcon={true}
+                    faClas={"fas fa-hand-point-right"}
+                    text={"Click me for toast"}
+                    onClick={() => {fireToast({Title: "clicked", Type:"success", Description:"Toast launched."})}}
+                />
                 <div>
                     <ProgressBar show={show} setShow={setShow} percentage={percentage}></ProgressBar>
                 </div>

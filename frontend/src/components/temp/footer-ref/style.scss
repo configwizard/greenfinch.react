@@ -1,0 +1,10 @@
+@import "../../../assets/dashboard-variables.scss";
+@import "../../../assets/greenfinch-variables.scss";
+
+footer {
+    position: fixed;
+    bottom: 0;
+    height: $heightFooter;
+    width: 100%;
+    background-color: $brandColorSecondary;
+}

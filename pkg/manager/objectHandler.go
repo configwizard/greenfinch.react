@@ -656,7 +656,7 @@ func (m *Manager) ListContainerObjects(containerID string, synchronised, deleted
 	fmt.Println("len unsorted", len(tmpObjects))
 	//filter for this container
 	var unsortedObjects []Element //make(map[string]Element)
-	fmt.Println("processinb ojects for", containerID)
+	fmt.Println("processing objects for", containerID)
 	for k, v := range tmpObjects {
 		tmp := Element{}
 		err := json.Unmarshal(v, &tmp)

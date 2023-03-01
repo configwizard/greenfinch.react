@@ -4,13 +4,10 @@ import {fileSize} from "humanize-plus";
 
 // Components
 import ButtonText from '../../../atoms/ButtonText';
-import ContainerIcon from '../../../atoms/ContainerIcon';
-import HeadingGeneral from '../../../atoms/HeadingGeneral';
 import ViewContainers from '../../../organisms/ViewContainers';
 import ViewObjects, {ContainerPreviewButton} from '../../../organisms/ViewObjects';
 import {openInDefaultBrowser} from '../../../../manager/manager';
-import ColumnData from '../../../organisms/nColumnData';
-
+import ColumnData from '../../../organisms/ColumnData';
 
 // To re-allocate
 import ObjectInfoButton from '../../../organisms/ObjectInfoButton';

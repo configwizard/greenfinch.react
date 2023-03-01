@@ -4,9 +4,12 @@ import PropTypes from 'prop-types';
 import Moment from 'react-moment';
 import { fileSize } from 'humanize-plus';
 
+// Components
+import ContainerIcon from '../../atoms/ContainerIcon';
+
 import './style.scss';
 
-const RowContainer = ({ onClick, containerName, containerSize, containerOrigin }) => {
+const RowContainer = ({ onClick, containerName, containerSize, containerOrigin, pendingDeleted }) => {
     return (
         <>
             <div className="atmRowList">
@@ -14,7 +17,9 @@ const RowContainer = ({ onClick, containerName, containerSize, containerOrigin }
                     type="button" 
                     className="atmButtonRowContent" 
                     onClick={onClick}>
-                        <i className="fas fa-folder"/>
+                        <ContainerIcon
+                            size={"small"}
+                            pendingDeleted={pendingDeleted} />
                         <span className="atmButtonRowName">{containerName}</span>
                 </button>
             </div>

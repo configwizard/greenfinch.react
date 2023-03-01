@@ -18,10 +18,8 @@ const TemplateNFTs = () => {
                     <div className="row">
                         <div className="col-12">
                             <div className="templateWrapper">
-                                <div className="templateInner">
-                                    <InDevelopment
-                                        text={"This functionality is currently in development and is coming soon."}/>
-                                </div>
+                                <InDevelopment
+                                    text={"This functionality is currently in development and is coming soon."}/>
                             </div>
                         </div>
                     </div>

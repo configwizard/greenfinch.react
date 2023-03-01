@@ -2,10 +2,6 @@
 @import "../../../assets/greenfinch-variables.scss";
 
 header {
-    @include fadeIn(
-        $duration: 3s,
-        $count: 1,
-    );
     position: fixed;
     top: 0;
     width: 100%;
