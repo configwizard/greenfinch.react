@@ -78,14 +78,12 @@ const TemplateContacts = ({contacts, createContact, deleteContact}) => {
                     <div className="row">
                         <div className="col-12">
                             <div className="templateWrapper">
-                                <div className="templateInner">
                                     {contacts.length > 0 ? <AddressBook contacts={contacts} deleteContact={deleteContact}/>
                                         : <NoContent
                                             text={"You currently have no contacts."}
-                                            textAction={"Add your first contact."}
+                                            textAction={"Add your first contact"}
                                             textClick={TextClickAction} />
                                     }
-                                </div>
                             </div>
                         </div>
                     </div>

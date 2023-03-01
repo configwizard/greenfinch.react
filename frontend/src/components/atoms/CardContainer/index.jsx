@@ -14,7 +14,7 @@ const CardContainer = ({ onClick, containerName, pendingDeleted }) => {
             onClick={onClick}>
                 <ContainerIcon
                     size={"medium"}
-                pendingDeleted={pendingDeleted} />
+                    pendingDeleted={pendingDeleted} />
                 <span className="atmButtonGridName">{containerName}</span>
         </button>
     )

@@ -1,0 +1,26 @@
+@import "../../../assets/dashboard-variables.scss";
+@import "../../../assets/greenfinch-variables.scss";
+
+/* Component: Dropdown
+- - - - - - - - - - - - - - - - - - */
+
+.molContentDropdown {   
+    height: $CardContentHeaderHeight;
+    & button.dropdown-toggle {
+        background-color: rgba(0,0,0,0.05);
+        height: $CardContentHeaderHeight;
+        width: $CardContentHeaderHeight;
+        & i {
+            color: $brandColorDark;
+        }
+        &:after {
+            display: none;
+            margin-left: 0;
+            vertical-align: 0;
+            content: "";
+            border: none;
+        }
+    }
+}
+
+

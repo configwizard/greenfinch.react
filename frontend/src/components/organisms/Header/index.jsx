@@ -12,7 +12,7 @@ class Header extends React.Component {
             }
         }
     }
-        async componentDidMount() {
+    async componentDidMount() {
         console.log("mounting header ", this.state.selectedNetwork)
         window.runtime.EventsOn("networkchanged", async (message) => {
             console.log("networkchanged", message)
@@ -22,12 +22,12 @@ class Header extends React.Component {
     render() {
         console.log("status bar updating wallet details", this.props.account)
 
-        // const isWalletLoaded = this.state.isWalletLoaded;
+        //const isWalletLoaded = this.state.isWalletLoaded;
         //{this.props.account.address}
 
         return (
             <>
-                <header className="animate__animated animate__bounce">
+                <header>
                     <div className="header-content d-flex">
                         <div className="atmHeaderPower d-flex align-items-center justify-content-center">
                             {this.state.selectedNetwork.Name === "Test Net" ? <span className="testtest"><i className="mainnetOff fa-sharp fa-solid fa-power-off fa-fw"></i></span> : <span className="testmain"><i className="mainnetOff fa-sharp fa-solid fa-power-off fa-fw"></i></span> }

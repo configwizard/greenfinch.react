@@ -13,7 +13,7 @@ import NoContent from '../../atoms/NoContent';
 import ControlBar from '../../molecules/ControlBar';
 import BreadCrumb from '../../organisms/Breadcrumb';
 import ContainerHeaderPage from '../../organisms/HeaderPage/ContainerHeaderPage';
-import filterContent from './OrganiseContent';
+import filterContent from './FilterContent';
 
 // Central style sheet for templates
 import '../_settings/style.scss';
@@ -180,7 +180,7 @@ class Containers extends React.Component {
                                         </>
                                         : <NoContent
                                             text={"You currently have no containers."}
-                                            textAction={"Create your first container."}
+                                            textAction={"Create your first container"}
                                             textClick={TextClickAction} />
                                     }
 

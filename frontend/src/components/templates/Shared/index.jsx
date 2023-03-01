@@ -10,7 +10,7 @@ import {addSharedContainer, removeSharedContainer, listSharedContainers} from ".
 import ViewContainers from "../../organisms/ViewContainers";
 import {getObject, listObjects} from "../../../manager/objects";
 import {listSharedContainerObjects} from "../../../manager/sharedContainers";
-import filterContent from "../Containers/OrganiseContent";
+import filterContent from "../Containers/FilterContent";
 import {deleteContainer, listContainers} from "../../../manager/containers";
 
 class SharedContainers extends React.Component {
