@@ -7,7 +7,7 @@ import SharedContainerHeaderPage from '../../organisms/HeaderPage/SharedContaine
 import '../_settings/style.scss';
 
 import {addSharedContainer, removeSharedContainer, listSharedContainers} from "../../../manager/sharedContainers";
-import ViewContainers from "../../organisms/ViewContainers";
+import ViewContainers from "../../organisms/ViewContent/ViewContainers";
 import {getObject, listObjects} from "../../../manager/objects";
 import {listSharedContainerObjects} from "../../../manager/sharedContainers";
 import filterContent from "../Containers/FilterContent";

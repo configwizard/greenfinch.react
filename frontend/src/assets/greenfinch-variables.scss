@@ -84,7 +84,7 @@ $brandColorWhite: #fff;
 $brandColorBlack: #000; // Change to a very dark green
 
 $brandColorDark: #2b393f;
-$brandColorDark-hint: rgba(#2b393f, 0.1);
+$brandColorDark-hint: rgba($brandColorDark, 0.1);
 
 $brandColorLight: #f0f5f6;
 

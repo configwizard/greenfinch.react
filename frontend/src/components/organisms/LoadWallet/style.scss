@@ -33,8 +33,10 @@
 }
 
 .wallet-tag {
-    animation-name: fade-in;
-	animation-duration: 0.3s;
+    @include fadeIn(
+		$duration: 0.5s,
+		$count: 1,
+	);
     font-size: 0.7rem;
     font-family: $brandFontSemi;
     background-color: rgba(0,0,0,0.1);

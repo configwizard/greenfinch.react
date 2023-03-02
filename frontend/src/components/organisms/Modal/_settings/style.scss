@@ -65,7 +65,7 @@
 
 .molModalContainer {
     border-radius: 5px;
-    border: 1px solid rgba($brandColorDark, 0.1);
+    border: 1px solid $brandColorDark-hint;
     background-color: #ffffff;
     box-shadow: 0px 20px 32px -8px rgba(0,0,0, 0.25);
 }   
