@@ -4,16 +4,16 @@ import {fileSize} from "humanize-plus";
 
 // Components
 import ButtonText from '../../../atoms/ButtonText';
-import ViewContainers from '../../../organisms/ViewContainers';
-import ViewObjects, {ContainerPreviewButton} from '../../../organisms/ViewObjects';
+import ViewContainers from '../../../organisms/ViewContent/ViewContainers';
+import ViewObjects, {ButtonContentAction} from '../../../organisms/ViewContent/ViewObjects';
 import {openInDefaultBrowser} from '../../../../manager/manager';
 import ColumnData from '../../../organisms/ColumnData';
 
 // To re-allocate
-import ObjectInfoButton from '../../../organisms/ObjectInfoButton';
-import ContainerInfoButton from '../../../organisms/ContainerInfoButton';
-import ContainerShareButton from '../../../organisms/ContainerShareButton';
-import ContainerDeleteButton from '../../../organisms/ContainerDeleteButton';
+import ButtonContentObjectInfo from '../../../molecules/ButtonsContent/ButtonContentObjectInfo';
+import ButtonContentContainerInfo from '../../../molecules/ButtonsContent/ButtonContentContainerInfo';
+import ButtonContentContainerShare from '../../../molecules/ButtonsContent/ButtonContentContainerShare';
+import ButtonContentContainerDelete from '../../../molecules/ButtonsContent/ButtonContentContainerDelete';
 
 
 // Central style sheet for templates
@@ -87,22 +87,24 @@ function filterContent(state, onObjectSelection, onObjectDelete, onObjectDownloa
                             
                         ]} />
 
-                    <div className="buttonStack">
-                        <ContainerInfoButton
+                    <div className="buttonStackHR">
+                        <ButtonContentContainerInfo
                             containerName={state.selectedContainer.containerName}
                             containerId={state.selectedContainer.containerID}
                             containerPermission={selectPermission(state.selectedContainer.permissions)}
                             containerCreated={<Moment unix format="DD MMM YY">{state.selectedContainer.createdAt}</Moment>}
                             containerSize={fileSize(state.selectedContainer.size)} />
+                    </div>
+                    <div className="buttonStack">
                         { !state.shared ? <>
-                        <ContainerPreviewButton
+                        <ButtonContentAction
                             icon="fas fa-upload"
                             text="Upload to this container"
                             onClick={onObjectUpload}/>
-                        <ContainerShareButton
+                        <ButtonContentContainerShare
                             containerId={state.selectedContainer.containerID}
                             contacts={state.contacts}/>
-                        <ContainerDeleteButton
+                        <ButtonContentContainerDelete
                             containerName={state.selectedContainer.containerName}/>
                         </> : null }
                     </div>
@@ -147,14 +149,16 @@ function filterContent(state, onObjectSelection, onObjectDelete, onObjectDownloa
                             </div>
 
                             <div className="object-data" id={"objectData"}>
-                                <div className="buttonStack">
-                                    <ObjectInfoButton
+                                <div className="buttonStackHR">
+                                    <ButtonContentObjectInfo
                                         objectId={state.selectedObject.objectID}
                                         objectFile={state.selectedObject.objectFile}
                                         objectName={state.selectedObject.objectName}
                                         uploadedAt={state.selectedObject.uploadedAt}
                                         objectSize={state.selectedObject.size} />
-                                    <ContainerPreviewButton 
+                                </div>
+                                <div className="buttonStack">
+                                    <ButtonContentAction
                                         icon="fas fa-download" 
                                         text="Download this object" 
                                         onClick={onObjectDownload} />

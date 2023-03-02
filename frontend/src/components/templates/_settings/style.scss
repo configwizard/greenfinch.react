@@ -73,6 +73,31 @@ ol.home-ol {
 .atmObjectThumbnail {
     margin: 8px auto 24px;
     & img {
-        border: 1px solid rgba($brandColorDark, 0.1);
+        border: 1px solid $brandColorDark-hint;
+    }
+}
+
+// Button Stack - Vertical
+.buttonStack {
+    & button {
+        display: block;
+        margin-bottom: $marginXSmall;
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+}
+
+// Button Stack - Vertical, including line-break
+.buttonStackHR {
+    padding-bottom: $paddingSmall;
+    margin-bottom: $marginSmall;
+    border-bottom: 1px solid $brandColorDark-hint;
+    & button {
+        display: block;
+        margin-bottom: $marginXSmall;
+        &:last-child {
+            margin-bottom: 0;
+        }
     }
 }
