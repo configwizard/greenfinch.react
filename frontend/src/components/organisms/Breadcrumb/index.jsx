@@ -15,7 +15,7 @@ function BreadCrumb(props) {
     return (
         <div className="breadcrumb-wrapper d-flex align-items-center">
             <div className="breadcrumb-container">
-                <span className="bread-home" onClick={props.resetBreadcrumb}>Containers</span>{selectedContainer ? <span className="bread-container">{selectedContainer}</span> : ''}{selectedObject ? <span className="bread-object">{selectedObject}</span> : ''}
+                <span className="bread-home" onClick={props.resetBreadcrumb}>Containers</span>{selectedContainer ? <span className="bread-container">{selectedContainer}</span> : null}{selectedObject ? <span className="bread-object">{selectedObject}</span> : null}
             </div>
         </div>
     );

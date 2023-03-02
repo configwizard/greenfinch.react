@@ -109,7 +109,7 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                             <div className="wallet-name">
                                                 {walletName}
                                             </div>
-                                            {account && account.address === obj ? <div className="wallet-tag">active</div> : ''}
+                                            {account && account.address === obj ? <div className="wallet-tag">active</div> : null}
                                             <div className="ms-auto">
                                                 <ButtonText
                                                     type="secondary"

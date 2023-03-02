@@ -15,7 +15,7 @@ import CompModalStandard from '../../../organisms/Modal/ModalStandard';
 
 import '../style.scss';
 
-const ContainerHeaderPage = ({ pageTitle, hasButton, hasIcon, faClass, buttonText, buttonAction }) => {
+const ContainerHeaderPage = ({ pageTitle, hasButton, hasIcon, faClass, buttonText, isButtonDisabled }) => {
     const { setModal, unSetModal } = useModal();
     return (
         <div className="HeaderPageWrapper">
@@ -34,6 +34,7 @@ const ContainerHeaderPage = ({ pageTitle, hasButton, hasIcon, faClass, buttonTex
                             type={"default"}
                             hasIcon={hasIcon}
                             faClass={faClass}
+                            isDisabled={isButtonDisabled}
                             text={buttonText}
                             onClick={() => {
                                 setModal(

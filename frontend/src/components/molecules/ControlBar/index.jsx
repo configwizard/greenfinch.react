@@ -65,7 +65,8 @@ const ControlBar = ({containers, selectedContainer, onSelected, changeView, view
                 <ButtonIcon
                     type={"default"}
                     size={"small"}
-                    buttonClass={selectedContainer ? "utActive" : "utInactive"}
+                    isDisabled={selectedContainer ? false : true }
+                    // buttonClass={selectedContainer ? "utActive" : "utInactive"}
                     faClass={"fas fa-arrow-alt-to-left"}
                     onClick={()=>{resetBreadcrumb()}} />
                 <ButtonIcon

@@ -125,9 +125,12 @@ button {
     outline: none!important;
 }
 
-// Global button disabled (see bootstrap for guidance, default = attribute, not class)
+// Global button/anchor disabled (see bootstrap for guidance, default = attribute, not class)
+// Can disable buttons, but not anchors: https://html.spec.whatwg.org/multipage/semantics-other.html#disabled-elements
 button:disabled, 
-.button.disabled {
+.button.disabled,
+a:disabled,
+a.disabled {
     opacity: 0.2;
     pointer-events: none;
     user-select: none;

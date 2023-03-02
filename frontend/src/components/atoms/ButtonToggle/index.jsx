@@ -7,7 +7,7 @@ export const ToggleType = {
     DEFAULT: 'default'
 }
 
-const ButtonToggle = ({ type, initialToggle, toggleName, toggleId, toggleNames, onToggle, toggleDescription, metaContent }) => {
+const ButtonToggle = ({ type, initialToggle, toggleName, toggleId, toggleNames, onToggle, toggleDescription, metaContent, isDisabled }) => {
 
     const [previousToggle, setPreviousToggle] = useState(initialToggle)
     const [isToggled, setIsToggled] = useState(initialToggle);
@@ -51,7 +51,8 @@ const ButtonToggle = ({ type, initialToggle, toggleName, toggleId, toggleNames, 
                             className={`atmInputToggle ${[type]}`}
                             name={toggleName}
                             id={toggleId}
-                            checked={isToggled} 
+                            checked={isToggled}
+                            disabled={isDisabled}
                             onChange={handleToggle}
                             />
                         <span className="atmSwitchSlider utRound"></span>
@@ -71,6 +72,7 @@ export default ButtonToggle;
 
 ButtonToggle.propTypes = {
     type: PropTypes.oneOf(Object.keys(ToggleType)),
+    isDisabled: PropTypes.bool,
     toggleHeading: PropTypes.string,
     toggleName: PropTypes.string,
     toggleId: PropTypes.string,
@@ -79,6 +81,7 @@ ButtonToggle.propTypes = {
 
 ButtonToggle.defaultProps = {
     type: ToggleType.DEFAULT,
+    isDisabled: false,
     toggleHeading: "Toggle Me",
     toggleName: "name",
     toggleId: "id",

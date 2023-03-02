@@ -34,6 +34,7 @@ const DrawerSettings = (props) => {
                            toogleName={"default"}
                            toggleId={"default"}
                            initialToggle={false}
+                           isDisabled={false}
                            onToggle={async (isToggled) => {
                                if (isToggled) {
                                    await setNetwork("mainnet")
@@ -52,6 +53,7 @@ const DrawerSettings = (props) => {
                             toogleName={"default"}
                             toggleId={"default"}
                             initialToggle={true}
+                            isDisabled={false}
                             onToggle={async (isToggled) => {
                                 await enableCache(isToggled)
                             }}
@@ -66,6 +68,7 @@ const DrawerSettings = (props) => {
                             toogleName={"default"}
                             toggleId={"default"}
                             initialToggle={false}
+                            isDisabled={true}
                             onToggle={async (isToggled) => {
                                 await enableLocalServer(isToggled)
                             }}

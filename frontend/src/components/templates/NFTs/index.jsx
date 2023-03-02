@@ -23,7 +23,6 @@ const TemplateNFTs = () => {
                             </div>
                         </div>
                     </div>
-                
                 </div>
             </div>
         </div>

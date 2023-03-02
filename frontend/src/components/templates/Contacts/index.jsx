@@ -81,6 +81,7 @@ const TemplateContacts = ({contacts, createContact, deleteContact}) => {
                                     {contacts.length > 0 ? <AddressBook contacts={contacts} deleteContact={deleteContact}/>
                                         : <NoContent
                                             text={"You currently have no contacts."}
+                                            addAction={true}
                                             textAction={"Add your first contact"}
                                             textClick={TextClickAction} />
                                     }
