@@ -14,12 +14,12 @@ export const ButtonType = {
     CLEAN: 'clean',
 }
 
-const ButtonIcon = ({ type, size, buttonClass, disabled, onClick, faClass }) => {
+const ButtonIcon = ({ type, size, buttonClass, isDisabled, onClick, faClass }) => {
     return (
         <button
             type="button"
-            className={`buttonIcon ${[type]} ${[size]} ${buttonClass}`}
-            disabled={disabled} 
+            className={`atmButtonIcon ${[type]} ${[size]} ${buttonClass}`}
+            disabled={isDisabled} 
             onClick={onClick}>
                 <i className={faClass} />
         </button>
@@ -32,7 +32,7 @@ ButtonIcon.propTypes = {
     type: PropTypes.oneOf(Object.keys(ButtonType)),
     size: PropTypes.oneOf(Object.keys(ButtonSize)),
     buttonClass: PropTypes.string,
-    disabled: PropTypes.bool,
+    isDisabled: PropTypes.bool,
     onClick: PropTypes.func,
     faClass: PropTypes.string
 };
@@ -41,6 +41,6 @@ ButtonIcon.defaultProps = {
     type: ButtonType.DEFAULT,
     size: ButtonSize.MEDIUM,
     buttonClass: '',
-    disabled: false,
+    isDisabled: false,
     faClass: "fas fa-flag"
 };                            

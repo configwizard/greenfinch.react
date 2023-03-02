@@ -25,7 +25,7 @@ const ButtonText = ({ type, size, buttonClass, isDisabled, onClick, hasIcon, faC
   return (
     <button
         type="button"
-        className={`buttonText ${[type]} ${[size]} ${buttonClass}`}
+        className={`atmButtonText ${[type]} ${[size]} ${buttonClass}`}
         disabled={isDisabled} 
         onClick={onClick} >
             {

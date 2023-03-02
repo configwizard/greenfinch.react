@@ -7,7 +7,7 @@ import ButtonText from '../../atoms/ButtonText';
 
 import './style.scss';
 
-const HeaderPage = ({ pageTitle, hasButton, hasButtonIcon, isButtonDisabled, faClass, buttonText, buttonAction,  }) => {
+const HeaderPage = ({ pageTitle, hasButton, hasButtonIcon, isButtonDisabled, faClass, buttonText, buttonAction }) => {
     return (
         <div className="HeaderPageWrapper">
             <div className="HeaderPage d-flex align-items-center">

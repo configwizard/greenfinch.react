@@ -1,18 +1,17 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import PropTypes, { bool } from 'prop-types';
 
 import { NavLink } from 'react-router-dom'; 
 
 import './style.scss';
 
-const NavlinkSide = ({ to, label, faClass, disabled }) => {
+const NavlinkSide = ({ to, label, faClass }) => {
     return (
-        <li className="navlink-side d-flex">
+        <li className="navlink-side d-flex" >
             <NavLink
                 to={to}
-                className={({ isActive }) => (isActive ? 'active' : 'inactive')}
-                label={label}
-                disabled={disabled}>
+                className={({ isActive }) => (isActive ? 'active' : null)}
+                label={label}>
                     <i className={faClass} />
             </NavLink>
         </li>

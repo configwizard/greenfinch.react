@@ -156,6 +156,7 @@ class Containers extends React.Component {
                             pageTitle={"Containers"} 
                             hasButton={true}
                             hasIcon={true}
+                            isButtonDisabled={this.props.account.address ? false : true}
                             faClass={"fas fa-plus-circle"}
                             buttonText={"Create new container"}
                         />
@@ -179,9 +180,11 @@ class Containers extends React.Component {
                                             </div>
                                         </>
                                         : <NoContent
-                                            text={"You currently have no containers."}
-                                            textAction={"Create your first container"}
-                                            textClick={TextClickAction} />
+                                            text={this.props.account.address ? "You currently have no containers." : "You need a wallet to create containers."}
+                                            addAction={true}
+                                            textAction={this.props.account.address ? "Create your first container" : "Load a wallet to get started"}
+                                            textClick={TextClickAction}
+                                        />
                                     }
 
                             </div>
