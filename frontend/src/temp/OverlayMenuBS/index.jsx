@@ -2,8 +2,8 @@ import React from 'react';
 import onClickOutside from 'react-onclickoutside';
 
 // Components
-import { useModal } from "../../organisms/Modal/ModalContext";
-import CompModalStandard from "../../organisms/Modal/ModalStandard";
+import { useModal } from "../../components/organisms/Modal/ModalContext";
+import CompModalStandard from "../../components/organisms/Modal/ModalStandard";
 
 
 // This is Secondary Component test to original component: OverlayMenu

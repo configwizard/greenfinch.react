@@ -6,6 +6,11 @@
         color: $brandColorWhite;
         background-color: $brandColorDark;
         border-radius: $brandBorderRadius;
+        &.active {
+            color: $brandColorPrimary;
+            background-color: $brandColorDark; 
+            cursor: default;
+        }
         &:hover {
             color: $brandColorPrimary;
             background-color: $brandColorDark; 
@@ -29,6 +34,9 @@
     &.clean {
         color: $brandColorDark;
         background-color: transparent;
+        &.active {
+            cursor: default;
+        }
         &:hover {
             background-color: transparent;
             color: $brandColorPrimary;
@@ -64,12 +72,5 @@
         &.default, &.clean {
             margin-left: $marginXSmall;
         }
-    }
-}
-
-// Should be attribute == disbaled
-.atmButtonIcon.clean {
-    &.active {
-        cursor: default; //temporary
     }
 }

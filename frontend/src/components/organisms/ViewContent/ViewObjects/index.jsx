@@ -14,9 +14,14 @@ function ViewObjects({shared, onDelete, objectList, onObjectSelection, objectsLo
             <div className="row g-2 mt-0">
                 {objectsLoaded && objectList.length > 0 ? objectList.map((item, i) =>
                     <div className="col-6 col-md-4 col-xl-3" key={i}>
-                        <div className="molButtonGrid">
-                            <ViewObjectsGrid showOverlayMenu={!shared} onDelete={() => {onDelete(item.id)}} onObjectSelection={onObjectSelection} item={item}></ViewObjectsGrid>
-                        </div>
+                        <ViewObjectsGrid 
+                            hasOverlayMenu={!shared} 
+                            onDelete={() => {onDelete(item.id)}} 
+                            onObjectSelection={onObjectSelection} 
+                            item={item}
+                            hasCheckbox={true} 
+                            hasDropdown={true}>
+                        </ViewObjectsGrid>
                     </div>
                 ) : objectsLoaded ? <div className="atmStatusSmall"><i className="fas fa-exclamation-triangle"/>&nbsp;There are no objects in this container.</div> : <div className="utLoading"><i className="fad fa-spinner fa-spin"/>Loading...</div>}
             </div>
@@ -25,8 +30,15 @@ function ViewObjects({shared, onDelete, objectList, onObjectSelection, objectsLo
         return (
             <div className="row g-2 mt-0">
                 {objectsLoaded && objectList.length > 0 ? objectList.map((item,i) =>
-                    <div className="col-12" key={i}>
-                        <ViewObjectsRow showOverlayMenu={!shared} onDelete={() => {onDelete(item.id)}} onObjectSelection={onObjectSelection} item={item}></ViewObjectsRow>
+                    <div className="col-12 mt-0" key={i}>
+                        <ViewObjectsRow 
+                            hasOverlayMenu={!shared}
+                            onDelete={() => {onDelete(item.id)}} 
+                            onObjectSelection={onObjectSelection} 
+                            item={item} 
+                            hasCheckbox={true} 
+                            hasDropdown={true}>
+                        </ViewObjectsRow>
                     </div>
                 ) : objectsLoaded ? <div className="atmStatusSmall"><i className="fas fa-exclamation-triangle"/>&nbsp;There are no objects in this container.</div> : <div className="utLoading"><i className="fad fa-spinner fa-spin"/>Loading...</div>}
             </div>

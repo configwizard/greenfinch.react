@@ -1,6 +1,35 @@
 @import "../../../assets/dashboard-variables.scss";
 @import "../../../assets/greenfinch-variables.scss";
 
+/* Toast Types
+- - - - - - - - - - - - - - - - - - */
+.toastWrapper {
+    &.success {
+        background-color: $toastColorSuccess;
+        & span.atmToastTitle {
+            color: $toastColorSuccess;
+        }
+    }
+    &.error {
+        background-color: $toastColorError;
+        & span.atmToastTitle  {
+            color: $toastColorError;
+        }
+    }
+    &.warning {
+        background-color: $toastColorWarning;
+        & span.atmToastTitle  {
+            color: $toastColorWarning;
+        }
+    }
+    &.info {
+        background-color: $toastColorInfo;
+        & span.atmToastTitle  {
+            color: $toastColorInfo;
+        }
+    }
+}
+
 /* Component: Toast
 - - - - - - - - - - - - - - - - - - */
 .toastColumn {
@@ -66,47 +95,3 @@
         }
     }
 }
-
-/* Component: Toast
-- - - - - - - - - - - - - - - - - - */
-.toastWrapper {
-    &.success {
-        background-color: $toastColorSuccess;
-        & span.atmToastTitle {
-            color: $toastColorSuccess;
-        }
-    }
-    &.error {
-        background-color: $toastColorError;
-        & span.atmToastTitle  {
-            color: $toastColorError;
-        }
-    }
-    &.warning {
-        background-color: $toastColorWarning;
-        & span.atmToastTitle  {
-            color: $toastColorWarning;
-        }
-    }
-    &.info {
-        background-color: $toastColorInfo;
-        & span.atmToastTitle  {
-            color: $toastColorInfo;
-        }
-    }
-}
-
-/*
-.toastContainer {
-    transition: transform .6s ease-in-out;
-    animation: toast-in-right .7s; }
-*/
-
-/* @keyframes toast-in-right {
-	from {
-	  transform: translateX(100%);
-	}
-	to {
-	  transform: translateX(0);
-	}
-} */

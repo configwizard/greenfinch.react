@@ -73,6 +73,9 @@ export default class TemplateNotifications extends React.Component {
     }
     render() {
         console.log("this.state.list ", this.state.list)
+
+        /* We have a molecule: Notification ready to populate, in same style as Toast */
+
         return (
             <div className="templatePage d-flex flex-column flex-grow-1">
                 <div className="row">
@@ -97,7 +100,7 @@ export default class TemplateNotifications extends React.Component {
                                                             Delete notification
                                                         </Button>
                                                         <div ref={l.Id}><JSONPretty id="json-pretty" data={l}></JSONPretty></div>
-                                                        { l.Action != undefined && l.Action === "qr-code" ? <QRCode size={128} value={l.Description} /> : null }
+                                                        { l.Action !== undefined && l.Action === "qr-code" ? <QRCode size={128} value={l.Description} /> : null }
                                                     </div>)
                                             }) : <NoContent 
                                                     text={"You currently have no notifications to view."}

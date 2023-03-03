@@ -38,22 +38,16 @@ function filterContent(state, onObjectSelection, onObjectDelete, onObjectDownloa
     if (state.selectedContainer == null) {
         return (
             <>
-                {/* RG48. This is container view. */}
                 <div className="col-3">
                     <p>Select a container to open and view contents.</p>
                 </div>
-                
                 <div className="col-9">
                     <div className="orgContainersGrid">
-
                         <div className="templateWrapper">
                             <div className="templateInner">
-                                <div className="row">
-                                    <ViewContainers containerList={state.containerList} onDelete={onContainerDelete} viewMode={state.viewMode} onContainerSelection={onContainerSelection}></ViewContainers>
-                                </div>
+                                <ViewContainers containerList={state.containerList} onDelete={onContainerDelete} viewMode={state.viewMode} onContainerSelection={onContainerSelection}></ViewContainers>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </>
@@ -86,7 +80,6 @@ function filterContent(state, onObjectSelection, onObjectDelete, onObjectDownloa
                             },
                             
                         ]} />
-
                     <div className="buttonStackHR">
                         <ButtonContentContainerInfo
                             containerName={state.selectedContainer.containerName}
@@ -111,15 +104,11 @@ function filterContent(state, onObjectSelection, onObjectDelete, onObjectDownloa
                 </div>
                 <div className="col-6">
                     <div className="orgObjectsGrid">
-
                         <div className="templateWrapper">
                             <div className="templateInner">
-                                <div className="row">
-                                    <ViewObjects shared={state.shared} objectsLoaded={state.objectsLoaded} onDelete={onObjectDelete} objectList={state.objectList} viewMode={state.viewMode} onObjectSelection={onObjectSelection}></ViewObjects>
-                                </div>
+                                <ViewObjects shared={state.shared} objectsLoaded={state.objectsLoaded} onDelete={onObjectDelete} objectList={state.objectList} viewMode={state.viewMode} onObjectSelection={onObjectSelection}></ViewObjects>
                             </div>
                         </div>
-
                     </div>
                 </div>
                 <div className="col-3">
@@ -147,7 +136,6 @@ function filterContent(state, onObjectSelection, onObjectDelete, onObjectDownloa
                                         
                                     ]} />
                             </div>
-
                             <div className="object-data" id={"objectData"}>
                                 <div className="buttonStackHR">
                                     <ButtonContentObjectInfo

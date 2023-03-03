@@ -1,23 +1,36 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 
 // Components
+import ContentCheckbox from '../../../../atoms/ContentCheckbox';
 import CardContentObjectGrid from '../../../../molecules/CardLayout/CardContentObjectGrid';
 import CardContentObjectRow from '../../../../molecules/CardLayout/CardContentObjectRow';
+import ContentDropdown from '../../../../molecules/ContentDropdown';
 import OverlayMenu from '../../../../molecules/OverlayMenu';
 
 // Central style sheet for ViewObjects
 import '../../_settings/style.scss';
 
-export function ViewObjectsGrid({showOverlayMenu, onDelete, onObjectSelection, item}) {
+export function ViewObjectsGrid({hasOverlayMenu, onDelete, onObjectSelection, item, hasCheckbox, hasDropdown}) {
     const [showMenu, setShowMenu] = useState(false)
     console.log("item", item)
     return (
-        <section className="orgViewObjectsGrid molButtonGrid">{/* old class === MolButtonGrid */}
-            {showOverlayMenu ?
-                <div className="atmButtonGridHeader d-flex">{/* Overlaymenu option */}
+        <section className="orgViewObjectsGrid">
+            <div className="molViewObjectsHeader d-flex flex-row justify-content-end">
+                { hasCheckbox ?
+                    <div className="me-auto">
+                        <ContentCheckbox></ContentCheckbox>
+                    </div>
+                    : null
+                }
+                { hasDropdown ?
+                    <ContentDropdown></ContentDropdown>
+                    : null
+                }
+                { hasOverlayMenu ? // To delete
                     <button 
                         type="button" 
-                        className="atmButtonOptions ms-auto" 
+                        className="atmButtonOptions" 
                         onClick={() => setShowMenu(!showMenu)}>
                             <i className="far fa-ellipsis-h"/>
                             {/* { !showMenu ? <i className="far fa-ellipsis-h"/> : <i className="far fa-times" style={{"color":"red"}}/> } */}
@@ -31,8 +44,8 @@ export function ViewObjectsGrid({showOverlayMenu, onDelete, onObjectSelection, i
                                 show={showMenu}>
                             </OverlayMenu>
                     </button>
-                </div> 
-            : null }
+                : null }
+            </div>
             <CardContentObjectGrid
                 onClick={() => onObjectSelection(item.id, item.attributes.FileName, item.attributes.Thumbnail, item.size, item.attributes.Timestamp)}
                 objectFile={item.attributes.Thumbnail}
@@ -43,22 +56,27 @@ export function ViewObjectsGrid({showOverlayMenu, onDelete, onObjectSelection, i
         </section>
     )
 }
-export function ViewObjectsRow({showOverlayMenu, onDelete, onObjectSelection, item}) {
+export function ViewObjectsRow({hasOverlayMenu, onDelete, onObjectSelection, item, hasCheckbox, hasDropdown}) {
     const [showMenu, setShowMenu] = useState(false)
     return (
-        <section className="orgViewObjectsRow molButtonRow">{/* old class === MolButtonRow */}
+        <section className="orgViewObjectsRow">
             <div className="d-flex flex-row">
-                <div className="atmRowCheck"><input type="checkbox"/></div>
-                <div className="atmRowList flex-grow-1">
-                    <CardContentObjectRow
-                        onClick={() => onObjectSelection(item.id, item.attributes.FileName, item.attributes.Thumbnail, item.size, item.attributes.Timestamp)}
-                        objectFile={item.attributes.Thumbnail}
-                        objectName={item.attributes.FileName}
-                        objectSize={item.size}
-                        uploadedAt={item.attributes.Timestamp}>
-                    </CardContentObjectRow>
-                </div>
-                {showOverlayMenu ?
+                { hasCheckbox ? 
+                    <ContentCheckbox></ContentCheckbox>
+                    : null
+                }
+                <CardContentObjectRow
+                    onClick={() => onObjectSelection(item.id, item.attributes.FileName, item.attributes.Thumbnail, item.size, item.attributes.Timestamp)}
+                    objectFile={item.attributes.Thumbnail}
+                    objectName={item.attributes.FileName}
+                    objectSize={item.size}
+                    uploadedAt={item.attributes.Timestamp}>
+                </CardContentObjectRow>
+                { hasDropdown ?
+                    <ContentDropdown></ContentDropdown>
+                    : null
+                }
+                { hasOverlayMenu ?
                     <div className="atmRowMenu d-flex flex-column">
                         <div className="align-self-end">
                             <button 
@@ -76,3 +94,23 @@ export function ViewObjectsRow({showOverlayMenu, onDelete, onObjectSelection, it
         </section>
     )
 }
+
+ViewObjectsGrid.propTypes = {
+    hasCheckbox: PropTypes.bool,
+    hasDropdown: PropTypes.bool,
+};
+
+ViewObjectsGrid.defaultProps = {
+    hasCheckbox: false,
+    hasDropdown: true,
+}; 
+
+ViewObjectsRow.propTypes = {
+    hasCheckbox: PropTypes.bool,
+    hasDropdown: PropTypes.bool,
+};
+
+ViewObjectsRow.defaultProps = {
+    hasCheckbox: false,
+    hasDropdown: true,
+};                        

@@ -16,20 +16,30 @@ class ViewContainers extends React.Component {
         console.log("containerList", containerList)
         if (viewMode === "grid") {
         return (
-            <div className="row g-2">
+            <div className="row g-2 mt-0">
                 {containerList.map((item, i) =>
                     <div className="col-6 col-md-4 col-xl-3" key={i}>
-                        <ViewContainersGrid onDelete={() => {this.props.onDelete(item.id)}} onContainerSelection={this.props.onContainerSelection} item={item}></ViewContainersGrid>
+                        <ViewContainersGrid 
+                            onDelete={() => {this.props.onDelete(item.id)}} 
+                            onContainerSelection={this.props.onContainerSelection} 
+                            item={item}>
+                        </ViewContainersGrid>
                     </div>
                 )}
             </div>
         )
         } else {
             return (
-                <div className="row g-2">
+                <div className="row g-2 mt-0">
                     {containerList.map((item, i) =>
                         <div className="col-12" key={i}>
-                            <ViewContainersRow onDelete={() => {this.props.onDelete(item.id)}} onContainerSelection={this.props.onContainerSelection} item={item}></ViewContainersRow>
+                            <ViewContainersRow 
+                                onDelete={() => {this.props.onDelete(item.id)}} 
+                                onContainerSelection={this.props.onContainerSelection} 
+                                item={item}
+                                hasCheckbox={true} 
+                                hasDropdown={true}>
+                            </ViewContainersRow>
                         </div>
                     )}
                 </div>
