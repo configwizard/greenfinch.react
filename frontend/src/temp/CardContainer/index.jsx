@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 // Components
-import ContainerIcon from '../../atoms/ContainerIcon';
+import IconFolder from '../../atoms/IconFolder';
 
 import './style.scss';
 
@@ -12,7 +12,7 @@ const CardContainer = ({ onClick, containerName, pendingDeleted }) => {
             type="button"
             className="atmButtonGridContent d-flex flex-column align-items-center justify-content-between"
             onClick={onClick}>
-                <ContainerIcon
+                <IconFolder
                     size={"medium"}
                     pendingDeleted={pendingDeleted} />
                 <span className="atmButtonGridName">{containerName}</span>

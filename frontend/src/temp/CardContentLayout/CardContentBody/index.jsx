@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 // Components
-import ContainerIcon from '../../../atoms/ContainerIcon';
+import IconFolder from '../../../atoms/IconFolder';
 
 // Central style sheet for Card Content (molecule)
 import '../_settings/style.scss';
@@ -12,12 +12,12 @@ const CardContentBody = (onClick, containerName, pendingDeleted) => {
         <div className="molCardContentBody d-flex flex-row align-items-center">
             <button 
                 type="button"
-                className="atmButtonGridContent d-flex flex-column align-items-center justify-content-between"
+                className="molViewContainersBody d-flex flex-column align-items-center justify-content-between"
                 onClick={onClick}>
-                    <ContainerIcon
+                    <IconFolder
                         size={"medium"}
                         pendingDeleted={pendingDeleted} />
-                    <span>{containerName}</span>
+                    <span className="atmContentName">{containerName}</span>
             </button>
         </div>
     )

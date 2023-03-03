@@ -66,7 +66,7 @@ export default class ToastMessage extends React.Component {
                         console.log("toastType ", toast.type)
                         return (
 
-                            <div key={i} className="toastMolecule">
+                            <div key={i} className="molToast">
                                 <div className={`toastWrapper ${toast.Type}`}>
                                     <div className="toastInner d-flex">
                                         <div className="molToastIcon d-flex align-items-center justify-content-center">

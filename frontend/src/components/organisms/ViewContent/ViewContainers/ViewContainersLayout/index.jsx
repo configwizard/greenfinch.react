@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 
 // Components
+import ContentCheckbox from '../../../../atoms/ContentCheckbox';
 import CardContentContainerGrid from '../../../../molecules/CardLayout/CardContentContainerGrid';
 import CardContentContainerRow from '../../../../molecules/CardLayout/CardContentContainerRow';
 import OverlayMenu from '../../../../molecules/OverlayMenu';
 
 // Original: import OverlayMenu from '../../../molecules/OverlayMenu'; TO DELETE
-// New: import OverlayMenuBS from '../../../molecules/OverlayMenuBS'; TO DELETE
 
 // Central style sheet for ViewContainers
 import '../../_settings/style.scss';
@@ -15,8 +16,8 @@ export function ViewContainersGrid(props) {
     console.log("container grid item", props.item)
     const [showMenu, setShowMenu] = useState(false)
     return (
-        <section className="orgViewContainersGrid molButtonGrid">{/* old class === MolButtonGrid */}
-            <div className="atmButtonGridHeader d-flex">{/* Overlaymenu option */}
+        <section className="orgViewContainersGrid">
+            <div className="molViewContainersHeader d-flex">
                 <button 
                     type="button" 
                     className="atmButtonOptions ms-auto" 
@@ -48,9 +49,11 @@ export function ViewContainersRow(props) {
     const [showMenu, setShowMenu] = useState(false)
     console.log("container row item", props.item)
     return (
-        <section className="orgViewContainersRow molButtonRow">{/* old class === MolButtonRow */}
+        <section className="orgViewContainersRow">
             <div className="d-flex flex-row align-items-center">
-                {/* 2. This is an molecule, although on paper it's simple and could be an atom, but as row === molecule */}
+
+                {/* To add props conditional here? */}
+                <ContentCheckbox></ContentCheckbox>
                 <CardContentContainerRow
                     onClick={() => {props.onContainerSelection(props.item.id,
                         props.item.attributes.Name,
@@ -63,6 +66,9 @@ export function ViewContainersRow(props) {
                     containerOrigin={props.item.attributes.Timestamp}
                     pendingDeleted={props.item.PendingDeleted}>
                 </CardContentContainerRow>
+
+                {/* To add props conditional here? */}
+                <ContentCheckbox></ContentCheckbox>
                 <div className="ms-auto">
                     <button 
                         type="button"   
@@ -77,3 +83,14 @@ export function ViewContainersRow(props) {
         </section>
     )
 }
+
+/*
+ViewContainersRow.propTypes = {
+    hasCheckbox: PropTypes.bool,
+    hasDropdown: PropTypes.bool,
+};
+ViewContainersRow.defaultProps = {
+    hasCheckbox: false,
+    hasDropdown: true,
+};
+*/

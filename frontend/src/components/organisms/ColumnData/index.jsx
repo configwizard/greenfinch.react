@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import HeadingGeneral from '../../atoms/HeadingGeneral';
-import ContainerIcon from '../../atoms/ContainerIcon';
+import IconFolder from '../../atoms/IconFolder';
 
 import './style.scss';
 
@@ -26,7 +26,7 @@ const ColumnData = ({ display, category, contentTitle, iconSize, data, file }) =
             display === "container" && (
                 category === "static" ? 
                 <>
-                    <ContainerIcon
+                    <IconFolder
                         size={iconSize} />
                     <HeadingGeneral
                         level={"h5"}

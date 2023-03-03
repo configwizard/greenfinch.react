@@ -1,0 +1,41 @@
+@import "../../../assets/dashboard-variables.scss";
+@import "../../../assets/greenfinch-variables.scss";
+
+/* Notification Types
+- - - - - - - - - - - - - - - - - - */
+
+.molNotification { // maybe this should be notificationMolecule, toastMolecule, buttonTextAtom, if we persist with structural elements like Wrapper and Inner
+    &.notificationWrapper {
+        background:greenyellow; // to delete
+        & .notificationInner {
+            background: limegreen; // to delete
+        }
+    }
+}
+
+.notificationWrapper {
+    &.success {
+        background-color: $toastColorSuccess;
+        & span.atmToastTitle {
+            color: $toastColorSuccess;
+        }
+    }
+    &.error {
+        background-color: $toastColorError;
+        & span.atmToastTitle  {
+            color: $toastColorError;
+        }
+    }
+    &.warning {
+        background-color: $toastColorWarning;
+        & span.atmToastTitle  {
+            color: $toastColorWarning;
+        }
+    }
+    &.info {
+        background-color: $toastColorInfo;
+        & span.atmToastTitle  {
+            color: $toastColorInfo;
+        }
+    }
+}

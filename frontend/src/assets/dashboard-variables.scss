@@ -19,8 +19,9 @@ $heightHeader: 72px;
 $heightPageHeader: 70px;
 $heightFooter: 15px;
 
-$CardContentHeaderHeight: 40px;
-
+//Sets Card Content proportional dimension, e.g. Row height
+$CardContentProportion: 36px;
+$CardContentGridHeight: 200px;
 
 /* Reset + Base
 - - - - - - - - - - - - - - - - - - */

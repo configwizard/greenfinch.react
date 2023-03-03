@@ -5,11 +5,11 @@
 - - - - - - - - - - - - - - - - - - */
 
 .molContentDropdown {   
-    height: $CardContentHeaderHeight;
     & button.dropdown-toggle {
-        background-color: rgba(0,0,0,0.05);
-        height: $CardContentHeaderHeight;
-        width: $CardContentHeaderHeight;
+        border-radius: 0 !important;
+        background-color: rgba($brandColorSecondary, 0.05);
+        height: $CardContentProportion;
+        width: $CardContentProportion;
         & i {
             color: $brandColorDark;
         }

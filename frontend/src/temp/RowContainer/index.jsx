@@ -5,26 +5,25 @@ import Moment from 'react-moment';
 import { fileSize } from 'humanize-plus';
 
 // Components
-import ContainerIcon from '../../atoms/ContainerIcon';
+import IconFolder from '../../atoms/IconFolder';
 
 import './style.scss';
 
 const RowContainer = ({ onClick, containerName, containerSize, containerOrigin, pendingDeleted }) => {
     return (
         <>
-            <div className="atmRowList">
+            <div>
                 <button 
                     type="button" 
-                    className="atmButtonRowContent" 
                     onClick={onClick}>
-                        <ContainerIcon
+                        <IconFolder
                             size={"small"}
                             pendingDeleted={pendingDeleted} />
-                        <span className="atmButtonRowName">{containerName}</span>
+                        <span>{containerName}</span>
                 </button>
             </div>
-            <div className="atmRowList">{fileSize(containerSize)}</div>
-            <div className="atmRowList"><Moment unix format="DD MMM YY">{containerOrigin}</Moment></div>
+            <div>{fileSize(containerSize)}</div>
+            <div><Moment unix format="DD MMM YY">{containerOrigin}</Moment></div>
         </>
     )
 }

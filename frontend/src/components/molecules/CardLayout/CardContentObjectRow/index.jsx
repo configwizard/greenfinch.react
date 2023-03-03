@@ -14,20 +14,18 @@ const CardContentObjectRow = ({ onClick, dataType, objectFile, objectName, objec
         <>
             <button 
                 type="button" 
-                className="atmButtonRowContent"
+                className="molViewObjectsBody"
                 onClick={onClick}>
                 
-                <div className="atmRowList d-flex flex-row flex-grow-1 align-items-center">
-                    <div className="atmRowImage d-flex">
+                <div className=" d-flex flex-row flex-grow-1 align-items-center">
+                    <div className="d-flex">
                         { objectFile ? <figure className="atmRowFile d-flex align-items-center justify-content-center"><img className="mw-100 mh-100" src={`data:image/png;base64,${objectFile}`} alt={objectName} /></figure> : <i className="fas fa-folder" data-type={dataType}/> }
                     </div>
-                    <div className="atmRowName">
-                        <MiddleEllipsis>
-                            <span className="atmButtonRowName">{objectName}</span>
-                        </MiddleEllipsis>
-                    </div>
-                    <div className="atmRowDefault">{fileSize(objectSize)}</div>
-                    <div className="atmRowDefault"><Moment unix format="DD MMM YY">{uploadedAt}</Moment></div>
+                    <MiddleEllipsis>
+                        <span className="atmContentName">{objectName}</span>
+                    </MiddleEllipsis>
+                    <div className="atmContentDefault">{fileSize(objectSize)}</div>
+                    <div className="atmContentDefault"><Moment unix format="DD MMM YY">{uploadedAt}</Moment></div>
                 </div>
             </button>  
         </>
