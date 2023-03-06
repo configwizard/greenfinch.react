@@ -1,0 +1,12 @@
+{
+  "source": ["./build/bin/Greenfinch.dmg"],
+  "bundle_id": "app.greenfinch",
+  "apple_id": {
+    "username": "amlwwalker@gmail.com",
+    "password": "@env:APPLE_PASSWORD"
+  },
+  "sign": {
+    "application_identity": "Developer ID Application: Alexander Walker (65V77NRF7L)",
+    "entitlements_file": "./build/darwin/entitlements.plist"
+  }
+}

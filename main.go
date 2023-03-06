@@ -112,9 +112,11 @@ func main() {
 	}
 	//https://http.testnet.fs.neo.org/CONTAINER_ID/OBJECT_ID
 	//createContainerOnStart
-	databaseLocation, err := os.UserHomeDir()
+	databaseLocation, err := os.UserConfigDir()
 	if err != nil {
 		log.Fatal("could not get home directory", err)
+	} else {
+		log.Println("saving database to ", databaseLocation)
 	}
 	manager, err := manager.NewFileSystemManager(version, filepath.Join(databaseLocation, "greenfinch.db"), false)
 	if err != nil {

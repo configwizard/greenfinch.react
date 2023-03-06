@@ -31,8 +31,8 @@ dev:
 #when going to production, run this
 .PHONY: prod
 prod:
-	wails build -f ${LDFLAGS}
+	wails build -p -f ${LDFLAGS}
 
 .PHONY: win
 win:
-	wails build -nsis -f ${LDFLAGS} -platform windows/arm64,windows/amd64
+	wails build -p -nsis -f ${LDFLAGS} -platform windows/arm64,windows/amd64
