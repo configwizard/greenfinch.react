@@ -34,7 +34,7 @@ class ViewContainers extends React.Component {
             return (
                 <div className="row g-2 mt-0">
                     {containerList.map((item, i) =>
-                        <div className="col-12" key={i}>
+                        <div className="col-12 mt-0" key={i}>
                             <ViewContainersRow 
                                 onDelete={() => {this.props.onDelete(item.id)}} 
                                 onContainerSelection={this.props.onContainerSelection} 

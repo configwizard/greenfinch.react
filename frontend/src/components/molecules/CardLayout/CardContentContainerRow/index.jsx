@@ -5,28 +5,29 @@ import { fileSize } from 'humanize-plus';
 import MiddleEllipsis from 'react-middle-ellipsis';
 
 // Components
-import IconFolder from '../../../atoms/IconFolder';
 
 // Central style sheet for Card Content
 import '../_settings/style.scss';
 
 const CardContentContainerRow = ({ onClick, containerName, containerSize, containerOrigin, pendingDeleted }) => {
     return (
-        <>
-            <button 
-                type="button" 
-                className="molViewContainersBody" 
-                onClick={onClick}>
-                    <IconFolder
-                        size={"small"}
-                        pendingDeleted={pendingDeleted} />
+        <button 
+            type="button" 
+            className="molViewContainersBody" 
+            onClick={onClick}>
+            <div className="d-flex flex-row flex-md-grow-1">
+                <div className="align-self-center">
+                    <i className="fa-sharp fa-solid fa-folder"/>
+                </div>
+                <div className="align-self-center">
                     <MiddleEllipsis>
                         <div className="atmContentName">{containerName}</div>
                     </MiddleEllipsis>
-                <div className="atmContentDefault">{fileSize(containerSize)}</div>
-                <div className="atmContentDefault"><Moment unix format="DD MMM YY">{containerOrigin}</Moment></div>
-            </button>
-        </>
+                </div>
+                <div className="atmContentDefault align-self-center">{fileSize(containerSize)}</div>
+                <div className="atmContentDefault align-self-center"><Moment unix format="DD MMM YY">{containerOrigin}</Moment></div>
+            </div>
+        </button>
     )
 }
 export default CardContentContainerRow;

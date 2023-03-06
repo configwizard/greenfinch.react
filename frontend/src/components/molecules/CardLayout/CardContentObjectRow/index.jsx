@@ -15,12 +15,11 @@ const CardContentObjectRow = ({ onClick, dataType, objectFile, objectName, objec
             type="button" 
             className="molViewObjectsBody"
             onClick={onClick}>
-            
-            <div className="d-flex flex-row flex-grow-1">
+            <div className="d-flex flex-row flex-md-grow-1">
                 { objectFile ?
                     <figure className="atmContentFile d-flex align-items-center justify-content-center">
                         <img className="mw-100 mh-100" src={`data:image/png;base64,${objectFile}`} alt={objectName} />
-                    </figure> : <i className="fas fa-folder" data-type={dataType}/> 
+                    </figure> : <i className="fa-sharp fa-solid fa-folder" data-type={dataType}/>
                 }
                 <div className="align-self-center">
                     <MiddleEllipsis>
