@@ -1,7 +1,6 @@
 @import "../../../../assets/dashboard-variables.scss";
 @import "../../../../assets/greenfinch-variables.scss";
 
-
 // General
 // - - - - - - - - - - - - - - - - - - - - - -
 .orgViewContainersGrid,
@@ -49,7 +48,7 @@ button.molViewContainersBody, button.molViewObjectsBody {
     height: $CardContentGridHeight;
     & .molViewContainersBody, .molViewObjectsBody {
         height: calc($CardContentGridHeight - $CardContentProportion);
-        padding: 0 $paddingXSmall;
+        padding: $paddingSmall $paddingXSmall;
         & figure {
             height: 120px;
             width: 120px;
@@ -60,7 +59,6 @@ button.molViewContainersBody, button.molViewObjectsBody {
         }
         & .atmContentName {
             margin-top: $marginSmall;
-            margin-bottom: $marginMedium;
         }
     }
 }
@@ -69,7 +67,6 @@ button.molViewContainersBody, button.molViewObjectsBody {
 // - - - - - - - - - - - - - - - - - - - - - -
 .orgViewContainersRow, .orgViewObjectsRow {
     height: calc($CardContentProportion + 2px); // Include 1px border
-    margin-bottom: 6px;
     & .molViewContainersBody, .molViewObjectsBody { 
         height: $CardContentProportion;
         & figure {
@@ -89,6 +86,10 @@ button.molViewContainersBody, button.molViewObjectsBody {
             &:last-child {
                 margin-right: 0;
             }
+        }
+        & i {
+            margin-left: $marginSmall;
+            color: $brandColorPrimary;
         }
     }
 }
