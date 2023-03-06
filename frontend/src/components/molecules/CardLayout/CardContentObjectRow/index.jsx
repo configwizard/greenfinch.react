@@ -11,24 +11,26 @@ import '../_settings/style.scss';
 
 const CardContentObjectRow = ({ onClick, dataType, objectFile, objectName, objectSize, uploadedAt }) => {
     return (
-        <>
-            <button 
-                type="button" 
-                className="molViewObjectsBody"
-                onClick={onClick}>
-                
-                <div className=" d-flex flex-row flex-grow-1 align-items-center">
-                    <div className="d-flex">
-                        { objectFile ? <figure className="atmRowFile d-flex align-items-center justify-content-center"><img className="mw-100 mh-100" src={`data:image/png;base64,${objectFile}`} alt={objectName} /></figure> : <i className="fas fa-folder" data-type={dataType}/> }
-                    </div>
+        <button 
+            type="button" 
+            className="molViewObjectsBody"
+            onClick={onClick}>
+            
+            <div className="d-flex flex-row flex-grow-1">
+                { objectFile ?
+                    <figure className="atmContentFile d-flex align-items-center justify-content-center">
+                        <img className="mw-100 mh-100" src={`data:image/png;base64,${objectFile}`} alt={objectName} />
+                    </figure> : <i className="fas fa-folder" data-type={dataType}/> 
+                }
+                <div className="align-self-center">
                     <MiddleEllipsis>
-                        <span className="atmContentName">{objectName}</span>
+                        <div className="atmContentName">{objectName}</div>
                     </MiddleEllipsis>
-                    <div className="atmContentDefault">{fileSize(objectSize)}</div>
-                    <div className="atmContentDefault"><Moment unix format="DD MMM YY">{uploadedAt}</Moment></div>
                 </div>
-            </button>  
-        </>
+                <div className="atmContentDefault align-self-center">{fileSize(objectSize)}</div>
+                <div className="atmContentDefault align-self-center"><Moment unix format="DD MMM YY">{uploadedAt}</Moment></div>
+            </div>
+        </button>
     )
 }
 export default CardContentObjectRow;

@@ -1,14 +1,14 @@
-import {copyTextToClipboard} from "../../../../manager/manager"
+import React from 'react';
+// import {copyTextToClipboard} from "../../../../manager/manager"
+import { Form } from "react-bootstrap";
+
 // Components
-import React, { useState, useEffect } from 'react';
+import ButtonText from "../../../atoms/ButtonText";
+import HeadingGeneral from "../../../atoms/HeadingGeneral";
+import RowWallet from "../../../atoms/RowWallet";
 
 // Central style sheet for templates
 import '../_settings/style.scss';
-import HeadingGeneral from "../../../atoms/HeadingGeneral";
-import RowWallet from "../../../atoms/RowWallet";
-import {Form} from "react-bootstrap";
-import ButtonText from "../../../atoms/ButtonText";
-//import Tooltip from "../../../atoms/Tooltip";
 
 const DrawerWallet = (props) => {
     console.log("drawer wallet props ", props.account)

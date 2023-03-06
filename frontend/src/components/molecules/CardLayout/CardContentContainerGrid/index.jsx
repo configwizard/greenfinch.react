@@ -12,13 +12,13 @@ const CardContentContainerGrid = ({ onClick, containerName, pendingDeleted }) =>
     return (
         <button 
             type="button"
-            className="atmButtonGridContent d-flex flex-column align-items-center justify-content-between"
+            className="molViewContainersBody d-flex flex-column align-items-center justify-content-between"
             onClick={onClick}>
                 <IconFolder
                     size={"medium"}
                     pendingDeleted={pendingDeleted} />
                 <MiddleEllipsis>
-                    <span className="atmButtonGridName">{containerName}</span>
+                    <span className="atmContentName">{containerName}</span>
                 </MiddleEllipsis>
         </button>
     )

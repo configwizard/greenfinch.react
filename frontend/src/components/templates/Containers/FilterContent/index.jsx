@@ -78,7 +78,6 @@ function filterContent(state, onObjectSelection, onObjectDelete, onObjectDownloa
                                 contentDataTitle:"Container size",
                                 contentDataValue: fileSize(state.selectedContainer.size)
                             },
-                            
                         ]} />
                     <div className="buttonStackHR">
                         <ButtonContentContainerInfo
@@ -133,7 +132,7 @@ function filterContent(state, onObjectSelection, onObjectDelete, onObjectDownloa
                                             contentDataTitle:"Object size",
                                             contentDataValue: fileSize(state.selectedObject.size)
                                         },
-                                        
+
                                     ]} />
                             </div>
                             <div className="object-data" id={"objectData"}>

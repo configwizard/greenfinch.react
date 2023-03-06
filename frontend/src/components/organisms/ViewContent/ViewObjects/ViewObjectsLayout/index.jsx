@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 // Components
@@ -6,89 +6,72 @@ import ContentCheckbox from '../../../../atoms/ContentCheckbox';
 import CardContentObjectGrid from '../../../../molecules/CardLayout/CardContentObjectGrid';
 import CardContentObjectRow from '../../../../molecules/CardLayout/CardContentObjectRow';
 import ContentDropdown from '../../../../molecules/ContentDropdown';
-import OverlayMenu from '../../../../molecules/OverlayMenu';
+import { DeleteButton } from '../../../../molecules/ContentDropdown/Buttons';
 
 // Central style sheet for ViewObjects
 import '../../_settings/style.scss';
 
-export function ViewObjectsGrid({hasOverlayMenu, onDelete, onObjectSelection, item, hasCheckbox, hasDropdown}) {
-    const [showMenu, setShowMenu] = useState(false)
-    console.log("item", item)
+export function ViewObjectsGrid(props) {
+    console.log("object grid item", props.item)
     return (
         <section className="orgViewObjectsGrid">
             <div className="molViewObjectsHeader d-flex flex-row justify-content-end">
-                { hasCheckbox ?
+                { props.hasCheckbox ?
                     <div className="me-auto">
                         <ContentCheckbox></ContentCheckbox>
                     </div>
                     : null
                 }
-                { hasDropdown ?
-                    <ContentDropdown></ContentDropdown>
+                { props.hasDropdown ?
+                    <ContentDropdown
+                        onObjectSelection={props.onObjectSelection} 
+                        id={props.item.id}
+                        filename={props.item.attributes.FileName} 
+                        type={props.item.type}>
+                        <DeleteButton // child of the ContentDropdown
+                            onDelete={props.onDelete}>
+                        </DeleteButton>
+                    </ContentDropdown>
                     : null
                 }
-                { hasOverlayMenu ? // To delete
-                    <button 
-                        type="button" 
-                        className="atmButtonOptions" 
-                        onClick={() => setShowMenu(!showMenu)}>
-                            <i className="far fa-ellipsis-h"/>
-                            {/* { !showMenu ? <i className="far fa-ellipsis-h"/> : <i className="far fa-times" style={{"color":"red"}}/> } */}
-                            <OverlayMenu 
-                                onDelete={onDelete} 
-                                onObjectSelection={onObjectSelection} 
-                                id={item.id}
-                                filename={item.attributes.FileName} 
-                                type={item.type} 
-                                setShowMenu={setShowMenu} 
-                                show={showMenu}>
-                            </OverlayMenu>
-                    </button>
-                : null }
             </div>
             <CardContentObjectGrid
-                onClick={() => onObjectSelection(item.id, item.attributes.FileName, item.attributes.Thumbnail, item.size, item.attributes.Timestamp)}
-                objectFile={item.attributes.Thumbnail}
-                dataType={item.attributes.X_EXT}
-                objectName={item.attributes.FileName}>
-                pendingDeleted={item.PendingDeleted}
+                onClick={() => props.onObjectSelection(props.item.id, props.item.attributes.FileName, props.item.attributes.Thumbnail, props.item.size, props.item.attributes.Timestamp)}
+                objectFile={props.item.attributes.Thumbnail}
+                dataType={props.item.attributes.X_EXT}
+                objectName={props.item.attributes.FileName}>
+                pendingDeleted={props.item.PendingDeleted}
             </CardContentObjectGrid>
         </section>
     )
 }
-export function ViewObjectsRow({hasOverlayMenu, onDelete, onObjectSelection, item, hasCheckbox, hasDropdown}) {
-    const [showMenu, setShowMenu] = useState(false)
+export function ViewObjectsRow(props) {
+    console.log("object row item", props.item)
     return (
         <section className="orgViewObjectsRow">
             <div className="d-flex flex-row">
-                { hasCheckbox ? 
+                { props.hasCheckbox ? 
                     <ContentCheckbox></ContentCheckbox>
                     : null
                 }
                 <CardContentObjectRow
-                    onClick={() => onObjectSelection(item.id, item.attributes.FileName, item.attributes.Thumbnail, item.size, item.attributes.Timestamp)}
-                    objectFile={item.attributes.Thumbnail}
-                    objectName={item.attributes.FileName}
-                    objectSize={item.size}
-                    uploadedAt={item.attributes.Timestamp}>
+                    onClick={() => props.onObjectSelection(props.item.id, props.item.attributes.FileName, props.item.attributes.Thumbnail, props.item.size, props.item.attributes.Timestamp)}
+                    objectFile={props.item.attributes.Thumbnail}
+                    objectName={props.item.attributes.FileName}
+                    objectSize={props.item.size}
+                    uploadedAt={props.item.attributes.Timestamp}>
                 </CardContentObjectRow>
-                { hasDropdown ?
-                    <ContentDropdown></ContentDropdown>
+                { props.hasDropdown ?
+                    <ContentDropdown
+                        onObjectSelection={props.onObjectSelection} 
+                        id={props.item.id}
+                        filename={props.item.attributes.FileName} 
+                        type={props.item.type}>
+                        <DeleteButton // child of the ContentDropdown
+                            onDelete={props.onDelete}>
+                        </DeleteButton>
+                    </ContentDropdown>
                     : null
-                }
-                { hasOverlayMenu ?
-                    <div className="atmRowMenu d-flex flex-column">
-                        <div className="align-self-end">
-                            <button 
-                                type="button"   
-                                className="atmButtonOptions" 
-                                onClick={() => setShowMenu(!showMenu)}>
-                                    <i className="far fa-ellipsis-h"/>
-                                    {/* { !showMenu ? <i className="far fa-ellipsis-h"/> : <i className="far fa-times" style={{"color":"red"}}/> } */}
-                                    <OverlayMenu onDelete={onDelete} type={item.type} setShowMenu={setShowMenu} show={showMenu}></OverlayMenu>
-                            </button>
-                        </div>
-                    </div> : null 
                 }
             </div>
         </section>

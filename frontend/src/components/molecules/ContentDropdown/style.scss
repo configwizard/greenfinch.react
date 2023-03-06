@@ -7,11 +7,16 @@
 .molContentDropdown {   
     & button.dropdown-toggle {
         border-radius: 0 !important;
+        color: $brandColorDark;
         background-color: rgba($brandColorSecondary, 0.05);
         height: $CardContentProportion;
         width: $CardContentProportion;
         & i {
             color: $brandColorDark;
+        }
+        &:hover {
+            cursor: pointer;
+            background-color: rgba($brandColorSecondary, 0.1);
         }
         &:after {
             display: none;

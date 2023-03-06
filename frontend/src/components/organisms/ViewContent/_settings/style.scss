@@ -29,10 +29,18 @@
 
 // When Content Body === Button
 button.molViewContainersBody, button.molViewObjectsBody {
+    padding: 0;
     background-color: unset;
     width: 100%;
     border-radius: 0;
     cursor: pointer;
+}
+
+.atmContentName, .atmContentDefault {
+    color: $brandColorDark;
+    font-family: $brandFontSemi;
+    font-size: 0.75rem;
+    line-height: 1;
 }
 
 // Grid, Containers + Objects
@@ -50,6 +58,10 @@ button.molViewContainersBody, button.molViewObjectsBody {
                 box-shadow: 0 0 5px rgba(0,0,0,0.2);
             }
         }
+        & .atmContentName {
+            margin-top: $marginSmall;
+            margin-bottom: $marginMedium;
+        }
     }
 }
 
@@ -60,79 +72,23 @@ button.molViewContainersBody, button.molViewObjectsBody {
     margin-bottom: 6px;
     & .molViewContainersBody, .molViewObjectsBody { 
         height: $CardContentProportion;
-        & figure { // shoudl we introduce a fig class?
+        & figure {
+            margin-left: $marginSmall;
             height: $CardContentProportion;
             width: $CardContentProportion;
         }
+        & .atmContentName {
+            margin-left: $marginSmall;
+            text-align: left;
+            width: 300px;
+        }
         & .atmContentDefault {
+            text-align: left;
             margin-right: $marginSmall;
-            background-color: rgba(black, 0.5);
             width: 80px;
             &:last-child {
                 margin-right: 0;
             }
         }
-    }
-}
-
-.atmContentName, .atmContentDefault {
-    color: $brandColorDark;
-    font-size: 0.75rem;
-    font-family: $brandFontSemi;
-    margin-top: $marginXSmall;
-    margin-bottom: $marginMedium;
-    & i {
-        color: $brandColorPrimary;
-    }
-}
-
-.orgViewObjectsGrid { //GRID: To delete when Overlay Menu goes
-    & .atmButtonOptions {
-        width: 30px;
-        height: 30px;
-        position: relative;
-        border-radius: 0;
-        background-color: rgba($brandColorSecondary, 0.04);
-        &:hover {
-            cursor: pointer;
-            background-color: rgba($brandColorSecondary, 0.1);
-        }
-    }
-    & .utOverlayMenuSmall {
-        position: absolute;
-        z-index: 150;
-        top: 30px;
-        left: 0;
-        min-width: 180px;
-        background-color: $brandColorWhite;
-        box-shadow: $brandBoxShadow;
-        font-size: 0.9rem;
-        text-align: left;
-        color: $brandColorDark;
-    }
-}
-.orgViewObjectsRow { //ROW: To delete when Overlay Menu goes
-    & .atmButtonOptions {
-        width: 30px;
-        height: 30px;
-        position: relative;
-        border-radius: 0;
-        &:hover {
-            cursor: pointer;
-            background-color: rgba($brandColorSecondary, 0.1);
-        }
-    }
-    & .utOverlayMenuSmall {
-        position: absolute;
-        z-index: 500;
-        top: 20px;
-        right: 0; 
-        min-width: 180px;
-        z-index: 200;
-        background-color: $brandColorWhite;
-        box-shadow: $brandBoxShadow;
-        font-size: 0.9rem;
-        text-align: left;
-        color: $brandColorDark;
     }
 }
