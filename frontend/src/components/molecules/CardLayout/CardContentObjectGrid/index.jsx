@@ -9,12 +9,15 @@ const CardContentObjectGrid = ({ onClick, dataType, objectFile, objectName, pend
     return (
         <button 
             type="button"
-            className={`molViewObjectsBody d-flex flex-column align-items-center justify-content-between`}
+            className="molViewObjectsBody d-flex flex-column align-items-center justify-content-between"
             onClick={onClick}>
-            { objectFile ? <figure className={`d-flex align-items-center justify-content-center ${pendingDeleted ? "pending-deleted" : "" }`}><img className="mw-100 mh-100" src={`data:image/png;base64,${objectFile}`} alt={objectName} /></figure> : <div className={`file-icon file-icon-lg ${pendingDeleted ? "pending-deleted" : "" }`} data-type={dataType}></div> }
-            <MiddleEllipsis>
-                <span className="atmContentName">{objectName}</span>
-            </MiddleEllipsis>
+                { objectFile ? 
+                    <figure className={`d-flex align-items-center justify-content-center ${pendingDeleted ? "pending-deleted" : "" }`}>
+                        <img className="mw-100 mh-100" src={`data:image/png;base64,${objectFile}`} alt={objectName} /></figure> 
+                        : <div className={`file-icon file-icon-lg ${pendingDeleted ? "pending-deleted" : "" }`} data-type={dataType}></div> }
+                <MiddleEllipsis>
+                    <span className="atmContentName">{objectName}</span>
+                </MiddleEllipsis>
         </button>
     )
 }

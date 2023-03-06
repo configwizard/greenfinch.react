@@ -69,8 +69,8 @@ class SharedContainers extends React.Component {
         await this.setState(this.setState({...this.state, containerList: containers}))
     }
     render() {
-// const TemplateShared = () => {
-//     const { setModal, unSetModal } = useModal()
+    // const TemplateShared = () => {
+    // const { setModal, unSetModal } = useModal()
         return (
             <div className="templatePage d-flex flex-column flex-grow-1">
                 <div className="row">

@@ -21,7 +21,7 @@ const CardContentContainerRow = ({ onClick, containerName, containerSize, contai
                         size={"small"}
                         pendingDeleted={pendingDeleted} />
                     <MiddleEllipsis>
-                        <span className="atmContentName">{containerName}</span>
+                        <div className="atmContentName">{containerName}</div>
                     </MiddleEllipsis>
                 <div className="atmContentDefault">{fileSize(containerSize)}</div>
                 <div className="atmContentDefault"><Moment unix format="DD MMM YY">{containerOrigin}</Moment></div>

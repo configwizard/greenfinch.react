@@ -30,7 +30,6 @@ const getNotifications = async()=> {
         console.log("error retrieving notifications from database ", e)
     }
 }
-
 const deleteNotification = async(id) => {
     try {
         console.log("deleting id ", id)
@@ -58,7 +57,6 @@ const getAccountInformation = async () => {
         console.log("error topping up", e)
     }
 }
-
 const transferGasToContact = async (contactAddress, amount) => {
     console.log("transferring with ", amount)
     try {
@@ -80,7 +78,6 @@ const topUpNeoFS = async (amount) => {
         console.log("error topping up", e)
     }
 }
-
 const newWallet = async (password) => {
     try {
         let t = await window.go.manager.Manager.NewWallet(password)
@@ -106,8 +103,6 @@ const loadWalletWithPath = async (password, path) => {
         console.log("error loading wallet", e)
     }
 }
-
-
 const retrieveRecentWallets = async() => {
     try {
         let wallets = await window.go.manager.Manager.RecentWallets()
@@ -117,7 +112,6 @@ const retrieveRecentWallets = async() => {
         console.log("error loading wallet", e)
     }
 }
-
 const openInDefaultBrowser = async(txt) => {
     try {
         await window.go.manager.Manager.OpenInDefaultBrowser(txt)
@@ -132,7 +126,6 @@ const copyTextToClipboard = async(txt) => {
         console.log("error loading wallet", e)
     }
 }
-
 const getVersion = async() => {
     try {
         const v = await window.go.manager.Manager.GetVersion()
