@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import MiddleEllipsis from 'react-middle-ellipsis';
 
 import './style.scss';
 
@@ -10,7 +11,7 @@ const RowWallet = ({ type, title, value }) => {
             type === "address" && (
                 <>
                     <h6 className="atmWallet">{title}</h6>
-                    <span className="atmWalletAddress">{value}</span>
+                    <MiddleEllipsis><span>{value}</span></MiddleEllipsis>
                 </>
             )
         }
@@ -35,6 +36,6 @@ RowWallet.propTypes = {
 
 RowWallet.defaultProps = {
     type: "number",
-    title: "Row Title",
-    value: "Empty"
+    title: "Row title",
+    value: "Row value"
 };                            

@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import MiddleEllipsis from 'react-middle-ellipsis';
 
 import HeadingGeneral from '../../atoms/HeadingGeneral';
 import IconFolder from '../../atoms/IconFolder';
@@ -38,12 +39,11 @@ const ColumnData = ({ display, category, contentTitle, iconSize, data, file }) =
                                 level={"h6"}
                                 isUppercase={true}
                                 text={dataItem.contentDataTitle} />
-                            <span>{dataItem.contentDataValue}</span>
+                            <MiddleEllipsis><span>{dataItem.contentDataValue}</span></MiddleEllipsis>
                         </div>
                     ))}
                 </>
-                :
-                <h1>TEXT</h1>
+                : null
             )
         }
         {
@@ -63,12 +63,11 @@ const ColumnData = ({ display, category, contentTitle, iconSize, data, file }) =
                                 level={"h6"}
                                 isUppercase={true}
                                 text={dataItem.contentDataTitle} />
-                            <span>{dataItem.contentDataValue}</span>
+                            <MiddleEllipsis><span>{dataItem.contentDataValue}</span></MiddleEllipsis>
                         </div>
                     ))}
                 </>
-                :
-                <h1>TEXT</h1>
+                : null
             )
         }
     </>

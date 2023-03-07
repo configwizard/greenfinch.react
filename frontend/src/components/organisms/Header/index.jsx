@@ -29,16 +29,18 @@ class Header extends React.Component {
             <>
                 <header>
                     <div className="header-content d-flex">
+                        {/*
                         <div className="atmHeaderPower d-flex align-items-center justify-content-center">
                             {this.state.selectedNetwork.Name === "Test Net" ? <span className="testtest"><i className="mainnetOff fa-sharp fa-solid fa-power-off fa-fw"></i></span> : <span className="testmain"><i className="mainnetOff fa-sharp fa-solid fa-power-off fa-fw"></i></span> }
                         </div>
+                        */}
                         <div className="atmStatus">
                             <span className="utUCSmall d-block">Net</span><span>{this.state.selectedNetwork.Name}</span>
                         </div>
                         <div className="atmStatus">
                             <span className="utUCSmall d-block">Wallet</span>{this.props.account.address ? <span>{this.props.account.address}</span> : <span className="utTemp">No wallet loaded</span>}
                         </div>
-                        <div className="atmStatus ms-auto">
+                        <div className="atmStatus ms-auto text-end">
                             <span className="utUCSmall d-block">NeoFS</span>{this.props.account.address ? <span style={{"color": this.props.account.neoFSBalance < 5 ? this.props.account.neoFSBalance < 2 ? "#E5004C": "#F47A00" : null}}>{this.props.account.neoFSBalance}</span> : <span className="utTemp">-&nbsp;-</span>}
                         </div>
                         <div className="atmHeaderLogo">

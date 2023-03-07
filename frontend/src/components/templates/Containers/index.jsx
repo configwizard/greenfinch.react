@@ -18,9 +18,11 @@ import filterContent from './FilterContent';
 // Central style sheet for templates
 import '../_settings/style.scss';
 
+/*
 function TextClickAction() {
     console.log("Button clicked, add modal onClick here")
 }
+*/
 
 class Containers extends React.Component {
     constructor(props) {
@@ -179,11 +181,14 @@ class Containers extends React.Component {
                                                 {filterContent(this.state, this.onObjectSelection, this.onObjectDelete, this.onObjectDownload, this.onObjectUpload, this.onContainerSelection, this.onContainerDelete)}
                                             </div>
                                         </>
-                                        : <NoContent
+                                        : 
+                                        <NoContent
                                             text={this.props.account.address ? "You currently have no containers." : "You need a wallet to create containers."}
-                                            addAction={true}
-                                            textAction={this.props.account.address ? "Create your first container" : "Load a wallet to get started"}
-                                            textClick={TextClickAction}
+                                            addAction={this.props.account.address ? true : false}
+                                            textAction={this.props.account.address ? "Create your first container" : null}
+                                            isPageLink={this.props.account.address ? false : true}
+                                            to={this.props.account.address ? null :"/"}
+                                            label={this.props.account.address ? null : "Load a wallet to get started"}
                                         />
                                     }
 

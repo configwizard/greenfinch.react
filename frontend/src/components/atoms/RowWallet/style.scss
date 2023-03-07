@@ -2,7 +2,16 @@
 @import "../../../assets/greenfinch-variables.scss";
 
 .row-wallet-option {
-    margin-bottom: $marginSmall; 
+    margin-bottom: $marginSmall;
+    & span {
+        font-family: $brandFontBold;
+        font-size: 0.8rem;
+        line-height: 1.4;
+        margin-top: 2px;
+    }
+    &:last-child {
+        margin-bottom: 0;
+    }
 }
 
 h4.atmWalletTitle {
@@ -14,17 +23,6 @@ h6 {
     @include titleStyle(0.6rem);
     color: $brandColorSecondary-dark;
     margin-bottom: 3px;
-}
-
-span.atmWalletNumber, span.atmWalletAddress {
-    font-family: $brandFontBold;
-    display:block;
-}
-
-span.atmWalletAddress {
-    font-size: 0.8rem;
-    line-height: 1.4;
-    margin-top: 2px;
 }
 
 span.atmWalletNumber {

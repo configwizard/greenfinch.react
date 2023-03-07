@@ -5,6 +5,7 @@ import { Form } from "react-bootstrap";
 // Components
 import ButtonText from "../../../atoms/ButtonText";
 import HeadingGeneral from "../../../atoms/HeadingGeneral";
+import InfoBox from "../../../atoms/InfoBox";
 import RowWallet from "../../../atoms/RowWallet";
 
 // Central style sheet for templates
@@ -20,50 +21,62 @@ const DrawerWallet = (props) => {
                 <button type="button" className="button-offcanvas" data-bs-dismiss="offcanvas" aria-label="Close"><i className="fas fa-lg fa-times"/></button>
             </div>
             <div className="offcanvas-body">
+                {props.account.address ?
+                    null
+                    :  
+                    <InfoBox
+                        type="info"
+                        text={"There is currently no wallet loaded. Please load a wallet to continue."} />
+                }
                 <section className="molDrawerRow">
                     <RowWallet
                         type={"address"}
                         title={"Wallet address"}
-                        value={props.account.address} />
+                        value={props.account.address ? props.account.address : "- -"} />
                     <RowWallet
                         type={"address"}
                         title={"Public Key"}
-                        value={props.account.publicKey} />
+                        value={props.account.publicKey ? props.account.publicKey : "- -"} />
                 </section>
                 <section className="molDrawerRow">
                     <RowWallet
                         type={"number"}
                         title={"NeoFS GAS balance"}
-                        value={props.account.neoFSBalance} />
+                        value={props.account.neoFSBalance ? props.account.neoFSBalance : "- -"} />
                     <RowWallet
                         type={"number"}
                         title={"Neo balance"}
-                        value={props.account.neoBalance} />
+                        value={props.account.neoBalance ? props.account.neoBalance : "- -"} />
                     <RowWallet
                         type={"number"}
                         title={"GAS balance"}
-                        value={props.account.gasBalance} />
+                        value={props.account.gasBalance ? props.account.gasBalance : "- -"} />
                         <ButtonText 
                             type="default"
                             size="small"
                             onClick={() => props.refreshAccount()}
+                            isDisabled={props.account.address ? false : true }
                             text={"Refresh balance"}
                             faClass={"fas fa-sync-alt"} />
                 </section>
                 <section className="molDrawerRow">
-                    {/* <h6 className="atmWallet">Top-up NeoFS GAS Balance</h6> */}
                     <HeadingGeneral
                         level={"h6"}
                         isUppercase={true}
                         text={"Top-up NeoFS GAS Balance"} />
                     <Form.Group className="form-div">
-                        <Form.Control type="number" placeholder="GAS amount" id={"topUpAmount"}/>
+                        <Form.Control 
+                            type="number"
+                            disabled={props.account.address ? false : true }
+                            placeholder="GAS amount" 
+                            id={"topUpAmount"}/>
                     </Form.Group>
                     <ButtonText
                         type="default"
                         size="medium"
                         hasIcon={true}
                         faClass={"fas fa-chart-line"}
+                        isDisabled={props.account.address ? false : true }
                         text={"Top-up"}
                         onClick={(amount) => {console.log("topping up"); props.topUpWallet(document.getElementById("topUpAmount").value);}} />
                 </section>

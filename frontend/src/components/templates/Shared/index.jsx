@@ -1,17 +1,16 @@
 import React from 'react';
 
+import { removeSharedContainer, listSharedContainers } from '../../../manager/sharedContainers';
+import { getObject} from '../../../manager/objects';
+import { listSharedContainerObjects } from '../../../manager/sharedContainers';
+
 // Components
+import NoContent from '../../atoms/NoContent';
 import SharedContainerHeaderPage from '../../organisms/HeaderPage/SharedContainerHeaderPage';
+import filterContent from "../Containers/FilterContent";
 
 // Central style sheet for templates
 import '../_settings/style.scss';
-
-import {addSharedContainer, removeSharedContainer, listSharedContainers} from "../../../manager/sharedContainers";
-import ViewContainers from "../../organisms/ViewContent/ViewContainers";
-import {getObject, listObjects} from "../../../manager/objects";
-import {listSharedContainerObjects} from "../../../manager/sharedContainers";
-import filterContent from "../Containers/FilterContent";
-import {deleteContainer, listContainers} from "../../../manager/containers";
 
 class SharedContainers extends React.Component {
     constructor(props) {
@@ -69,22 +68,31 @@ class SharedContainers extends React.Component {
         await this.setState(this.setState({...this.state, containerList: containers}))
     }
     render() {
-    // const TemplateShared = () => {
-    // const { setModal, unSetModal } = useModal()
         return (
             <div className="templatePage d-flex flex-column flex-grow-1">
                 <div className="row">
                     <div className="col-12">
                         <SharedContainerHeaderPage
                             pageTitle={"Containers shared with me"}
-                            hasButton={true}
-                            hasIcon={true}
-                            faClass={"fas fa-plus-circle"}
-                            buttonText={"Add shared container"}
+                            hasButton={false}
                         />
                         <div className="row">
-                            {filterContent(this.state, this.onObjectSelection, null, this.onObjectDownload, null, this.onSharedContainerSelection, this.onContainerDelete)}
+                            <div className="col-12">
+                                {this.state.containerList.length > 0 ? 
+                                    <>
+                                        {filterContent(this.state, this.onObjectSelection, null, this.onObjectDownload, null, this.onSharedContainerSelection, this.onContainerDelete)}
+                                    </>
+                                    : <NoContent
+                                        text={"You currently have no shared containers."}
+                                        addAction={false}
+                                        isPageLink={true}
+                                        label={"Add contacts to share containers"}
+                                        to={"/contacts"}
+                                    />
+                                }
+                            </div>
                         </div>
+
                     </div>
                 </div>
             </div>
