@@ -112,13 +112,17 @@ func main() {
 	}
 	//https://http.testnet.fs.neo.org/CONTAINER_ID/OBJECT_ID
 	//createContainerOnStart
-	databaseLocation, err := os.UserConfigDir()
+	configLocation, err := os.UserConfigDir()
 	if err != nil {
 		log.Fatal("could not get home directory", err)
 	} else {
-		log.Println("saving database to ", databaseLocation)
+		err := os.MkdirAll(filepath.Join(configLocation, "greenfinch"), 0770)
+		if err != nil {
+			return
+		}
+		log.Println("saving database to ", filepath.Join(configLocation, "greenfinch"))
 	}
-	manager, err := manager.NewFileSystemManager(version, filepath.Join(databaseLocation, "greenfinch.db"), false)
+	manager, err := manager.NewFileSystemManager(version, filepath.Join(configLocation, "greenfinch", "greenfinch.db"), false)
 	if err != nil {
 		log.Fatal("can't create a manager", err)
 	}
