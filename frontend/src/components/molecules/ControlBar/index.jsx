@@ -39,12 +39,14 @@ const ControlBar = ({containers, selectedContainer, onSelected, changeView, view
                     size={"small"}
                     buttonClass={viewMode === 'grid' ? "active" : null}
                     faClass={"fas fa-th-large"}
+                    isDisabled={false}
                     onClick={()=>{changeView("grid")}} />
                 <ButtonIcon
                     type={"default"}
                     size={"small"}
                     buttonClass={viewMode === 'grid' ? null : 'active'}
                     faClass={"fas fa-list"}
+                    isDisabled={false}
                     onClick={()=>{changeView("list")}} />
             </div>
         </div>

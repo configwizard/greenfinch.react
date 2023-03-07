@@ -22,12 +22,14 @@ const CompModalStandard = props => {
                         size="medium"
                         hasIcon={false}
                         text={props.buttonTextSecondary}
+                        isDisabled={false}
                         onClick={() => {props.secondaryClicked()}} />
                     <ButtonText
                         type="primary"
                         size="medium"
                         hasIcon={false}
                         text={props.buttonTextPrimary}
+                        isDisabled={false}
                         onClick={() => {props.primaryClicked()}} />
                 </div>
             </div>

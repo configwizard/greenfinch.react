@@ -83,6 +83,7 @@ const TemplateHome = ({ makeToast, account, recentWallets, refreshRecentWallets 
                                                             size={"medium"}
                                                             hasIcon={false}
                                                             text={"Donate"}
+                                                            isDisabled={false}
                                                             onClick={DonateButtonAction}/>  
                                                     </div>
                                                 </div>
