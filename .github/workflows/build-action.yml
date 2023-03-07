@@ -2,10 +2,10 @@ name: Create Release
 on:
   workflow_dispatch:
   # This Action only starts when you go to Actions and manually run the workflow.
-#  push:
-#    # Sequence of patterns matched against refs/tags
-#    tags:
-#      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+  push:
+    # Sequence of patterns matched against refs/tags
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
 
 # see here for variables
 jobs:
@@ -44,8 +44,9 @@ jobs:
       - name: Build Wails app
         env:
           CI: false
+          REF: ${{ github.ref }}
         run: |
-          wails build -ldflags "-X main.version=${{ github.ref }}"
+          wails build -ldflags "-X main.version=${REF##*/}"
       - name: MacOS download gon for code signing and app notarization
         if: matrix.platform == 'macos-latest'
         run: |
@@ -127,7 +128,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: tagged--${{ github.ref }}
+          tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
           body: ${{ github.event.head_commit.message }}
           draft: false

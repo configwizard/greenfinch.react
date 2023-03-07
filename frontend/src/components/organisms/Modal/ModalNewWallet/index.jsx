@@ -32,7 +32,7 @@ function NewWalletModal(props) {
                             <ButtonText
                                 buttonClass={"atmButtonText"}
                                 hasIcon={true}
-                                faClass={"fas fa-star-shooting"} 
+                                faClass={"fa-solid fa-star-shooting"}
                                 text={"Create new wallet"}
                                 isDisabled={false}
                                 onClick={async () => {await newWallet("password"); unSetModal()}} 
@@ -41,12 +41,12 @@ function NewWalletModal(props) {
                                 type="button"
                                 className="atmButtonText"
                                 onClick={async () => {await loadWallet("password"); unSetModal()}}>
-                                <i className="fas fa-upload"/>Load existing wallet
+                                <i className="fa-sharp fa-solid fa-upload"/>Load existing wallet
                             </button>
                         </div>
                     </CompModalBrand>)
                 }}>
-                <i className="fas fa-plus-circle"/>Choose a wallet
+                <i className="fa-sharp fa-solid fa-circle-plus"/>Choose a wallet
             </button>
         </div>
     )

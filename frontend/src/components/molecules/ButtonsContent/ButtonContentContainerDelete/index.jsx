@@ -12,7 +12,7 @@ const ButtonContentContainerDelete = ({ containerName, containerId, containerPer
             type="default"
             size="small"
             hasIcon={true}
-            faClass={"fas fa-trash-alt"} 
+            faClass={"fa-sharp fa-solid fa-trash-can"}
             text={"Delete container"}
             isDisabled={false}
             onClick={() => {

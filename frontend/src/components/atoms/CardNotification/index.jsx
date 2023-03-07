@@ -31,5 +31,5 @@ CardNotification.propTypes = {
 
 CardNotification.defaultProps = {
     label: "Navbar Link",
-    faClass: "fas fa-flag"
+    faClass: "fa-sharp fa-solid fa-flag"
 };

@@ -17,8 +17,8 @@ const DrawerWallet = (props) => {
         <>
         <div className="offcanvas offcanvas-start" tabIndex="-1" id="offcanvasLeft" aria-labelledby="offcanvasLeftLabel">
             <div className="offcanvas-header d-flex align-items-center">
-                <h4 id="offcanvasLeftLabel"><i className="fas fa-lg fa-wallet"/>&nbsp;Wallet</h4>
-                <button type="button" className="button-offcanvas" data-bs-dismiss="offcanvas" aria-label="Close"><i className="fas fa-lg fa-times"/></button>
+                <h4 id="offcanvasLeftLabel"><i className="fa-sharp fa-solid fa-wallet"/>&nbsp;Wallet</h4>
+                <button type="button" className="button-offcanvas" data-bs-dismiss="offcanvas" aria-label="Close"><i className="fa-sharp fa-solid fa-xmark"/></button>
             </div>
             <div className="offcanvas-body">
                 {props.account.address ?
@@ -57,7 +57,7 @@ const DrawerWallet = (props) => {
                             onClick={() => props.refreshAccount()}
                             isDisabled={props.account.address ? false : true }
                             text={"Refresh balance"}
-                            faClass={"fas fa-sync-alt"} />
+                            faClass={"fa-sharp fa-solid fa-rotate"} />
                 </section>
                 <section className="molDrawerRow">
                     <HeadingGeneral
@@ -75,7 +75,7 @@ const DrawerWallet = (props) => {
                         type="default"
                         size="medium"
                         hasIcon={true}
-                        faClass={"fas fa-chart-line"}
+                        faClass={"fa-sharp fa-solid fa-chart-line"}
                         isDisabled={props.account.address ? false : true }
                         text={"Top-up"}
                         onClick={(amount) => {console.log("topping up"); props.topUpWallet(document.getElementById("topUpAmount").value);}} />

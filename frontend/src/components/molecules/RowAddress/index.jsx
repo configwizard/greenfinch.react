@@ -46,7 +46,7 @@ const RowAddress = ({first, contact, deleteContact}) => {
                     size={"small"}
                     type={"clean"}
                     hasIcon={true}
-                    faClass={"fas fa-trash-alt"}
+                    faClass={"fa-sharp fa-solid fa-trash-can"}
                     text={"Delete"}
                     isDisabled={false}
                     onClick={() => {deleteContact(contact.walletAddress)}}/>
@@ -54,7 +54,7 @@ const RowAddress = ({first, contact, deleteContact}) => {
                     size={"small"}
                     type={"clean"}
                     hasIcon={true}
-                    faClass={"fas fa-paper-plane"}
+                    faClass={"fa-sharp fa-solid fa-paper-plane"}
                     text={"Send GAS"}
                     isDisabled={false}
                     onClick={

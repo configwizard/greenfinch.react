@@ -183,9 +183,14 @@ func (m *Manager) LoadWalletWithPath(password, filepath string) error {
 		tmp := UXMessage{
 			Title:       "Error reading wallet",
 			Type:        "error",
-			Description: err.Error(),
+			Description: "Greenfinch could not open your wallet",
 		}
 		m.MakeToast(NewToastMessage(&tmp))
+		m.MakeNotification(NotificationMessage{
+			Title:       "Error reading wallet",
+			Type:        "error",
+			Description: "Error " + err.Error(),
+		})
 		return err
 	}
 	err = w.Accounts[0].Decrypt(password, w.Scrypt)
@@ -196,6 +201,11 @@ func (m *Manager) LoadWalletWithPath(password, filepath string) error {
 			Description: err.Error(),
 		}
 		m.MakeToast(NewToastMessage(&tmp))
+		m.MakeNotification(NotificationMessage{
+			Title:       "Error unlocking wallet",
+			Type:        "error",
+			Description: "Error " + err.Error(),
+		})
 		return err
 	}
 	m.password = password

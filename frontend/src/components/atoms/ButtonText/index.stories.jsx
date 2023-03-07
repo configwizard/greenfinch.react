@@ -18,7 +18,7 @@ Default.args = {
     type: 'default',
     text: 'Button - default',
     hasIcon: true,
-    faClass: "fas fa-flag",
+    faClass: "fa-sharp fa-solid fa-flag",
 };
 
 export const Clean = Template.bind({});
@@ -26,7 +26,7 @@ Clean.args = {
     type: 'clean',
     text: 'Button - clean',
     hasIcon: true,
-    faClass: "fas fa-flag",
+    faClass: "fa-sharp fa-solid fa-flag",
 };
 
 export const Primary = Template.bind({});
@@ -34,7 +34,7 @@ Primary.args = {
     type: 'primary',
     text: 'Button - primary',
     hasIcon: true,
-    faClass: "fas fa-flag",
+    faClass: "fa-sharp fa-solid fa-flag",
 };
 
 export const Secondary = Template.bind({});
@@ -42,5 +42,5 @@ Secondary.args = {
     type: 'secondary',
     text: 'Button - secondary',
     hasIcon: true,
-    faClass: "fas fa-flag",
+    faClass: "fa-sharp fa-solid fa-flag",
 };

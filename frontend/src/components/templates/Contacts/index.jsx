@@ -26,7 +26,7 @@ const TemplateContacts = ({contacts, createContact, deleteContact}) => {
                         hasButton={true}
                         hasButtonIcon={true}
                         isButtonDisabled={false}
-                        faClass={"fas fa-plus-circle"}
+                        faClass={"fa-sharp fa-solid fa-circle-plus"}
                         buttonText={"Add new contact"}
                         buttonAction={() => {
                             setModal(

@@ -12,8 +12,8 @@ const DrawerSettings = (props) => {
         <>
             <div className="offcanvas offcanvas-end" tabIndex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
                 <div className="offcanvas-header d-flex align-items-center">
-                    <h4 id="offcanvasRightLabel"><i className="fas fa-lg fa-cog"/>&nbsp;Settings</h4>
-                    <button type="button" className="button-offcanvas" data-bs-dismiss="offcanvas" aria-label="Close"><i className="fas fa-lg fa-times"/></button>
+                    <h4 id="offcanvasRightLabel"><i className="fa-sharp fa-solid fa-gear"/>&nbsp;Settings</h4>
+                    <button type="button" className="button-offcanvas" data-bs-dismiss="offcanvas" aria-label="Close"><i className="fa-sharp fa-solid fa-xmark"/></button>
                 </div>
                 <div className="offcanvas-body">
 

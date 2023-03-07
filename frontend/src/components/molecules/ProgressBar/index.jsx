@@ -43,7 +43,7 @@ export default class ProgressBar extends React.Component {
                 <div className="molProgressWrapper">
                     <div className="molProgressInner d-flex">
                         <div className="molProgressContent d-flex align-items-center justify-content-center">
-                                <i className="fa fa-fw fa-times" onClick={async () => {await this.setState({...this.state, show: false})}}/>
+                                <i className="fa-sharp fa-solid fa-xmark" onClick={async () => {await this.setState({...this.state, show: false})}}/>
                                 <Progress
                                     theme={{
                                         success: {

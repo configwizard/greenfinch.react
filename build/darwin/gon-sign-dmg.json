@@ -11,7 +11,6 @@
     "staple": true
   }],
   "sign": {
-    "application_identity": "Developer ID Application: Alexander Walker (65V77NRF7L)",
-    "entitlements_file": "./build/darwin/entitlements.plist"
+    "application_identity": "Developer ID Application: Alexander Walker (65V77NRF7L)"
   }
 }
