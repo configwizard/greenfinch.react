@@ -168,7 +168,7 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                             text={"Recent wallets"} />
                             {
                                 recentWallets ? Object.keys(recentWallets).map(function(obj, ) {
-                                    console.log("RECENT", obj, recentWallets[obj]) //gives [long]short
+                                    console.log("RECENT", obj, recentWallets[obj])
                                     //the absolute path is recentWallets[obj]
                                     const walletName = recentWallets[obj].Name//recentWallets[obj].split('/')[recentWallets[obj].split('/').length -1]
                                     return <div key={obj} className="wallet-recent d-flex align-items-center">
@@ -215,7 +215,7 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                             />
                                         </div>
                                     </div>
-                                }) : null
+                                }) : <p>There are no recent wallets to load.</p>
                             }
                     </div>
                 </div>
