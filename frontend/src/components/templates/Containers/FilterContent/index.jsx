@@ -4,6 +4,7 @@ import {fileSize} from "humanize-plus";
 
 // Components
 import ButtonText from '../../../atoms/ButtonText';
+import InfoBox from "../../../atoms/InfoBox";
 import ViewContainers from '../../../organisms/ViewContent/ViewContainers';
 import ViewObjects, {ButtonContentAction} from '../../../organisms/ViewContent/ViewObjects';
 import {openInDefaultBrowser} from '../../../../manager/manager';
@@ -39,7 +40,9 @@ function filterContent(state, onObjectSelection, onObjectDelete, onObjectDownloa
         return (
             <>
                 <div className="col-3">
-                    <p>Select a container to open and view contents.</p>
+                    <InfoBox
+                        type="info"
+                        text={"Select a container to open and view contents."} />
                 </div>
                 <div className="col-9">
                     <div className="orgContainersGrid">
@@ -118,11 +121,11 @@ function filterContent(state, onObjectSelection, onObjectDelete, onObjectDownloa
                                     display="object"
                                     category="static"
                                     file={state.selectedObject.objectFile}
-                                    contentTitle={state.selectedObject.objectName || null}
+                                    contentTitle={state.selectedObject.objectName}
                                     data={[
                                         {
                                             contentDataTitle:"Object ID",
-                                            contentDataValue: state.selectedObject.objectID || null
+                                            contentDataValue: state.selectedObject.objectID
                                         },
                                         {
                                             contentDataTitle:"Object created",
@@ -132,7 +135,6 @@ function filterContent(state, onObjectSelection, onObjectDelete, onObjectDownloa
                                             contentDataTitle:"Object size",
                                             contentDataValue: fileSize(state.selectedObject.size)
                                         },
-
                                     ]} />
                             </div>
                             <div className="object-data" id={"objectData"}>

@@ -1,0 +1,16 @@
+@import "../../../assets/dashboard-variables.scss";
+@import "../../../assets/greenfinch-variables.scss";
+
+.atmInfoBox {
+    border-left: 5px solid $toastColorInfo;
+    padding: $paddingSmall;
+    background-color: rgba($toastColorInfo,0.05);
+    margin-bottom: $marginXSmall;
+    & span {
+        font-family: $brandFontSemi;
+        font-size: 0.9rem;
+        line-height: 1.2;
+        color: $brandColorDark;
+        margin-bottom: 0;
+    }
+}

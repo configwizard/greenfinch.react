@@ -11,11 +11,12 @@
     & i {
         margin: $marginXSmall 0;
     }
-    & button {
+    & button, a {
         background-color: unset;
         text-decoration: underline;
         color: rgba($brandColorDark, 1);
         font-size: 1.1rem;
+        line-height: 1.6;
         &:hover {
             color: rgba($brandColorDark, 0.5);
         }
