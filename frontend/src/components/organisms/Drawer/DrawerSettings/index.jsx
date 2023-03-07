@@ -69,7 +69,7 @@ const DrawerSettings = (props) => {
                     <div className="molDrawerRow">
                         <div className="atmSwitchContent">
                             <h5>Version</h5>
-                            <p>{props.getVersion}</p>
+                            <p>{props.version}</p>
                         </div>
                     </div>
                 </div>

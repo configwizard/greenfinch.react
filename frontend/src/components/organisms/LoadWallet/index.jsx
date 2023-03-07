@@ -44,8 +44,8 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                                     buttonTextPrimary={"Locate wallet"}
                                                     buttonTextSecondary={"Cancel"}
                                                     primaryClicked={async () => {
-                                                        await loadWallet(document.getElementById("loadWalletPassword").value);
                                                         await unSetModal()
+                                                        await loadWallet(document.getElementById("loadWalletPassword").value);
                                                         await refreshRecentWallets()
                                                     }}
                                                     secondaryClicked={async () => unSetModal()}>
@@ -69,10 +69,10 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                                     buttonTextPrimary={"Create"}
                                                     buttonTextSecondary={"Cancel"}
                                                     primaryClicked={async () => {
+                                                        await unSetModal()
                                                         if (document.getElementById("createWalletPassword").value === document.getElementById("createWalletPasswordMatch").value) {
                                                             await newWallet(document.getElementById("createWalletPassword").value)
                                                         }
-                                                        await unSetModal()
                                                         await refreshRecentWallets()
                                                     }}
                                                     secondaryClicked={async () => unSetModal()}>
@@ -150,7 +150,7 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                             />
                                         </div>
                                     </div>
-                                }) : null
+                                }) : <p>There are no recent wallets to load.</p>
                             }
                     </div>
                 </div>
