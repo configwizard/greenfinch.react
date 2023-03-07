@@ -52,6 +52,7 @@ export function ButtonContentAction({icon, text, onClick}) {
             size={"small"}
             hasIcon={true}
             faClass={icon}
+            isDisabled={false}
             onClick={onClick}
             text={text}/>
     )

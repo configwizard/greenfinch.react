@@ -14,6 +14,7 @@ const ButtonContentContainerInfo = ({ containerName, containerId, containerPermi
             hasIcon={true}
             faClass={"fas fa-eye"} 
             text={"View container properties"}
+            isDisabled={false}
             onClick={() => {
                 setModal(
                 <CompModalStandard

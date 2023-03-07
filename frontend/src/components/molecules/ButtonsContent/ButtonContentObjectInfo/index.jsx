@@ -16,6 +16,7 @@ const ButtonContentObjectInfo = ({ objectName, objectId, objectFile, objectSize,
             hasIcon={true}
             faClass={"fas fa-eye"} 
             text={"View object properties"}
+            isDisabled={false}
             onClick={() => {
                 setModal(
                 <CompModalStandard

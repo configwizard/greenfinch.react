@@ -50,13 +50,13 @@ jobs:
         if: matrix.platform == 'macos-latest'
         run: |
           brew install mitchellh/gon/gon
-      - name: Strip assets
+      - name: Remove all assets from macOS binary
         if: matrix.platform == 'macos-latest'
-        run: | #1. make sure any attributes are removed
+        run: |
           xattr -lr "./build/bin/Greenfinch.app"
-      - name: Change permissions
+      - name: Set the permissions on the binary before signing
         if: matrix.platform == 'macos-latest'
-        run: | #2. set permissions on anything inside the app
+        run: |
           chmod -R u+rw "./build/bin/Greenfinch.app"
       - name: Import Code-Signing Certificates for macOS
         if: matrix.platform == 'macos-latest'
@@ -66,33 +66,31 @@ jobs:
           p12-file-base64: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_P12_BASE64 }}
           # The password used to import the PKCS12 file.
           p12-password: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_PASSWORD }}
-      - name: Sign our macOS binary
+      - name: Sign the macOS binary
         if: matrix.platform == 'macos-latest'
         env:
           APPLE_USER: ${{ secrets.APPLE_USER }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
         run: |
-          echo "Signing app"
           gon -log-level=info ./build/darwin/gon-sign-app.json
-      - name: Retrieve DMG generator
+      - name: Retrieve imagemagick for DMG artworkg
         if: matrix.platform == 'macos-latest'
         run: |
           brew install graphicsmagick imagemagick
-      - name: Retrieve DMG generator
+      - name: Retrieve dmg generator
         if: matrix.platform == 'macos-latest'
         run: |
           npm install --global create-dmg
-      - name: Generate DMG
+      - name: Generate dmg for macOS
         if: matrix.platform == 'macos-latest'
         run: |
           create-dmg --overwrite --dmg-title=Greenfinch.dmg ./build/bin/Greenfinch.app ./build/bin && mv ./build/bin/Greenfinch*.dmg ./build/bin/Greenfinch.dmg
-      - name: Sign our macOS binary
+      - name: Sign the macOS dmg
         if: matrix.platform == 'macos-latest'
         env:
           APPLE_USER: ${{ secrets.APPLE_USER }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
         run: |
-          echo "Signing DMG"
           gon -log-level=info ./build/darwin/gon-sign-dmg.json
       - name: Sign Windows binaries
         if: matrix.platform == 'windows-latest'

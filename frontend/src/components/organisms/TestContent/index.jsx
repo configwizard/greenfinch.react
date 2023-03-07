@@ -19,6 +19,7 @@ const TestContent = () => {
                     type={"default"}
                     size={"small"}
                     text={"Check 2 children"}
+                    isDisabled={false}
                     hasIcon={false}>
                 </ButtonText>
             </div>
@@ -32,6 +33,7 @@ const TestContent = () => {
                     type={"default"}
                     size={"small"}
                     text={"Check 2 children"}
+                    isDisabled={false}
                     hasIcon={false}>
                 </ButtonText>
             </div>
@@ -45,6 +47,7 @@ const TestContent = () => {
                     type={"default"}
                     size={"small"}
                     text={"Check 2 children"}
+                    isDisabled={false}
                     hasIcon={false}>
                 </ButtonText>
             </div>
@@ -58,6 +61,7 @@ const TestContent = () => {
                     type={"default"}
                     size={"small"}
                     text={"Check 2 children"}
+                    isDisabled={false}
                     hasIcon={false}>
                 </ButtonText>
             </div>
@@ -71,6 +75,7 @@ const TestContent = () => {
                     type={"default"}
                     size={"small"}
                     text={"Check 2 children"}
+                    isDisabled={false}
                     hasIcon={false}>
                 </ButtonText>
             </div>
@@ -84,6 +89,7 @@ const TestContent = () => {
                     type={"default"}
                     size={"small"}
                     text={"Check 2 children"}
+                    isDisabled={false}
                     hasIcon={false}>
                 </ButtonText>
             </div>
@@ -97,6 +103,7 @@ const TestContent = () => {
                     type={"default"}
                     size={"small"}
                     text={"Check 2 children"}
+                    isDisabled={false}
                     hasIcon={false}>
                 </ButtonText>
             </div>
@@ -110,6 +117,7 @@ const TestContent = () => {
                     type={"default"}
                     size={"small"}
                     text={"Check 2 children"}
+                    isDisabled={false}
                     hasIcon={false}>
                 </ButtonText>
             </div>
@@ -123,6 +131,7 @@ const TestContent = () => {
                     type={"default"}
                     size={"small"}
                     text={"Check 2 children"}
+                    isDisabled={false}
                     hasIcon={false}>
                 </ButtonText>
             </div>
@@ -136,6 +145,7 @@ const TestContent = () => {
                     type={"default"}
                     size={"small"}
                     text={"Check 2 children"}
+                    isDisabled={false}
                     hasIcon={false}>
                 </ButtonText>
             </div>

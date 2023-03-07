@@ -158,6 +158,7 @@ function filterContent(state, onObjectSelection, onObjectDelete, onObjectDownloa
                                             hasIcon={true}
                                             faClass={"fas fa-external-link"}
                                             text={"Click to view object in web browser"}
+                                            isDisabled={false}
                                             onClick={() => openInDefaultBrowser(`https://http.t5.fs.neo.org/${state.selectedContainer.containerID}/${state.selectedObject.objectID}`)} />
                                     : null }
                                 </div>

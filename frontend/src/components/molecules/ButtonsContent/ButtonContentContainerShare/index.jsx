@@ -21,6 +21,7 @@ const ButtonContentContainerShare = ({containerId, contacts}) => {
             hasIcon={true}
             faClass={"fas fa-share"} 
             text={"Share container"}
+            isDisabled={false}
             onClick={() => {
                 setModal(
                 <CompModalStandard

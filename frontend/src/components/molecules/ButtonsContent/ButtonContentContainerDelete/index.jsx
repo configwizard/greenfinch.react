@@ -14,6 +14,7 @@ const ButtonContentContainerDelete = ({ containerName, containerId, containerPer
             hasIcon={true}
             faClass={"fas fa-trash-alt"} 
             text={"Delete container"}
+            isDisabled={false}
             onClick={() => {
                 setModal(
                 <CompModalStandard

@@ -34,6 +34,7 @@ function NewWalletModal(props) {
                                 hasIcon={true}
                                 faClass={"fas fa-star-shooting"} 
                                 text={"Create new wallet"}
+                                isDisabled={false}
                                 onClick={async () => {await newWallet("password"); unSetModal()}} 
                             />
                             <button
