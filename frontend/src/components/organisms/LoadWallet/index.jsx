@@ -189,7 +189,7 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                             */}
                                             <ButtonText
                                                 type="default"
-                                                size="small"
+                                                size="small" 
                                                 hasIcon={false}
                                                 text={"Load wallet"}
                                                 isDisabled={false}
