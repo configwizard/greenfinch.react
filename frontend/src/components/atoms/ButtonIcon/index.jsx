@@ -42,5 +42,5 @@ ButtonIcon.defaultProps = {
     size: ButtonSize.MEDIUM,
     buttonClass: '',
     isDisabled: false,
-    faClass: "fas fa-flag"
+    faClass: "fa-sharp fa-solid fa-flag"
 };                            

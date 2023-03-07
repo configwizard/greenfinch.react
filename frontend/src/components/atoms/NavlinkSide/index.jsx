@@ -27,5 +27,5 @@ NavlinkSide.propTypes = {
 
 NavlinkSide.defaultProps = {
     label: "Navbar Link",
-    faClass: "fas fa-flag"
+    faClass: "fa-sharp fa-solid fa-flag"
 };

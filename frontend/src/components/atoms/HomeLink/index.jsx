@@ -22,5 +22,5 @@ HomeLink.propTypes = {
 
 HomeLink.defaultProps = {
     text: "Homepage link",
-    faClass: "fas fa-flag"
+    faClass: "fa-sharp fa-solid fa-flag"
 };

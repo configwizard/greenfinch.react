@@ -93,7 +93,7 @@ function filterContent(state, onObjectSelection, onObjectDelete, onObjectDownloa
                     <div className="buttonStack">
                         { !state.shared ? <>
                         <ButtonContentAction
-                            icon="fas fa-upload"
+                            icon="fa-sharp fa-solid fa-upload"
                             text="Upload to this container"
                             onClick={onObjectUpload}/>
                         <ButtonContentContainerShare
@@ -148,7 +148,7 @@ function filterContent(state, onObjectSelection, onObjectDelete, onObjectDownloa
                                 </div>
                                 <div className="buttonStack">
                                     <ButtonContentAction
-                                        icon="fas fa-download" 
+                                        icon="fa-sharp fa-solid fa-download"
                                         text="Download this object" 
                                         onClick={onObjectDownload} />
                                     { state.selectedContainer.permissions === 264211711 || 264224767 ?
@@ -156,7 +156,7 @@ function filterContent(state, onObjectSelection, onObjectDelete, onObjectDownloa
                                             type="clean"
                                             size="small"
                                             hasIcon={true}
-                                            faClass={"fas fa-external-link"}
+                                            faClass={"fa-sharp fa-solid fa-arrow-up-right-from-square"}
                                             text={"Click to view object in web browser"}
                                             onClick={() => openInDefaultBrowser(`https://http.t5.fs.neo.org/${state.selectedContainer.containerID}/${state.selectedObject.objectID}`)} />
                                     : null }

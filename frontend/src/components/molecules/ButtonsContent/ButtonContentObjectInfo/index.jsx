@@ -14,7 +14,7 @@ const ButtonContentObjectInfo = ({ objectName, objectId, objectFile, objectSize,
             type="clean"
             size="small"
             hasIcon={true}
-            faClass={"fas fa-eye"} 
+            faClass={"fa-sharp fa-solid fa-eye"} 
             text={"View object properties"}
             onClick={() => {
                 setModal(

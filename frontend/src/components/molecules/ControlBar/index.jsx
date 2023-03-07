@@ -32,19 +32,19 @@ const ControlBar = ({containers, selectedContainer, onSelected, changeView, view
                     type={"default"}
                     size={"small"}
                     isDisabled={selectedContainer ? false : true}
-                    faClass={"fas fa-arrow-alt-to-left"}
+                    faClass={"fa-sharp fa-solid fa-left-to-line"}
                     onClick={()=>{resetBreadcrumb()}} />
                 <ButtonIcon
                     type={"default"}
                     size={"small"}
                     buttonClass={viewMode === 'grid' ? "active" : null}
-                    faClass={"fas fa-th-large"}
+                    faClass={"fa-sharp fa-solid fa-table-cells-large"}
                     onClick={()=>{changeView("grid")}} />
                 <ButtonIcon
                     type={"default"}
                     size={"small"}
                     buttonClass={viewMode === 'grid' ? null : 'active'}
-                    faClass={"fas fa-list"}
+                    faClass={"fa-sharp fa-solid fa-list"}
                     onClick={()=>{changeView("list")}} />
             </div>
         </div>

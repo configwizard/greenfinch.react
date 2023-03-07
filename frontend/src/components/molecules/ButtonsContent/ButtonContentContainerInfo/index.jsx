@@ -12,7 +12,7 @@ const ButtonContentContainerInfo = ({ containerName, containerId, containerPermi
             type="clean"
             size="small"
             hasIcon={true}
-            faClass={"fas fa-eye"} 
+            faClass={"fa-sharp fa-solid fa-eye"}
             text={"View container properties"}
             onClick={() => {
                 setModal(

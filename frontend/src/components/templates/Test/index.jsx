@@ -21,7 +21,7 @@ const TemplateTest = () => {
                         hasButton={true}
                         hasButtonIcon={true}
                         isButtonDisabled={true}
-                        faClass={"fas fa-vial"}
+                        faClass={"fa-sharp fa-solid fa-vial"}
                         buttonText={"Test button"}
                         buttonAction={TestButtonAction} />
                    <div className="row g-0">

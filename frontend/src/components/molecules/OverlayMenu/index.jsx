@@ -18,11 +18,11 @@ function OverlayMenu(props) {
                     <nav className="nav flex-column align-items-start">
                         { props.type === "object" ?  
                             <>
-                                {/* <button className="atmButtonBase nav-link" onClick={props.view}><i className="fas fa-eye"/>&nbsp;View</button>*/}
-                                <button className="atmButtonBase nav-link" onClick={() => props.onObjectSelection(props.id, props.filename)}><i className="fas fa-download"/>&nbsp;Download</button>
+                                {/* <button className="atmButtonBase nav-link" onClick={props.view}><i className="fa-sharp fa-solid fa-eye"/>&nbsp;View</button>*/}
+                                <button className="atmButtonBase nav-link" onClick={() => props.onObjectSelection(props.id, props.filename)}><i className="fa-sharp fa-solid fa-download"/>&nbsp;Download</button>
                             </>
                         : null }
-                        {/*  <button data-bs-toggle="modal" data-bs-target="#deleteModal" type="button" className="atmButtonBase nav-link"><i className="fas fa-trash-alt"/>&nbsp;Delete</button> */}
+                        {/*  <button data-bs-toggle="modal" data-bs-target="#deleteModal" type="button" className="atmButtonBase nav-link"><i className="fa-sharp fa-solid fa-trash-can"/>&nbsp;Delete</button> */}
                         <button 
                             type="button" 
                             className="atmButtonBase nav-link" 
@@ -37,7 +37,7 @@ function OverlayMenu(props) {
                                         <p>Are you sure you want to delete this item?</p>
                                 </CompModalStandard>)
                             }}>
-                            <i className="fas fa-trash-alt"/>&nbsp;Delete
+                            <i className="fa-sharp fa-solid fa-trash-can"/>&nbsp;Delete
                         </button>
                     </nav>
                 </div>

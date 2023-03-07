@@ -19,7 +19,7 @@ const ButtonContentContainerShare = ({containerId, contacts}) => {
             type="default"
             size="small"
             hasIcon={true}
-            faClass={"fas fa-share"} 
+            faClass={"fa-sharp fa-solid fa-share"}
             text={"Share container"}
             onClick={() => {
                 setModal(

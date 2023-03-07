@@ -57,6 +57,6 @@ ButtonText.defaultProps = {
     isDisabled: false,
     hasIcon: true,
     buttonClass: "",
-    faClass: "fas fa-flag",
-    text: "lipsum vie"
+    faClass: "fa-sharp fa-solid fa-flag",
+    text: "Button text"
 };                            

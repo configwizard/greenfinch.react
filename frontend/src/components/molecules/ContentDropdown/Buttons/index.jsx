@@ -22,7 +22,7 @@ export function DeleteButton(props){
                         <p>Are you sure you want to delete this item?</p>
                 </CompModalStandard>)
             }}>
-            <i className="fas fa-trash-alt"/>&nbsp;Delete
+            <i className="fa-sharp fa-solid fa-trash-can"/>&nbsp;Delete
         </button>
     )
 

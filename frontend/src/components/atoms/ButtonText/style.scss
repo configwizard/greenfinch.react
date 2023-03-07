@@ -30,6 +30,7 @@
     &.clean, &.secondary {
         background-color: rgba(0,0,0,0.03);
         &:hover {
+            text-decoration: none;
             color: $brandColorDark;
             background-color: rgba(0,0,0,0.1);
         }

@@ -159,7 +159,7 @@ class Containers extends React.Component {
                             hasButton={true}
                             hasIcon={true}
                             isButtonDisabled={this.props.account.address ? false : true}
-                            faClass={"fas fa-plus-circle"}
+                            faClass={"fa-sharp fa-solid fa-circle-plus"}
                             buttonText={"Create new container"}
                         />
                         <div className="row">
