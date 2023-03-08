@@ -17,13 +17,16 @@ const CompModalStandard = props => {
             </div>
             <div className="molModalFooter d-flex">
                 <div className="ms-auto buttonGroup">
-                    <ButtonText
-                        type="secondary"
-                        size="medium"
-                        hasIcon={false}
-                        text={props.buttonTextSecondary}
-                        isDisabled={false}
-                        onClick={() => {props.secondaryClicked()}} />
+                    {props.hasSecondaryButton ?  
+                        <ButtonText
+                            type="secondary"
+                            size="medium"
+                            hasIcon={false}
+                            text={props.buttonTextSecondary}
+                            isDisabled={false}
+                            onClick={() => {props.secondaryClicked()}} />
+                            : null
+                    }
                     <ButtonText
                         type="primary"
                         size="medium"

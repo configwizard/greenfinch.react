@@ -114,12 +114,6 @@
 
 /* Styles: Typography
 - - - - - - - - - - - - - - - - - - */
-.utLoading {
-    font-size: 0.8rem;
-    font-family: $brandFontSemi;
-    color: $brandColorDark;
-}
-
 h2 {
     &.atmTitle {
         @include titleStyle(0.9rem);

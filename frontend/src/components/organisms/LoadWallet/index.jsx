@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useModal } from '../../organisms/Modal/ModalContext';
 // Actual
 import { loadWallet, loadWalletWithPath, newWallet} from '../../../manager/manager.js'
@@ -6,6 +6,7 @@ import { loadWallet, loadWalletWithPath, newWallet} from '../../../manager/manag
 // Components
 import ButtonText from '../../atoms/ButtonText';
 import HeadingGeneral from '../../atoms/HeadingGeneral';
+import SpinnerLoading from '../../atoms/SpinnerLoading';
 
 import './style.scss';
 import CompModalStandard from "../Modal/ModalStandard";
@@ -13,7 +14,12 @@ import {Form} from "react-bootstrap";
 
 const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
     const { setModal, unSetModal } = useModal()
+    const { isVisible, setIsVisible } = useState(false)
     console.log("propogating wallet", account, recentWallets)
+    if (account && account.address) {
+        //setIsVisible(false);
+        console.log("Account is ", account);
+    }
     return (
         <>
             <div className="section-wallet">
@@ -26,7 +32,8 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                             level={"h5"}
                             isUppercase={true}
                             text={"Get started"}
-                        />            
+                        />
+                        <SpinnerLoading isVisible={isVisible} text={"Wallet loading..."} />
                         <p>To use Greenfinch, a wallet is required. Either load an exisiting wallet or create a new wallet.</p>
                         <div className="d-flex">
                             <div className="ms-auto">
@@ -44,8 +51,9 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                                     buttonTextPrimary={"Locate wallet"}
                                                     buttonTextSecondary={"Cancel"}
                                                     primaryClicked={async () => {
+                                                        setIsVisible(true)
+                                                        loadWallet(document.getElementById("loadWalletPassword").value);
                                                         await unSetModal()
-                                                        await loadWallet(document.getElementById("loadWalletPassword").value);
                                                         await refreshRecentWallets()
                                                     }}
                                                     secondaryClicked={async () => unSetModal()}>
@@ -69,10 +77,11 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                                     buttonTextPrimary={"Create"}
                                                     buttonTextSecondary={"Cancel"}
                                                     primaryClicked={async () => {
-                                                        await unSetModal()
+                                                        setIsVisible(true)
                                                         if (document.getElementById("createWalletPassword").value === document.getElementById("createWalletPasswordMatch").value) {
-                                                            await newWallet(document.getElementById("createWalletPassword").value)
+                                                            newWallet(document.getElementById("createWalletPassword").value)
                                                         }
+                                                        await unSetModal()
                                                         await refreshRecentWallets()
                                                     }}
                                                     secondaryClicked={async () => unSetModal()}>
@@ -138,6 +147,7 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                                                 primaryClicked={async () => {
                                                                     loadWalletWithPath(document.getElementById("loadWalletFromPathPassword").value, recentWallets[obj])
                                                                     await unSetModal()
+                                                                    await setIsVisible(true)
                                                                     }
                                                                 }
                                                                 secondaryClicked={async () => unSetModal()}>

@@ -1,16 +1,15 @@
 import React from 'react';
-//import PropTypes from 'prop-types';
+import {Form} from "react-bootstrap";
 import {copyTextToClipboard, transferGasToContact} from "../../../manager/manager.js"
+
 // Components
 import ButtonText from '../../atoms/ButtonText';
 import RowElement from '../../atoms/RowElement';
 import Tooltip from '../../atoms/Tooltip';
-
-import './style.scss';
 import CompModalStandard from "../../organisms/Modal/ModalStandard";
-import {Form} from "react-bootstrap";
 import { useModal } from '../../organisms/Modal/ModalContext';
 
+import './style.scss';
 
 const RowAddress = ({first, contact, deleteContact}) => {
     const { setModal, unSetModal } = useModal()

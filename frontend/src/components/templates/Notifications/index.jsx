@@ -82,12 +82,13 @@ export default class TemplateNotifications extends React.Component {
                     <div className="col-12">
                         <HeaderPage 
                             pageTitle={"Notifications"}
-                            hasButton={true}
-                            hasButtonIcon={true}
-                            isButtonDisabled={this.state.list.length === 0 ? true : false}
-                            faClass={"fa-sharp fa-solid fa-broom-wide"}
-                            buttonText={"Clear notifications"}
-                            buttonAction={this.onClearNotifications} /> 
+                            hasButton={false}
+                            // hasButtonIcon={true}
+                            // isButtonDisabled={this.state.list.length === 0 ? true : false}
+                            // faClass={"fa-sharp fa-solid fa-broom-wide"}
+                            // buttonText={"Clear notifications"}
+                            // buttonAction={this.onClearNotifications} 
+                        /> 
                         <div className="row justify-content-center">
                             <div className="col-6">
                                 <div className="templateWrapper">

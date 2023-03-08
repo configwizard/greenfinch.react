@@ -50,9 +50,13 @@ const ColumnData = ({ display, category, contentTitle, iconSize, data, file }) =
             display === "object" && (
                 category === "static" ? 
                 <>
-                    <figure className="atmObjectThumbnail">
-                        <img className="mw-100" src={`data:image/png;base64,${file}`} alt={contentTitle} />
-                    </figure>
+                    { 
+                    file ? 
+                        <figure className="atmObjectThumbnail">
+                            <img className="mw-100" src={`data:image/png;base64,${file}`} alt={contentTitle} />
+                        </figure>
+                    : null 
+                    }
                     <HeadingGeneral
                         level={"h5"}
                         isUppercase={false}
