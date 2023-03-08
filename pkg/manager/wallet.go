@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/amlwwalker/greenfinch.react/pkg/cache"
 	"github.com/amlwwalker/greenfinch.react/pkg/wallet"
+	"github.com/nspcc-dev/neo-go/pkg/crypto/keys"
 	"github.com/nspcc-dev/neo-go/pkg/encoding/address"
 	"github.com/nspcc-dev/neo-go/pkg/rpcclient"
 	"github.com/nspcc-dev/neo-go/pkg/rpcclient/actor"
@@ -23,6 +24,9 @@ import (
 type cleanedWallet struct {
 	Path string
 	Name string
+}
+func (m *Manager) DeleteRecentWallet(walletId string) error {
+	return cache.DeleteRecentWallet(walletId)
 }
 func (m *Manager) RecentWallets() (map[string]cleanedWallet, error) {
 	recentWallets, err := cache.RecentWallets()
@@ -141,6 +145,37 @@ func (m *Manager) TopUpNeoWallet(amount float64) (string, error) {
 	}
 	return token, err
 }
+func (m *Manager) NewWalletFromWIF(password, wif, filepath string) error {
+	key, err := keys.NewPrivateKeyFromWIF(wif)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("key %+v\r\n", key)
+	privKey := keys.PrivateKey{PrivateKey: key.PrivateKey}
+	a := wal.NewAccountFromPrivateKey(&privKey)
+	w, err := wal.NewWallet(filepath) // < -- this saves an empty file
+	if err != nil {
+		return err
+	}
+	w.AddAccount(a)
+
+	if err := a.Encrypt(password, w.Scrypt); err != nil {
+		return err
+	}
+	if err := w.Save(); err != nil {
+		return err
+	}
+	tmp := UXMessage{
+		Title:       "Success creating wallet from 	WIF: " + w.Accounts[0].Address,
+		Type:        "success",
+		Description: "You will need to transfer the wallet some gas",
+	}
+	m.MakeToast(NewToastMessage(&tmp))
+
+	runtime.EventsEmit(m.ctx, "fresh_wallet", w.Accounts[0])
+	runtime.EventsEmit(m.ctx, "select_wallet", false)
+	return nil
+}
 func (m *Manager) NewWallet(password string) error {
 	homeDir, err := os.UserHomeDir()
 	fmt.Println("saving to ")
@@ -184,7 +219,7 @@ func (m *Manager) NewWallet(password string) error {
 	tmp := UXMessage{
 		Title:       "Success creating wallet: " + w.Accounts[0].Address,
 		Type:        "success",
-		Description: "You will need to transfer the wallet some gas. Then you will need to transfer to NeoFS. Your wallet",
+		Description: "You will need to transfer the wallet some gas",
 	}
 	m.MakeToast(NewToastMessage(&tmp))
 
@@ -316,6 +351,31 @@ func (m *Manager) LoadWalletWithoutPassword() (string, error) {
 		}
 		m.MakeToast(NewToastMessage(&tmp))
 		return "", err
+	}
+	return filepath, nil
+}
+//firstly call this to get a filepath
+//then once the filepath is returned to the frontend, call the modal to get a password
+//then finally from the frontend call return m.LoadWalletWithPath(password, filepath)
+//wallet loaded.
+func (m *Manager) SaveWalletWithoutPassword() (string, error) {
+	homeDir, err := os.UserHomeDir()
+	fmt.Println("saving to ")
+	filepath, err := runtime.SaveFileDialog(m.ctx, runtime.SaveDialogOptions{
+		DefaultDirectory:           homeDir,
+		DefaultFilename:            "wallet.json",
+		Title:                      "Choose where to save file to",
+		Filters:                    nil,
+		ShowHiddenFiles:            false,
+		CanCreateDirectories:       true,
+		TreatPackagesAsDirectories: false,
+	})
+	if err != nil {
+		return "", err
+	}
+	if filepath == "" {
+		fmt.Println("no filepath. Bailing out")
+		return "", nil
 	}
 	return filepath, nil
 }

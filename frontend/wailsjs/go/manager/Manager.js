@@ -94,6 +94,10 @@ export function LoadWalletWithPath(arg1, arg2) {
   return window['go']['manager']['Manager']['LoadWalletWithPath'](arg1, arg2);
 }
 
+export function LoadWalletWithoutPassword() {
+  return window['go']['manager']['Manager']['LoadWalletWithoutPassword']();
+}
+
 export function MakeNotification(arg1) {
   return window['go']['manager']['Manager']['MakeNotification'](arg1);
 }
@@ -118,8 +122,12 @@ export function NewListReadOnlyContainerContents(arg1) {
   return window['go']['manager']['Manager']['NewListReadOnlyContainerContents'](arg1);
 }
 
-export function NewWallet(arg1) {
-  return window['go']['manager']['Manager']['NewWallet'](arg1);
+export function NewWallet(arg1, arg2) {
+  return window['go']['manager']['Manager']['NewWallet'](arg1, arg2);
+}
+
+export function NewWalletFromWIF(arg1, arg2, arg3) {
+  return window['go']['manager']['Manager']['NewWalletFromWIF'](arg1, arg2, arg3);
 }
 
 export function Notifications() {
@@ -152,6 +160,10 @@ export function RetrieveContactByWalletAddress(arg1) {
 
 export function RetrieveContacts() {
   return window['go']['manager']['Manager']['RetrieveContacts']();
+}
+
+export function SaveWalletWithoutPassword() {
+  return window['go']['manager']['Manager']['SaveWalletWithoutPassword']();
 }
 
 export function SendSignal(arg1, arg2) {

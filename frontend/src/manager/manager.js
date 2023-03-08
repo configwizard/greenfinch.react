@@ -78,9 +78,9 @@ const topUpNeoFS = async (amount) => {
         console.log("error topping up", e)
     }
 }
-const newWallet = async (password) => {
+const newWallet = async (password, walletPath) => {
     try {
-        let t = await window.go.manager.Manager.NewWallet(password)
+        let t = await window.go.manager.Manager.NewWallet(password, walletPath)
         // return t
     } catch(e) {
         console.log("error creating new wallet", e)
@@ -93,6 +93,37 @@ const loadWallet = async (password) => {
         // return t
     } catch(e) {
         console.log("error loading wallet", e)
+    }
+}
+const deleteRecentWallet = async (walletId) => {
+    try {
+        let t = await window.go.manager.DeleteRecentWallet.LoadWallet(walletId)
+        // return t
+    } catch(e) {
+        console.log("error loading wallet", e)
+    }
+}
+const saveWalletWithoutPassword = async () => {
+    try {
+        let path = await window.go.manager.Manager.SaveWalletWithoutPassword()
+        return path
+    } catch(e) {
+        console.log("error loading wallet", e)
+    }
+}
+const loadWalletWithoutPassword = async () => {
+    try {
+        let path = await window.go.manager.Manager.LoadWalletWithoutPassword()
+        return path
+    } catch(e) {
+        console.log("error loading wallet", e)
+    }
+}
+const newWalletFromWIF = async (password, wif, path) => {
+    try {
+        await window.go.manager.Manager.NewWalletFromWIF(password, wif, path)
+    } catch(e) {
+        console.log("error creating wallet from WIF", e)
     }
 }
 const loadWalletWithPath = async (password, path) => {
@@ -148,7 +179,11 @@ export {
     getAccountInformation,
     topUpNeoFS,
     newWallet,
+    deleteRecentWallet,
+    newWalletFromWIF,
     loadWallet,
     loadWalletWithPath,
+    loadWalletWithoutPassword,
+    saveWalletWithoutPassword,
     getVersion
 }

@@ -101,6 +101,14 @@ func RecentWallets() (map[string]string, error) {
 	})
 	return wallets, err
 }
+func DeleteRecentWallet(walletId string) error {
+	return db.Update(func(tx *bolt.Tx) error {
+		ub := tx.Bucket([]byte(recentWallets))
+		err := ub.Delete([]byte(walletId))
+		return err
+	})
+}
+
 func GracefulShutdown() {
 	db.Close()
 }
