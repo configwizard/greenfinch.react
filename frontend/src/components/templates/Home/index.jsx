@@ -71,34 +71,32 @@ const TemplateHome = ({ makeToast, account, recentWallets, refreshRecentWallets,
                                                 <HeadingGeneral 
                                                     level={"h5"}
                                                     isUppercase={true}
-                                                    text={"Donations"}
-                                                />            
+                                                    text={"Donations"}/>            
                                                 { 
-                                                selectedNetwork !== undefined && selectedNetwork.Name === "Main Net" ? 
+                                                    selectedNetwork !== undefined && selectedNetwork.Name === "Main Net" ? 
                                                         <p>For Greenfinch to grow, we need your support. Please consider donating today.</p>
                                                     : 
                                                     <p>Switch to Main Net, to make valuable donations to the team.</p>
                                                 }
                                                 <Form.Group className="form-div">
-                                                            <Form.Control 
-                                                                type="number"
-                                                                disabled={selectedNetwork !== undefined && selectedNetwork.Name === "Main Net" && account.address ? false : true }
-                                                                placeholder="e.g 10 GAS" 
-                                                                id={"donateAmount"}/>
-                                                        </Form.Group>
-                                                        <div className="d-flex">
-                                                            <div className="ms-auto">
-                                                                <ButtonText 
-                                                                    type={"default"}
-                                                                    size={"medium"}
-                                                                    hasIcon={false}
-                                                                    text={"Donate"}
-                                                                    isDisabled={selectedNetwork !== undefined && selectedNetwork.Name === "Main Net" && account.address ? false : true }
-                                                                    onClick={async () => {await transferGasToContact("Nfv6SYe5QiAxpeSzpy11NWKyoyDSHp47f1", document.getElementById("donateAmount").value);}}/>  
-                                                            </div>
-                                                        </div>
-                                                
-                                            </div>
+                                                    <Form.Control 
+                                                        type="number"
+                                                        disabled={selectedNetwork !== undefined && selectedNetwork.Name === "Main Net" && account.address ? false : true }
+                                                        placeholder="e.g 10 GAS" 
+                                                        id={"donateAmount"}/>
+                                                </Form.Group>
+                                                <div className="d-flex">
+                                                    <div className="ms-auto">
+                                                        <ButtonText 
+                                                            type={"default"}
+                                                            size={"medium"}
+                                                            hasIcon={false}
+                                                            text={"Donate"}
+                                                            isDisabled={selectedNetwork !== undefined && selectedNetwork.Name === "Main Net" && account.address ? false : true }
+                                                            onClick={async () => {await transferGasToContact("Nfv6SYe5QiAxpeSzpy11NWKyoyDSHp47f1", document.getElementById("donateAmount").value);}}/>  
+                                                    </div>
+                                                </div>
+                                        </div>
                                         </div>
                                     </div>
 
