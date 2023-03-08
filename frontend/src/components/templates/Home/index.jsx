@@ -1,4 +1,6 @@
 import React from 'react';
+import { Form } from "react-bootstrap";
+import {transferGasToContact} from "../../../manager/manager.js"
 
 // Components
 import ButtonText from '../../atoms/ButtonText';
@@ -12,11 +14,7 @@ import {openInDefaultBrowser} from "../../../manager/manager";
 // Central style sheet for templates
 import '../_settings/style.scss';
 
-function DonateButtonAction() {
-    console.log("Donate Button clicked.")
-}
-
-const TemplateHome = ({ makeToast, account, recentWallets, refreshRecentWallets }) => {
+const TemplateHome = ({ makeToast, account, recentWallets, refreshRecentWallets, selectedNetwork }) => {
     return (
         <div className="templatePage d-flex flex-column flex-grow-1">
             <div className="row">
@@ -75,18 +73,31 @@ const TemplateHome = ({ makeToast, account, recentWallets, refreshRecentWallets 
                                                     isUppercase={true}
                                                     text={"Donations"}
                                                 />            
-                                                <p>For Greenfinch to grow, we need your support. Please consider donating today.</p>
-                                                <div className="d-flex">
-                                                    <div className="ms-auto">
-                                                        <ButtonText 
-                                                            type={"default"}
-                                                            size={"medium"}
-                                                            hasIcon={false}
-                                                            text={"Donate"}
-                                                            isDisabled={false}
-                                                            onClick={DonateButtonAction}/>  
-                                                    </div>
-                                                </div>
+                                                { 
+                                                selectedNetwork !== undefined && selectedNetwork.Name === "Main Net" ? 
+                                                        <p>For Greenfinch to grow, we need your support. Please consider donating today.</p>
+                                                    : 
+                                                    <p>Switch to Main Net, to make valuable donations to the team.</p>
+                                                }
+                                                <Form.Group className="form-div">
+                                                            <Form.Control 
+                                                                type="number"
+                                                                disabled={selectedNetwork !== undefined && selectedNetwork.Name === "Main Net" && account.address ? false : true }
+                                                                placeholder="e.g 10 GAS" 
+                                                                id={"donateAmount"}/>
+                                                        </Form.Group>
+                                                        <div className="d-flex">
+                                                            <div className="ms-auto">
+                                                                <ButtonText 
+                                                                    type={"default"}
+                                                                    size={"medium"}
+                                                                    hasIcon={false}
+                                                                    text={"Donate"}
+                                                                    isDisabled={selectedNetwork !== undefined && selectedNetwork.Name === "Main Net" && account.address ? false : true }
+                                                                    onClick={async () => {await transferGasToContact("Nfv6SYe5QiAxpeSzpy11NWKyoyDSHp47f1", document.getElementById("donateAmount").value);}}/>  
+                                                            </div>
+                                                        </div>
+                                                
                                             </div>
                                         </div>
                                     </div>

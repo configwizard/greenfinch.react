@@ -76,6 +76,7 @@ class App extends React.Component {
                 gasBalance: 0,
                 neoBalance: 0
             },
+            selectedNetwork: null,
             recentWallets: []
         };
     }
@@ -91,6 +92,7 @@ class App extends React.Component {
         // const [count, setCount] = React.useState(0);
         window.runtime.EventsOn("networkchanged", async (message) => {
             console.log("networkchanged", message)
+            await this.setState({...this.state, selectedNetwork: message})
             await this.setStatusAccount()
         })
         const recentWallets = await retrieveRecentWallets()
@@ -127,7 +129,7 @@ class App extends React.Component {
                             </div>
                             <div className="w-100">
                                 <Routes>
-                                    <Route path="/" exact element={<PageHome refreshRecentWallets={this.refreshRecentWallets} recentWallets={this.state.recentWallets} account={this.state.account}/>} />
+                                    <Route path="/" exact element={<PageHome refreshRecentWallets={this.refreshRecentWallets} recentWallets={this.state.recentWallets} account={this.state.account} selectedNetwork={this.state.selectedNetwork}/>} />
                                     <Route path="/containers" exact element={<PageContainers setStatusAccount={this.setStatusAccount} account={this.state.account}/>} />
                                     <Route path="/contacts" exact element={<PageContacts/>} />
                                     <Route path="/shared" exact element={<PageShared/>} />
