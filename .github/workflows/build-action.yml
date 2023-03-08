@@ -30,8 +30,15 @@ jobs:
           cd frontend && npm install
       - name: build frontend macOS
         if: matrix.platform == 'macos-latest'
+        env:
+          CI: false
+          REF: ${{ github.ref }}
         run: |
           cd frontend && CI= npm run build
+      - name: check env on macOS
+        if: matrix.platform == 'macos-latest'
+        run: |
+          echo "ref " $REF ${REF##*/}
       - name: build frontend windows
         if: matrix.platform == 'windows-latest'
         env:
@@ -41,16 +48,13 @@ jobs:
       # You may need to manually build you frontend manually here, unless you have configured frontend build and install commands in wails.json.
       - name: Get Wails
         run: go install github.com/wailsapp/wails/v2/cmd/wails@latest
-      - name: Build Wails app
-        env:
-          CI: false
-          REF: ${{ github.ref }}
-        run: |
-          wails build -debug -ldflags "-X main.version=${REF##*/}"
-      - name: check env on macOS
+      - name:
         if: matrix.platform == 'macos-latest'
         run: |
-          echo "ref " $REF ${REF##*/}
+          echo $REF ${REF##*/}
+      - name: Build Wails app
+        run: |
+          wails build -debug -ldflags "-X main.version=${REF##*/}"
       - name: MacOS download gon for code signing and app notarization
         if: matrix.platform == 'macos-latest'
         run: |
@@ -132,7 +136,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-#          tag_name: ${{ github.ref }}
+          tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
           body: ${{ github.event.head_commit.message }}
           draft: false

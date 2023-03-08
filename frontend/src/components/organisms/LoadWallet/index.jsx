@@ -62,7 +62,7 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                                         buttonTextSecondary={"Cancel"}
                                                         primaryClicked={async () => {
                                                             console.log("waiting to load wallet with path ", walletPath)
-                                                            await loadWalletWithPath(document.getElementById("loadWalletPassword").value, walletPath);
+                                                            loadWalletWithPath(document.getElementById("loadWalletPassword").value, walletPath);
                                                             await unSetModal()
                                                             await refreshRecentWallets()
                                                         }}
@@ -94,9 +94,10 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                                     buttonTextSecondary={"Cancel"}
                                                     primaryClicked={async () => {
                                                         if (document.getElementById("createWalletPassword").value === document.getElementById("createWalletPasswordMatch").value) {
-                                                            await newWallet(document.getElementById("createWalletPassword").value, walletPath)
+                                                            newWallet(document.getElementById("createWalletPassword").value, walletPath)
                                                         } else {
                                                             alert("passwords do no match")
+                                                            return
                                                         }
                                                         await unSetModal()
                                                         await refreshRecentWallets()
@@ -133,9 +134,10 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                                         buttonTextSecondary={"Cancel"}
                                                         primaryClicked={async () => {
                                                             if (document.getElementById("createWalletPassword").value === document.getElementById("createWalletPasswordMatch").value) {
-                                                                await newWalletFromWIF(document.getElementById("createWalletPassword").value, document.getElementById("createWalletFromWIF").value, walletPath)
+                                                                newWalletFromWIF(document.getElementById("createWalletPassword").value, document.getElementById("createWalletFromWIF").value, walletPath)
                                                             } else {
                                                                 alert("passwords do no match")
+                                                                return
                                                             }
                                                             await unSetModal()
                                                             await refreshRecentWallets()
