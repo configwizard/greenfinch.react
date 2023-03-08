@@ -112,7 +112,7 @@ func (m *Manager) DomReady(ctx context.Context) {
 		tmp := NewToastMessage(&UXMessage{
 			Title:       "Get started",
 			Type:        "info",
-			Description: "Please load a wallet to starting using Greenfinch",
+			Description: "Please load a wallet to start using Greenfinch",
 		})
 		m.MakeToast(tmp)
 		runtime.EventsEmit(m.ctx, "select_wallet", true)
@@ -223,11 +223,7 @@ func (m *Manager) checkForVersion() {
 			json.Unmarshal(body, &metadata)
 			remoteVersion, _ := semver.Make(metadata.RemoteVersion)
 			fmt.Println("parsing ", m.version)
-			tmpVersion := m.version
-			fmt.Println("tmp ", tmpVersion, " remote ", remoteVersion)
-			if strings.HasPrefix(m.version, "v") {
-				tmpVersion = strings.TrimPrefix(m.version, "v")
-			}
+			tmpVersion := strings.TrimPrefix(m.version, "v")
 			v, err := semver.Parse(tmpVersion)
 			if err != nil {
 				log.Println("error with versioning. Not Semantic", err)

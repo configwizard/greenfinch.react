@@ -292,3 +292,31 @@ func (m *Manager) LoadWallet(password string) error {
 	}
 	return m.LoadWalletWithPath(password, filepath)
 }
+
+//firstly call this to get a filepath
+//then once the filepath is returned to the frontend, call the modal to get a password
+//then finally from the frontend call return m.LoadWalletWithPath(password, filepath)
+//wallet loaded.
+func (m *Manager) LoadWalletWithoutPassword() (string, error) {
+	homeDir, err := os.UserHomeDir()
+	filepath, err := runtime.OpenFileDialog(m.ctx, runtime.OpenDialogOptions{
+		DefaultDirectory:           homeDir,
+		Title:                      "Choose a wallet",
+		Filters:                    nil,
+		ShowHiddenFiles:            false,
+		CanCreateDirectories:       false,
+		ResolvesAliases:            true,
+		TreatPackagesAsDirectories: false,
+	})
+	if err != nil {
+		tmp := UXMessage{
+			Title:       "Error finding wallet",
+			Type:        "error",
+			Description: err.Error(),
+		}
+		m.MakeToast(NewToastMessage(&tmp))
+		return "", err
+	}
+	return filepath, nil
+}
+
