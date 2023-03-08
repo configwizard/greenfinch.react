@@ -8,6 +8,7 @@ import ButtonToggle from '../../../atoms/ButtonToggle';
 import '../_settings/style.scss';
 
 const DrawerSettings = (props) => {
+    props.version = "v1.2.3"
     return (
         <>
             <div className="offcanvas offcanvas-end" tabIndex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
@@ -69,7 +70,7 @@ const DrawerSettings = (props) => {
                     <div className="molDrawerRow">
                         <div className="atmSwitchContent">
                             <h5>Version</h5>
-                            <p>{props.getVersion}</p>
+                            <p>{props.version}</p>
                         </div>
                     </div>
                 </div>

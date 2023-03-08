@@ -224,6 +224,7 @@ func (m *Manager) checkForVersion() {
 			remoteVersion, _ := semver.Make(metadata.RemoteVersion)
 			fmt.Println("parsing ", m.version)
 			tmpVersion := m.version
+			fmt.Println("tmp ", tmpVersion, " remote ", remoteVersion)
 			if strings.HasPrefix(m.version, "v") {
 				tmpVersion = strings.TrimPrefix(m.version, "v")
 			}
@@ -233,7 +234,7 @@ func (m *Manager) checkForVersion() {
 				tmp := NewToastMessage(&UXMessage{
 					Title:       "Checking for update",
 					Type:        "warning",
-					Description: "Error with versioning " + err.Error() + " " + m.version + " - " + tmpVersion,
+					Description: "Error with versioning " + err.Error() + " - " + m.version + " - " + tmpVersion,
 				})
 				m.MakeToast(tmp)
 				return

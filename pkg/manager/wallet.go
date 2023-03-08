@@ -12,6 +12,7 @@ import (
 	"github.com/nspcc-dev/neo-go/pkg/rpcclient/nep17"
 	"math/big"
 	"path"
+	"path/filepath"
 
 	"github.com/nspcc-dev/neo-go/pkg/rpcclient"
 	wal "github.com/nspcc-dev/neo-go/pkg/wallet"
@@ -21,7 +22,17 @@ import (
 )
 
 func (m *Manager) RecentWallets() (map[string]string, error) {
-	return cache.RecentWallets()
+	recentWallets, err := cache.RecentWallets()
+	if err != nil {
+		return recentWallets, err
+	}
+	for k, v := range recentWallets {
+		recentWallets[k] = filepath.Base(v)
+	}
+	for k, v := range recentWallets {
+		fmt.Println("recent wallets ", k, v, recentWallets[k])
+	}
+	return recentWallets, nil
 }
 
 func (m *Manager) TransferToken(recipient string, amount float64) (string, error) {

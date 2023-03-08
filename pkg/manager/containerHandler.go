@@ -720,6 +720,11 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 		Description: "Container '" + name + "' is currently being created. Please wait...",
 	}
 	m.MakeToast(NewToastMessage(&tmp))
-
+	m.MakeNotification(NotificationMessage{
+		Title:       "Creating container",
+		Type:        "info",
+		Description: "please wait,  creating container" + name,
+		MarkRead:    false,
+	})
 	return nil
 }

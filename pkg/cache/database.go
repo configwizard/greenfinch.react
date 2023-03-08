@@ -1,7 +1,6 @@
 package cache
 
 import (
-	"errors"
 	"fmt"
 	"github.com/boltdb/bolt"
 	"log"
@@ -88,7 +87,11 @@ func RecentWallets() (map[string]string, error) {
 	err := db.View(func(tx *bolt.Tx) error {
 		ub := tx.Bucket([]byte(recentWallets))
 		if ub == nil {
-			return errors.New("no bucket for recent wallets")
+			var err error
+			ub, err = tx.CreateBucketIfNotExists([]byte(recentWallets))
+			if err != nil {
+				return err
+			}
 		}
 		c := ub.Cursor()
 		for k, v := c.First(); k != nil; k, v = c.Next() {

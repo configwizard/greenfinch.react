@@ -74,7 +74,8 @@ class SharedContainers extends React.Component {
                     <div className="col-12">
                         <SharedContainerHeaderPage
                             pageTitle={"Containers shared with me"}
-                            hasButton={false}
+                            hasButton={true}
+                            buttonText={"Add shared container"}
                         />
                         <div className="row">
                             <div className="col-12">
@@ -83,11 +84,9 @@ class SharedContainers extends React.Component {
                                         {filterContent(this.state, this.onObjectSelection, null, this.onObjectDownload, null, this.onSharedContainerSelection, this.onContainerDelete)}
                                     </>
                                     : <NoContent
-                                        text={"You currently have no shared containers."}
+                                        text={"When someone shares a container with you, add it here"}
                                         addAction={false}
-                                        isPageLink={true}
-                                        label={"Add contacts to share containers"}
-                                        to={"/contacts"}
+                                        isPageLink={false}
                                     />
                                 }
                             </div>
