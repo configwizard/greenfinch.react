@@ -77,8 +77,40 @@ ol.home-ol {
     }
 }
 
+// Button Stack - Horizontal (start left)
+div[class^="buttonStackHorizontal"], div[class^="buttonStackHorizontal"].me-auto {
+    & button {
+        margin-right: $marginSmall;
+        &:first-child {
+            margin-left: 0;
+            margin-right: 0;
+        }
+        &:last-child {
+            margin-right: 0;
+        }
+    }
+}
+
+// Button Stack - Horizontal (start right)
+ div[class^="buttonStackHorizontal"].ms-auto {
+    & button {
+        margin-left: $marginSmall;
+        &:last-child {
+            margin-left: 0;
+        }
+    }
+}
+
+// Button Stack - Horizontal, including line-break
+.buttonStackHorizontalHR {
+    width: 100%;
+    padding-bottom: $paddingSmall;
+    margin-bottom: $marginSmall;
+    border-bottom: 1px solid $brandColorDark-hint;
+}
+
 // Button Stack - Vertical
-.buttonStack {
+div[class^="buttonStackVertical"] {
     & button {
         display: block;
         margin-bottom: $marginXSmall;
@@ -89,15 +121,8 @@ ol.home-ol {
 }
 
 // Button Stack - Vertical, including line-break
-.buttonStackHR {
+.buttonStackVerticalHR {
     padding-bottom: $paddingSmall;
     margin-bottom: $marginSmall;
     border-bottom: 1px solid $brandColorDark-hint;
-    & button {
-        display: block;
-        margin-bottom: $marginXSmall;
-        &:last-child {
-            margin-bottom: 0;
-        }
-    }
 }

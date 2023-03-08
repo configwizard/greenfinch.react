@@ -50,16 +50,3 @@ figure {
 .form-label {
     margin-bottom: $marginXSmall*0.5;
 }
-
-// Button Group - Horizontal
-.buttonGroup, .me-auto .buttonGroup {
-    & .buttonText {
-        margin-right: 10px;
-    }
-}
-
-.ms-auto .buttonGroup {
-    & .buttonText {
-        margin-left: 10px;
-    }
-}

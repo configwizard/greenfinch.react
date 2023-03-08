@@ -16,24 +16,26 @@ const CompModalStandard = props => {
                 {props.children}
             </div>
             <div className="molModalFooter d-flex">
-                <div className="ms-auto buttonGroup">
-                    {props.hasSecondaryButton ?  
+                <div className="buttonStackHorizontal d-flex">
+                    <div className="ms-auto">
+                        {props.hasSecondaryButton ?  
+                            <ButtonText
+                                type="secondary"
+                                size="medium"
+                                hasIcon={false}
+                                text={props.buttonTextSecondary}
+                                isDisabled={false}
+                                onClick={() => {props.secondaryClicked()}} />
+                                : null
+                        }
                         <ButtonText
-                            type="secondary"
+                            type="primary"
                             size="medium"
                             hasIcon={false}
-                            text={props.buttonTextSecondary}
+                            text={props.buttonTextPrimary}
                             isDisabled={false}
-                            onClick={() => {props.secondaryClicked()}} />
-                            : null
-                    }
-                    <ButtonText
-                        type="primary"
-                        size="medium"
-                        hasIcon={false}
-                        text={props.buttonTextPrimary}
-                        isDisabled={false}
-                        onClick={() => {props.primaryClicked()}} />
+                            onClick={() => {props.primaryClicked()}} />
+                    </div>
                 </div>
             </div>
         </section>

@@ -82,7 +82,7 @@ function filterContent(state, onObjectSelection, onObjectDelete, onObjectDownloa
                                 contentDataValue: fileSize(state.selectedContainer.size)
                             },
                         ]} />
-                    <div className="buttonStackHR">
+                    <div className="buttonStackVerticalHR">
                         <ButtonContentContainerInfo
                             containerName={state.selectedContainer.containerName}
                             containerId={state.selectedContainer.containerID}
@@ -90,7 +90,7 @@ function filterContent(state, onObjectSelection, onObjectDelete, onObjectDownloa
                             containerCreated={<Moment unix format="DD MMM YY">{state.selectedContainer.createdAt}</Moment>}
                             containerSize={fileSize(state.selectedContainer.size)} />
                     </div>
-                    <div className="buttonStack">
+                    <div className="buttonStackVertical">
                         { !state.shared ? <>
                         <ButtonContentAction
                             icon="fa-sharp fa-solid fa-upload"
@@ -140,7 +140,7 @@ function filterContent(state, onObjectSelection, onObjectDelete, onObjectDownloa
                                     ]} />
                             </div>
                             <div className="object-data" id={"objectData"}>
-                                <div className="buttonStackHR">
+                                <div className="buttonStackVerticalHR">
                                     <ButtonContentObjectInfo
                                         objectId={state.selectedObject.objectID}
                                         objectFile={state.selectedObject.objectFile}
@@ -148,7 +148,7 @@ function filterContent(state, onObjectSelection, onObjectDelete, onObjectDownloa
                                         uploadedAt={state.selectedObject.uploadedAt}
                                         objectSize={state.selectedObject.size} />
                                 </div>
-                                <div className="buttonStack">
+                                <div className="buttonStackVertical">
                                     <ButtonContentAction
                                         icon="fa-sharp fa-solid fa-download"
                                         text="Download this object" 

@@ -42,7 +42,8 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                         />
                         <SpinnerLoading isVisible={isVisible} text={"Wallet loading..."} />
                         <p>To use Greenfinch, a wallet is required. Either load an exisiting wallet or create a new wallet.</p>
-                        <div className="d-flex">
+                        
+                        <div className="buttonStackHorizontalHR d-flex">
                             <div className="ms-auto">
                                 <ButtonText 
                                     type={"default"}
@@ -75,7 +76,8 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                             } catch (e) {
                                                 console.log("error loading wallet path ", e)
                                             }
-                                        }}/>
+                                        }
+                                    }/>
                                 <ButtonText
                                     type={"default"}
                                     size={"medium"}
@@ -114,12 +116,17 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                             } catch (e) {
                                                 console.log("error loading wallet path ", e)
                                             }
-                                        }}/>
+                                        }
+                                    }/>
+                            </div>
+                        </div>
+                        <div className="buttonStackHorizontal d-flex">
+                            <div className="ms-auto">
                                 <ButtonText
-                                    type={"default"}
+                                    type={"clean"}
                                     size={"medium"}
                                     hasIcon={false}
-                                    text={"Create a wallet from WIF"}
+                                    text={"Create wallet from private key"}
                                     isDisabled={false}
                                     onClick={
                                         async () => {
@@ -157,7 +164,8 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                             } catch (e) {
                                                 console.log("error loading wallet path ", e)
                                             }
-                                        }}/>
+                                        }
+                                    }/>
                             </div>
                         </div>
                     </div>
