@@ -25,5 +25,15 @@ export function DeleteButton(props){
             <i className="fa-sharp fa-solid fa-trash-can"/>&nbsp;Delete
         </button>
     )
+}
 
+export function DownloadButton(props){
+    return (
+        <button
+            type="button"
+            className="atmButtonBase dropdown-item"
+            onClick={() => props.onDownload()}>
+            <i className="fa-sharp fa-solid fa-download"/>&nbsp;Download
+        </button>
+    )
 }

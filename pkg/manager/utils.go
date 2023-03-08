@@ -168,14 +168,14 @@ func thumbnail(ioReader io.Reader) ([]byte, error) {
 		//check if its a pdf
 		doc, err := fitz.NewFromReader(ioReader)
 		if err != nil {
-			return nil, err
+			fmt.Println("could not open using fitz. Not pdf? ", err)
+		} else {
+			if srcImage, err = doc.Image(0); err != nil {
+				return nil, err
+			}
+			format = "png" //fake it to save as a png
+			fmt.Println("saving the pdf")
 		}
-
-		if srcImage, err = doc.Image(0); err != nil {
-			return nil, err
-		}
-		format = "png" //fake it to save as a png
-		fmt.Println("saving the pdf")
 	}
 	if format != "jpeg" && format != "png" {
 		return nil, image.ErrFormat

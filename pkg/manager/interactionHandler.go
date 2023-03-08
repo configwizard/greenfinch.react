@@ -99,11 +99,11 @@ func (m *Manager) Download(filename, objectID, containerID string) error {
 		})
 		return errors.New("no filepath detected")
 	}
-	metaData, err := m.GetObjectMetaData(objectID, containerID)
-	if err != nil {
-		return err
-	}
-	fmt.Println("meta data - ", metaData.Attributes())
+	//metaData, err := m.GetObjectMetaData(objectID, containerID)
+	//if err != nil {
+	//	return err
+	//}
+	//fmt.Println("meta data - ", metaData.Attributes())
 	f, err := os.Create(filepath)
 	defer f.Close()
 	if err != nil {

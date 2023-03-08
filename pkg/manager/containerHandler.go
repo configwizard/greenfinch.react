@@ -233,7 +233,7 @@ func (m *Manager) listContainersAsync() ([]Element, error) {
 	}
 
 	containerList, err := m.ListContainers(false, true)
-	fmt.Println("async returning", containerList)
+	//fmt.Println("async returning", containerList)
 	return containerList, err
 }
 
@@ -512,64 +512,24 @@ func (m *Manager) RestrictContainer(id string, publicKey string) error {
 		return err
 	}
 
-	if err := pl.SetEACL(m.ctx, prm); err != nil {
-		fmt.Errorf("save eACL via connection pool: %w", err)
-		tmp := UXMessage{
-			Title:       "Container Error",
-			Type:        "error",
-			Description: "EACL failed" + err.Error(),
+	go func() {
+		if err := pl.SetEACL(m.ctx, prm); err != nil {
+			fmt.Errorf("save eACL via connection pool: %w", err)
+			tmp := UXMessage{
+				Title:       "Container Error",
+				Type:        "error",
+				Description: "EACL failed" + err.Error(),
+			}
+			m.MakeToast(NewToastMessage(&tmp))
+			return
 		}
-		m.MakeToast(NewToastMessage(&tmp))
-		return err
-	}
-
-	////table := eacl.AllAllowDenyOthersEACL(c, pKey)
-	//var prmContainerSetEACL client.PrmContainerSetEACL
-	//prmContainerSetEACL.SetTable(table)
-	//pl, err := m.Pool()
-	//if err != nil {
-	//	return err
-	//}
-	//_, err = pl.ContainerSetEACL(m.ctx, prmContainerSetEACL)
-	//if err != nil {
-	//	tmp := UXMessage{
-	//		Title:       "Container Error",
-	//		Type:        "error",
-	//		Description: "EACL failed" + err.Error(),
-	//	}
-	//	m.MakeToast(NewToastMessage(&tmp))
-	//	return err
-	//}
-	//
-	//err = AwaitTime(30, func() bool {
-	//	var prmContainerEACL client.PrmContainerEACL
-	//	prmContainerEACL.SetContainer(c)
-	//	r, err := fsCli.ContainerEACL(m.ctx, prmContainerEACL)
-	//	if err != nil {
-	//		return false
-	//	}
-	//	expected, _ := table.Marshal()
-	//	got, _ := r.Table().Marshal()
-	//	res := bytes.Equal(expected, got)
-	//	if res {
-	//		tmp := UXMessage{
-	//			Title:       "Sharing successful",
-	//			Type:        "success",
-	//			Description: "successfully shared container",
-	//		}
-	//		m.MakeToast(NewToastMessage(&tmp))
-	//	}
-	//	return res
-	//})
-	//if err != nil {
-	//	tmp := UXMessage{
-	//		Title:       "Container Error",
-	//		Type:        "error",
-	//		Description: "failed to restrict container" + err.Error(),
-	//	}
-	//	m.MakeToast(NewToastMessage(&tmp))
-	//	return err
-	//}
+			tmp := UXMessage{
+				Title:       "Sharing successful",
+				Type:        "success",
+				Description: "successfully shared container",
+			}
+			m.MakeToast(NewToastMessage(&tmp))
+	}()
 	return nil
 }
 const (

@@ -122,6 +122,7 @@ func (m *Manager) listSharedContainerObjectsAsync(containerID string) ([]Element
 	}
 	fmt.Printf("list objects %+v\r\n", list)
 	wg := sync.WaitGroup{}
+	var listObjects []Element
 	var prmHead pool.PrmObjectHead
 	var addr oid.Address
 	addr.SetContainer(cnrID)
@@ -175,6 +176,9 @@ func (m *Manager) listSharedContainerObjectsAsync(containerID string) ([]Element
 				tmp.Attributes["X_EXT"] = ""
 			}
 			tmp.Size = hdr.PayloadSize()
+			if !m.enableCaching {
+				listObjects = append(listObjects, tmp)
+			}
 			str, err := json.MarshalIndent(tmp, "", "  ")
 			if err != nil {
 				fmt.Println(err)
@@ -189,8 +193,11 @@ func (m *Manager) listSharedContainerObjectsAsync(containerID string) ([]Element
 	if len(list) > 0 {
 		wg.Wait()
 	}
+	if !m.enableCaching {
+		return listObjects, nil
+	}
 	objectList, err := m.ListSharedContainerObjects(containerID, true)
-	fmt.Println("async returning", objectList)
+	//fmt.Println("async returning", objectList)
 	return objectList, err
 }
 
@@ -199,6 +206,10 @@ func (m *Manager) ListSharedContainerObjects(containerID string, synchronised bo
 	tmpWallet, err := m.retrieveWallet()
 	if err != nil {
 		return []Element{}, err
+	}
+	if !m.enableCaching {
+		//what do we do here then for retrieving the objects from the network?
+		return m.listSharedContainerObjectsAsync(containerID)
 	}
 	tmpObjects, err := cache.RetrieveSharedObjects(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID)
 	if err != nil {
@@ -291,36 +302,31 @@ func (m *Manager) AddSharedContainer(containerID string) error {
 	//check if you can access this container
 	fmt.Println("adding shared container with id", containerID)
 
-	fmt.Println("adding shared containers currently disabled.")
-	return nil
-	//tmpWallet, err := m.retrieveWallet()
-	//if err != nil {
-	//	fmt.Println("error retrieving wallet")
-	//	return err
-	//}
-	//tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
+	tmpWallet, err := m.retrieveWallet()
+	if err != nil {
+		fmt.Println("error retrieving wallet ", err)
+		return err
+	}
 	//fsCli, err := m.Client()
-	//c := cid.ID{}
-	//err = c.Parse(containerID)
-	//if err != nil {
-	//	fmt.Println("error parsing container ", err)
-	//	return err
-	//}
-	//sessionToken, err := client2.CreateSessionForContainerList(m.ctx, fsCli, client2.DEFAULT_EXPIRATION, &tmpKey)
-	//if err != nil {
-	//	return err
-	//}
-	//cont, err := m.prepareAndAppendContainer(c, sessionToken)
-	//if err != nil {
-	//	return err
-	//}
-	//fmt.Printf("shared container %+v\r\n", cont)
-	//marshal, err := json.Marshal(cont)
-	//if err != nil {
-	//	return err
-	//}
-	//if err := cache.StoreSharedContainer(tmpWallet.Accounts[0].Address, containerID, marshal); err != nil {
-	//	return err
-	//}
-	//return nil
+	cnrID := cid.ID{}
+	if err := cnrID.DecodeString(containerID); err != nil {
+		fmt.Println("error decoding container id ", err)
+		return err
+	}
+	cont, err := m.prepareAndAppendContainer(cnrID)
+	if err != nil {
+		fmt.Println("error prepareAndAppendContainer - shared ", err)
+		return err
+	}
+	fmt.Printf("shared container %+v\r\n", cont)
+	marshal, err := json.Marshal(cont)
+	if err != nil {
+		fmt.Println("error marshalling container", err)
+		return err
+	}
+	if err := cache.StoreSharedContainer(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID, containerID, marshal); err != nil {
+		fmt.Println("error saving shared container ", err)
+		return err
+	}
+	return nil
 }

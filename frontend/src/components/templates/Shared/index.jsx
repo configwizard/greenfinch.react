@@ -56,12 +56,18 @@ class SharedContainers extends React.Component {
         // await getObject(objectName, objectID, this.state.selectedContainer.containerID)
         console.log('state after selecting object', this.state)
     }
-    onObjectDownload = async() => {
-        if (this.state.selectedObject == null) {
+    onObjectDownloadByItem = async(name, id) => {
+        if (this.state.selectedContainer == null) {
             return
         }
-        await getObject(this.state.selectedObject.objectName, this.state.selectedObject.objectID, this.state.selectedContainer.containerID)
+        await getObject(name, id, this.state.selectedContainer.containerID)
     }
+    // onObjectDownload = async() => {
+    //     if (this.state.selectedObject == null) {
+    //         return
+    //     }
+    //     await getObject(this.state.selectedObject.objectName, this.state.selectedObject.objectID, this.state.selectedContainer.containerID)
+    // }
     onContainerDelete = async (containerId) => {
         let containers = await removeSharedContainer(containerId)
         console.log("removing shared container container ", containerId)
@@ -81,7 +87,7 @@ class SharedContainers extends React.Component {
                             <div className="col-12">
                                 {this.state.containerList.length > 0 ? 
                                     <>
-                                        {filterContent(this.state, this.onObjectSelection, null, this.onObjectDownload, null, this.onSharedContainerSelection, this.onContainerDelete)}
+                                        {filterContent(this.state, this.onObjectSelection, null, this.onObjectDownloadByItem, null, this.onSharedContainerSelection, this.onContainerDelete)}
                                     </>
                                     : <NoContent
                                         text={"When someone shares a container with you, add it here"}

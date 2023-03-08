@@ -349,17 +349,17 @@ func (m *Manager) GetObjectMetaData(objectID, containerID string) (object.Object
 		fmt.Errorf("read object header via connection pool: %w", err)
 		return object.Object{}, err
 	}
-
-	for _, attr := range hdr.Attributes() {
-		key := attr.Key()
-		val := attr.Value()
-		fmt.Println(key, val)
-		switch key {
-		case object.AttributeFileName:
-		case object.AttributeTimestamp:
-		case object.AttributeContentType:
-		}
-	}
+	//
+	//for _, attr := range hdr.Attributes() {
+	//	key := attr.Key()
+	//	val := attr.Value()
+	//	//fmt.Println(key, val)
+	//	switch key {
+	//	case object.AttributeFileName:
+	//	case object.AttributeTimestamp:
+	//	case object.AttributeContentType:
+	//	}
+	//}
 	return hdr, nil
 }
 
@@ -630,7 +630,7 @@ func (m *Manager) listObjectsAsync(containerID string) ([]Element, error) {
 		return listObjects, nil
 	}
 	objectList, err := m.ListContainerObjects(containerID, true, false)
-	fmt.Println("async returning", objectList)
+	//fmt.Println("async returning", objectList)
 	return objectList, err
 }
 

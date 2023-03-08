@@ -7,7 +7,7 @@ import { ViewObjectsGrid, ViewObjectsRow } from './ViewObjectsLayout';
 // Central style sheet for ViewObjects
 import '../_settings/style.scss';
 
-function ViewObjects({shared, onDelete, objectList, onObjectSelection, objectsLoaded, viewMode }) {
+function ViewObjects({shared, onDelete, onDownload, objectList, onObjectSelection, objectsLoaded, viewMode }) {
     console.log("objectList", objectList)
     if (viewMode === "grid") {
         return (
@@ -16,8 +16,9 @@ function ViewObjects({shared, onDelete, objectList, onObjectSelection, objectsLo
                     <div className="col-6 col-md-4 col-xl-3" key={i}>
                         <ViewObjectsGrid 
                             hasOverlayMenu={!shared} 
-                            onDelete={() => {onDelete(item.id)}} 
-                            onObjectSelection={onObjectSelection} 
+                            onDelete={onDelete != undefined ? () => {onDelete(item.id)} : null} //set to null if nothing to call
+                            onDownload={() => {onDownload(item.attributes.FileName, item.id)}}
+                            onObjectSelection={onObjectSelection}
                             item={item}
                             hasCheckbox={true} 
                             hasDropdown={true}>

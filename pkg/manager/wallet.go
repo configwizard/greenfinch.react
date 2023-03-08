@@ -7,32 +7,38 @@ import (
 	"github.com/amlwwalker/greenfinch.react/pkg/cache"
 	"github.com/amlwwalker/greenfinch.react/pkg/wallet"
 	"github.com/nspcc-dev/neo-go/pkg/encoding/address"
+	"github.com/nspcc-dev/neo-go/pkg/rpcclient"
 	"github.com/nspcc-dev/neo-go/pkg/rpcclient/actor"
 	"github.com/nspcc-dev/neo-go/pkg/rpcclient/gas"
 	"github.com/nspcc-dev/neo-go/pkg/rpcclient/nep17"
-	"math/big"
-	"path"
-	"path/filepath"
-
-	"github.com/nspcc-dev/neo-go/pkg/rpcclient"
 	wal "github.com/nspcc-dev/neo-go/pkg/wallet"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"math"
+	"math/big"
 	"os"
+	"path"
+	"path/filepath"
 )
 
-func (m *Manager) RecentWallets() (map[string]string, error) {
+type cleanedWallet struct {
+	Path string
+	Name string
+}
+func (m *Manager) RecentWallets() (map[string]cleanedWallet, error) {
 	recentWallets, err := cache.RecentWallets()
 	if err != nil {
-		return recentWallets, err
+		return map[string]cleanedWallet{}, err //wallet address => filepath[shortName]
 	}
+	cleanWallets := make(map[string]cleanedWallet)
 	for k, v := range recentWallets {
-		recentWallets[k] = filepath.Base(v)
+		cleaned := cleanedWallet{
+			Path: v,
+			Name: filepath.Base(v),
+		}
+		cleanWallets[k] = cleaned
 	}
-	for k, v := range recentWallets {
-		fmt.Println("recent wallets ", k, v, recentWallets[k])
-	}
-	return recentWallets, nil
+	fmt.Print("cleaned wallets ", cleanWallets)
+	return cleanWallets, nil
 }
 
 func (m *Manager) TransferToken(recipient string, amount float64) (string, error) {

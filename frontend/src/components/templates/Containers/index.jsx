@@ -112,12 +112,18 @@ class Containers extends React.Component {
         // await getObject(objectName, objectID, this.state.selectedContainer.containerID)
         console.log('state after selecting object', this.state)
     }
-    onObjectDownload = async() => {
-        if (this.state.selectedObject == null) {
+    onObjectDownloadByItem = async(name, id) => {
+        if (this.state.selectedContainer == null) {
             return
         }
-        await getObject(this.state.selectedObject.objectName, this.state.selectedObject.objectID, this.state.selectedContainer.containerID)
+        await getObject(name, id, this.state.selectedContainer.containerID)
     }
+    // onObjectDownload = async() => {
+    //     if (this.state.selectedObject == null) {
+    //         return
+    //     }
+    //     await getObject(this.state.selectedObject.objectName, this.state.selectedObject.objectID, this.state.selectedContainer.containerID)
+    // }
     onObjectUpload = async () => {
         if (this.state.selectedContainer == null) {
             throw new Error("cannot retrieve an object from non existent container 2")
@@ -178,7 +184,7 @@ class Containers extends React.Component {
                                                 </div>
                                             </div>
                                             <div className="row">
-                                                {filterContent(this.state, this.onObjectSelection, this.onObjectDelete, this.onObjectDownload, this.onObjectUpload, this.onContainerSelection, this.onContainerDelete)}
+                                                {filterContent(this.state, this.onObjectSelection, this.onObjectDelete, this.onObjectDownloadByItem, this.onObjectUpload, this.onContainerSelection, this.onContainerDelete)}
                                             </div>
                                         </>
                                         : 

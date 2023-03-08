@@ -103,9 +103,9 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                             text={"Recent wallets"} />
                             {
                                 recentWallets ? Object.keys(recentWallets).map(function(obj, ) {
-                                    console.log("RECENT", obj, recentWallets[obj])
+                                    console.log("RECENT", obj, recentWallets[obj]) //gives [long]short
                                     //the absolute path is recentWallets[obj]
-                                    const walletName = recentWallets[obj].split('/')[recentWallets[obj].split('/').length -1]
+                                    const walletName = recentWallets[obj].Name//recentWallets[obj].split('/')[recentWallets[obj].split('/').length -1]
                                     return <div key={obj} className="wallet-recent d-flex align-items-center">
                                         <div className="wallet-name">
                                             {walletName}
@@ -136,7 +136,7 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                                                 buttonTextPrimary={"Confirm"}
                                                                 buttonTextSecondary={"Cancel"}
                                                                 primaryClicked={async () => {
-                                                                    loadWalletWithPath(document.getElementById("loadWalletFromPathPassword").value, recentWallets[obj])
+                                                                    loadWalletWithPath(document.getElementById("loadWalletFromPathPassword").value, recentWallets[obj].Path)
                                                                     await unSetModal()
                                                                     }
                                                                 }

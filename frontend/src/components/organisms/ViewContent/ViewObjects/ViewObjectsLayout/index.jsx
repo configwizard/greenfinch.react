@@ -6,12 +6,13 @@ import ContentCheckbox from '../../../../atoms/ContentCheckbox';
 import CardContentObjectGrid from '../../../../molecules/CardLayout/CardContentObjectGrid';
 import CardContentObjectRow from '../../../../molecules/CardLayout/CardContentObjectRow';
 import ContentDropdown from '../../../../molecules/ContentDropdown';
-import { DeleteButton } from '../../../../molecules/ContentDropdown/Buttons';
+import {DeleteButton, DownloadButton} from '../../../../molecules/ContentDropdown/Buttons';
 
 // Central style sheet for ViewObjects
 import '../../_settings/style.scss';
 
 export function ViewObjectsGrid(props) {
+    console.log("props.onDelete ", props.onDelete)
     console.log("object grid item", props.item)
     return (
         <section className="orgViewObjectsGrid">
@@ -28,9 +29,12 @@ export function ViewObjectsGrid(props) {
                         id={props.item.id}
                         filename={props.item.attributes.FileName} 
                         type={props.item.type}>
-                        <DeleteButton // child of the ContentDropdown
+                        { props.onDelete !== null ? <DeleteButton // child of the ContentDropdown
                             onDelete={props.onDelete}>
-                        </DeleteButton>
+                        </DeleteButton> : null }
+                        <DownloadButton // child of the ContentDropdown
+                            onDownload={props.onDownload}>
+                        </DownloadButton>
                     </ContentDropdown>
                     : null
                 }

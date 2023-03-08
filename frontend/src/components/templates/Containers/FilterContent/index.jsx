@@ -108,7 +108,7 @@ function filterContent(state, onObjectSelection, onObjectDelete, onObjectDownloa
                     <div className="orgObjectsGrid">
                         <div className="templateWrapper">
                             <div className="templateInner">
-                                <ViewObjects shared={state.shared} objectsLoaded={state.objectsLoaded} onDelete={onObjectDelete} objectList={state.objectList} viewMode={state.viewMode} onObjectSelection={onObjectSelection}></ViewObjects>
+                                <ViewObjects shared={state.shared} objectsLoaded={state.objectsLoaded} onDownload={onObjectDownload} onDelete={onObjectDelete} objectList={state.objectList} viewMode={state.viewMode} onObjectSelection={onObjectSelection}></ViewObjects>
                             </div>
                         </div>
                     </div>
@@ -150,7 +150,7 @@ function filterContent(state, onObjectSelection, onObjectDelete, onObjectDownloa
                                     <ButtonContentAction
                                         icon="fa-sharp fa-solid fa-download"
                                         text="Download this object" 
-                                        onClick={onObjectDownload} />
+                                        onClick={() => {onObjectDownload(state.selectedObject.objectFile, state.selectedObject.objectID)}} />
                                     { state.selectedContainer.permissions === 264211711 || 264224767 ?
                                         <ButtonText 
                                             type="clean"
