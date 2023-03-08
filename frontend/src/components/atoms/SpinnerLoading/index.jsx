@@ -9,13 +9,14 @@ export const SpinnerSize = {
     LARGE: 'large',
 }
 
-const SpinnerLoading = ({ size, faClass, text, isVisible }) => {
+const SpinnerLoading = ({ size, hasText, text, isVisible }) => {
     return (
         isVisible ? (
-            <div className="atmSpinnerLoading">
-                <i className="fad fa-spinner fa-spin"/>
-                icon
-                <span>{text}</span>
+            <div className={`atmSpinnerLoading ${[size]}`}>
+                <i className="fa-sharp fa-solid fa-spinner"/>
+                { hasText ? 
+                    <span>{text}</span>
+                : null }
             </div>
         )
             : null
@@ -25,6 +26,7 @@ export default SpinnerLoading;
 
 SpinnerLoading.propTypes = {
     size: PropTypes.oneOf(Object.keys(SpinnerSize)),
+    hasText: PropTypes.bool,
     text: PropTypes.string,
     isVisible: PropTypes.bool,
 };
@@ -32,5 +34,6 @@ SpinnerLoading.propTypes = {
 SpinnerLoading.defaultProps = {
     size: SpinnerSize.SMALL,
     isVisible: false,
+    hasText: true,
     text: "Loading...",
 };

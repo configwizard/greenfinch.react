@@ -6,7 +6,16 @@
     font-family: $brandFontSemi;
     color: $brandColorDark;
     display: block;
-    & i {
-        margin-right: $marginXSmall;
+    & span {
+        margin-left: $marginXSmall;
+    }
+    &.small {
+        font-size: 0.8rem;
+    }
+    &.medium {
+        font-size: 1rem;
+    }
+    &.medium {
+        font-size: 1.2rem;
     }
 }

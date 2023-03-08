@@ -40,7 +40,7 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                             isUppercase={true}
                             text={"Get started"}
                         />
-                        <SpinnerLoading isVisible={isVisible} text={"Wallet loading..."} />
+                        <SpinnerLoading hasText={true} isVisible={isVisible} text={"Wallet loading..."} />
                         <p>To use Greenfinch, a wallet is required. Either load an exisiting wallet or create a new wallet.</p>
                         
                         <div className="buttonStackHorizontalHR d-flex">
