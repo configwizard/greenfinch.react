@@ -1,7 +1,14 @@
 import React from 'react';
 import { useModal } from '../../organisms/Modal/ModalContext';
 // Actual
-import { loadWallet, loadWalletWithPath, newWallet} from '../../../manager/manager.js'
+import {
+    loadWallet,
+    loadWalletWithoutPassword,
+    loadWalletWithPath,
+    newWallet,
+    newWalletFromWIF,
+    saveWalletWithoutPassword
+} from '../../../manager/manager.js'
 
 // Components
 import ButtonText from '../../atoms/ButtonText';
@@ -37,23 +44,30 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                     text={"Load existing wallet"}
                                     isDisabled={false}
                                     onClick={
-                                        () => {
-                                            setModal(
-                                                <CompModalStandard
-                                                    title={"Wallet Password"}
-                                                    buttonTextPrimary={"Locate wallet"}
-                                                    buttonTextSecondary={"Cancel"}
-                                                    primaryClicked={async () => {
-                                                        await loadWallet(document.getElementById("loadWalletPassword").value);
-                                                        await unSetModal()
-                                                        await refreshRecentWallets()
-                                                    }}
-                                                    secondaryClicked={async () => unSetModal()}>
-                                                    <Form.Group className="form-div">
-                                                        <Form.Label>Enter password for existing wallet:</Form.Label>
-                                                        <Form.Control id="loadWalletPassword" type="password" placeholder="Password" />
-                                                    </Form.Group>
-                                                </CompModalStandard>)
+                                        async () => {
+                                            try {
+                                                let walletPath = await loadWalletWithoutPassword()
+                                                if (walletPath === "") return
+                                                setModal(
+                                                    <CompModalStandard
+                                                        title={"Wallet Password"}
+                                                        buttonTextPrimary={"Locate wallet"}
+                                                        buttonTextSecondary={"Cancel"}
+                                                        primaryClicked={async () => {
+                                                            console.log("waiting to load wallet with path ", walletPath)
+                                                            await loadWalletWithPath(document.getElementById("loadWalletPassword").value, walletPath);
+                                                            await unSetModal()
+                                                            await refreshRecentWallets()
+                                                        }}
+                                                        secondaryClicked={async () => unSetModal()}>
+                                                        <Form.Group className="form-div">
+                                                            <Form.Label>Enter password for existing wallet:</Form.Label>
+                                                            <Form.Control id="loadWalletPassword" type="password" placeholder="Password" />
+                                                        </Form.Group>
+                                                    </CompModalStandard>)
+                                            } catch (e) {
+                                                console.log("error loading wallet path ", e)
+                                            }
                                         }}/>
                                 <ButtonText
                                     type={"default"}
@@ -62,7 +76,10 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                     text={"Create new wallet"}
                                     isDisabled={false}
                                     onClick={
-                                        () => {
+                                        async () => {
+                                            try {
+                                                let walletPath = await saveWalletWithoutPassword()
+                                                if (walletPath === "") return
                                             setModal(
                                                 <CompModalStandard
                                                     title={"Wallet Password"}
@@ -70,7 +87,9 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                                     buttonTextSecondary={"Cancel"}
                                                     primaryClicked={async () => {
                                                         if (document.getElementById("createWalletPassword").value === document.getElementById("createWalletPasswordMatch").value) {
-                                                            await newWallet(document.getElementById("createWalletPassword").value)
+                                                            await newWallet(document.getElementById("createWalletPassword").value, walletPath)
+                                                        } else {
+                                                            alert("passwords do no match")
                                                         }
                                                         await unSetModal()
                                                         await refreshRecentWallets()
@@ -85,6 +104,52 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                                         <Form.Control id="createWalletPasswordMatch" type="password" placeholder="Password" />
                                                     </Form.Group>
                                                 </CompModalStandard>)
+                                            } catch (e) {
+                                                console.log("error loading wallet path ", e)
+                                            }
+                                        }}/>
+                                <ButtonText
+                                    type={"default"}
+                                    size={"medium"}
+                                    hasIcon={false}
+                                    text={"Load wallet from WIF"}
+                                    isDisabled={false}
+                                    onClick={
+                                        async () => {
+                                            try {
+                                                let walletPath = await saveWalletWithoutPassword()
+                                                if (walletPath === "") return
+                                                setModal(
+                                                    <CompModalStandard
+                                                        title={"Wallet Password"}
+                                                        buttonTextPrimary={"Create"}
+                                                        buttonTextSecondary={"Cancel"}
+                                                        primaryClicked={async () => {
+                                                            if (document.getElementById("createWalletPassword").value === document.getElementById("createWalletPasswordMatch").value) {
+                                                                await newWalletFromWIF(document.getElementById("createWalletPassword").value, document.getElementById("createWalletFromWIF").value, walletPath)
+                                                            } else {
+                                                                alert("passwords do no match")
+                                                            }
+                                                            await unSetModal()
+                                                            await refreshRecentWallets()
+                                                        }}
+                                                        secondaryClicked={async () => unSetModal()}>
+                                                        <Form.Group className="form-div">
+                                                            <Form.Label>Enter your WIF</Form.Label>
+                                                            <Form.Control id="createWalletFromWIF" type="password" placeholder="WIF" />
+                                                        </Form.Group>
+                                                        <Form.Group className="form-div">
+                                                            <Form.Label>To create a new wallet, you will need a password:</Form.Label>
+                                                            <Form.Control id="createWalletPassword" type="password" placeholder="Password" />
+                                                        </Form.Group>
+                                                        <Form.Group className="form-div">
+                                                            <Form.Label>Re-enter password to confirm:</Form.Label>
+                                                            <Form.Control id="createWalletPasswordMatch" type="password" placeholder="Password" />
+                                                        </Form.Group>
+                                                    </CompModalStandard>)
+                                            } catch (e) {
+                                                console.log("error loading wallet path ", e)
+                                            }
                                         }}/>
                             </div>
                         </div>

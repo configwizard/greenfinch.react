@@ -52,6 +52,8 @@ export function LoadWallet(arg1:string):Promise<void>;
 
 export function LoadWalletWithPath(arg1:string,arg2:string):Promise<void>;
 
+export function LoadWalletWithoutPassword():Promise<string>;
+
 export function MakeNotification(arg1:manager.NotificationMessage):Promise<void>;
 
 export function MakeToast(arg1:manager.UXMessage):Promise<void>;
@@ -64,7 +66,9 @@ export function NetworkChangeNotification():Promise<void>;
 
 export function NewListReadOnlyContainerContents(arg1:number):Promise<Array<manager.Element>>;
 
-export function NewWallet(arg1:string):Promise<void>;
+export function NewWallet(arg1:string,arg2:string):Promise<void>;
+
+export function NewWalletFromWIF(arg1:string,arg2:string,arg3:string):Promise<void>;
 
 export function Notifications():Promise<Array<manager.NotificationMessage>>;
 
@@ -81,6 +85,8 @@ export function RestrictContainer(arg1:string,arg2:string):Promise<void>;
 export function RetrieveContactByWalletAddress(arg1:string):Promise<manager.contact>;
 
 export function RetrieveContacts():Promise<Array<manager.contact>>;
+
+export function SaveWalletWithoutPassword():Promise<string>;
 
 export function SendSignal(arg1:string,arg2:any):Promise<void>;
 
