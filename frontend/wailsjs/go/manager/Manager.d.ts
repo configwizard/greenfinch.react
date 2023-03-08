@@ -22,6 +22,8 @@ export function DeleteContainer(arg1:string):Promise<Array<manager.Element>>;
 
 export function DeleteObject(arg1:string,arg2:string):Promise<Array<manager.Element>>;
 
+export function DeleteRecentWallet(arg1:string):Promise<void>;
+
 export function Download(arg1:string,arg2:string,arg3:string):Promise<void>;
 
 export function EnableCache(arg1:boolean):Promise<void>;

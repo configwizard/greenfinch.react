@@ -112,7 +112,7 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                     type={"default"}
                                     size={"medium"}
                                     hasIcon={false}
-                                    text={"Load wallet from WIF"}
+                                    text={"Create a wallet from WIF"}
                                     isDisabled={false}
                                     onClick={
                                         async () => {

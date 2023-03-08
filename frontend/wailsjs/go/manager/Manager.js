@@ -34,6 +34,10 @@ export function DeleteObject(arg1, arg2) {
   return window['go']['manager']['Manager']['DeleteObject'](arg1, arg2);
 }
 
+export function DeleteRecentWallet(arg1) {
+  return window['go']['manager']['Manager']['DeleteRecentWallet'](arg1);
+}
+
 export function Download(arg1, arg2, arg3) {
   return window['go']['manager']['Manager']['Download'](arg1, arg2, arg3);
 }

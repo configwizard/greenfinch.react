@@ -100,7 +100,9 @@ function filterContent(state, onObjectSelection, onObjectDelete, onObjectDownloa
                             containerId={state.selectedContainer.containerID}
                             contacts={state.contacts}/>
                         <ButtonContentContainerDelete
-                            containerName={state.selectedContainer.containerName}/>
+                            containerName={state.selectedContainer.containerName}
+                            containerId={state.selectedContainer.containerID}
+                            containerDelete={onContainerDelete}/>
                         </> : null }
                     </div>
                 </div>
