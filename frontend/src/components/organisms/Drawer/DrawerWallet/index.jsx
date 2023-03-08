@@ -1,5 +1,4 @@
 import React from 'react';
-// import {copyTextToClipboard} from "../../../../manager/manager"
 import { Form } from "react-bootstrap";
 
 // Components

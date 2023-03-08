@@ -2,6 +2,7 @@ import React from 'react';
 
 // Components
 import ButtonText from '../../../atoms/ButtonText';
+import SpinnerLoading from '../../../atoms/SpinnerLoading';
 import { ViewObjectsGrid, ViewObjectsRow } from './ViewObjectsLayout';
 
 // Central style sheet for ViewObjects
@@ -24,7 +25,11 @@ function ViewObjects({shared, onDelete, onDownload, objectList, onObjectSelectio
                             hasDropdown={true}>
                         </ViewObjectsGrid>
                     </div>
-                ) : objectsLoaded ? <div className="atmStatusSmall"><i className="fa-sharp fa-solid fa-triangle-exclamation"/>&nbsp;There are no objects in this container.</div> : <div className="utLoading"><i className="fad fa-spinner fa-spin"/>Loading...</div>}
+                ) : objectsLoaded ? 
+                    <div className="atmStatusSmall"><i className="fa-sharp fa-solid fa-triangle-exclamation"/>&nbsp;There are no objects in this container.</div> 
+                    : 
+                    <SpinnerLoading text={"Loading..."} size={"small"}/>
+                }
             </div>
         )
     } else {
@@ -41,7 +46,11 @@ function ViewObjects({shared, onDelete, onDownload, objectList, onObjectSelectio
                             hasDropdown={true}>
                         </ViewObjectsRow>
                     </div>
-                ) : objectsLoaded ? <div className="atmStatusSmall"><i className="fa-sharp fa-solid fa-triangle-exclamation"/>&nbsp;There are no objects in this container.</div> : <div className="utLoading"><i className="fad fa-spinner fa-spin"/>Loading...</div>}
+                ) : objectsLoaded ? 
+                    <div className="atmStatusSmall"><i className="fa-sharp fa-solid fa-triangle-exclamation"/>&nbsp;There are no objects in this container.</div> 
+                    : 
+                    <SpinnerLoading text={"Loading..."} size={"small"}/>
+                }
             </div>
         )
     }

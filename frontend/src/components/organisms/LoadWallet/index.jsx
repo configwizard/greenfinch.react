@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useModal } from '../../organisms/Modal/ModalContext';
 // Actual
 import {
@@ -13,6 +13,7 @@ import {
 // Components
 import ButtonText from '../../atoms/ButtonText';
 import HeadingGeneral from '../../atoms/HeadingGeneral';
+import SpinnerLoading from '../../atoms/SpinnerLoading';
 
 import './style.scss';
 import CompModalStandard from "../Modal/ModalStandard";
@@ -20,7 +21,12 @@ import {Form} from "react-bootstrap";
 
 const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
     const { setModal, unSetModal } = useModal()
+    const { isVisible, setIsVisible } = useState(false)
     console.log("propogating wallet", account, recentWallets)
+    if (account && account.address) {
+        //setIsVisible(false);
+        console.log("Account is ", account);
+    }
     return (
         <>
             <div className="section-wallet">
@@ -33,7 +39,8 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                             level={"h5"}
                             isUppercase={true}
                             text={"Get started"}
-                        />            
+                        />
+                        <SpinnerLoading isVisible={isVisible} text={"Wallet loading..."} />
                         <p>To use Greenfinch, a wallet is required. Either load an exisiting wallet or create a new wallet.</p>
                         <div className="d-flex">
                             <div className="ms-auto">
@@ -203,6 +210,7 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                                                 primaryClicked={async () => {
                                                                     loadWalletWithPath(document.getElementById("loadWalletFromPathPassword").value, recentWallets[obj].Path)
                                                                     await unSetModal()
+                                                                    await setIsVisible(true)
                                                                     }
                                                                 }
                                                                 secondaryClicked={async () => unSetModal()}>

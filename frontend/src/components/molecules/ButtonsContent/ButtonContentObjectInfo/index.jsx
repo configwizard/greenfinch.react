@@ -23,7 +23,7 @@ const ButtonContentObjectInfo = ({ objectName, objectId, objectFile, objectSize,
                     title={"Object properties"}
                     buttonTextSecondary={"Cancel"}
                     buttonTextPrimary={"Close"}
-                    secondaryClicked={async () => unSetModal()}
+                    hasSecondaryButton={false}
                     primaryClicked={async () => unSetModal()}>
                         <figure><img className="mw-100" src={`data:image/png;base64,${objectFile}`} alt={objectName} /></figure>
                         <h6>Object Name:</h6>
