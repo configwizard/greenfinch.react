@@ -13,12 +13,11 @@ export default class ProgressBar extends React.Component {
         this.state = {
             list: [],
             percentage: 0,
-            title:"Test",
+            title:"Progress",
             show: false
         }
     }
-    /* One to check: https://getbootstrap.com/docs/5.0/components/progress/ */
-     async componentDidMount () {
+    async componentDidMount () {
         console.log("percentage ready")
 
         window.runtime.EventsOn(name, async (progressMessage) => {
@@ -32,7 +31,6 @@ export default class ProgressBar extends React.Component {
                 await this.setState({...this.state, show: true})
             }
         })
-
     }
     render() {
         if (!this.state.show) {
@@ -43,19 +41,20 @@ export default class ProgressBar extends React.Component {
                 <div className="molProgressWrapper">
                     <div className="molProgressInner d-flex">
                         <div className="molProgressContent d-flex align-items-center justify-content-center">
-                                <i className="fa-sharp fa-solid fa-xmark" onClick={async () => {await this.setState({...this.state, show: false})}}/>
+                                <i className="fa-sharp fa-solid fa-xmark fa-fw" onClick={async () => {await this.setState({...this.state, show: false})}}/>
                                 <Progress
                                     theme={{
                                         success: {
-                                            color: 'rgba(0, 175, 75, 1)'
+                                            color: 'rgba(0, 173, 75, 1)'
                                         },
                                         active: {
-                                            color: 'rgba(0, 175, 75, 0.5)'
+                                            color: 'rgba(0, 173, 75, 1)'
                                         },
                                         default: {
-                                            color: 'rgba(43, 57, 63, 0.2)'
+                                            color: 'rgba(255, 255, 255, 1)'
                                         }
                                     }}
+                                    strokeWidth={15}
                                     percent={this.state.percentage}/>
                         </div>
                     </div>

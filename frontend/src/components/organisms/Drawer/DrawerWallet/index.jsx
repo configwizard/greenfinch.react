@@ -17,7 +17,7 @@ const DrawerWallet = (props) => {
         <div className="offcanvas offcanvas-start" tabIndex="-1" id="offcanvasLeft" aria-labelledby="offcanvasLeftLabel">
             <div className="offcanvas-header d-flex align-items-center">
                 <h4 id="offcanvasLeftLabel"><i className="fa-sharp fa-solid fa-wallet"/>&nbsp;Wallet</h4>
-                <button type="button" className="button-offcanvas" data-bs-dismiss="offcanvas" aria-label="Close"><i className="fa-sharp fa-solid fa-xmark"/></button>
+                <button type="button" className="button-offcanvas" data-bs-dismiss="offcanvas" aria-label="Close"><i className="fa-sharp fa-solid fa-xmark fa-fw"/></button>
             </div>
             <div className="offcanvas-body">
                 {props.account.address ?

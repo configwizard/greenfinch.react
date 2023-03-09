@@ -1,3 +1,6 @@
+// Import dashboard variables, so we can set base, and build on top of here
+@import "./dashboard-variables.scss";
+
 /* Animation Library
 - - - - - - - - - - - - - - - - - - */
 @import "animate/animate.scss";
@@ -46,34 +49,28 @@ h1, h2, h4, h4, h5, h6 {
 
 h1 {
     font-size: $brandFontSize * $brandHeaderScale * $brandHeaderScale * $brandHeaderScale * $brandHeaderScale;
-    //margin-bottom: $brandLineHeight * 1.5rem;
+    //margin-bottom: $brandLineHeight * 1.5rem; 
 }
-
 h2 {
     font-size: $brandFontSize * $brandHeaderScale * $brandHeaderScale * $brandHeaderScale;
     //margin-bottom: $brandLineHeight * 1.5rem;
 }
-
 h3 {
     font-size: $brandFontSize * $brandHeaderScale * $brandHeaderScale;
     //margin-bottom: $brandLineHeight * 1.5rem;
 }
-
 h4 {
     font-size: $brandFontSize * $brandHeaderScale;
     //margin-bottom: $brandLineHeight * 1.5rem;
 }
-
 h5 {
     font-size: $brandFontSize;
     //margin-bottom: $brandLineHeight * 1.5rem;
 }
-
 h6 {
     font-size: calc($brandFontSize / $brandHeaderScale);
     //margin-bottom: $brandLineHeight * 1.5rem;
 }
-
 
 /* Variables: Color
 - - - - - - - - - - - - - - - - - - */
@@ -91,7 +88,7 @@ $brandColorLight: #f0f5f6;
 $toastColorSuccess: #00ad4b;
 $toastColorError: #E5004C;
 $toastColorWarning: #F47A00;
-$toastColorInfo: #0080F4;
+$toastColorInfo: #0080f4;
 $toastColorBody: $brandColorDark;
 
 $youtubeRed: #FF0000;
@@ -102,8 +99,7 @@ $brandLetterSpacing: 0.15rem;
 $brandBorderRadius: 5px;
 $brandTransitionSpeed: 0.3s;
 $brandDarkenValue: 12%;
-$brandBoxShadow: 0 0 10px rgba(0,0,0,0.3);
-
+$brandBoxShadow: 0 0 12px rgba(0,0,0,0.4);
 
 /* Base: Buttons
 - - - - - - - - - - - - - - - - - - */
@@ -164,12 +160,4 @@ a.disabled {
     border-radius: $iconFillBorderRadius;
     background-color: $iconFillBgColor;
     cursor: pointer;
-}
-
-
-/* Animation
-- - - - - - - - - - - - - - - - - - */
-@keyframes fade-in {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
 }

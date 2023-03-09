@@ -1,21 +1,53 @@
-@import "../../../assets/dashboard-variables.scss";
 @import "../../../assets/greenfinch-variables.scss";
 
 /* Component: Progress
 - - - - - - - - - - - - - - - - - - */
 .molProgressContainer {
+    position: fixed;
+    top: 20px;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 30000;
+    background-color: rgba(0,0,0,0.2);
     & .molProgressWrapper {
         font-family: $brandFontSemi;
         background-color: $brandColorLight;
         box-shadow: $brandBoxShadow;
-        & i.fa-times { // close button]
-            transition: $brandTransitionSpeed;
-            color: rgba($brandColorDark, 0.5);
-            font-size: 1.1rem;
-            &:hover {
-                color: rgba($brandColorDark, 0.8);
+        border-radius: $brandBorderRadius;
+        padding: $paddingSmall;
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translate(-50%, 0);
+        z-index: 30000;
+        width: 450px;
+        min-height: 70px;
+        margin: 0 auto;
+        & .molProgressInner {
+            min-height: 70px;
+            width: 100%;
+            & .molProgressContent {
+                min-height: 70px;
+                width: 100%;
+                padding: $paddingSmall;
+                & i.fa-xmark { // close button
+                    transition: $brandTransitionSpeed;
+                    position: absolute;
+                    top: 5px;
+                    right: 5px;
+                    color: rgba($brandColorDark, 0.5);
+                    font-size: 1.1rem;
+                    border-radius: 2px;
+                    cursor: pointer;
+                    &:hover {
+                        color: rgba($brandColorDark, 0.8);
+                        background-color: rgba(0,0,0,0.05);
+                    }
+                }
             }
         }
+       
     }
     & h6 {
         font-size: 0.9rem;
@@ -23,20 +55,7 @@
 }
 
 .react-sweet-progress-symbol {
-    font-family: $brandFontSemi;
-}
-
-/* Component: Progress
-- - - - - - - - - - - - - - - - - - */
-.molProgressContainer {
-    // transition: transform .6s ease-in-out;
-    // animation: progress-in-bottom .7s;
-    position: fixed;
-    top: 20px;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 30000;
+    font-family: $brandFontBold;
 }
 
 @keyframes progress-in-bottom {
@@ -48,28 +67,8 @@
 	}
 }
 
-.molProgressWrapper {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translate(-50%, 0);
-    z-index: 30000;
-    width: 450px;
-    min-height: 70px;
-    margin: 0 auto;
-    & .molProgressInner {
-        min-height: 70px;
-        width: 100%;
-        & .molProgressContent {
-            min-height: 70px;
-            width: 100%;
-            padding: $paddingSmall;
-            & i.fa-times { // close button
-                position: absolute;
-                top: 3px;
-                right: 0;
-                cursor: pointer;
-            }
-        }
-    }
+.react-sweet-progress-line {
+    border: 1px solid rgba(0,0,0,0.2);
+    background-color: $brandColorWhite;
+    box-shadow: 0 0 7px rgba(0,0,0,0.1);
 }
