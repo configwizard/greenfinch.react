@@ -3,6 +3,8 @@ on:
   workflow_dispatch:
   # This Action only starts when you go to Actions and manually run the workflow.
   push:
+#    branches:
+#      - !master #don't run when master is pushed so doesn't mess up releases
 #    # Sequence of patterns matched against refs/tags
 #    tags:
 #      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
@@ -122,6 +124,7 @@ jobs:
   release:
     name: Create Github Release
     needs: package #don't want to create a release if a package failed to create.
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
@@ -140,6 +143,7 @@ jobs:
   deploy:
     name: Deploy artifacts
     needs: release
+    if: github.ref == 'refs/heads/master'
     strategy:
       matrix:
         platform: [windows-latest, macos-latest]

@@ -147,6 +147,7 @@ func main() {
 		// MaxHeight:		740,
 		DisableResize:     false,
 		Fullscreen:        false,
+		WindowStartState:   options.Maximised,
 		Frameless:         false,
 		StartHidden:       false,
 		HideWindowOnClose: false,

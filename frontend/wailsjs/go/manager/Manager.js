@@ -126,8 +126,8 @@ export function NewListReadOnlyContainerContents(arg1) {
   return window['go']['manager']['Manager']['NewListReadOnlyContainerContents'](arg1);
 }
 
-export function NewWallet(arg1, arg2) {
-  return window['go']['manager']['Manager']['NewWallet'](arg1, arg2);
+export function NewWallet(arg1) {
+  return window['go']['manager']['Manager']['NewWallet'](arg1);
 }
 
 export function NewWalletFromWIF(arg1, arg2, arg3) {
