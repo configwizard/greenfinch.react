@@ -7,7 +7,7 @@ const enableLocalServer = async (enable) => {
 }
 const enableCache = async (enable) => {
     try {
-        let networkSettings = await window.go.manager.Manager.EnableCache(enable)
+        await window.go.manager.Manager.EnableCache(enable)
     } catch (e) {
         console.log("error setting cache state", e)
     }
@@ -62,8 +62,7 @@ const transferGasToContact = async (contactAddress, amount) => {
     try {
         let floatAmount = parseFloat(amount)
         floatAmount = floatAmount * Math.pow(10, 8)
-        let t = await window.go.manager.Manager.TransferToken(contactAddress, floatAmount)
-        console.log("t", t)
+        await window.go.manager.Manager.TransferToken(contactAddress, floatAmount)
     } catch(e) {
         console.log("error transferring", e)
     }
@@ -72,16 +71,14 @@ const topUpNeoFS = async (amount) => {
     console.log("topping up with ", amount)
     try {
         const floatAmount = parseFloat(amount)
-        let t = await window.go.manager.Manager.TopUpNeoWallet(floatAmount)
-        console.log("t", t)
+        await window.go.manager.Manager.TopUpNeoWallet(floatAmount)
     } catch(e) {
         console.log("error topping up", e)
     }
 }
 const newWallet = async (password, walletPath) => {
     try {
-        let t = await window.go.manager.Manager.NewWallet(password, walletPath)
-        // return t
+        await window.go.manager.Manager.NewWallet(password, walletPath)
     } catch(e) {
         console.log("error creating new wallet", e)
     }
@@ -89,16 +86,14 @@ const newWallet = async (password, walletPath) => {
 
 const loadWallet = async (password) => {
     try {
-        let t = await window.go.manager.Manager.LoadWallet(password)
-        // return t
+        await window.go.manager.Manager.LoadWallet(password)
     } catch(e) {
         console.log("error loading wallet", e)
     }
 }
 const deleteRecentWallet = async (walletId) => {
     try {
-        let t = await window.go.manager.DeleteRecentWallet.LoadWallet(walletId)
-        // return t
+        await window.go.manager.DeleteRecentWallet.LoadWallet(walletId)
     } catch(e) {
         console.log("error loading wallet", e)
     }
@@ -128,8 +123,7 @@ const newWalletFromWIF = async (password, wif, path) => {
 }
 const loadWalletWithPath = async (password, path) => {
     try {
-        let t = await window.go.manager.Manager.LoadWalletWithPath(password, path)
-        // return t
+        await window.go.manager.Manager.LoadWalletWithPath(password, path)
     } catch(e) {
         console.log("error loading wallet", e)
     }
