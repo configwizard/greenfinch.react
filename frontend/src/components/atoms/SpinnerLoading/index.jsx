@@ -13,7 +13,7 @@ const SpinnerLoading = ({ size, hasText, text, isVisible }) => {
     return (
         isVisible ? (
             <div className={`atmSpinnerLoading ${[size]}`}>
-                <i className="fa-sharp fa-solid fa-spinner"/>
+                <i className="fa-sharp fa-solid fa-spinner"/> 
                 { hasText ? 
                     <span>{text}</span>
                 : null }
@@ -28,7 +28,7 @@ SpinnerLoading.propTypes = {
     size: PropTypes.oneOf(Object.keys(SpinnerSize)),
     hasText: PropTypes.bool,
     text: PropTypes.string,
-    isVisible: PropTypes.bool,
+    isVisible: PropTypes.bool, 
 };
 
 SpinnerLoading.defaultProps = {
