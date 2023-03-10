@@ -6,7 +6,6 @@
         font-family: $brandFontBold;
         font-size: 0.8rem;
         line-height: 1.4;
-        margin-top: 2px;
     }
     &:last-child {
         margin-bottom: 0;
@@ -27,4 +26,8 @@ h6 {
 span.atmWalletNumber {
     font-size: 1.1rem;
     line-height: 1;
+}
+
+.copyable {
+    cursor: pointer;
 }

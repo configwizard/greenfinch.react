@@ -15,7 +15,7 @@ const CompModalStandard = props => {
             <div className="molModalBody"> 
                 {props.children}
             </div>
-            <div className="molModalFooter d-flex">
+            <div className="molModalFooter">
                 <div className="buttonStackHorizontal d-flex">
                     <div className="ms-auto">
                         {props.hasSecondaryButton ?  

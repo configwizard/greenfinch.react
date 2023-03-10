@@ -1,23 +1,17 @@
 import React, { useState } from 'react';
 import { useModal } from '../../organisms/Modal/ModalContext';
+import {Form} from "react-bootstrap";
+
 // Actual
-import {
-    loadWallet,
-    loadWalletWithoutPassword,
-    loadWalletWithPath,
-    newWallet,
-    newWalletFromWIF,
-    saveWalletWithoutPassword
-} from '../../../manager/manager.js'
+import { loadWalletWithoutPassword, loadWalletWithPath, newWallet, newWalletFromWIF, saveWalletWithoutPassword, deleteRecentWallet } from '../../../manager/manager.js'
 
 // Components
 import ButtonText from '../../atoms/ButtonText';
 import HeadingGeneral from '../../atoms/HeadingGeneral';
 import SpinnerLoading from '../../atoms/SpinnerLoading';
+import CompModalStandard from "../Modal/ModalStandard";
 
 import './style.scss';
-import CompModalStandard from "../Modal/ModalStandard";
-import {Form} from "react-bootstrap";
 
 const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
     const { setModal, unSetModal } = useModal()
@@ -59,7 +53,8 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                                 setModal(
                                                     <CompModalStandard
                                                         title={"Wallet Password"}
-                                                        buttonTextPrimary={"Locate wallet"}
+                                                        hasSecondaryButton={true}
+                                                        buttonTextPrimary={"Load wallet"}
                                                         buttonTextSecondary={"Cancel"}
                                                         primaryClicked={async () => {
                                                             console.log("waiting to load wallet with path ", walletPath)
@@ -92,6 +87,7 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                             setModal(
                                                 <CompModalStandard
                                                     title={"Wallet Password"}
+                                                    hasSecondaryButton={true}
                                                     buttonTextPrimary={"Create"}
                                                     buttonTextSecondary={"Cancel"}
                                                     primaryClicked={async () => {
@@ -136,6 +132,7 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                                 setModal(
                                                     <CompModalStandard
                                                         title={"Wallet Password"}
+                                                        hasSecondaryButton={true}
                                                         buttonTextPrimary={"Create"}
                                                         buttonTextSecondary={"Cancel"}
                                                         primaryClicked={async () => {
@@ -192,16 +189,15 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                         </div>
                                         {account && account.address === obj ? <div className="wallet-tag">active</div> : null}
                                         <div className="ms-auto">
-                                            {/*
                                             <ButtonText
                                                 type="secondary"
                                                 size="small"
                                                 hasIcon={false}
                                                 text={"Forget wallet"}
                                                 isDisabled={false}
-                                                // empty onClick
+                                                // add onClick
+                                                // onClick={async () => {deleteRecentWallet()}}
                                             />
-                                            */}
                                             <ButtonText
                                                 type="default"
                                                 size="small" 
@@ -213,6 +209,7 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                                         setModal(
                                                             <CompModalStandard
                                                                 title={"Load recent wallet"}
+                                                                hasSecondaryButton={true}
                                                                 buttonTextPrimary={"Confirm"}
                                                                 buttonTextSecondary={"Cancel"}
                                                                 primaryClicked={async () => {

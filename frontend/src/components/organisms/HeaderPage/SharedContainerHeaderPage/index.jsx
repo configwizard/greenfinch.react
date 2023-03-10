@@ -41,6 +41,7 @@ const SharedContainerHeaderPage = ({ pageTitle, hasButton, hasButtonIcon, isButt
                                 setModal(
                                     <CompModalStandard
                                         title={"Add shared container"}
+                                        hasSecondaryButton={true}
                                         buttonTextPrimary={"Add"}
                                         buttonTextSecondary={"Cancel"}
                                         primaryClicked={async () => {

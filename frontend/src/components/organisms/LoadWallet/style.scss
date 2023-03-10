@@ -3,7 +3,7 @@
 .section-wallet {
     background-color: rgba(0,0,0,0.05);
     padding: $paddingMedium;
-    margin-bottom: $marginLarge;
+    margin-bottom: $marginMedium;
     clip-path: polygon(0 0,100% 0,100% calc(100% - 20.00px),calc(100% - 20.00px) 100%,0 100%);
     & i {
         color: rgba(0,0,0,0.2);

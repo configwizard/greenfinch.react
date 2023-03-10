@@ -19,9 +19,8 @@ const ButtonContentContainerInfo = ({ containerName, containerId, containerPermi
                 setModal(
                 <CompModalStandard
                     title={"Container properties"}
-                    buttonTextSecondary={"Cancel"}
+                    hasSecondaryButton={false}
                     buttonTextPrimary={"Close"}
-                    secondaryClicked={async () => unSetModal()}
                     primaryClicked={async () => unSetModal()}>
                         <h6>Container Name</h6>
                         <p>{containerName}</p>

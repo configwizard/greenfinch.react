@@ -83,7 +83,6 @@ const newWallet = async (password, walletPath) => {
         console.log("error creating new wallet", e)
     }
 }
-
 const loadWallet = async (password) => {
     try {
         await window.go.manager.Manager.LoadWallet(password)
@@ -95,7 +94,7 @@ const deleteRecentWallet = async (walletId) => {
     try {
         await window.go.manager.DeleteRecentWallet.LoadWallet(walletId)
     } catch(e) {
-        console.log("error loading wallet", e)
+        console.log("error deleting recent wallet", e)
     }
 }
 const saveWalletWithoutPassword = async () => {

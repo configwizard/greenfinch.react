@@ -1,35 +1,42 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import MiddleEllipsis from 'react-middle-ellipsis';
 import {copyTextToClipboard} from "../../../manager/manager.js"
+import MiddleEllipsis from 'react-middle-ellipsis';
 
 //Components
-import ButtonText from "../../atoms/ButtonText";
 import Tooltip from '../../atoms/Tooltip';
 
 import './style.scss';
 
-const RowWallet = ({ type, title, value }) => {
+const RowWallet = ({ type, title, value, hasCopy }) => {
   return (
     <div className="row-wallet-option">
         {
             type === "address" && (
+                hasCopy ?
+                    <>
+                        <h6 className="atmWallet">{title}</h6>
+                        <MiddleEllipsis><span className="copyable" onClick={() => {copyTextToClipboard(value)}}>{value}</span></MiddleEllipsis>
+                    </>
+                :
                 <>
                     <h6 className="atmWallet">{title}</h6>
-                    <Tooltip content={'Copy' + title}>
-                        <ButtonText
-                            size={"small"}
-                            type={"clean"}
-                            hasIcon={false}
-                            text={<MiddleEllipsis><span>{value}</span></MiddleEllipsis>}
-                            isDisabled={false}
-                            onClick={() => {copyTextToClipboard({value})}}/>
-                    </Tooltip>
+                    <MiddleEllipsis><span>{value}</span></MiddleEllipsis>
                 </>
-            )
+            )      
         }
         {
             type === "number" && (
+                hasCopy ?
+                    <>
+                        <h6 className="atmWallet">{title}</h6>
+                        <Tooltip content={'Copy ' + title}>
+                            <button type="button" className="atmButtonText medium clean" onClick={() => {copyTextToClipboard(value)}}>
+                                <MiddleEllipsis><span>{value}</span></MiddleEllipsis>
+                            </button>
+                        </Tooltip>
+                    </>
+                :
                 <>
                     <h6 className="atmWallet">{title}</h6>
                     <span className="atmWalletNumber">{value}</span>
@@ -44,11 +51,13 @@ export default RowWallet;
 
 RowWallet.propTypes = {
     type: PropTypes.string,
+    hasCopy: PropTypes.bool,
     title: PropTypes.string
 };
 
 RowWallet.defaultProps = {
     type: "number",
+    hasCopy: false,
     title: "Row title",
     value: "Row value"
 };                            

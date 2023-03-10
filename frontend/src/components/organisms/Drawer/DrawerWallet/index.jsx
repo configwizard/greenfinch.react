@@ -30,25 +30,30 @@ const DrawerWallet = (props) => {
                 <section className="molDrawerRow">
                     <RowWallet
                         type={"address"}
-                        title={"Wallet address"}
+                        title={"wallet address"}
+                        hasCopy={props.account.address ? true : false }
                         value={props.account.address ? props.account.address : "- -"} />
                     <RowWallet
                         type={"address"}
-                        title={"Public Key"}
+                        title={"public key"}
+                        hasCopy={props.account.publicKey ? true : false }
                         value={props.account.publicKey ? props.account.publicKey : "- -"} />
                 </section>
                 <section className="molDrawerRow">
                     <RowWallet
                         type={"number"}
                         title={"NeoFS GAS balance"}
+                        hasCopy={false}
                         value={props.account.neoFSBalance ? props.account.neoFSBalance : "- -"} />
                     <RowWallet
                         type={"number"}
                         title={"Neo balance"}
+                        hasCopy={false}
                         value={props.account.neoBalance ? props.account.neoBalance : "- -"} />
                     <RowWallet
                         type={"number"}
                         title={"GAS balance"}
+                        hasCopy={false}
                         value={props.account.gasBalance ? props.account.gasBalance : "- -"} />
                         <ButtonText 
                             type="default"

@@ -14,7 +14,7 @@ import {openInDefaultBrowser} from "../../../manager/manager";
 // Central style sheet for templates
 import '../_settings/style.scss';
 
-const TemplateHome = ({ makeToast, account, recentWallets, refreshRecentWallets, selectedNetwork }) => {
+const TemplateHome = ({ account, recentWallets, refreshRecentWallets, selectedNetwork, walletId }) => {
     return (
         <div className="templatePage d-flex flex-column flex-grow-1">
             <div className="row">
@@ -110,6 +110,7 @@ const TemplateHome = ({ makeToast, account, recentWallets, refreshRecentWallets,
                                     </div>   
                                     <LoadWallet
                                         account={account}
+                                        walletId={walletId}
                                         recentWallets={recentWallets}
                                         refreshRecentWallets={refreshRecentWallets} />
                                 </div>

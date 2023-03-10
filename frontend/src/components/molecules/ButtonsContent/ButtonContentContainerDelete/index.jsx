@@ -19,8 +19,9 @@ const ButtonContentContainerDelete = ({ containerName, containerDelete, containe
                 setModal(
                 <CompModalStandard
                     title={"Are you sure?"}
-                    buttonTextSecondary={"No"}
                     buttonTextPrimary={"Yes"}
+                    hasSecondaryButton={true}
+                    buttonTextSecondary={"No"}
                     primaryClicked={async () => {containerDelete(containerId); unSetModal()}}
                     secondaryClicked={async () => unSetModal()}>
                 <p>Are you sure you would you like to delete container <em>{containerName}</em></p>

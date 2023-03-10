@@ -21,9 +21,8 @@ const ButtonContentObjectInfo = ({ objectName, objectId, objectFile, objectSize,
                 setModal(
                 <CompModalStandard
                     title={"Object properties"}
-                    buttonTextSecondary={"Cancel"}
-                    buttonTextPrimary={"Close"}
                     hasSecondaryButton={false}
+                    buttonTextPrimary={"Close"}
                     primaryClicked={async () => unSetModal()}>
                         <figure><img className="mw-100" src={`data:image/png;base64,${objectFile}`} alt={objectName} /></figure>
                         <h6>Object Name:</h6>

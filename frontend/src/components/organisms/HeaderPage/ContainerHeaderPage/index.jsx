@@ -40,6 +40,7 @@ const ContainerHeaderPage = ({ pageTitle, hasButton, hasIcon, faClass, buttonTex
                                 setModal(
                                 <CompModalStandard
                                     title={"Create new container"}
+                                    hasSecondaryButton={true}
                                     buttonTextPrimary={"Create"}
                                     buttonTextSecondary={"Cancel"}
                                     primaryClicked={async () => {await createContainer(document.getElementById("containerName").value, document.getElementById("containerPermission").value); unSetModal()}}

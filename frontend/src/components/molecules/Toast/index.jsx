@@ -1,5 +1,8 @@
 import React from 'react';
 
+// Components
+import ButtonClose from '../../atoms/ButtonClose';
+
 import './style.scss';
 
 const runtime = require('@wailsapp/runtime');
@@ -36,7 +39,7 @@ export default class ToastMessage extends React.Component {
         })
         setInterval(() => {
             if (this.props.autoDelete && this.state.list.length) {
-                if (((new Date) - this.state.list[0].startTime) > this.props.autoDeleteTime) {
+                if (((new Date()) - this.state.list[0].startTime) > this.props.autoDeleteTime) {
                     this.deleteToast(this.state.list[0].id);
                 }
             }
@@ -73,7 +76,7 @@ export default class ToastMessage extends React.Component {
                                             <i className={`${faIcon}`}/>
                                         </div>
                                         <div className="molToastContent d-flex flex-column justify-content-center">
-                                            <i className="fa-sharp fa-solid fa-xmark fa-fw" onClick={() => this.deleteToast(toast.id)}/>
+                                            <ButtonClose size="small" onClick={() => this.deleteToast(toast.id)} />
                                             <span className="atmToastTitle">{toast.Title}</span>
                                             <span className="atmToastMessage">{toast.Description}</span>
                                         </div>

@@ -1,7 +1,8 @@
 import React from 'react';
-
 import { Progress } from 'react-sweet-progress';
 import 'react-sweet-progress/lib/style.css';
+
+import ButtonClose from '../../atoms/ButtonClose';
 
 import './style.scss';
 
@@ -40,22 +41,39 @@ export default class ProgressBar extends React.Component {
             <div className="molProgressContainer">
                 <div className="molProgressWrapper">
                     <div className="molProgressInner d-flex">
-                        <div className="molProgressContent d-flex align-items-center justify-content-center">
-                                <i className="fa-sharp fa-solid fa-xmark fa-fw" onClick={async () => {await this.setState({...this.state, show: false})}}/>
-                                <Progress
-                                    theme={{
-                                        success: {
-                                            color: 'rgba(0, 173, 75, 1)'
-                                        },
-                                        active: {
-                                            color: 'rgba(0, 173, 75, 1)'
-                                        },
-                                        default: {
-                                            color: 'rgba(255, 255, 255, 1)'
-                                        }
-                                    }}
-                                    strokeWidth={15}
-                                    percent={this.state.percentage}/>
+                        <div className="molProgressContent d-flex flex-column">
+                                <ButtonClose size="small" onClick={async () => {await this.setState({...this.state, show: false})}} />
+                                <div>
+                                    <span className="atmProgressTitle">Progress</span>
+                                </div>
+                                <div className="molProgressUnit">
+                                    <span className="atmProgressItem">File title here</span>
+                                    <Progress
+                                        theme={{
+                                            success: {
+                                                color: 'rgba(0, 173, 75, 1)'
+                                            },
+                                            active: {
+                                                color: 'rgba(0, 173, 75, 1)'
+                                            },
+                                            default: {
+                                                color: 'rgba(255, 255, 255, 1)'
+                                            }
+                                        }}
+                                        strokeWidth={15}
+                                        percent={this.state.percentage}/>
+                                </div>
+
+                                {/* <div className="molProgressUnit">
+                                    <Progress
+                                        theme={{
+                                            success: { color: 'rgba(0, 173, 75, 1)' },
+                                            active: {  color: 'rgba(0, 173, 75, 1)' },
+                                            default: { color: 'rgba(255, 255, 255, 1)'  }
+                                        }}
+                                        strokeWidth={15}
+                                        percent={this.state.percentage}/>
+                                </div> */}
                         </div>
                     </div>
                 </div>

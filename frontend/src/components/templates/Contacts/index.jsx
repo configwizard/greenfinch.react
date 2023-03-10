@@ -15,6 +15,7 @@ const createNewContact = async (setModal, createContact, unSetModal) => {
     setModal(
     <CompModalStandard
         title={"Add new contact"}
+        hasSecondaryButton={true}
         buttonTextPrimary={"Add"}
         buttonTextSecondary={"Cancel"}
         primaryClicked={async () => {
@@ -53,8 +54,8 @@ const createNewContact = async (setModal, createContact, unSetModal) => {
                 <Form.Control id="contactPublicKey" type="text" />
                 <Form.Text muted>N.B. A contact's public key is required to share containers</Form.Text>
                 </Form.Group>
-            <Form.Group id={"warningarea"} style={{display: "none"}}>
-                <span id="errormessage" style={{color: "red"}}></span>
+            <Form.Group id={"warningarea"} className="atmFormError" style={{display: "none"}}>
+                <i class='fa-sharp fa-solid fa-circle-x'></i><span id="errormessage"></span>
             </Form.Group>
     </CompModalStandard>)
 }
@@ -80,6 +81,7 @@ const TemplateContacts = ({contacts, createContact, deleteContact}) => {
                                         : <NoContent
                                             text={"You currently have no contacts."}
                                             addAction={true}
+                                            isPageLink={false}
                                             textAction={"Add your first contact"}
                                             textClick={() => {createNewContact(setModal, createContact, unSetModal)} }/>
                                     }

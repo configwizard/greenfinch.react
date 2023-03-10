@@ -161,3 +161,15 @@ a.disabled {
     background-color: $iconFillBgColor;
     cursor: pointer;
 }
+
+
+.atmFormError {
+    font-size: 0.9rem;
+    color: $toastColorError;
+    & span {
+        font-family: $brandFontSemi;
+    }
+    & i {
+        margin-right: $marginXSmall;
+    }
+}

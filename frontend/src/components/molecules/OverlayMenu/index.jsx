@@ -30,6 +30,7 @@ function OverlayMenu(props) {
                                 setModal(
                                 <CompModalStandard 
                                     title={"Confirmation"} 
+                                    hasSecondaryButton={true}
                                     buttonTextPrimary={"Yes"} 
                                     buttonTextSecondary={"No"} 
                                     secondaryClicked={async () => unSetModal()} 

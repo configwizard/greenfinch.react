@@ -2,6 +2,12 @@
 
 /* Component: Progress
 - - - - - - - - - - - - - - - - - - */
+
+// Have a column for the content to sit inside
+
+// you have a wrapper/inner for each individual progress to sit in.
+// And each progress bar is a div that slots underneath
+
 .molProgressContainer {
     position: fixed;
     top: 20px;
@@ -15,7 +21,7 @@
         background-color: $brandColorLight;
         box-shadow: $brandBoxShadow;
         border-radius: $brandBorderRadius;
-        padding: $paddingSmall;
+        padding: $paddingSmall $paddingXSmall;
         position: fixed;
         top: 20px;
         left: 50%;
@@ -31,20 +37,6 @@
                 min-height: 70px;
                 width: 100%;
                 padding: $paddingSmall;
-                & i.fa-xmark { // close button
-                    transition: $brandTransitionSpeed;
-                    position: absolute;
-                    top: 5px;
-                    right: 5px;
-                    color: rgba($brandColorDark, 0.5);
-                    font-size: 1.1rem;
-                    border-radius: 2px;
-                    cursor: pointer;
-                    &:hover {
-                        color: rgba($brandColorDark, 0.8);
-                        background-color: rgba(0,0,0,0.05);
-                    }
-                }
             }
         }
        
@@ -52,6 +44,29 @@
     & h6 {
         font-size: 0.9rem;
     }
+}
+
+.atmProgressTitle {
+    font-family: $brandFontBold;
+    font-size: 1.1rem;
+    color: $brandColorDark;
+    margin-bottom: $marginSmall;
+}
+
+.molProgressUnit {
+    background-color: rgba(0,0,0,0.02);
+    padding: $paddingXSmall $paddingSmall;
+    margin-bottom: $marginXSmall;
+    width: 100%;
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.atmProgressItem {
+    font-family: $brandFontSemi;
+    font-size: 0.7rem;
+    color: $brandColorDark;
 }
 
 .react-sweet-progress-symbol {

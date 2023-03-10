@@ -61,14 +61,15 @@ const RowAddress = ({first, contact, deleteContact}) => {
                             setModal(
                                 <CompModalStandard
                                     title={"Add new contact"}
+                                    hasSecondaryButton={true}
                                     buttonTextPrimary={"Send"}
                                     buttonTextSecondary={"Cancel"}
                                     primaryClicked={async () => {await transferGasToContact(contact.walletAddress, document.getElementById("transferGasAmount").value); await unSetModal()}}
                                     secondaryClicked={async () => unSetModal()}>
                                     <Form.Group className="form-div">
-                                        <Form.Label>Transfer Gas to {contact.firstName + " " + contact.lastName} - {contact.walletAddress}</Form.Label>
+                                        <Form.Label>Transfer GAS to {contact.firstName + " " + contact.lastName} - {contact.walletAddress}</Form.Label>
                                         <Form.Control id="transferGasAmount" type="number" placeholder={"1.2"}/>
-                                        <Form.Text muted>e.g 1.3 GAS</Form.Text>
+                                        <Form.Text muted>e.g. 5 GAS</Form.Text>
                                     </Form.Group>
                                 </CompModalStandard>)
                         }}/>

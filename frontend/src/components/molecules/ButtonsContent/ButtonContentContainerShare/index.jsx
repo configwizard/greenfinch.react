@@ -26,6 +26,7 @@ const ButtonContentContainerShare = ({containerId, contacts}) => {
                 setModal(
                 <CompModalStandard
                     title={"Share this container"}
+                    hasSecondaryButton={true}
                     buttonTextPrimary={"Share"}
                     buttonTextSecondary={"Cancel"}
                     primaryClicked={async () => {console.log("clicked", document.getElementById("shareContact").value); await shareContainerWithContact(containerId, document.getElementById("shareContact").value); unSetModal()}}
