@@ -17,7 +17,7 @@ function ViewObjects({shared, onDelete, onDownload, objectList, onObjectSelectio
                     <div className="col-6 col-md-4 col-xl-3" key={i}>
                         <ViewObjectsGrid 
                             hasOverlayMenu={!shared} 
-                            onDelete={onDelete != undefined ? () => {onDelete(item.id)} : null} //set to null if nothing to call
+                            onDelete={onDelete !== undefined ? () => {onDelete(item.id)} : null} //set to null if nothing to call
                             onDownload={() => {onDownload(item.attributes.FileName, item.id)}}
                             onObjectSelection={onObjectSelection}
                             item={item}

@@ -9,7 +9,7 @@ const runtime = require('@wailsapp/runtime');
 const name = 'freshtoast';
 
 const iconSelector = (type) => {
-    console.log("type selected ", type)
+    console.log("Toast type selected ", type)
     switch (type) {
         case 'success':
             return 'fa-sharp fa-solid fa-circle-check';
@@ -24,7 +24,7 @@ const iconSelector = (type) => {
     }
 }
 
-export default class ToastMessage extends React.Component {
+export default class ItemToast extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -62,30 +62,29 @@ export default class ToastMessage extends React.Component {
         console.log("this.state.list", this.state.list)
         return (
             <>
-                <div className="toastColumn">
-                {
-                    this.state.list.map((toast, i) => {
-                        const faIcon = iconSelector(toast.Type)
-                        console.log("toastType ", toast.type)
-                        return (
-
-                            <div key={i} className="molToast">
-                                <div className={`toastWrapper ${toast.Type}`}>
-                                    <div className="toastInner d-flex">
-                                        <div className="molToastIcon d-flex align-items-center justify-content-center">
-                                            <i className={`${faIcon}`}/>
-                                        </div>
-                                        <div className="molToastContent d-flex flex-column justify-content-center">
-                                            <ButtonClose size="small" onClick={() => this.deleteToast(toast.id)} />
-                                            <span className="atmToastTitle">{toast.Title}</span>
-                                            <span className="atmToastMessage">{toast.Description}</span>
+                <div className="toastColumn d-flex flex-column">
+                    {
+                        this.state.list.map((toast, i) => {
+                            const toastIcon = iconSelector(toast.Type)
+                            console.log("Toast type: ", toast.type)
+                            return (
+                                <div key={i} className="molToast">
+                                    <div className={`toastWrapper ${toast.Type}`}>
+                                        <div className="toastInner d-flex">
+                                            <div className="toastIcon d-flex align-items-center justify-content-center">
+                                                <i className={`${toastIcon}`}/>
+                                            </div>
+                                            <div className="toastContent d-flex flex-column justify-content-center">
+                                                <ButtonClose size="small" onClick={() => this.deleteToast(toast.id)} />
+                                                <span className="toastTitle">{toast.Title}</span>
+                                                <span className="toastDesc">{toast.Description}</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        )
-                    })
-                }
+                            )
+                        })
+                    }
                 </div>
             </>
         )

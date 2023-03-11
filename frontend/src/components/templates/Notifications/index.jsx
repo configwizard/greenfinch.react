@@ -16,13 +16,13 @@ const runtime = require('@wailsapp/runtime');
 const notificationsEventName = 'freshnotification';
 
 const Button = styled.button`
-  background-color: black;
-  color: white;
-  font-size: 20px;
-  padding: 10px 60px;
-  border-radius: 5px;
-  margin: 10px 0px;
-  cursor: pointer;
+    background-color: black;
+    color: white;
+    font-size: 20px;
+    padding: 10px 60px;
+    border-radius: 5px;
+    margin: 10px 0px;
+    cursor: pointer;
 `;
 
 export default class TemplateNotifications extends React.Component {
@@ -73,8 +73,6 @@ export default class TemplateNotifications extends React.Component {
     }
     render() {
         console.log("this.state.list ", this.state.list)
-
-        /* We have a molecule: Notification ready to populate, in same style as Toast */
 
         return (
             <div className="templatePage d-flex flex-column flex-grow-1">

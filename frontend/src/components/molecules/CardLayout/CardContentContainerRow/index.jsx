@@ -21,7 +21,7 @@ const CardContentContainerRow = ({ onClick, containerName, containerSize, contai
                 </div>
                 <div className="align-self-center">
                     <MiddleEllipsis>
-                        <div className="atmContentName">{containerName}</div>
+                        <span className="atmContentName">{containerName}</span>
                     </MiddleEllipsis>
                 </div>
                 <div className="atmContentDefault align-self-center">{fileSize(containerSize)}</div>

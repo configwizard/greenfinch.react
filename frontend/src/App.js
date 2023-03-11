@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import { useLocation, Routes, Route } from 'react-router-dom';
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
 
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css'; // Every page will use bootstrap
@@ -22,7 +22,7 @@ import Header from './components/organisms/Header';
 import NavbarSide from './components/organisms/NavbarSide';
 
 import {getAccountInformation, getVersion} from './manager/manager.js';
-import ToastMessage from "./components/molecules/Toast";
+import ItemToast from "./components/molecules/Toast";
 import ProgressBar from "./components/molecules/ProgressBar";
 import { retrieveRecentWallets } from "./manager/manager.js";
 //import { getAccountInformation } from './mocker/manager.js';
@@ -143,7 +143,7 @@ class App extends React.Component {
                         </div>
                         <Footer/>
                     </div>
-                    <ToastMessage autoDelete={true} autoDeleteTime={3000}></ToastMessage>
+                    <ItemToast autoDelete={true} autoDeleteTime={3000}></ItemToast>
                     <ProgressBar></ProgressBar>
                 </div>
             </>

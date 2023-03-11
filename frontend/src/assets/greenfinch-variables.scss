@@ -106,7 +106,7 @@ $brandBoxShadow: 0 0 12px rgba(0,0,0,0.4);
 button {
     font-family: $brandFontBold;
     transition: $brandTransitionSpeed;
-    border: none!important;
+    border: none;
     border-radius: none;
 }
 
@@ -117,7 +117,7 @@ button {
  button:focus,
 .button:hover, 
  button:hover {
-    border: none!important;
+    border: none;
     outline: none!important;
 }
 

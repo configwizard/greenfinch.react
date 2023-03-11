@@ -1,7 +1,7 @@
 @import "../../../assets/greenfinch-variables.scss";
 
 .atmContentCheckbox {
-    height: $CardContentProportion;
+    min-height: $CardContentProportion;
     width: $CardContentProportion;
     background-color: rgba($brandColorSecondary, 0.05);
     & .form-check {

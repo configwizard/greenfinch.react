@@ -1,18 +1,39 @@
 @import "../../../assets/greenfinch-variables.scss";
 
 .file-icon {
+    display: inline-block;
+    width: 24px;
+    height: 32px;
+    position: relative;
+    margin-bottom: 4px;
     background: linear-gradient(180deg, $brandColorSecondary 0%, $brandColorPrimary 76%, $brandColorSecondary 100%);
     border-radius: 2px;
     text-align: left;
     -webkit-font-smoothing: antialiased;
     font-family: $brandFontSemi;
     &:before {
+        display: block;
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 0;
+        height: 0;
         border-bottom-left-radius: 2px;
         border-width: 5px;
         border-style: solid;
         border-color: #fff #fff rgba(255,255,255,0.35) rgba(255,255,255,0.35);
     }
     &:after {
+        display: block;
+        content: '.'attr(data-type);
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 2px;
+        white-space: nowrap;
+        overflow: hidden;
         font-size: 0.9rem;
         color: $brandColorWhite;
         text-transform: lowercase;
@@ -22,17 +43,22 @@
 }
 
 .file-icon-lg {
+    width: 48px;
+    height: 64px;
     border-radius: 3px;
     &:before {
         border-bottom-left-radius: 2px;
         border-width: 8px;
     }
     &:after {
+        padding: 4px 6px;
         font-size: 0.8rem;
     }
 }
 
 .file-icon-xl {
+    width: 96px;
+    height: 128px;
     border-radius: 4px;
     &:before {
         border-bottom-left-radius: 4px;
@@ -40,9 +66,10 @@
     }
     &:after {
         font-size: 0.9rem;
+        padding: 4px 10px;
     }
 }
 
-file-icon.pending-deleted {
+.file-icon.pending-deleted {
     background-color: red;
 }

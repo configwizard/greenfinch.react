@@ -27,6 +27,7 @@
         }
     }
     &.clean, &.secondary {
+        border: 1px solid rgba(0,0,0,0.06);
         background-color: rgba(0,0,0,0.03);
         &:hover {
             text-decoration: none;

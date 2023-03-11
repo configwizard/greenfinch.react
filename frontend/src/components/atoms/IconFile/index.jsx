@@ -14,7 +14,7 @@ const IconFile = ({ size, pendingDeleted }) => {
         <div className={`neo folder-icon ${[size]} ${pendingDeleted ? "pending-deleted" : "" }` }></div>
     )
 }
-export default IconFolder ;
+export default IconFile;
 
 IconFile.propTypes = {
     size: PropTypes.oneOf(Object.keys(IconFileSize)),

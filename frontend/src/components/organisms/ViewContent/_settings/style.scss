@@ -35,6 +35,7 @@ button.molViewContainersBody, button.molViewObjectsBody {
 }
 
 .atmContentName, .atmContentDefault {
+    padding: $paddingXSmall 0;
     color: $brandColorDark;
     font-family: $brandFontSemi;
     font-size: 0.75rem;
@@ -65,23 +66,21 @@ button.molViewContainersBody, button.molViewObjectsBody {
 // Row, Containers + Objects
 // - - - - - - - - - - - - - - - - - - - - - -
 .orgViewContainersRow, .orgViewObjectsRow {
-    height: calc($CardContentProportion + 2px); // Include 1px border
+    min-height: calc($CardContentProportion + 2px); // Include 1px border
     & .molViewContainersBody, .molViewObjectsBody { 
-        height: $CardContentProportion;
+        min-height: $CardContentProportion;
         & figure {
-            margin-left: $marginSmall;
+            margin: 0 $marginSmall;
             height: $CardContentProportion;
             width: $CardContentProportion;
         }
         & .atmContentName {
-            margin-left: $marginSmall;
             text-align: left;
-            width: 300px;
         }
         & .atmContentDefault {
+            min-width: 80px;
             text-align: left;
             margin-right: $marginSmall;
-            width: 80px;
             &:last-child {
                 margin-right: 0;
             }
@@ -90,5 +89,24 @@ button.molViewContainersBody, button.molViewObjectsBody {
             margin-left: $marginSmall;
             color: $brandColorPrimary;
         }
+    }
+}
+
+.atmContentNameWrapper {
+    max-width: 240px;
+}
+@media (min-width:1400px) { //bootstrap xxl
+    .atmContentNameWrapper {
+        max-width: 300px;
+    }
+}
+@media (min-width:1600px) {
+    .atmContentNameWrapper {
+        max-width: 400px;
+    }
+}
+@media (min-width:1800px) {
+    .atmContentNameWrapper {
+        max-width: 500px;
     }
 }

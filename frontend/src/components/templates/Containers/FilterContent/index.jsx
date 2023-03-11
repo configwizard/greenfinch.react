@@ -159,7 +159,7 @@ function filterContent(state, onObjectSelection, onObjectDelete, onObjectDownloa
                                             size="small"
                                             hasIcon={true}
                                             faClass={"fa-sharp fa-solid fa-arrow-up-right-from-square"}
-                                            text={"Click to view object in web browser"}
+                                            text={"View object in web browser"}
                                             isDisabled={false}
                                             onClick={() => openInDefaultBrowser(`https://http.t5.fs.neo.org/${state.selectedContainer.containerID}/${state.selectedObject.objectID}`)} />
                                     : null }

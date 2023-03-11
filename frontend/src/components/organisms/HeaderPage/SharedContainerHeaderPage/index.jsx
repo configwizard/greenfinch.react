@@ -1,10 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
 import { Form } from 'react-bootstrap';
-
-import { createContainer } from '../../../../manager/containers.js';
-
+//import { createContainer } from '../../../../manager/containers.js';
 
 // Components
 import HeadingGeneral from '../../../atoms/HeadingGeneral';

@@ -29,10 +29,7 @@ const ColumnData = ({ display, category, contentTitle, iconSize, data, file }) =
                 <>
                     <IconFolder
                         size={iconSize} />
-                    <HeadingGeneral
-                        level={"h5"}
-                        isUppercase={false}
-                        text={contentTitle}/>
+                    <MiddleEllipsis><span className="atmContentTitle">{contentTitle}</span></MiddleEllipsis>
                     {data.map((dataItem, index) => (
                         <div key={index}>
                             <HeadingGeneral
@@ -57,10 +54,7 @@ const ColumnData = ({ display, category, contentTitle, iconSize, data, file }) =
                         </figure>
                     : null 
                     }
-                    <HeadingGeneral
-                        level={"h5"}
-                        isUppercase={false}
-                        text={contentTitle} />
+                    <MiddleEllipsis><span className="atmContentTitle">{contentTitle}</span></MiddleEllipsis>
                      {data.map((dataItem, index) => (
                         <div key={index}>
                             <HeadingGeneral

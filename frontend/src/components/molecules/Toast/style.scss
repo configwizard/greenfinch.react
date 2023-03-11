@@ -2,29 +2,31 @@
 
 /* Toast Types
 - - - - - - - - - - - - - - - - - - */
-.toastWrapper {
-    &.success {
-        background-color: $toastColorSuccess;
-        & span.atmToastTitle {
-            color: $toastColorSuccess;
+.molToast {
+    & .toastWrapper {
+        &.success {
+            background-color: $toastColorSuccess;
+            & span.toastTitle {
+                color: $toastColorSuccess;
+            }
         }
-    }
-    &.error {
-        background-color: $toastColorError;
-        & span.atmToastTitle  {
-            color: $toastColorError;
+        &.error {
+            background-color: $toastColorError;
+            & span.toastTitle  {
+                color: $toastColorError;
+            }
         }
-    }
-    &.warning {
-        background-color: $toastColorWarning;
-        & span.atmToastTitle  {
-            color: $toastColorWarning;
+        &.warning {
+            background-color: $toastColorWarning;
+            & span.toastTitle  {
+                color: $toastColorWarning;
+            }
         }
-    }
-    &.info {
-        background-color: $toastColorInfo;
-        & span.atmToastTitle  {
-            color: $toastColorInfo;
+        &.info {
+            background-color: $toastColorInfo;
+            & span.toastTitle  {
+                color: $toastColorInfo;
+            }
         }
     }
 }
@@ -36,63 +38,49 @@
     width: 500px;
     right: 20px;
     top: 40px;
-    display: flex;
-    flex-direction: column;
 }
 
-.toastWrapper {
-    position: relative;
-    margin: 0 auto;
-    margin-bottom: 10px;
-    width: 500px;
-    min-height: 70px;
-    font-family: $brandFontSemi;
-    background: $brandColorWhite;
-    box-shadow: $brandBoxShadow;
-    & .toastInner {
+.molToast {
+    & .toastWrapper {
+        position: relative;
+        margin: 0 auto;
+        margin-bottom: $marginSmall;
+        width: 500px;
         min-height: 70px;
-        width: 100%;
-        & .molToastIcon {
-            min-height: 70px;
-            width: 60px;
-            & i {
-                font-size: 1.6rem;
-                color: rgba(255,255,255,0.7);
-            }
-        }
-        & .molToastContent {
+        font-family: $brandFontSemi;
+        background: $brandColorWhite;
+        box-shadow: $brandBoxShadow;
+        & .toastInner {
             min-height: 70px;
             width: 100%;
-            padding: $paddingSmall;
-            background-color: $brandColorWhite;
-            & span.atmToastTitle {
-                margin-bottom: 7px;
-                letter-spacing: $brandLetterSpacing;
-                font-size: 0.8rem;
-                line-height: 1.2;
-                text-transform: uppercase;
-                font-family: $brandFontBold;
+            & .toastIcon {
+                min-height: 70px;
+                width: 60px;
+                & i {
+                    font-size: 1.6rem;
+                    color: rgba(255,255,255,0.5);
+                }
             }
-            & span.atmToastMessage {
-                color: $toastColorBody;
-                font-size: 0.8rem;
-                line-height: 1.2;
-                font-family: $brandFontSemi;
+            & .toastContent {
+                min-height: 70px;
+                width: 100%;
+                padding: $paddingSmall;
+                background-color: $brandColorWhite;
+                & span.toastTitle {
+                    margin-bottom: 7px;
+                    letter-spacing: $brandLetterSpacing;
+                    font-size: 0.8rem;
+                    line-height: 1.2;
+                    text-transform: uppercase;
+                    font-family: $brandFontBold;
+                }
+                & span.toastDesc {
+                    color: $toastColorBody;
+                    font-size: 0.8rem;
+                    line-height: 1.2;
+                    font-family: $brandFontSemi;
+                }
             }
-        }
-    }
-    & i.fa-xmark { // close button
-        transition: $brandTransitionSpeed;
-        position: absolute;
-        top: 5px;
-        right: 5px;
-        color: rgba($brandColorDark, 0.5);
-        font-size: 1.1rem;
-        border-radius: 2px;
-        cursor: pointer;
-        &:hover {
-            color: rgba($brandColorDark, 0.8);
-            background-color: rgba(0,0,0,0.05);
         }
     }
 }

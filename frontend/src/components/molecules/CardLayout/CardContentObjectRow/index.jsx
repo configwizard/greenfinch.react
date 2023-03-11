@@ -15,20 +15,26 @@ const CardContentObjectRow = ({ onClick, dataType, objectFile, objectName, objec
             type="button" 
             className="molViewObjectsBody"
             onClick={onClick}>
-            <div className="d-flex flex-row flex-md-grow-1">
-                { objectFile ?
-                    <figure className="atmContentFile d-flex align-items-center justify-content-center">
-                        <img className="mw-100 mh-100" src={`data:image/png;base64,${objectFile}`} alt={objectName} />
-                    </figure> : <i className="fa-sharp fa-solid fa-folder" data-type={dataType}/>
-                }
-                <div className="align-self-center">
-                    <MiddleEllipsis>
-                        <div className="atmContentName">{objectName}</div>
-                    </MiddleEllipsis>
+
+            <div className="d-flex">
+                <div className="d-flex align-items-center">
+                    { objectFile ?
+                        <figure className="atmContentFile d-flex align-items-center justify-content-center">
+                            <img className="mw-100 mh-100" src={`data:image/png;base64,${objectFile}`} alt={objectName} />
+                        </figure> : <i className="fa-sharp fa-solid fa-folder" data-type={dataType}/>
+                    }
                 </div>
-                <div className="atmContentDefault align-self-center">{fileSize(objectSize)}</div>
-                <div className="atmContentDefault align-self-center"><Moment unix format="DD MMM YY">{uploadedAt}</Moment></div>
+                <div className="d-flex align-items-center flex-grow-1">
+                    <div className="atmContentNameWrapper me-auto">
+                        <MiddleEllipsis>
+                            <span className="atmContentName">{objectName}</span>
+                        </MiddleEllipsis>
+                    </div>
+                    <div className="atmContentDefault d-none d-xxl-flex"><Moment unix format="DD MMM YY">{uploadedAt}</Moment></div>
+                    <div className="atmContentDefault d-none d-xl-flex">{fileSize(objectSize)}</div>
+                </div>
             </div>
+
         </button>
     )
 }

@@ -2,39 +2,79 @@
 
 /* Notification Types
 - - - - - - - - - - - - - - - - - - */
-
-.molNotification { // maybe this should be notificationMolecule, toastMolecule, buttonTextAtom, if we persist with structural elements like Wrapper and Inner
-    &.notificationWrapper {
-        background:greenyellow; // to delete
-        & .notificationInner {
-            background: limegreen; // to delete
+.molNotification {
+    & .notificationWrapper {
+        &.success {
+            background-color: $toastColorSuccess;
+            & span.notificationTitle {
+                color: $toastColorSuccess;
+            }
+        }
+        &.error {
+            background-color: $toastColorError;
+            & span.notificationTitle  {
+                color: $toastColorError;
+            }
+        }
+        &.warning {
+            background-color: $toastColorWarning;
+            & span.notificationTitle  {
+                color: $toastColorWarning;
+            }
+        }
+        &.info {
+            background-color: $toastColorInfo;
+            & span.notificationTitle  {
+                color: $toastColorInfo;
+            }
         }
     }
 }
 
-.notificationWrapper {
-    &.success {
-        background-color: $toastColorSuccess;
-        & span.atmToastTitle {
-            color: $toastColorSuccess;
-        }
-    }
-    &.error {
-        background-color: $toastColorError;
-        & span.atmToastTitle  {
-            color: $toastColorError;
-        }
-    }
-    &.warning {
-        background-color: $toastColorWarning;
-        & span.atmToastTitle  {
-            color: $toastColorWarning;
-        }
-    }
-    &.info {
-        background-color: $toastColorInfo;
-        & span.atmToastTitle  {
-            color: $toastColorInfo;
+/* Component: Toast
+- - - - - - - - - - - - - - - - - - */
+.noticationColumn {
+    background-color: rgba(0,0,0,0.5); 
+}
+
+.molNotification {
+    & .noticationWrapper {
+        position: relative;
+        margin: 0 auto;
+        margin-bottom: $marginSmall;
+        font-family: $brandFontSemi;
+        background: $brandColorWhite;
+        box-shadow: $brandBoxShadow;
+        & .noticationInner {
+            //min-height: 70px;
+            width: 100%;
+            & .noticationIcon {
+                //min-height: 70px;
+                width: 60px;
+                & i {
+                    font-size: 1.6rem;
+                    color: rgba(255,255,255,0.5);
+                }
+            }
+            & .noticationContent {
+                //min-height: 70px;
+                width: 100%;
+                padding: $paddingSmall;
+                background-color: $brandColorWhite;
+                & span.noticationTitle {
+                    margin-bottom: 7px;
+                    letter-spacing: $brandLetterSpacing;
+                    font-size: 0.8rem;
+                    line-height: 1.2;
+                    text-transform: uppercase;
+                    font-family: $brandFontBold;
+                }
+                & span.noticationDesc {
+                    font-size: 0.8rem;
+                    line-height: 1.2;
+                    font-family: $brandFontSemi;
+                }
+            }
         }
     }
 }

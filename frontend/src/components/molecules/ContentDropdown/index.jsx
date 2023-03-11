@@ -14,7 +14,7 @@ const ContentDropdown = (props) => {
     return (
         <>
             <div className="molContentDropdown d-flex align-items-center justify-content-center">
-                <button className="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <button className="btn dropdown-toggle align-self-stretch" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <i className="fa-sharp fa-solid fa-ellipsis"/>
                 </button>
                 <ul className="dropdown-menu">
