@@ -1,9 +1,5 @@
 import React from 'react';
 
-//import { topUpNeoFS } from '../../../manager/manager.js';
-
-// Components
-
 import './style.scss';
 
 function BreadCrumb(props) {
@@ -13,13 +9,33 @@ function BreadCrumb(props) {
     console.log("selectedObject", props, selectedObject, selectedContainer)
 
     return (
-        <div className="breadcrumb-wrapper d-flex align-items-center">
-            <div className="breadcrumb-container">
-                <span className="bread-home" onClick={props.resetBreadcrumb}>Containers</span>
-                {selectedContainer ? <span className="bread-container">{selectedContainer}</span> : null}
-                {selectedObject ? <span className="bread-object">{selectedObject}</span> : null}
+        <section className="orgBreadcrumb d-flex align-items-center">
+            <div className="breadcrumbWrapper d-flex flex-row">
+                {
+                    !selectedContainer && !selectedObject ?
+                        <button className="atmBreadcrumb" type="button" disabled>Containers</button>   
+                    : null
+                }
+                { 
+                    selectedContainer && !selectedObject ? 
+                        <>
+                            <button className="atmBreadcrumb" type="button" onClick={props.resetBreadcrumb}>Containers</button>
+                            <button className="atmBreadcrumb" type="button" disabled>{selectedContainer}</button>
+                        </>
+                    : null
+                }
+                { 
+                    selectedContainer && selectedObject ? 
+                        <>
+                            <button className="atmBreadcrumb" type="button" onClick={props.resetBreadcrumb}>Containers</button>
+                            <button className="atmBreadcrumb" type="button" disabled>{selectedContainer}</button>
+                            <button className="atmBreadcrumb" type="button" disabled>{selectedObject}</button>
+                        </>
+                    :
+                    null
+                }
             </div>
-        </div>
+        </section>
     );
 }
 

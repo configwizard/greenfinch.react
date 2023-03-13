@@ -84,3 +84,16 @@
         }
     }
 }
+
+.molToast.copy  {
+    position: relative;
+    margin: 0 auto;
+    margin-bottom: $marginSmall;
+    width: 300px;
+    min-height: 50px;
+    font-family: $brandFontSemi;
+    background: $brandColorDark;
+    color: $brandColorWhite;
+    border-left: 5px solid darken($brandColorDark,10%);
+    box-shadow: $brandBoxShadow;
+}

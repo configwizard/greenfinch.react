@@ -1,59 +1,45 @@
 @import "../../../assets/greenfinch-variables.scss";
 
-.breadcrumb-wrapper {
+.orgBreadcrumb {
     font-size: 0.75rem;
     font-family: $brandFontSemi;
     color: $brandColorSecondary;
 }
 
-[class^="bread-"] {
+[class^="breadcrumbItem"] {
     transition: $brandTransitionSpeed;
     border-radius: 2px;
     padding: 2px 6px;
-    max-width: 170px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    max-width: 180px;
     &:hover {
         background-color: rgba(0,0,0,0.05);
         cursor: pointer;
     }
 }
 
-.bread-home {
-    &:before {
-        font-family: "Font Awesome 5 Pro";
-        font-weight: 900;
-        margin: 0 0.5em 0 0;
-        content: '\f015';
-    }
-    &:hover {
-        background-color: rgba(0,0,0,0.05);
-        cursor: pointer;
-    }
-}
-
-.bread-container, .bread-object {
-    margin-left: 0.4em;
+button.atmBreadcrumb {
+    background-color: rgba(0,0,0,0.0);
+    border-radius: 3px;
+    color: $brandColorSecondary;
+    padding: 2px 6px;
+    margin-right: $marginSmall;
     &:before {
         font-family: "Font Awesome 5 Pro";
         font-weight: 900;
         margin: 0 0.5em 0 0;
         content: '\f0da';
     }
-}
-
-// To Sort
-/*
-span.atmBreadCrumb, & span.utBreadLive {
-    margin-right: 10px;
-    max-width: 170px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
     &:hover {
-        text-decoration: underline;
+        background-color: rgba(0,0,0,0.05);
         cursor: pointer;
     }
+    &:disabled {
+        color: $brandColorDark;
+        opacity: 1!important;
+        background-color: rgba(0,0,0,0)!important;
+        &:hover {
+            background-color: unset!important;
+            cursor: default!important;
+        }
+    }
 }
-*/
