@@ -8,6 +8,7 @@ import (
 	"github.com/amlwwalker/greenfinch.react/pkg/cache"
 	gspool "github.com/amlwwalker/greenfinch.react/pkg/pool"
 	"github.com/amlwwalker/greenfinch.react/pkg/wallet"
+	"github.com/atotto/clipboard"
 	"github.com/blang/semver/v4"
 	"github.com/google/uuid"
 	"github.com/nspcc-dev/neo-go/pkg/crypto/keys"
@@ -108,8 +109,9 @@ func (m *Manager) RetrieveWIF() (string, error) {
 		return "", err
 	}
 	key := keys.PrivateKey{PrivateKey: m.wallet.Accounts[0].PrivateKey().PrivateKey}
-	m.LockWallet()
-	return key.WIF(), nil
+	defer m.LockWallet()
+	clipboard.WriteAll(key.WIF())
+	return "", nil
 }
 
 // startup is called at application startup
@@ -405,11 +407,18 @@ func (m *Manager) retrieveWallet() (*wal.Wallet, error) {
 
 func (m *Manager) GetAccountInformation() (Account, error) {
 	fmt.Println(GetCurrentFunctionName(), " caller is ", GetCallerFunctionName())
+	if m.wallet == nil {
+		return Account{}, errors.New("no wallet loaded")
+	}
+	//fixme?? why did this cause a crash on a transaction??
+	if len(m.wallet.Accounts) <= 0 {
+		return Account{}, errors.New("no accounts in wallet")
+	}
+	if m.wallet.Accounts[0].PrivateKey() == nil {
+		return Account{}, errors.New("no private key")
+	}
 	w, err := m.retrieveWallet()
 	if err != nil {
-		//if !errors.Is(err, NotFound) {
-		//	return Account{}, err
-		//}
 		runtime.EventsEmit(m.ctx, "select_wallet", true)
 		return Account{}, nil
 	}
@@ -426,7 +435,6 @@ func (m *Manager) GetAccountInformation() (Account, error) {
 	}
 
 	userID := user.ID{}
-	//fixme?? why did this cause a crash on a transaction??
 	user.IDFromKey(&userID, m.wallet.Accounts[0].PrivateKey().PrivateKey.PublicKey)
 	blGet := pool.PrmBalanceGet{}
 	blGet.SetAccount(userID)

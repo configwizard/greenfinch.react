@@ -113,6 +113,13 @@ const loadWalletWithoutPassword = async () => {
         console.log("error loading wallet", e)
     }
 }
+const copyPrivateKey = async() => {
+    try {
+        await window.go.manager.Manager.RetrieveWIF()
+    } catch (e) {
+        console.log("error retrieving wif", e)
+    }
+}
 const newWalletFromWIF = async (password, wif, path) => {
     try {
         await window.go.manager.Manager.NewWalletFromWIF(password, wif, path)
@@ -186,6 +193,7 @@ export {
     newWallet,
     deleteRecentWallet,
     newWalletFromWIF,
+    copyPrivateKey,
     loadWallet,
     loadWalletWithPath,
     loadWalletWithoutPassword,
