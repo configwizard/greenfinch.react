@@ -60,7 +60,7 @@ const createNewContact = async (setModal, createContact, unSetModal) => {
     </CompModalStandard>)
 }
 
-const TemplateContacts = ({contacts, createContact, deleteContact}) => {
+const TemplateContacts = ({account, contacts, createContact, deleteContact}) => {
     const { setModal, unSetModal } = useModal()
     return (
         <div className="templatePage d-flex flex-column flex-grow-1">
@@ -70,7 +70,7 @@ const TemplateContacts = ({contacts, createContact, deleteContact}) => {
                         pageTitle={"Greenfinch contacts"}
                         hasButton={true}
                         hasButtonIcon={true}
-                        isButtonDisabled={false}
+                        isButtonDisabled={account.address ? false : true}
                         faClass={"fa-sharp fa-solid fa-circle-plus"}
                         buttonText={"Add new contact"}
                         buttonAction={() => {createNewContact(setModal, createContact, unSetModal)} }/>
@@ -79,16 +79,17 @@ const TemplateContacts = ({contacts, createContact, deleteContact}) => {
                             <div className="templateWrapper">
                                     {contacts.length > 0 ? <AddressBook contacts={contacts} deleteContact={deleteContact}/>
                                         : <NoContent
-                                            text={"You currently have no contacts."}
-                                            addAction={true}
-                                            isPageLink={false}
-                                            textAction={"Add your first contact"}
-                                            textClick={() => {createNewContact(setModal, createContact, unSetModal)} }/>
+                                            text={account.address ? "You currently have no contacts." : "You need a wallet loaded to add contacts."}
+                                            addAction={account.address ? true : false}
+                                            textAction={account.address ? "Add your first contact" : null}
+                                            isPageLink={account.address ? false : true}
+                                            textClick={() => {createNewContact(setModal, createContact, unSetModal)}}
+                                            to={account.address ? null :"/"}
+                                            label={account.address ? null : "Load a wallet to get started"}/>
                                     }
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>

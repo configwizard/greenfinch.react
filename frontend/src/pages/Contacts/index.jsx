@@ -1,9 +1,9 @@
 import React from 'react';
+import {listContacts, createContact, deleteContact} from "../../manager/contacts";
 
-import {listContacts, createContact} from "../../manager/contacts"
 // Components
 import TemplateContacts from '../../components/templates/Contacts';
-import {deleteContact} from "../../manager/contacts"
+
 class PageContacts extends React.Component {
     constructor(props) {
         super(props);
@@ -39,7 +39,7 @@ class PageContacts extends React.Component {
         return (
             <>
                 {/* Loader */}
-                <TemplateContacts contacts={this.state.contacts} createContact={this.createContact} deleteContact={this.deleteContact}/>
+                <TemplateContacts account={this.props.account} contacts={this.state.contacts} createContact={this.createContact} deleteContact={this.deleteContact}/>
             </>
         )
     }

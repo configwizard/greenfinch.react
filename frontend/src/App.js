@@ -130,7 +130,7 @@ class App extends React.Component {
                                 <Routes>
                                     <Route path="/" exact element={<PageHome refreshRecentWallets={this.refreshRecentWallets} recentWallets={this.state.recentWallets} account={this.state.account} selectedNetwork={this.state.selectedNetwork}/>} />
                                     <Route path="/containers" exact element={<PageContainers setStatusAccount={this.setStatusAccount} account={this.state.account}/>} />
-                                    <Route path="/contacts" exact element={<PageContacts/>} />
+                                    <Route path="/contacts" exact element={<PageContacts account={this.state.account}/>} />
                                     <Route path="/shared" exact element={<PageShared/>} />
                                     <Route path="/websites" exact element={<PageWebsites/>} />
                                     <Route path="/nfts" exact element={<PageNFTs/>} />
