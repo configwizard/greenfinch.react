@@ -67,7 +67,7 @@ const TemplateContacts = ({account, contacts, createContact, deleteContact}) => 
             <div className="row">
                 <div className="col-12">
                     <HeaderPage 
-                        pageTitle={"Greenfinch contacts"}
+                        pageTitle={"Greenfinch contacts"} 
                         hasButton={true}
                         hasButtonIcon={true}
                         isButtonDisabled={account.address ? false : true}
