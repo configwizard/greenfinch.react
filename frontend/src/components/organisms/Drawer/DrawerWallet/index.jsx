@@ -38,6 +38,11 @@ const DrawerWallet = (props) => {
                         title={"public key"}
                         hasCopy={props.account.publicKey ? true : false }
                         value={props.account.publicKey ? props.account.publicKey : "- -"} />
+                    <RowWallet
+                        type={"address"}
+                        title={"private key"}
+                        hasCopy={props.account.privateKey ? true : false }
+                        value={props.account.privateKey ? "••••••••••••••" : "- -"} />
                 </section>
                 <section className="molDrawerRow">
                     <RowWallet

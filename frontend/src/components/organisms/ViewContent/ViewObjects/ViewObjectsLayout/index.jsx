@@ -71,9 +71,12 @@ export function ViewObjectsRow(props) {
                         id={props.item.id}
                         filename={props.item.attributes.FileName} 
                         type={props.item.type}>
-                        <DeleteButton // child of the ContentDropdown
+                        { props.onDelete !== null ? <DeleteButton // child of the ContentDropdown
                             onDelete={props.onDelete}>
-                        </DeleteButton>
+                        </DeleteButton> : null }
+                        <DownloadButton // child of the ContentDropdown
+                            onDownload={props.onDownload}>
+                        </DownloadButton>
                     </ContentDropdown>
                     : null
                 }

@@ -1,11 +1,11 @@
 import React from 'react';
 import {Form} from "react-bootstrap";
-import {copyTextToClipboard, transferGasToContact} from "../../../manager/manager.js"
+import {copyTextToClipboard, transferGasToContact, makeCopyToast} from "../../../manager/manager.js"
 
 // Components
 import ButtonText from '../../atoms/ButtonText';
 import RowElement from '../../atoms/RowElement';
-import Tooltip from '../../atoms/Tooltip';
+
 import CompModalStandard from "../../organisms/Modal/ModalStandard";
 import { useModal } from '../../organisms/Modal/ModalContext';
 
@@ -21,24 +21,8 @@ const RowAddress = ({first, contact, deleteContact}) => {
                     size={"small"}
                     isUppercase={false}
                     text={contact.firstName + " " + contact.lastName} />
-                <Tooltip content="Copy wallet address" direction={first ? "bottom": "top"}>
-                    <ButtonText
-                        size={"small"}
-                        type={"clean"}
-                        hasIcon={false}
-                        text={contact.walletAddress}
-                        isDisabled={false}
-                        onClick={() => {copyTextToClipboard(contact.walletAddress)}}/>
-                </Tooltip>
-                <Tooltip content="Copy public key" direction={first ? "bottom": "top"}>
-                    <ButtonText
-                        size={"small"}
-                        type={"clean"}
-                        hasIcon={false}
-                        text={contact.publicKey}
-                        isDisabled={false}
-                        onClick={() => {copyTextToClipboard(contact.publicKey)}}/>
-                </Tooltip>
+                <span className="copyable" onClick={() => {copyTextToClipboard(contact.walletAddress); makeCopyToast("Copied to clipboard")}}>{contact.walletAddress}</span>
+                <span className="copyable" onClick={() => {copyTextToClipboard(contact.publicKey); makeCopyToast("Copied to clipboard")}}>{contact.publicKey}</span>
             </div>
             <div className="ms-auto">
                 <ButtonText

@@ -3,9 +3,6 @@ import PropTypes from 'prop-types';
 import {copyTextToClipboard, makeCopyToast} from "../../../manager/manager.js"
 import MiddleEllipsis from 'react-middle-ellipsis';
 
-//Components
-import Tooltip from '../../atoms/Tooltip';
-
 import './style.scss';
 
 const RowWallet = ({ type, title, value, hasCopy }) => {
@@ -30,9 +27,7 @@ const RowWallet = ({ type, title, value, hasCopy }) => {
                 hasCopy ?
                     <>
                         <h6 className="atmWallet">{title}</h6>
-                        <Tooltip content={'Copy ' + title}>
-                            <span className="copyable" onClick={() => {copyTextToClipboard(value); makeCopyToast("Copied to clipboard")}}>{value}</span>
-                        </Tooltip>
+                        <span className="copyable" onClick={() => {copyTextToClipboard(value); makeCopyToast("Copied to clipboard")}}>{value}</span>
                     </>
                 :
                 <>
