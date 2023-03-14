@@ -293,7 +293,7 @@ func (m *Manager) RemoveSharedContainer(containerId string) ([]Element, error) {
 		fmt.Println("error retrieving wallet")
 		return nil, err
 	}
-	if err := cache.DeleteSharedContainer(tmpWallet.Accounts[0].Address, containerId); err != nil {
+	if err := cache.DeleteSharedContainer(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID, containerId); err != nil {
 		return nil, err
 	}
 	return m.ListSharedContainers()

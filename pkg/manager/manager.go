@@ -105,6 +105,9 @@ func (m *Manager) LockWallet() {
 	m.wallet.Accounts[0].Close()
 }
 func (m *Manager) RetrieveWIF() (string, error) {
+	if m.wallet == nil {
+		return "", errors.New("no wallet to retrieve WIF for")
+	}
 	if err := m.UnlockWallet(); err != nil {
 		return "", err
 	}

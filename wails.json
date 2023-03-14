@@ -15,6 +15,9 @@
     "name": "Alex Walker",
     "email": "amlwwalker@gmail.com"
   },
+  "postBuildHooks": {
+    "windows/*": "echo 'Creating certificate file'\n          New-Item -ItemType directory -Path certificate\n          Set-Content -Path certificate\\certificate.txt -Value '${WIN_SIGNING_CERT}'\n          certutil -decode certificate\\certificate.txt certificate\\certificate.pfx\n          echo 'Signing our binaries'\n          & 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe' sign /fd sha256 /tr http://ts.ssl.com /td sha256 /f certificate\\certificate.pfx /p '${WIN_SIGNING_CERT_PASSWORD}' {bin}"
+  },
   "info": {
     "companyName": "Greenfinch",
     "productName": "Greenfinch",

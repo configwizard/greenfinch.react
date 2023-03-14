@@ -98,15 +98,19 @@ func (m *Manager) TransferToken(recipient string, amount float64) (string, error
 			return
 		}
 		runtime.EventsEmit(m.ctx, "fresh_wallet", nil)
-		fmt.Printf("events %s %+v\r\n", txid, stateResponse.Events)
-		fmt.Printf("stack %s %+v\r\n", txid, stateResponse.Stack)
-		fmt.Printf("fault %s exception %+v\r\n", txid, stateResponse.FaultException)
-		fmt.Printf("vm state %s %+v\r\n", txid, stateResponse.VMState)
+		//fmt.Printf("events %s %+v\r\n", txid, stateResponse.Events)
+		//fmt.Printf("stack %s %+v\r\n", txid, stateResponse.Stack)
+		//fmt.Printf("fault %s exception %+v\r\n", txid, stateResponse.FaultException)
+		//fmt.Printf("vm state %s %+v\r\n", txid, stateResponse.VMState)
+		var url string = testNetExplorerUrl
+		if m.selectedNetwork.ID == "mainnet" {
+			url = mainnetExplorerUrl
+		}
 		m.MakeNotification(NotificationMessage{
 			Title:       "Transaction succeeded",
 			Action: 	 "qr-code",
 			Type:        "success",
-			Description: fmt.Sprintf("tranasction %s successful", stateResponse.Container.StringLE()),
+			Description: fmt.Sprintf(path.Join(url, "0x%s"), stateResponse.Container.StringLE()),
 			MarkRead:    false,
 		})
 		tmp := UXMessage{

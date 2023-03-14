@@ -6,7 +6,7 @@ default:
 docs:
 	swag init -g "main.go" && cp docs/swagger.json ./swagger
 
-LDFLAGS := -ldflags "-X main.version=$(shell git semver get)"
+LDFLAGS := -ldflags "-X main.version=v0.5.0-rc2"
 
 #when a new makor release is made, we run this
 .PHONY: tag-major
@@ -31,7 +31,7 @@ dev:
 #when going to production, run this
 .PHONY: prod
 prod:
-	wails build -p -f ${LDFLAGS}
+	wails build -f ${LDFLAGS}
 
 .PHONY: win
 win:

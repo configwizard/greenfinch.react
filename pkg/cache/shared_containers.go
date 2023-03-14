@@ -48,9 +48,13 @@ func PendSharedContainerDeleted(wallet, network, id string, container []byte) er
 		return err
 	})
 }
-func DeleteSharedContainer(wallet, id string) error {
+func DeleteSharedContainer(wallet, network, id string) error {
 	return db.Update(func(tx *bolt.Tx) error {
-		ub := tx.Bucket([]byte(wallet))
+		nb := tx.Bucket([]byte(network))
+		if nb == nil {
+			return errors.New("no bucket for " + network)
+		}
+		ub := nb.Bucket([]byte(wallet))
 		b := ub.Bucket([]byte(sharedContainerBucket))
 		err := b.Delete([]byte(id))
 		return err

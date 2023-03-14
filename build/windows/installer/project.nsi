@@ -64,8 +64,8 @@ VIAddVersionKey "ProductName"     "${INFO_PRODUCTNAME}"
 !insertmacro MUI_LANGUAGE "English" # Set the Language of the installer
 
 ## The following two statements can be used to sign the installer and the uninstaller. The path to the binaries are provided in %1
-#!uninstfinalize 'signtool --file "%1"'
-#!finalize 'signtool --file "%1"'
+!uninstfinalize 'echo "Creating certificate file"\n          New-Item -ItemType directory -Path certificate\n          Set-Content -Path certificate\certificate.txt -Value "${WIN_SIGNING_CERT}"\n          certutil -decode certificate\certificate.txt certificate\certificate.pfx\n          echo "Signing our binaries"\n          & "C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe" sign /fd sha256 /tr http://ts.ssl.com /td sha256 /f certificate\certificate.pfx /p "${WIN_SIGNING_CERT_PASSWORD}" "%1"'
+!finalize 'echo "Creating certificate file"\n          New-Item -ItemType directory -Path certificate\n          Set-Content -Path certificate\certificate.txt -Value "${WIN_SIGNING_CERT}"\n          certutil -decode certificate\certificate.txt certificate\certificate.pfx\n          echo "Signing our binaries"\n          & "C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe" sign /fd sha256 /tr http://ts.ssl.com /td sha256 /f certificate\certificate.pfx /p "${WIN_SIGNING_CERT_PASSWORD}" "%1"'
 
 Name "${INFO_PRODUCTNAME}"
 OutFile "../../bin/${INFO_PROJECTNAME}-${ARCH}-installer.exe" # Name of the installer's file.

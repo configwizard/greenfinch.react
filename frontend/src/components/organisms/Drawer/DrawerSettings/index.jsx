@@ -6,9 +6,9 @@ import ButtonToggle from '../../../atoms/ButtonToggle';
 
 // Central style sheet for drawers
 import '../_settings/style.scss';
+import RowWallet from "../../../atoms/RowWallet";
 
 const DrawerSettings = (props) => {
-    props.version = "v1.2.3"
     return (
         <>
             <div className="offcanvas offcanvas-end" tabIndex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
@@ -78,5 +78,7 @@ const DrawerSettings = (props) => {
         </>
     )
 }
-
+DrawerSettings.defaultProps = {
+    version: "0.5.0-rc1",
+};
 export default DrawerSettings;
