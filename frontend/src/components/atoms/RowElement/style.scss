@@ -1,5 +1,7 @@
 @import "../../../assets/greenfinch-variables.scss";
 
 .rowElement {
+    max-width: 300px;
+    font-size: 0.8rem;
     font-family: $brandFontSemi; 
 }

@@ -1,29 +1,23 @@
 import React from 'react';
 import JSONPretty from 'react-json-pretty';
 import QRCode from "react-qr-code";
+import Moment from "react-moment";
 
 import {getNotifications, deleteNotifications, deleteNotification} from "../../../manager/manager";
 
 // Components
+import ButtonText from "../../atoms/ButtonText";
 import NoContent from "../../atoms/NoContent";
 import HeaderPage from '../../organisms/HeaderPage';
 
 // Central style sheet for templates
 import '../_settings/style.scss';
-import styled from "styled-components";
+
+// To separate out to molecule -> notification
+import '../../molecules/Notification/style.scss';
 
 const runtime = require('@wailsapp/runtime');
 const notificationsEventName = 'freshnotification';
-
-const Button = styled.button`
-    background-color: black;
-    color: white;
-    font-size: 20px;
-    padding: 10px 60px;
-    border-radius: 5px;
-    margin: 10px 0px;
-    cursor: pointer;
-`;
 
 export default class TemplateNotifications extends React.Component {
     constructor(props) {
@@ -104,20 +98,34 @@ export default class TemplateNotifications extends React.Component {
                                             this.state.list.length > 0 ? this.state.list.map((notification, i) => {
                                                 console.log(notification)
                                                 return (
-                                                        <div className="molToast">
-                                                            <div className={`toastWrapper ${notification.Type}`}>
-                                                                <div className="toastInner d-flex">
-                                                                    {/* <div className="toastIcon d-flex align-items-center justify-content-center">
-                                                                        <i className={`${toastIcon}`}/>
-                                                                    </div> */}
-                                                                    <div className="toastContent d-flex flex-column justify-content-center">
-                                                                        <span className="toastTitle">{notification.Title}</span>
-                                                                        <span className="toastDesc">{notification.Description}</span>
-                                                                        { notification.Action !== undefined && notification.Action === "qr-code" ? <QRCode size={128} value={notification.Description} /> : null }
-                                                                        <Button onClick={() => this.onDeleteNotification(notification.Id)}>
-                                                                            Delete notification
-                                                                        </Button>
+                                                        <div className="molNotification">
+                                                            <div className={`notificationWrapper ${notification.Type}`}>
+                                                                <div className="notificationInner d-flex">
+                                                                    <div className="notificationIcon d-flex align-items-start jusify-content-center">
+                                                                        <span class="fa-stack fa-lg">
+                                                                            <i className="fa-sharp fa-solid fa-circle fa-stack-2x"/>
+                                                                            <i className="fa-sharp fa-solid fa-stack-1x fa-megaphone"/>
+                                                                        </span>
                                                                     </div>
+                                                                    <div className="notificationContent d-flex flex-column">
+                                                                        <span className="notificationTitle">{notification.Title}</span>
+                                                                        <span className="notificationDesc">{notification.Description}</span>
+                                                                        <span className="notificationDesc"><Moment unix format="DD MMM YY">{notification.CreatedAt}</Moment></span>
+                                                                        { notification.Action !== undefined && notification.Action === "qr-code" ? <QRCode size={128} value={notification.Description} /> : null }
+                                                                        <div className="d-flex align-items-center">
+                                                                            <div className="ms-auto">
+                                                                                <ButtonText 
+                                                                                    type="default"
+                                                                                    size="small"
+                                                                                    hasIcon={true}
+                                                                                    faClass={"fa-sharp fa-solid fa-trash-can"}
+                                                                                    text={"Delete notification"}
+                                                                                    isDisabled={false}
+                                                                                    onClick={() => this.onDeleteNotification(notification.Id)}/>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                   
                                                                 </div>
                                                             </div>
                                                         </div>

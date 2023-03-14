@@ -99,7 +99,7 @@ $brandLetterSpacing: 0.15rem;
 $brandBorderRadius: 5px;
 $brandTransitionSpeed: 0.3s;
 $brandDarkenValue: 12%;
-$brandBoxShadow: 0 0 12px rgba(0,0,0,0.4);
+$brandBoxShadow: 0 0 12px rgba(0,0,0,0.3);
 
 /* Base: Buttons
 - - - - - - - - - - - - - - - - - - */
@@ -172,4 +172,8 @@ a.disabled {
     & i {
         margin-right: $marginXSmall;
     }
+}
+
+.utCopyable {
+    cursor: pointer;
 }

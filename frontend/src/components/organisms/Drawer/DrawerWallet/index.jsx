@@ -41,10 +41,10 @@ const DrawerWallet = (props) => {
                         value={props.account.publicKey ? props.account.publicKey : "- -"} />
                     <ButtonText
                         type={"clean"}
-                        size={"medium"}
+                        size={"small"}
                         hasIcon={false}
                         text={"Copy private key to clipboard"}
-                        isDisabled={false}
+                        isDisabled={props.account.address ? false : true }
                         onClick={async () => {await copyPrivateKey(); makeCopyToast("Copied to clipboard")}}/>
                 </section>
                 <section className="molDrawerRow">

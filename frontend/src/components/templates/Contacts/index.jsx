@@ -55,7 +55,7 @@ const createNewContact = async (setModal, createContact, unSetModal) => {
                 <Form.Text muted>N.B. A contact's public key is required to share containers</Form.Text>
                 </Form.Group>
             <Form.Group id={"warningarea"} className="atmFormError" style={{display: "none"}}>
-                <i class='fa-sharp fa-solid fa-circle-x'></i><span id="errormessage"></span>
+                <i className='fa-sharp fa-solid fa-circle-x'/><span id="errormessage"></span>
             </Form.Group>
     </CompModalStandard>)
 }
