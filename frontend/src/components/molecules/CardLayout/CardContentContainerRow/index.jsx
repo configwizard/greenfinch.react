@@ -15,17 +15,19 @@ const CardContentContainerRow = ({ onClick, containerName, containerSize, contai
             type="button" 
             className="molViewContainersBody" 
             onClick={onClick}>
-            <div className="d-flex flex-row flex-md-grow-1">
-                <div className="align-self-center">
+            <div className="d-flex">
+                <div className="atmContentFileIcon d-flex align-items-center">
                     <i className="fa-sharp fa-solid fa-folder"/>
                 </div>
-                <div className="align-self-center">
-                    <MiddleEllipsis>
-                        <span className="atmContentName">{containerName}</span>
-                    </MiddleEllipsis>
+                <div className="d-flex align-items-center flex-grow-1">
+                    <div className="atmContentNameWrapper me-auto">
+                        <MiddleEllipsis>
+                            <span className="atmContentName">{containerName}</span>
+                        </MiddleEllipsis>
+                    </div>
+                    <div className="atmContentDefault d-none d-xxl-flex"><Moment unix format="DD MMM YY">{containerOrigin}</Moment></div>
+                    <div className="atmContentDefault d-none d-xl-flex">{fileSize(containerSize)}</div>
                 </div>
-                <div className="atmContentDefault align-self-center">{fileSize(containerSize)}</div>
-                <div className="atmContentDefault align-self-center"><Moment unix format="DD MMM YY">{containerOrigin}</Moment></div>
             </div>
         </button>
     )

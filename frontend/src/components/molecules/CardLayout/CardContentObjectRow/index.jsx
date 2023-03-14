@@ -15,7 +15,6 @@ const CardContentObjectRow = ({ onClick, dataType, objectFile, objectName, objec
             type="button" 
             className="molViewObjectsBody"
             onClick={onClick}>
-
             <div className="d-flex">
                 <div className="d-flex align-items-center">
                     { objectFile ?
