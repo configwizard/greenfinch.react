@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form } from "react-bootstrap";
-import {transferGasToContact} from "../../../manager/manager.js"
+import {transferGasToContact, copyTextToClipboard, makeCopyToast} from "../../../manager/manager.js"
 
 // Components
 import ButtonText from '../../atoms/ButtonText';
@@ -15,6 +15,7 @@ import {openInDefaultBrowser} from "../../../manager/manager";
 import '../_settings/style.scss';
 
 const TemplateHome = ({ account, recentWallets, refreshRecentWallets, selectedNetwork, walletId }) => {
+    let walletDonation = "Nfv6SYe5QiAxpeSzpy11NWKyoyDSHp47f1"
     console.log("NETWORK", selectedNetwork);
     return (
         <div className="templatePage d-flex flex-column flex-grow-1">
@@ -75,7 +76,7 @@ const TemplateHome = ({ account, recentWallets, refreshRecentWallets, selectedNe
                                                     text={"Donations"}/>            
                                                 { 
                                                     selectedNetwork !== null && selectedNetwork.Name === "Main Net" ? 
-                                                        <p>For Greenfinch to grow, we need your support. Please consider donating today.</p>
+                                                        <p>For Greenfinch to grow, we need your support. Please consider donating today. Alternatively send donations direct to our wallet address below.</p>
                                                     : 
                                                     <p>Switch to Main Net, to make valuable donations to the team.</p>
                                                 }
@@ -86,7 +87,17 @@ const TemplateHome = ({ account, recentWallets, refreshRecentWallets, selectedNe
                                                         placeholder="e.g 10 GAS" 
                                                         id={"donateAmount"}/>
                                                 </Form.Group>
-                                                <div className="d-flex">
+                                                <div className="d-flex align-items-center">
+                                                    <div className="atmWalletDonation">
+                                                    { 
+                                                        selectedNetwork !== null && selectedNetwork.Name === "Main Net" ? 
+                                                        <>
+                                                            <i className="fa-sharp fa-solid fa-wallet"/>
+                                                            <span className="utCopyable" onClick={() => {copyTextToClipboard(walletDonation); makeCopyToast("Copied to clipboard")}}>{walletDonation}</span>
+                                                        </>
+                                                        : null
+                                                    }
+                                                    </div>
                                                     <div className="ms-auto">
                                                         <ButtonText 
                                                             type={"default"}
@@ -94,7 +105,7 @@ const TemplateHome = ({ account, recentWallets, refreshRecentWallets, selectedNe
                                                             hasIcon={false}
                                                             text={"Donate"}
                                                             isDisabled={selectedNetwork !== null && selectedNetwork.Name === "Main Net" && account.address ? false : true }
-                                                            onClick={async () => {await transferGasToContact("Nfv6SYe5QiAxpeSzpy11NWKyoyDSHp47f1", document.getElementById("donateAmount").value);}}/>  
+                                                            onClick={async () => {await transferGasToContact({walletDonation}, document.getElementById("donateAmount").value);}}/>  
                                                     </div>
                                                 </div>
                                         </div>

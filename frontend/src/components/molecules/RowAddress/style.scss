@@ -1,7 +1,23 @@
 @import "../../../assets/greenfinch-variables.scss";
 
 .rowAddress {
+    height: $CardContentProportion;
     background-color: rgba(0,0,0,0.05);
-    padding: $paddingXSmall;
     margin-bottom: $marginXSmall;
+    padding-right: $paddingXSmall;
+    font-size: 0.9rem;
+    font-family: $brandFontSemi; 
+    & span.rowElement {
+        margin-right: $marginSmall;
+        &:first-child {
+            min-width: 200px;
+        }
+    }
+}
+
+.atmRowAddressIcon {
+    min-height: $CardContentProportion;
+    width: $CardContentProportion;
+    background-color: rgba($brandColorBlack, 0.05);
+    margin-right: $marginSmall;
 }

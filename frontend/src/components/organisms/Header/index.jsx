@@ -31,7 +31,7 @@ class Header extends React.Component {
                     <div className="header-content d-flex">
                         {/*
                         <div className="atmHeaderPower d-flex align-items-center justify-content-center">
-                            {this.state.selectedNetwork.Name === "Test Net" ? <span className="testtest"><i className="mainnetOff fa-sharp fa-solid fa-power-off fa-fw"></i></span> : <span className="testmain"><i className="mainnetOff fa-sharp fa-solid fa-power-off fa-fw"></i></span> }
+                            {this.state.selectedNetwork.Name === "Test Net" ? <span className="testtest"><i className="mainnetOff fa-sharp fa-solid fa-power-off fa-fw"/></span> : <span className="testmain"><i className="mainnetOff fa-sharp fa-solid fa-power-off fa-fw"/></span> }
                         </div>
                         */}
                         <div className="atmStatus">

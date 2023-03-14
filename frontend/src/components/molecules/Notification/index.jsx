@@ -36,8 +36,8 @@ export default class ItemNotification extends React.Component {
                             console.log("Notification type: ", notification.type)
                             return (
                                 <div key={i} className="molNotification">
-                                    <div class={`notificationWrapper ${notification.Type}`}>
-                                        <div class="notificationInner d-flex">
+                                    <div className={`notificationWrapper ${notification.Type}`}>
+                                        <div className="notificationInner d-flex">
                                             <div className="notificationIcon d-flex align-items-center justify-content-center">
                                                 <i className={`${notificationIcon}`}/>
                                             </div>

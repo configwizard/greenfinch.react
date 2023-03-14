@@ -13,7 +13,7 @@ const RowWallet = ({ type, title, value, hasCopy }) => {
                 hasCopy ?
                     <>
                         <h6 className="atmWallet">{title}</h6>
-                        <MiddleEllipsis><span className="copyable" onClick={() => {copyTextToClipboard(value); makeCopyToast("Copied to clipboard")}}>{value}</span></MiddleEllipsis>
+                        <MiddleEllipsis><span className="utCopyable" onClick={() => {copyTextToClipboard(value); makeCopyToast("Copied to clipboard")}}>{value}</span></MiddleEllipsis>
                     </>
                 :
                 <>
@@ -27,7 +27,7 @@ const RowWallet = ({ type, title, value, hasCopy }) => {
                 hasCopy ?
                     <>
                         <h6 className="atmWallet">{title}</h6>
-                        <span className="copyable" onClick={() => {copyTextToClipboard(value); makeCopyToast("Copied to clipboard")}}>{value}</span>
+                        <span className="utCopyable" onClick={() => {copyTextToClipboard(value); makeCopyToast("Copied to clipboard")}}>{value}</span>
                     </>
                 :
                 <>

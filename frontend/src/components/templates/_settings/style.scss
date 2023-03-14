@@ -11,6 +11,11 @@
     height: calc(100% - $heightFooter);
 }
 
+.templatePage > .row > .col-12 {
+    max-width: $maxDisplay;
+    margin: 0 auto;
+}
+
 .templateWrapper {
     height: calc(100vh - $heightHeader - $heightPageHeader - $heightFooter - 80px);
     // margin-right: $marginMedium; // To allow for scroll-bar width
@@ -131,4 +136,14 @@ ol.home-ol {
     padding-bottom: $paddingSmall;
     margin-bottom: $marginSmall;
     border-bottom: 1px solid $brandColorDark-hint;
+}
+
+.atmWalletDonation {
+    color: $brandColorDark;
+    font-size: 0.9rem;
+    font-family: $brandFontBold;
+    & i {
+        color: $brandColorDark;
+        margin-right: $marginXSmall;
+    }
 }

@@ -691,7 +691,7 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 	m.MakeNotification(NotificationMessage{
 		Title:       "Creating container",
 		Type:        "info",
-		Description: "please wait,  creating container" + name,
+		Description: "Please wait, creating container '" + name + "'",
 		MarkRead:    false,
 	})
 	return nil

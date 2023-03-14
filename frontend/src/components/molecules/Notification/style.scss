@@ -5,25 +5,33 @@
 .molNotification {
     & .notificationWrapper {
         &.success {
-            background-color: $toastColorSuccess;
+            & i.fa-circle {
+                color: $toastColorSuccess;
+            }
             & span.notificationTitle {
                 color: $toastColorSuccess;
             }
         }
         &.error {
-            background-color: $toastColorError;
+            & i.fa-circle {
+                color: $toastColorError;
+            }
             & span.notificationTitle  {
                 color: $toastColorError;
             }
         }
         &.warning {
-            background-color: $toastColorWarning;
+            & i.fa-circle {
+                color: $toastColorWarning;
+            }
             & span.notificationTitle  {
                 color: $toastColorWarning;
             }
         }
-        &.info {
-            background-color: $toastColorInfo;
+        &.info  {
+            & i.fa-circle {
+                color: $toastColorInfo;
+            }
             & span.notificationTitle  {
                 color: $toastColorInfo;
             }
@@ -33,35 +41,32 @@
 
 /* Component: Toast
 - - - - - - - - - - - - - - - - - - */
-.noticationColumn {
+.notificationColumn {
     background-color: rgba(0,0,0,0.5); 
 }
 
 .molNotification {
-    & .noticationWrapper {
+    & .notificationWrapper {
         position: relative;
         margin: 0 auto;
         margin-bottom: $marginSmall;
         font-family: $brandFontSemi;
         background: $brandColorWhite;
+        border-radius: $brandBorderRadius;
         box-shadow: $brandBoxShadow;
-        & .noticationInner {
-            //min-height: 70px;
+        & .notificationInner {
             width: 100%;
-            & .noticationIcon {
-                //min-height: 70px;
-                width: 60px;
-                & i {
-                    font-size: 1.6rem;
+            padding: $paddingSmall;
+            & .notificationIcon {
+                & i.fa-megaphone {
                     color: rgba(255,255,255,0.5);
                 }
             }
-            & .noticationContent {
-                //min-height: 70px;
+            & .notificationContent {
                 width: 100%;
-                padding: $paddingSmall;
                 background-color: $brandColorWhite;
-                & span.noticationTitle {
+                padding-left: $paddingSmall;
+                & span.notificationTitle {
                     margin-bottom: 7px;
                     letter-spacing: $brandLetterSpacing;
                     font-size: 0.8rem;
@@ -69,7 +74,7 @@
                     text-transform: uppercase;
                     font-family: $brandFontBold;
                 }
-                & span.noticationDesc {
+                & span.notificationDesc {
                     font-size: 0.8rem;
                     line-height: 1.2;
                     font-family: $brandFontSemi;

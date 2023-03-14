@@ -1,6 +1,7 @@
 import React from 'react';
-import {Form} from "react-bootstrap";
-import {copyTextToClipboard, transferGasToContact, makeCopyToast} from "../../../manager/manager.js"
+import MiddleEllipsis from 'react-middle-ellipsis';
+import {Form} from 'react-bootstrap';
+import {copyTextToClipboard, transferGasToContact, makeCopyToast} from '../../../manager/manager.js';
 
 // Components
 import ButtonText from '../../atoms/ButtonText';
@@ -16,13 +17,16 @@ const RowAddress = ({first, contact, deleteContact}) => {
     console.log("row address ", contact)
     return (
         <div className="rowAddress d-flex flex-row align-items-center">
-            <div>
+            <div className="atmRowAddressIcon d-flex align-items-center justify-content-center">
+                <i className="fa-sharp fa-solid fa-user"/>
+            </div>
+            <div className="d-flex align-items-center flex-grow-1">
                 <RowElement
                     size={"small"}
                     isUppercase={false}
                     text={contact.firstName + " " + contact.lastName} />
-                <span className="copyable" onClick={() => {copyTextToClipboard(contact.walletAddress); makeCopyToast("Copied to clipboard")}}>{contact.walletAddress}</span>
-                <span className="copyable" onClick={() => {copyTextToClipboard(contact.publicKey); makeCopyToast("Copied to clipboard")}}>{contact.publicKey}</span>
+                <span className="rowElement utCopyable" onClick={() => {copyTextToClipboard(contact.walletAddress); makeCopyToast("Copied to clipboard")}}><MiddleEllipsis><span>{contact.walletAddress}</span></MiddleEllipsis></span>
+                <span className="rowElement utCopyable" onClick={() => {copyTextToClipboard(contact.publicKey); makeCopyToast("Copied to clipboard")}}><MiddleEllipsis><span>{contact.publicKey}</span></MiddleEllipsis></span>
             </div>
             <div className="ms-auto">
                 <ButtonText
