@@ -18,9 +18,24 @@ h4 {
 }
 
 .button-offcanvas {
-    background: none;
+    background-color: rgba(0,0,0,0);
+    &:hover {
+        background-color: rgba(0,0,0,0);
+    }
+    & i {
+        transition: $brandTransitionSpeed;
+        padding: 5px 10px;
+        color: rgba($brandColorDark, 0.5);
+        background-color: rgba(0,0,0,0);
+        font-size: 1.5rem;
+        border-radius: 3px;
+        cursor: pointer;
+        &:hover {
+            color: rgba($brandColorDark, 1);
+            background-color: rgba(0,0,0,0.05);
+        }
+    }
 }
-
 
 #offcanvasRight, #offcanvasLeft {
     .atmSwitchContent p {

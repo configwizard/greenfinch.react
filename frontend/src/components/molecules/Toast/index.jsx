@@ -75,7 +75,7 @@ export default class ItemToast extends React.Component {
                                                 <i className={`${toastIcon}`}/>
                                             </div>
                                             <div className="toastContent d-flex flex-column justify-content-center">
-                                                <ButtonClose size="small" onClick={() => this.deleteToast(toast.id)} />
+                                                <ButtonClose type="div" size="small" onClick={() => this.deleteToast(toast.id)} />
                                                 <span className="toastTitle">{toast.Title}</span>
                                                 <span className="toastDesc">{toast.Description}</span>
                                             </div>

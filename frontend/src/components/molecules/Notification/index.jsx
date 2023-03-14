@@ -42,7 +42,7 @@ export default class ItemNotification extends React.Component {
                                                 <i className={`${notificationIcon}`}/>
                                             </div>
                                             <div className="notificationContent d-flex flex-column">
-                                                <ButtonClose size="small" onClick={() => this.deleteToast(notification.id)} />
+                                                <ButtonClose type="div" size="small" onClick={() => this.deleteToast(notification.id)} />
 
                                                 <span className="notificationTitle">{notification.Title}</span>
                                                 <span className="notificationDesc">{notification.Description}</span>

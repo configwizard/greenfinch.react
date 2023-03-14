@@ -8,9 +8,13 @@ export const IconSize = {
     MEDIUM: 'medium',
 }
 
-const ButtonClose = ({ onClick, size }) => {
+export const CloseType = {
+    DIV: 'div',
+}
+
+const ButtonClose = ({ onClick, size, type }) => {
     return (
-        <div className={`atmButtonClose ${[size]}`}>
+        <div className={`atmButtonClose ${[size]} ${[type]}`}>
             <i className="fa-sharp fa-solid fa-xmark" onClick={onClick} />
         </div>
     )
@@ -20,9 +24,11 @@ export default ButtonClose;
 
 ButtonClose.propTypes = {
     size: PropTypes.oneOf(Object.keys(IconSize)),
+    type: PropTypes.oneOf(Object.keys(CloseType)),
     onClick: PropTypes.func
 };
 
 ButtonClose.defaultProps = {
     size: IconSize.SMALL,
+    type: CloseType.DIV,
 };

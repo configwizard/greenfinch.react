@@ -42,7 +42,7 @@ export default class ProgressBar extends React.Component {
                 <div className="molProgressWrapper">
                     <div className="molProgressInner d-flex">
                         <div className="molProgressContent d-flex flex-column">
-                                <ButtonClose size="small" onClick={async () => {await this.setState({...this.state, show: false})}} />
+                                <ButtonClose type="div" size="small" onClick={async () => {await this.setState({...this.state, show: false})}} />
                                 <div>
                                     <span className="atmProgressTitle">Progress</span>
                                 </div>
