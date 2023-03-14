@@ -26,8 +26,10 @@ import (
 	//"github.com/patrickmn/go-cache"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
-//const explorerUrl = "https://testnet.explorer.onegate.space/transactionInfo"
-const explorerUrl = "https://dora.coz.io/transaction/neo3/testnet"
+
+//const testNetExplorerUrl = "https://testnet.explorer.onegate.space/transactionInfo"
+const testNetExplorerUrl = "https://dora.coz.io/transaction/neo3/testnet"
+const mainnetExplorerUrl = "https://dora.coz.io/transaction/neo3/mainnet"
 type NotificationMessage struct {
 	Id          string
 	User		string //who is this message for so we can store it in the database
@@ -422,10 +424,9 @@ func (m *Manager) GetAccountInformation() (Account, error) {
 	if err != nil {
 		return Account{}, err
 	}
-	//get := neofscli.PrmBalanceGet{}
-	//get.SetAccount(*id)
 
 	userID := user.ID{}
+	//fixme?? why did this cause a crash on a transaction??
 	user.IDFromKey(&userID, m.wallet.Accounts[0].PrivateKey().PrivateKey.PublicKey)
 	blGet := pool.PrmBalanceGet{}
 	blGet.SetAccount(userID)

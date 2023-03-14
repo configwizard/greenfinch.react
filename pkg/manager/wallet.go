@@ -116,11 +116,16 @@ func (m *Manager) TransferToken(recipient string, amount float64) (string, error
 		}
 		m.MakeToast(NewToastMessage(&tmp))
 	}()
+
+	var url string = testNetExplorerUrl
+	if m.selectedNetwork.ID == "mainnet" {
+		url = mainnetExplorerUrl
+	}
 	m.MakeNotification(NotificationMessage{
 		Title:       "Transaction started",
 		Action: 	"qr-code",
 		Type:        "info",
-		Description: fmt.Sprintf(path.Join(explorerUrl, "0x%s"), txid.StringLE()),
+		Description: fmt.Sprintf(path.Join(url, "0x%s"), txid.StringLE()),
 		MarkRead:    false,
 	})
 	tmp := UXMessage{

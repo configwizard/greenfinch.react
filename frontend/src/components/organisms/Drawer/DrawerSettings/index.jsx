@@ -59,7 +59,7 @@ const DrawerSettings = (props) => {
                             toogleName={"default"}
                             toggleId={"default"}
                             initialToggle={false}
-                            isDisabled={true}
+                            isDisabled={false}
                             onToggle={async (isToggled) => {
                                 await enableLocalServer(isToggled)
                             }}

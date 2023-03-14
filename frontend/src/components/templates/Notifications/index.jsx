@@ -52,6 +52,10 @@ export default class TemplateNotifications extends React.Component {
     async retrieveList () {
         const currentNotifications = await getNotifications()
         if (currentNotifications != null) {
+            currentNotifications.sort((a,b) => {
+                console.log("comparing ", a, " to ", b)
+                return parseInt(b.CreatedAt) - parseInt(a.CreatedAt);
+            })
             await this.setState({list: currentNotifications})
         } else {
             await this.setState({list: []})
@@ -68,10 +72,10 @@ export default class TemplateNotifications extends React.Component {
         //here we need to read in all notifications from the database
         window.runtime.EventsOn(notificationsEventName, async (message) => {
             console.log("message", message)
-            //HERE. Show dot on notification icon e.g. highlight on bell icon
             const notificationList = [message,...this.state.list]
             notificationList.sort((a,b) => {
-                return parseInt(a.CreatedAt) - parseInt(b.CreatedAt);
+                console.log("comparing ", a, " to ", b)
+                return parseInt(b.CreatedAt) - parseInt(a.CreatedAt);
             })
             await this.setState({list: notificationList})           
         })
@@ -98,6 +102,7 @@ export default class TemplateNotifications extends React.Component {
                                     <div className="templateInner">
                                         {
                                             this.state.list.length > 0 ? this.state.list.map((notification, i) => {
+                                                console.log(notification)
                                                 return (
                                                         <div className="molToast">
                                                             <div className={`toastWrapper ${notification.Type}`}>
