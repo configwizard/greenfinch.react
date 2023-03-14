@@ -2,6 +2,7 @@ package manager
 
 import (
 	"context"
+	"crypto/ecdsa"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -490,15 +491,22 @@ func (m *Manager) RestrictContainer(id string, publicKey string) error {
 	//todo: how do you attach a new session to a session Container?
 	sc, err := tokens.BuildContainerSessionToken(pKey, 500, 500, 500, cnrID, session.VerbContainerPut, *pKey.PublicKey())
 	if err != nil {
-		log.Fatal("error creating session token to create a container")
+		return err
 	}
 
 	//for the time being, this is the same key
-	specifiedTargetRole := eacl.NewTarget()
-	eacl.SetTargetECDSAKeys(specifiedTargetRole, &tmpKey.PublicKey)
+	target := eacl.Target{}
+	target.SetRole(eacl.RoleUser)
+	target.SetBinaryKeys([][]byte{pKey.Bytes()})
+	userKey, err := keys.NewPublicKeyFromString(publicKey)
+	if err != nil {
+		return err
+	}
+	ecdsaPubkey := ecdsa.PublicKey(*userKey)
+	eacl.SetTargetECDSAKeys(&target, &ecdsaPubkey)
 
 	var prm pool.PrmContainerSetEACL
-	table, err := tokens.AllowGetPut(cnrID, *specifiedTargetRole)
+	table, err := tokens.AllowGetPut(cnrID, target)
 	if err != nil {
 		log.Fatal("couldn't create eacl table", err)
 	}
@@ -629,13 +637,13 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 				Type:        "error",
 				Description: "Container '" + name + "' failed",
 			}
+			m.MakeToast(NewToastMessage(&tmp))
 			m.MakeNotification(NotificationMessage{
 				Title:       "Container Error",
 				Type:        "error",
 				Description: fmt.Sprintf("Failed to create container %s - %s", name, err.Error()),
 				MarkRead:    false,
 			})
-			m.MakeToast(NewToastMessage(&tmp))
 			return
 		}
 		fmt.Println("container putted")

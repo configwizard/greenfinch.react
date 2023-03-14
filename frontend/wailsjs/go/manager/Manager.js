@@ -102,6 +102,10 @@ export function LoadWalletWithoutPassword() {
   return window['go']['manager']['Manager']['LoadWalletWithoutPassword']();
 }
 
+export function LockWallet() {
+  return window['go']['manager']['Manager']['LockWallet']();
+}
+
 export function MakeNotification(arg1) {
   return window['go']['manager']['Manager']['MakeNotification'](arg1);
 }
@@ -164,6 +168,10 @@ export function RetrieveContactByWalletAddress(arg1) {
 
 export function RetrieveContacts() {
   return window['go']['manager']['Manager']['RetrieveContacts']();
+}
+
+export function RetrieveWIF() {
+  return window['go']['manager']['Manager']['RetrieveWIF']();
 }
 
 export function SaveWalletWithoutPassword() {

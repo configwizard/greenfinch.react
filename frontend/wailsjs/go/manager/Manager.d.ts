@@ -3,6 +3,8 @@
 import {manager} from '../models';
 import {io} from '../models';
 import {object} from '../models';
+import {pool} from '../models';
+import {map[string]manager} from '../models';
 import {context} from '../models';
 
 export function AddContact(arg1:string,arg2:string,arg3:string,arg4:string):Promise<Array<manager.contact>>;
@@ -55,6 +57,8 @@ export function LoadWalletWithPath(arg1:string,arg2:string):Promise<void>;
 
 export function LoadWalletWithoutPassword():Promise<string>;
 
+export function LockWallet():Promise<void>;
+
 export function MakeNotification(arg1:manager.NotificationMessage):Promise<void>;
 
 export function MakeToast(arg1:manager.UXMessage):Promise<void>;
@@ -75,9 +79,9 @@ export function Notifications():Promise<Array<manager.NotificationMessage>>;
 
 export function OpenInDefaultBrowser(arg1:string):Promise<void>;
 
-export function Pool():Promise<any>;
+export function Pool():Promise<pool.Pool>;
 
-export function RecentWallets():Promise<{[key: string]: manager.cleanedWallet}>;
+export function RecentWallets():Promise<map[string]manager.cleanedWallet>;
 
 export function RemoveSharedContainer(arg1:string):Promise<Array<manager.Element>>;
 
@@ -86,6 +90,8 @@ export function RestrictContainer(arg1:string,arg2:string):Promise<void>;
 export function RetrieveContactByWalletAddress(arg1:string):Promise<manager.contact>;
 
 export function RetrieveContacts():Promise<Array<manager.contact>>;
+
+export function RetrieveWIF():Promise<string>;
 
 export function SaveWalletWithoutPassword():Promise<string>;
 

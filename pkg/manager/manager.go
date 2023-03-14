@@ -10,6 +10,7 @@ import (
 	"github.com/amlwwalker/greenfinch.react/pkg/wallet"
 	"github.com/blang/semver/v4"
 	"github.com/google/uuid"
+	"github.com/nspcc-dev/neo-go/pkg/crypto/keys"
 	"github.com/nspcc-dev/neofs-sdk-go/pool"
 	"github.com/nspcc-dev/neofs-sdk-go/user"
 	"io/ioutil"
@@ -96,6 +97,17 @@ const (
 
 func (m *Manager) UnlockWallet() error {
 	return m.wallet.Accounts[0].Decrypt(m.password, m.wallet.Scrypt)
+}
+func (m *Manager) LockWallet() {
+	m.wallet.Accounts[0].Close()
+}
+func (m *Manager) RetrieveWIF() (string, error) {
+	if err := m.UnlockWallet(); err != nil {
+		return "", err
+	}
+	key := keys.PrivateKey{PrivateKey: m.wallet.Accounts[0].PrivateKey().PrivateKey}
+	m.LockWallet()
+	return key.WIF(), nil
 }
 
 // startup is called at application startup

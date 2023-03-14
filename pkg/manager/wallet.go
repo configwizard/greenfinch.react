@@ -58,6 +58,7 @@ func (m *Manager) TransferToken(recipient string, amount float64) (string, error
 		m.MakeToast(NewToastMessage(&tmp))
 		return "", err
 	}
+	defer m.LockWallet()
 
 	c, err := rpcclient.New(context.Background(), m.selectedNetwork.RpcNodes[0], rpcclient.Options{})
 

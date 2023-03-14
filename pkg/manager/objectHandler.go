@@ -765,9 +765,12 @@ func (m *Manager) DeleteObject(objectID, containerID string) ([]Element, error) 
 	}
 
 	iAt, exp, err := gspool.TokenExpiryValue(m.ctx, pl, 100)
+	if err != nil {
+		return []Element{}, err
+	}
 	bt, err := tokens.BuildBearerToken(pKey, &table, iAt, iAt, exp, pKey.PublicKey())
 	if err != nil {
-		log.Fatal("error creating bearer token to upload object")
+		return []Element{}, err
 	}
 	prmDelete.UseBearer(*bt)
 	//now mark deleted
