@@ -38,6 +38,7 @@
     width: 500px;
     right: 20px;
     top: 40px;
+    z-index: 500000;
 }
 
 .molToast {
@@ -85,15 +86,28 @@
     }
 }
 
-.molToast.copy  {
-    position: relative;
-    margin: 0 auto;
-    margin-bottom: $marginSmall;
-    width: 300px;
-    min-height: 50px;
-    font-family: $brandFontSemi;
-    background: $brandColorDark;
-    color: $brandColorWhite;
-    border-left: 5px solid darken($brandColorDark,10%);
-    box-shadow: $brandBoxShadow;
+.molToast {
+    & .toastWrapper.copy  {
+        position: relative;
+        margin: unset;
+        margin-bottom: $marginSmall;
+        width: 300px;
+        min-height: 30px;
+        font-family: $brandFontSemi;
+        border-left: 7px solid darken($brandColorDark,10%);
+        box-shadow: $brandBoxShadow;
+        & .toastInner {
+            min-height: 30px;
+            & .toastContent {
+                min-height: 30px;
+                padding-left: 10px;
+                background-color: $brandColorDark;
+                & span.toastDesc {
+                    font-size: 1rem;
+                    font-family: $brandFontBold;
+                    color: $brandColorWhite;
+                }
+            }
+        }
+    }
 }

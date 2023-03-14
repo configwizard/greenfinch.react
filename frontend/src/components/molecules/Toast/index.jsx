@@ -68,20 +68,34 @@ export default class ItemToast extends React.Component {
                             const toastIcon = iconSelector(toast.Type)
                             console.log("Toast type: ", toast.type)
                             return (
+                                
                                 <div key={i} className="molToast">
-                                    <div className={`toastWrapper ${toast.Type}`}>
-                                        <div className="toastInner d-flex">
-                                            <div className="toastIcon d-flex align-items-center justify-content-center">
-                                                <i className={`${toastIcon}`}/>
+                                    { toast.Type === "copy" 
+                                        ? 
+                                            <div className={`toastWrapper ms-auto ${toast.Type}`}>
+                                                <div className="toastInner d-flex">
+                                                    <div className="toastContent d-flex align-items-center">
+                                                        <span className="toastDesc">{toast.Description}</span>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div className="toastContent d-flex flex-column justify-content-center">
-                                                <ButtonClose type="div" size="small" onClick={() => this.deleteToast(toast.id)} />
-                                                <span className="toastTitle">{toast.Title}</span>
-                                                <span className="toastDesc">{toast.Description}</span>
-                                            </div>
+                                        : 
+                                        <div className={`toastWrapper ${toast.Type}`}>
+                                            <div className="toastInner d-flex">
+                                                <div className="toastIcon d-flex align-items-center justify-content-center">
+                                                    <i className={`${toastIcon}`}/>
+                                                </div>
+                                                <div className="toastContent d-flex flex-column justify-content-center">
+                                                    <ButtonClose type="div" size="small" onClick={() => this.deleteToast(toast.id)} />
+                                                    <span className="toastTitle">{toast.Title}</span>
+                                                    <span className="toastDesc">{toast.Description}</span>
+                                                </div>
+                                            </div>  
                                         </div>
-                                    </div>
+                                    }
+                                   
                                 </div>
+                                
                             )
                         })
                     }

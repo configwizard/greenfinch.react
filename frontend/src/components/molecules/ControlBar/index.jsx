@@ -1,17 +1,7 @@
 import * as React from 'react'
-// import { Breadcrumb } from 'react-bootstrap';
-// import { Form } from 'react-bootstrap';
-
-// Actual
-// import { createContainer } from '../../../manager/containers.js';
-
-// Mocker
-// import { createContainer } from '../../../mocker/containers.js'
 
 // Components
 import ButtonIcon from '../../atoms/ButtonIcon';
-// import { useModal } from '../../organisms/Modal/ModalContext';
-// import CompModalStandard from '../../organisms/Modal/ModalStandard';
 
 import './style.scss';
 

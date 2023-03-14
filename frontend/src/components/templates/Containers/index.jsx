@@ -5,10 +5,6 @@ import { deleteObject, getObject, listObjects, uploadObject } from '../../../man
 import { listContacts } from '../../../manager/contacts';
 import { Form } from 'react-bootstrap';
 
-// Mocker
-// import { deleteContainer, listContainers} from '../../../mocker/containers.js';
-// import { deleteObject, getObject, listObjects, uploadObject } from '../../../mocker/objects.js';
-
 // Components
 import NoContent from '../../atoms/NoContent';
 import ControlBar from '../../molecules/ControlBar';

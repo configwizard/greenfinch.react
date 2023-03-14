@@ -25,7 +25,6 @@ import {getAccountInformation, getVersion} from './manager/manager.js';
 import ItemToast from "./components/molecules/Toast";
 import ProgressBar from "./components/molecules/ProgressBar";
 import { retrieveRecentWallets } from "./manager/manager.js";
-//import { getAccountInformation } from './mocker/manager.js';
 
 // Try this: https://v5.reactrouter.com/web/example/basic
 

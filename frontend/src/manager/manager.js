@@ -158,11 +158,10 @@ const getVersion = async() => {
         console.log("could not get version", e)
     }
 }
-const makeToast = async(message) => {
+const makeCopyToast = async(message) => {
     try {
         let o = { 
-            Title: message,
-            Type: "info",
+            Type: "copy",
             Description: message
         }
         await window.go.manager.Manager.MakeToast(o)
@@ -192,5 +191,5 @@ export {
     loadWalletWithoutPassword,
     saveWalletWithoutPassword,
     getVersion,
-    makeToast
+    makeCopyToast
 }
