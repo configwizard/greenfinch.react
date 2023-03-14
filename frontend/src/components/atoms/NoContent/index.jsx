@@ -2,16 +2,18 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { Link } from 'react-router-dom'; 
+import { useModal } from '../../organisms/Modal/ModalContext';
 
 import './style.scss';
 
 const NoContent = ({ text, textAction, textClick, addAction, isPageLink, to, label }) => {
+    const { setModal, unSetModal } = useModal();
     return (
         <div className="atmNoContent d-flex flex-column align-items-center">
             <i className="fa-2x fa-solid fa-sharp fa-triangle-exclamation"/>
             <span>{text}</span>
             {addAction ? 
-                <span><button type="button" className="atmSimpleText" onClick={textClick}>{textAction}</button></span> 
+                <span><button type="button" className="atmSimpleText" onClick={() => textClick(setModal, unSetModal)}>{textAction}</button></span> 
             : null
             }
             {isPageLink ? 

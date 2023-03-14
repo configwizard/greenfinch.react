@@ -1,8 +1,9 @@
 import React from 'react';
 
-import { deleteContainer, listContainers } from '../../../manager/containers.js';
+import { deleteContainer, listContainers, createContainer } from '../../../manager/containers.js';
 import { deleteObject, getObject, listObjects, uploadObject } from '../../../manager/objects.js';
 import { listContacts } from '../../../manager/contacts';
+import { Form } from 'react-bootstrap';
 
 // Mocker
 // import { deleteContainer, listContainers} from '../../../mocker/containers.js';
@@ -13,6 +14,7 @@ import NoContent from '../../atoms/NoContent';
 import ControlBar from '../../molecules/ControlBar';
 import BreadCrumb from '../../organisms/Breadcrumb';
 import ContainerHeaderPage from '../../organisms/HeaderPage/ContainerHeaderPage';
+import CompModalStandard from '../../organisms/Modal/ModalStandard';
 import filterContent from './FilterContent';
 
 // Central style sheet for templates
@@ -23,6 +25,32 @@ function TextClickAction() {
     console.log("Button clicked, add modal onClick here")
 }
 */
+
+const createNewContainer = (setModal, unSetModal) => { 
+    setModal(
+    <CompModalStandard
+        title={"Create new container"}
+        hasSecondaryButton={true}
+        buttonTextPrimary={"Create"}
+        buttonTextSecondary={"Cancel"}
+        primaryClicked={async () => {await createContainer(document.getElementById("containerName").value, document.getElementById("containerPermission").value); unSetModal()}}
+        secondaryClicked={async () => unSetModal()}>
+            <Form.Group className="form-div">
+                <Form.Label>Container name</Form.Label>
+                <Form.Control id="containerName" type="text" placeholder="e.g. Family Photos"/>
+                <Form.Text muted>NB. This cannot be changed</Form.Text>
+            </Form.Group>
+            <Form.Group>
+                <Form.Label>Container permissions</Form.Label>
+                <Form.Select id="containerPermission" aria-label="select">
+                    <option>Select container permissions...</option>
+                    <option value="PUBLICREAD">Public Read Only</option>
+                    <option value="PUBLICBASIC">Public Read/Write</option>
+                    <option value="PRIVATE">Private</option>
+                </Form.Select>
+            </Form.Group>
+    </CompModalStandard>)
+}
 
 class Containers extends React.Component {
     constructor(props) {
@@ -164,6 +192,7 @@ class Containers extends React.Component {
                             pageTitle={"Containers"} 
                             hasButton={true}
                             hasIcon={true}
+                            createNewContainer={createNewContainer}
                             isButtonDisabled={this.props.account.address ? false : true}
                             faClass={"fa-sharp fa-solid fa-circle-plus"}
                             buttonText={"Create new container"}
@@ -193,6 +222,7 @@ class Containers extends React.Component {
                                             addAction={this.props.account.address ? true : false}
                                             textAction={this.props.account.address ? "Create your first container" : null}
                                             isPageLink={this.props.account.address ? false : true}
+                                            textClick={createNewContainer}
                                             to={this.props.account.address ? null :"/"}
                                             label={this.props.account.address ? null : "Load a wallet to get started"}
                                         />

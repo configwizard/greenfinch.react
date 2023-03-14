@@ -1,21 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
-import { Form } from 'react-bootstrap';
-
-import { createContainer } from '../../../../manager/containers.js';
-
+import { useModal } from '../../../organisms/Modal/ModalContext';
 
 // Components
 import HeadingGeneral from '../../../atoms/HeadingGeneral';
 import ButtonText from '../../../atoms/ButtonText';
 
-import { useModal } from '../../../organisms/Modal/ModalContext';
-import CompModalStandard from '../../../organisms/Modal/ModalStandard';
-
 import '../style.scss';
 
-const ContainerHeaderPage = ({ pageTitle, hasButton, hasIcon, faClass, buttonText, isButtonDisabled }) => {
+const ContainerHeaderPage = ({ pageTitle, hasButton, hasIcon, faClass, buttonText, isButtonDisabled, createNewContainer }) => {
     const { setModal, unSetModal } = useModal();
     return (
         <div className="HeaderPageWrapper">
@@ -36,31 +29,7 @@ const ContainerHeaderPage = ({ pageTitle, hasButton, hasIcon, faClass, buttonTex
                             faClass={faClass}
                             isDisabled={isButtonDisabled}
                             text={buttonText}
-                            onClick={() => {
-                                setModal(
-                                <CompModalStandard
-                                    title={"Create new container"}
-                                    hasSecondaryButton={true}
-                                    buttonTextPrimary={"Create"}
-                                    buttonTextSecondary={"Cancel"}
-                                    primaryClicked={async () => {await createContainer(document.getElementById("containerName").value, document.getElementById("containerPermission").value); unSetModal()}}
-                                    secondaryClicked={async () => unSetModal()}>
-                                        <Form.Group className="form-div">
-                                            <Form.Label>Container name</Form.Label>
-                                            <Form.Control id="containerName" type="text" placeholder="e.g. Family Photos"/>
-                                            <Form.Text muted>NB. This cannot be changed</Form.Text>
-                                        </Form.Group>
-                                        <Form.Group>
-                                            <Form.Label>Container permissions</Form.Label>
-                                            <Form.Select id="containerPermission" aria-label="select">
-                                                <option>Select container permissions...</option>
-                                                <option value="PUBLICREAD">Public Read Only</option>
-                                                <option value="PUBLICBASIC">Public Read/Write</option>
-                                                <option value="PRIVATE">Private</option>
-                                            </Form.Select>
-                                        </Form.Group>
-                                </CompModalStandard>)
-                            }} /> 
+                            onClick={() => createNewContainer(setModal, unSetModal)} /> 
                         : null }
                 </div>
             </div>

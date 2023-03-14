@@ -92,7 +92,7 @@ const loadWallet = async (password) => {
 }
 const deleteRecentWallet = async (walletId) => {
     try {
-        await window.go.manager.DeleteRecentWallet.LoadWallet(walletId)
+        await window.go.manager.Manager.DeleteRecentWallet(walletId)
     } catch(e) {
         console.log("error deleting recent wallet", e)
     }
@@ -158,6 +158,19 @@ const getVersion = async() => {
         console.log("could not get version", e)
     }
 }
+const makeToast = async(message) => {
+    try {
+        let o = { 
+            Title: message,
+            Type: "info",
+            Description: message
+        }
+        await window.go.manager.Manager.MakeToast(o)
+    } catch(e) {
+        console.log("could not make toast", e)
+    }
+}
+
 export {
     setNetwork,
     enableCache,
@@ -178,5 +191,6 @@ export {
     loadWalletWithPath,
     loadWalletWithoutPassword,
     saveWalletWithoutPassword,
-    getVersion
+    getVersion,
+    makeToast
 }

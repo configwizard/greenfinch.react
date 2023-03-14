@@ -68,7 +68,12 @@ export default class TemplateNotifications extends React.Component {
         //here we need to read in all notifications from the database
         window.runtime.EventsOn(notificationsEventName, async (message) => {
             console.log("message", message)
-            await this.setState({list: [message,...this.state.list]})
+            //HERE. Show dot on notification icon e.g. highlight on bell icon
+            const notificationList = [message,...this.state.list]
+            notificationList.sort((a,b) => {
+                return parseInt(a.CreatedAt) - parseInt(b.CreatedAt);
+            })
+            await this.setState({list: notificationList})           
         })
     }
     render() {
@@ -92,15 +97,26 @@ export default class TemplateNotifications extends React.Component {
                                 <div className="templateWrapper">
                                     <div className="templateInner">
                                         {
-                                            this.state.list.length > 0 ? this.state.list.map(l => {
+                                            this.state.list.length > 0 ? this.state.list.map((notification, i) => {
                                                 return (
-                                                    <div className="notificationMolecule">
-                                                        <Button onClick={() => this.onDeleteNotification(l.Id)}>
-                                                            Delete notification
-                                                        </Button>
-                                                        <div ref={l.Id}><JSONPretty id="json-pretty" data={l}></JSONPretty></div>
-                                                        { l.Action !== undefined && l.Action === "qr-code" ? <QRCode size={128} value={l.Description} /> : null }
-                                                    </div>)
+                                                        <div className="molToast">
+                                                            <div className={`toastWrapper ${notification.Type}`}>
+                                                                <div className="toastInner d-flex">
+                                                                    {/* <div className="toastIcon d-flex align-items-center justify-content-center">
+                                                                        <i className={`${toastIcon}`}/>
+                                                                    </div> */}
+                                                                    <div className="toastContent d-flex flex-column justify-content-center">
+                                                                        <span className="toastTitle">{notification.Title}</span>
+                                                                        <span className="toastDesc">{notification.Description}</span>
+                                                                        { notification.Action !== undefined && notification.Action === "qr-code" ? <QRCode size={128} value={notification.Description} /> : null }
+                                                                        <Button onClick={() => this.onDeleteNotification(notification.Id)}>
+                                                                            Delete notification
+                                                                        </Button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    )
                                             }) : <NoContent 
                                                     text={"You currently have no notifications to view."}
                                                     addAction={false} />

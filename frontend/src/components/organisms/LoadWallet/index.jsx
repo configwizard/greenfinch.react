@@ -195,8 +195,10 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                                 hasIcon={false}
                                                 text={"Forget wallet"}
                                                 isDisabled={false}
-                                                // add onClick
-                                                // onClick={async () => {deleteRecentWallet()}}
+                                                onClick={async () => {
+                                                    await deleteRecentWallet(obj)
+                                                    await refreshRecentWallets()
+                                                }}
                                             />
                                             <ButtonText
                                                 type="default"

@@ -6,12 +6,13 @@ import MiddleEllipsis from 'react-middle-ellipsis';
 import '../_settings/style.scss';
 
 const CardContentObjectGrid = ({ onClick, dataType, objectFile, objectName, pendingDeleted }) => {
+    console.log("OBJECT FILE", objectFile);
     return (
         <button 
             type="button"
             className="molViewObjectsBody d-flex flex-column align-items-center justify-content-between"
             onClick={onClick}>
-                { objectFile ? 
+                { objectFile !== "" ? 
                     <figure className={`d-flex align-items-center justify-content-center ${pendingDeleted ? "pending-deleted" : "" }`}>
                         <img className="mw-100 mh-100" src={`data:image/png;base64,${objectFile}`} alt={objectName} /></figure> 
                         : <div className={`file-icon file-icon-lg ${pendingDeleted ? "pending-deleted" : "" }`} data-type={dataType}></div> }

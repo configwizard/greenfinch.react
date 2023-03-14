@@ -15,6 +15,7 @@ import {openInDefaultBrowser} from "../../../manager/manager";
 import '../_settings/style.scss';
 
 const TemplateHome = ({ account, recentWallets, refreshRecentWallets, selectedNetwork, walletId }) => {
+    console.log("NETWORK", selectedNetwork);
     return (
         <div className="templatePage d-flex flex-column flex-grow-1">
             <div className="row">
@@ -73,7 +74,7 @@ const TemplateHome = ({ account, recentWallets, refreshRecentWallets, selectedNe
                                                     isUppercase={true}
                                                     text={"Donations"}/>            
                                                 { 
-                                                    selectedNetwork !== undefined && selectedNetwork.Name === "Main Net" ? 
+                                                    selectedNetwork !== null && selectedNetwork.Name === "Main Net" ? 
                                                         <p>For Greenfinch to grow, we need your support. Please consider donating today.</p>
                                                     : 
                                                     <p>Switch to Main Net, to make valuable donations to the team.</p>
@@ -81,7 +82,7 @@ const TemplateHome = ({ account, recentWallets, refreshRecentWallets, selectedNe
                                                 <Form.Group className="form-div">
                                                     <Form.Control 
                                                         type="number"
-                                                        disabled={selectedNetwork !== undefined && selectedNetwork.Name === "Main Net" && account.address ? false : true }
+                                                        disabled={selectedNetwork !== null && selectedNetwork.Name === "Main Net" && account.address ? false : true }
                                                         placeholder="e.g 10 GAS" 
                                                         id={"donateAmount"}/>
                                                 </Form.Group>
@@ -92,7 +93,7 @@ const TemplateHome = ({ account, recentWallets, refreshRecentWallets, selectedNe
                                                             size={"medium"}
                                                             hasIcon={false}
                                                             text={"Donate"}
-                                                            isDisabled={selectedNetwork !== undefined && selectedNetwork.Name === "Main Net" && account.address ? false : true }
+                                                            isDisabled={selectedNetwork !== null && selectedNetwork.Name === "Main Net" && account.address ? false : true }
                                                             onClick={async () => {await transferGasToContact("Nfv6SYe5QiAxpeSzpy11NWKyoyDSHp47f1", document.getElementById("donateAmount").value);}}/>  
                                                     </div>
                                                 </div>
