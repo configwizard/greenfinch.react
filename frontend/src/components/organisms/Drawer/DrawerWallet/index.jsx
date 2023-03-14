@@ -9,6 +9,7 @@ import RowWallet from "../../../atoms/RowWallet";
 
 // Central style sheet for templates
 import '../_settings/style.scss';
+import {copyPrivateKey, makeCopyToast} from "../../../../manager/manager";
 
 const DrawerWallet = (props) => {
     console.log("drawer wallet props ", props.account)
@@ -38,11 +39,13 @@ const DrawerWallet = (props) => {
                         title={"public key"}
                         hasCopy={props.account.publicKey ? true : false }
                         value={props.account.publicKey ? props.account.publicKey : "- -"} />
-                    <RowWallet
-                        type={"address"}
-                        title={"private key"}
-                        hasCopy={props.account.privateKey ? true : false }
-                        value={props.account.privateKey ? "••••••••••••••" : "- -"} />
+                    <ButtonText
+                        type={"clean"}
+                        size={"medium"}
+                        hasIcon={false}
+                        text={"Copy private key to clipboard"}
+                        isDisabled={false}
+                        onClick={async () => {await copyPrivateKey(); makeCopyToast("Copied to clipboard")}}/>
                 </section>
                 <section className="molDrawerRow">
                     <RowWallet

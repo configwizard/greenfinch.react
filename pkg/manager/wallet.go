@@ -156,7 +156,6 @@ func (m *Manager) NewWalletFromWIF(password, wif, filepath string) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("key %+v\r\n", key)
 	privKey := keys.PrivateKey{PrivateKey: key.PrivateKey}
 	a := wal.NewAccountFromPrivateKey(&privKey)
 	w, err := wal.NewWallet(filepath) // < -- this saves an empty file
@@ -172,14 +171,14 @@ func (m *Manager) NewWalletFromWIF(password, wif, filepath string) error {
 		return err
 	}
 	tmp := UXMessage{
-		Title:       "Success creating wallet from 	WIF: " + w.Accounts[0].Address,
+		Title:       "Success creating wallet",
 		Type:        "success",
-		Description: "You will need to transfer the wallet some gas",
+		Description: "To use it, load it from file",
 	}
 	m.MakeToast(NewToastMessage(&tmp))
 
-	runtime.EventsEmit(m.ctx, "fresh_wallet", w.Accounts[0])
-	runtime.EventsEmit(m.ctx, "select_wallet", false)
+	//runtime.EventsEmit(m.ctx, "fresh_wallet", w.Accounts[0])
+	//runtime.EventsEmit(m.ctx, "select_wallet", false)
 	return nil
 }
 func (m *Manager) NewWallet(password string) error {
