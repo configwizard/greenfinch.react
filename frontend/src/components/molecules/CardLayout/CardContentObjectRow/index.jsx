@@ -5,11 +5,12 @@ import { fileSize } from 'humanize-plus';
 import MiddleEllipsis from 'react-middle-ellipsis';
 
 // Components
+import IconFile from '../../../atoms/IconFile';
 
 // Central style sheet for Card Content
 import '../_settings/style.scss';
 
-const CardContentObjectRow = ({ onClick, dataType, objectFile, objectName, objectSize, uploadedAt }) => {
+const CardContentObjectRow = ({ onClick, dataType, objectFile, objectName, objectSize, uploadedAt, pendingDeleted }) => {
     return (
         <button 
             type="button" 
@@ -17,10 +18,15 @@ const CardContentObjectRow = ({ onClick, dataType, objectFile, objectName, objec
             onClick={onClick}>
             <div className="d-flex">
                 <div className="d-flex align-items-center">
-                    { objectFile ?
+                    { objectFile && (dataType === "jpg" || "jpeg" || "png") ?
                         <figure className="atmContentFile d-flex align-items-center justify-content-center">
-                            <img className="mw-100 mh-100" src={`data:image/png;base64,${objectFile}`} alt={objectName} />
-                        </figure> : <i className="fa-sharp fa-solid fa-folder" data-type={dataType}/>
+                            <img className="mw-100 mh-100" src={`data:image/png;base64,${objectFile}`} alt={objectName} data-type={dataType} />
+                        </figure> 
+                    : 
+                        <IconFile
+                           type={dataType}
+                           pendingDeleted={pendingDeleted}
+                           size="medium"/>
                     }
                 </div>
                 <div className="d-flex align-items-center flex-grow-1">

@@ -28,7 +28,8 @@ const ColumnData = ({ display, category, contentTitle, iconSize, data, file }) =
                 category === "static" ? 
                 <>
                     <IconFolder
-                        size={iconSize} />
+                        size={iconSize}
+                        type="native" />
                     <MiddleEllipsis><span className="atmContentTitle">{contentTitle}</span></MiddleEllipsis>
                     {data.map((dataItem, index) => (
                         <div key={index}>

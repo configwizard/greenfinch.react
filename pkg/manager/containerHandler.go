@@ -683,15 +683,15 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 		m.ContainersChanged()
 	}()
 	tmp := UXMessage{
-		Title:       "Container being created",
+		Title:       "Creating container...",
 		Type:        "info",
 		Description: "Container '" + name + "' is currently being created. Please wait...",
 	}
 	m.MakeToast(NewToastMessage(&tmp))
 	m.MakeNotification(NotificationMessage{
-		Title:       "Creating container",
+		Title:       "Creating container...",
 		Type:        "info",
-		Description: "Please wait, creating container '" + name + "'",
+		Description: "Container '" + name + "' is currently being created. Please wait...",
 		MarkRead:    false,
 	})
 	return nil

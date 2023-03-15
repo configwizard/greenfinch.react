@@ -1,27 +1,5 @@
 @import "./dashboard-variables.scss";
 
-/* Elements: Buttons
-- - - - - - - - - - - - - - - - - - */
-// Make mixin
-
-.atmButtonBase {
-    &.nav-link {
-        padding-left: $paddingSmall;
-        width: 100%;
-        & i {
-            margin-right: $marginXSmall;
-        }
-    }
-}
-
-.atmButtonText {
-    padding: 0;
-    margin: 0;
-    & i {
-        margin-right: 7px;
-    }
-}
-
 /* Element: Tabs
 - - - - - - - - - - - - - - - - - - */
 .orgTabsView {

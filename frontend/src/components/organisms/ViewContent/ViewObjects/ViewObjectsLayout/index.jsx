@@ -29,12 +29,12 @@ export function ViewObjectsGrid(props) {
                         id={props.item.id}
                         filename={props.item.attributes.FileName} 
                         type={props.item.type}>
-                        { props.onDelete !== null ? <DeleteButton // child of the ContentDropdown
-                            onDelete={props.onDelete}>
-                        </DeleteButton> : null }
                         <DownloadButton // child of the ContentDropdown
                             onDownload={props.onDownload}>
                         </DownloadButton>
+                        { props.onDelete !== null ? <DeleteButton // child of the ContentDropdown
+                            onDelete={props.onDelete}>
+                        </DeleteButton> : null }
                     </ContentDropdown>
                     : null
                 }
@@ -43,8 +43,8 @@ export function ViewObjectsGrid(props) {
                 onClick={() => props.onObjectSelection(props.item.id, props.item.attributes.FileName, props.item.attributes.Thumbnail, props.item.size, props.item.attributes.Timestamp)}
                 objectFile={props.item.attributes.Thumbnail}
                 dataType={props.item.attributes.X_EXT}
-                objectName={props.item.attributes.FileName}>
-                pendingDeleted={props.item.PendingDeleted}
+                objectName={props.item.attributes.FileName}
+                pendingDeleted={props.item.PendingDeleted}>
             </CardContentObjectGrid>
         </section>
     )
@@ -61,9 +61,11 @@ export function ViewObjectsRow(props) {
                 <CardContentObjectRow
                     onClick={() => props.onObjectSelection(props.item.id, props.item.attributes.FileName, props.item.attributes.Thumbnail, props.item.size, props.item.attributes.Timestamp)}
                     objectFile={props.item.attributes.Thumbnail}
+                    dataType={props.item.attributes.X_EXT}
                     objectName={props.item.attributes.FileName}
                     objectSize={props.item.size}
-                    uploadedAt={props.item.attributes.Timestamp}>
+                    uploadedAt={props.item.attributes.Timestamp}
+                    pendingDeleted={props.item.PendingDeleted}>
                 </CardContentObjectRow>
                 { props.hasDropdown ?
                     <ContentDropdown
@@ -71,12 +73,12 @@ export function ViewObjectsRow(props) {
                         id={props.item.id}
                         filename={props.item.attributes.FileName} 
                         type={props.item.type}>
-                        { props.onDelete !== null ? <DeleteButton // child of the ContentDropdown
-                            onDelete={props.onDelete}>
-                        </DeleteButton> : null }
                         <DownloadButton // child of the ContentDropdown
                             onDownload={props.onDownload}>
                         </DownloadButton>
+                        { props.onDelete !== null ? <DeleteButton // child of the ContentDropdown
+                            onDelete={props.onDelete}>
+                        </DeleteButton> : null }
                     </ContentDropdown>
                     : null
                 }

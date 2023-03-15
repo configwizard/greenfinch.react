@@ -94,6 +94,7 @@ export default class TemplateNotifications extends React.Component {
                             <div className="col-6">
                                 <div className="templateWrapper">
                                     <div className="templateInner">
+                                        
                                         {
                                             this.state.list.length > 0 ? this.state.list.map((notification, i) => {
                                                 console.log(notification)
@@ -106,14 +107,48 @@ export default class TemplateNotifications extends React.Component {
                                                                             <i className="fa-sharp fa-solid fa-circle fa-stack-2x"/>
                                                                             <i className="fa-sharp fa-solid fa-stack-1x fa-megaphone"/>
                                                                         </span>
+                                                                        
                                                                     </div>
                                                                     <div className="notificationContent d-flex flex-column">
-                                                                        <span className="notificationTitle">{notification.Title}</span>
+                                                                        <div className="d-flex align-items-center">
+                                                                            <div>
+                                                                                <span className="notificationTitle">{notification.Title}</span>
+                                                                            </div>
+                                                                            <div className="ms-auto">
+                                                                                <span className="notificationTime"><Moment unix format="DD-MM-YY HH:MM">{notification.CreatedAt}</Moment></span>
+                                                                            </div>
+                                                                        </div>
                                                                         <span className="notificationDesc">{notification.Description}</span>
-                                                                        <span className="notificationDesc"><Moment unix format="DD MMM YY">{notification.CreatedAt}</Moment></span>
+                                   
+                                                                        {/* { 
+                                                                            notification.Description.contains("https:/dora.coz") ?
+                                                                                <div>
+                                                                                <ButtonText
+                                                                                // if includes a dora link in description
+                                                                                    hasIcon={true}
+                                                                                    type="dora"
+                                                                                    size="medium"
+                                                                                    isDisabled={false}
+                                                                                    faClass="fak fa-doracoz"
+                                                                                    text="View on Dora"/>
+                                                                                </div>
+                                                                            : null 
+                                                                        } */}
+                                                
                                                                         { notification.Action !== undefined && notification.Action === "qr-code" ? <QRCode size={128} value={notification.Description} /> : null }
+                                                                       
                                                                         <div className="d-flex align-items-center">
                                                                             <div className="ms-auto">
+                                                                                { notification.Action !== undefined && notification.Action === "qr-code" ? 
+                                                                                <ButtonText
+                                                                                    // if includes a dora link in description
+                                                                                        hasIcon={true}
+                                                                                        type="default"
+                                                                                        size="small"
+                                                                                        isDisabled={false}
+                                                                                        faClass="fa-sharp fa-solid fa-qrcode"
+                                                                                        text="QR code available"/>
+                                                                                : null }
                                                                                 <ButtonText 
                                                                                     type="default"
                                                                                     size="small"
@@ -134,6 +169,7 @@ export default class TemplateNotifications extends React.Component {
                                                     text={"You currently have no notifications to view."}
                                                     addAction={false} />
                                         }
+                                        
                                     </div>
                                 </div>
                             </div>

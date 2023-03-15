@@ -8,26 +8,36 @@
     position: relative;
     margin-bottom: 8px;
     margin-top: 12px;
+    border-radius: 5px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    border-top: 4px solid #96DCFD;
     &:before {
         width: 50%;
         height: 0.7em;
         position: absolute;
         top: -0.7em;
         left: 0px;
-    }
-}
-
-.folder-icon { //Update classes
-    border-radius: 5px;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
-    border-top: 4px solid #96DCFD;
-    &:before {
         content: '';
         border-radius: 5px 10px 0 0;
     }
 }
 
-.neo.folder-icon { //Update classes
+.native.folder-icon {
+    background: linear-gradient(180deg, $brandColorSecondary 0%, $brandColorPrimary 76%, $brandColorSecondary 100%);
+    border-top: 4px solid $brandColorPrimary;
+    &:before {
+        background-color: $brandColorPrimary;
+    }
+    &.pending-deleted {
+        background: linear-gradient(180deg, $brandColorSecondary 0%, $brandColorPrimary 76%, $brandColorSecondary 100%);
+        border-top: 4px solid $brandColorPrimary;
+        &:before {
+            background-color: red;
+        }
+    }
+}
+
+.shared.folder-icon { //Update classes to reflect 'shared' palette e.g. blue
     background: linear-gradient(180deg, $brandColorSecondary 0%, $brandColorPrimary 76%, $brandColorSecondary 100%);
     border-top: 4px solid $brandColorPrimary;
     &:before {

@@ -2,6 +2,9 @@
 
 .atmButtonText {
     border-radius: $brandBorderRadius;
+    & i {
+        margin-right: 7px;
+    }
     &.small {
         font-size: 0.75rem;
         padding: 3px 6px;
@@ -22,9 +25,6 @@
             color: $brandColorPrimary;
             background-color: $brandColorDark;
         }
-        & i {
-            margin-right: 7px;
-        }
     }
     &.clean, &.secondary {
         border: 1px solid rgba(0,0,0,0.06);
@@ -34,8 +34,14 @@
             color: $brandColorDark;
             background-color: rgba(0,0,0,0.1);
         }
-        & i {
-            margin-right: 7px;
+    }
+    &.dora {
+        color: $brandColorWhite;
+        background-color: $brandColorDark;
+        &:hover {
+            text-decoration: none;
+            color: $brandColorWhite;
+            background-color: $brandColorDark;
         }
     }
 }
