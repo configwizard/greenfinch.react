@@ -7,6 +7,13 @@
     transition: $brandTransitionSpeed;
     border-radius: none;
     background: transparent;
+    &.dropdown-item {
+        padding: $paddingXSmall;
+        color: $brandColorDark;
+        & i {
+            margin-right: $marginXSmall;
+        }
+    }
     &.nav-link {
         font-family: $brandFontSemi;
         text-align: left;
@@ -14,6 +21,11 @@
         background-color: rgba(0,0,0,0);
         border-bottom: 1px solid rgba($brandColorDark, 0.3);
         color: $brandColorSecondary;
+        padding-left: $paddingSmall;
+        width: 100%;
+        & i {
+            margin-right: $marginXSmall;
+        }
         &:hover {
             cursor: pointer;
             color: $brandColorDark;
@@ -24,13 +36,20 @@
         }
     }
 }
+
 .atmButtonText {
+    padding: 0;
+    margin: 0;
     color: $brandColorDark;
     background: none;
+    & i {
+        margin-right: 7px;
+    }
     &:hover {
         text-decoration: underline;
     }
 }
+
 
 /* Element: Tabs
 - - - - - - - - - - - - - - - - - - */

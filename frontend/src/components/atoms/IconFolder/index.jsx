@@ -9,17 +9,26 @@ export const IconFolderSize = {
     LARGE: 'large',
 }
 
-const IconFolder = ({ size, pendingDeleted }) => {
+export const IconFolderType = {
+    NATIVE: 'native',
+    SHARED: 'shared',
+}
+
+const IconFolder = ({ type, size, pendingDeleted }) => {
     return (
-        <div className={`neo folder-icon ${[size]} ${pendingDeleted ? "pending-deleted" : "" }` }></div>
+        <div className={`${[type]} ${[size]} folder-icon  ${pendingDeleted ? "pending-deleted" : null }` } data-type={`${[type]}`}></div>
     )
 }
 export default IconFolder ;
 
 IconFolder.propTypes = {
-    size: PropTypes.oneOf(Object.keys( IconFolderSize)),
+    size: PropTypes.oneOf(Object.keys(IconFolderSize)),
+    type: PropTypes.oneOf(Object.keys(IconFolderType)),
+    pendingDeleted: PropTypes.bool,
 };
 
 IconFolder.defaultProps = {
-    size:  IconFolderSize.MEDIUM
+    size: IconFolderSize.MEDIUM,
+    type: IconFolderType.NATIVE,
+    pendingDeleted: "false",
 };  

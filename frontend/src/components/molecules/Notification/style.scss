@@ -42,17 +42,20 @@
 /* Component: Toast
 - - - - - - - - - - - - - - - - - - */
 .notificationColumn {
-    background-color: rgba(0,0,0,0.5); 
+    background-color: rgba(0,0,0,0.5);
+    padding-top: $paddingSmall;
 }
 
 .molNotification {
     & .notificationWrapper {
         position: relative;
         margin: 0 auto;
+        margin-top: $marginXSmall;
         margin-bottom: $marginSmall;
         font-family: $brandFontSemi;
         background: $brandColorWhite;
         border-radius: $brandBorderRadius;
+        border: 1px solid rgba(0,0,0,0.2);
         box-shadow: $brandBoxShadow;
         & .notificationInner {
             width: 100%;
@@ -69,13 +72,18 @@
                 & span.notificationTitle {
                     margin-bottom: 7px;
                     letter-spacing: $brandLetterSpacing;
-                    font-size: 0.8rem;
+                    font-size: 1rem;
                     line-height: 1.2;
                     text-transform: uppercase;
                     font-family: $brandFontBold;
                 }
                 & span.notificationDesc {
-                    font-size: 0.8rem;
+                    font-size: 0.7rem;
+                    line-height: 1.2;
+                    font-family: $brandFontSemi;
+                }
+                & span.notificationTime {
+                    font-size: 0.9rem;
                     line-height: 1.2;
                     font-family: $brandFontSemi;
                 }

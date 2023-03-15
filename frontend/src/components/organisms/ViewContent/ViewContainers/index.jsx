@@ -39,7 +39,7 @@ class ViewContainers extends React.Component {
                                 onDelete={() => {this.props.onDelete(item.id)}} 
                                 onContainerSelection={this.props.onContainerSelection} 
                                 item={item}
-                                hasCheckbox={true} 
+                                hasCheckbox={false} 
                                 hasDropdown={true}>
                             </ViewContainersRow>
                         </div>

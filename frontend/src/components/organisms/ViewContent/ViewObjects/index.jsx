@@ -21,7 +21,7 @@ function ViewObjects({shared, onDelete, onDownload, objectList, onObjectSelectio
                             onDownload={() => {onDownload(item.attributes.FileName, item.id)}}
                             onObjectSelection={onObjectSelection}
                             item={item}
-                            hasCheckbox={true} 
+                            hasCheckbox={false} 
                             hasDropdown={true}>
                         </ViewObjectsGrid>
                     </div>
@@ -42,7 +42,7 @@ function ViewObjects({shared, onDelete, onDownload, objectList, onObjectSelectio
                             onDelete={() => {onDelete(item.id)}} 
                             onObjectSelection={onObjectSelection} 
                             item={item} 
-                            hasCheckbox={true} 
+                            hasCheckbox={false} 
                             hasDropdown={true}>
                         </ViewObjectsRow>
                     </div>

@@ -19,6 +19,7 @@ export const ButtonType = {
     CLEAN: 'clean',
     PRIMARY: 'primary',
     SECONDARY: 'secondary',
+    DORA: 'dora',
 }
 
 const ButtonText = ({ type, size, buttonClass, isDisabled, onClick, hasIcon, faClass, text }) => {

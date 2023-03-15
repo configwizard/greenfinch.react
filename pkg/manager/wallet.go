@@ -86,13 +86,13 @@ func (m *Manager) TransferToken(recipient string, amount float64) (string, error
 			m.MakeNotification(NotificationMessage{
 				Title:       "Transaction failed",
 				Type:        "error",
-				Description: fmt.Sprintf("tranasction %s failed due to %s", txid, err),
+				Description: fmt.Sprintf("The transaction %s failed, due to %s", txid, err),
 				MarkRead:    false,
 			})
 			tmp := UXMessage{
 				Title:       "Transaction failed",
 				Type:        "error",
-				Description: "transaction failed",
+				Description: "The transaction failed.",
 			}
 			m.MakeToast(NewToastMessage(&tmp))
 			return
@@ -103,16 +103,16 @@ func (m *Manager) TransferToken(recipient string, amount float64) (string, error
 		fmt.Printf("fault %s exception %+v\r\n", txid, stateResponse.FaultException)
 		fmt.Printf("vm state %s %+v\r\n", txid, stateResponse.VMState)
 		m.MakeNotification(NotificationMessage{
-			Title:       "Transaction succeeded",
+			Title:       "Transaction successful",
 			Action: 	 "qr-code",
 			Type:        "success",
-			Description: fmt.Sprintf("tranasction %s successful", stateResponse.Container.StringLE()),
+			Description: fmt.Sprintf("The transaction %s was successful", stateResponse.Container.StringLE()),
 			MarkRead:    false,
 		})
 		tmp := UXMessage{
-			Title:       "Transaction succeeded",
+			Title:       "Transaction successful",
 			Type:        "success",
-			Description: "transaction succeeded",
+			Description: "transaction successful",
 		}
 		m.MakeToast(NewToastMessage(&tmp))
 	}()
@@ -122,16 +122,16 @@ func (m *Manager) TransferToken(recipient string, amount float64) (string, error
 		url = mainnetExplorerUrl
 	}
 	m.MakeNotification(NotificationMessage{
-		Title:       "Transaction started",
+		Title:       "Transaction started...",
 		Action: 	"qr-code",
 		Type:        "info",
 		Description: fmt.Sprintf(path.Join(url, "0x%s"), txid.StringLE()),
 		MarkRead:    false,
 	})
 	tmp := UXMessage{
-		Title:       "Transaction started",
+		Title:       "Transaction started...",
 		Type:        "info",
-		Description: "transaction has started",
+		Description: "The transaction has started.",
 	}
 	m.MakeToast(NewToastMessage(&tmp))
 	fmt.Println("txid ", txid.StringLE())
