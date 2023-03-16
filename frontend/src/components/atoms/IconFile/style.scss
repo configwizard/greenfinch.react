@@ -1,7 +1,6 @@
 @import "../../../assets/greenfinch-variables.scss";
 
-.file-icon {
-    display: inline-block;
+.atmIconFile {
     position: relative;
     margin-bottom: 4px;
     background: linear-gradient(180deg, $brandColorSecondary 0%, $brandColorPrimary 76%, $brandColorSecondary 100%);
@@ -77,6 +76,6 @@
     }
 }
 
-.file-icon.pending-deleted {
+.atmIconFile.pending-deleted {
     background-color: red;
 }

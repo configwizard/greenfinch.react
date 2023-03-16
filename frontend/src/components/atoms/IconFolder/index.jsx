@@ -16,7 +16,7 @@ export const IconFolderType = {
 
 const IconFolder = ({ type, size, pendingDeleted }) => {
     return (
-        <div className={`${[type]} ${[size]} folder-icon  ${pendingDeleted ? "pending-deleted" : null }` } data-type={`${[type]}`}></div>
+        <div className={`${[type]} ${[size]} atmIconFolder ${pendingDeleted ? "pending-deleted" : null }` } data-type={`${[type]}`}></div>
     )
 }
 export default IconFolder ;

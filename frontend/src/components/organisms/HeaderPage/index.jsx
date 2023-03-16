@@ -10,7 +10,7 @@ import './style.scss';
 const HeaderPage = ({ pageTitle, hasButton, hasButtonIcon, isButtonDisabled, faClass, buttonText, buttonAction }) => {
     return (
         <div className="HeaderPageWrapper">
-            <div className="HeaderPage d-flex align-items-center">
+            <div className="HeaderPageInner d-flex align-items-center">
                 <div>
                     <HeadingGeneral
                         level={"h1"}

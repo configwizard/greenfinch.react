@@ -23,7 +23,7 @@ export const IconFileType = {
 
 const IconFile = ({ type, size, pendingDeleted }) => {
     return (
-        <div className={`file-icon ${[type]} ${[size]} ${pendingDeleted ? "pending-deleted" : null }` } data-type={`${[type]}`}></div>
+        <div className={`atmIconFile ${[type]} ${[size]} ${pendingDeleted ? "pending-deleted" : null }` } data-type={`${[type]}`}></div>
     )
 }
 export default IconFile;
