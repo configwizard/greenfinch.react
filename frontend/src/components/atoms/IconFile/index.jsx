@@ -10,18 +10,18 @@ export const IconFileSize = {
 }
 
 export const IconFileType = {
-    GENERIC: 'generic',
-    AI: 'ai',
-    DOCX: 'docx',
-    INDD: 'indd',
-    MP4: 'mp4',
-    PSD: 'psd',
-    SVG: 'svg',
-    TXT: 'txt',
-    XLS: 'xls',
+    GENERIC: null,
+    AI: '.ai',
+    DOCX: '.docx',
+    INDD: '.indd',
+    MP4: '.mp4',
+    PSD: '.psd',
+    SVG: '.svg',
+    TXT: '.txt',
+    XLS: '.xls',
 }
 
-const IconFile = ({ type, size,  pendingDeleted }) => {
+const IconFile = ({ type, size, pendingDeleted }) => {
     return (
         <div className={`file-icon ${[type]} ${[size]} ${pendingDeleted ? "pending-deleted" : null }` } data-type={`${[type]}`}></div>
     )

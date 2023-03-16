@@ -41,15 +41,18 @@ class SharedContainers extends React.Component {
         console.log("container selected object list", objectList)
         this.setState({...state, selectedContainer, objectList, objectsLoaded: true})
     }
-    onObjectSelection = async (objectID, objectName) => {
+    onObjectSelection = async (objectID, objectName, objectFile, size, uploadedAt) => {
         if (this.state.selectedContainer == null) {
             throw new Error("cannot retrieve an object from non existent container")
         }
-        console.log("selected", objectID, objectName)
+        console.log("selected", objectID, objectName, uploadedAt)
         //we will need to call the function to get the objects for a specific container ID and update the objectList
         const selectedObject = {
             objectID,
-            objectName
+            objectName,
+            objectFile,
+            size,
+            uploadedAt
         }
         let state = this.state
         this.setState({...state, selectedObject})
@@ -89,7 +92,9 @@ class SharedContainers extends React.Component {
                             <div className="col-12">
                                 {this.state.containerList.length > 0 ? 
                                     <>
-                                        {filterContent(this.state, this.onObjectSelection, null, this.onObjectDownloadByItem, null, this.onSharedContainerSelection, this.onContainerDelete)}
+                                        <div className="row">
+                                            {filterContent(this.state, this.onObjectSelection, null, this.onObjectDownloadByItem, null, this.onSharedContainerSelection, this.onContainerDelete)}
+                                        </div>
                                     </>
                                     : <NoContent
                                         text={"You currently have no shared container."}

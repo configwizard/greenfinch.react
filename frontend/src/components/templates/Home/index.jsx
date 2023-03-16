@@ -30,7 +30,7 @@ const TemplateHome = ({ account, recentWallets, refreshRecentWallets, selectedNe
                                 <div className="templateInner">
                                     <SectionHomepage
                                         titleLevel={"h3"}
-                                        sectionTitle={"Get started"} />
+                                        sectionTitle={"Quick links"} />
                                     <SectionSupport
                                         titleLevel={"h3"}
                                         sectionTitle={"Help and support"} />
@@ -38,7 +38,7 @@ const TemplateHome = ({ account, recentWallets, refreshRecentWallets, selectedNe
                                         <HeadingGeneral 
                                             level={"h3"}
                                             isUppercase={false}
-                                            text={"Create new wallet"} />
+                                            text={"Get started on Testnet"} />
                                         <ol className="home-ol">
                                             <li>Click &lsquo;Create new wallet&rsquo;</li>
                                             <li>Copy your wallet address (starting with 'N')</li>
@@ -78,7 +78,7 @@ const TemplateHome = ({ account, recentWallets, refreshRecentWallets, selectedNe
                                                     selectedNetwork !== null && selectedNetwork.Name === "Main Net" ? 
                                                         <p>For Greenfinch to grow, we need your support. Please consider donating today. Alternatively send donations direct to our wallet address below.</p>
                                                     : 
-                                                    <p>Switch to Main Net, to make valuable donations to the team.</p>
+                                                    <p>Please switch to Main Net to make valuable donations to the team.</p>
                                                 }
                                                 <Form.Group className="form-div">
                                                     <Form.Control 
