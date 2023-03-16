@@ -4,14 +4,16 @@ import PropTypes from 'prop-types';
 import './style.scss';
 
 const HeadingGeneral = ({ level, isUppercase, text }) => {
+    console.log("TEXT",  text)
   return (
     <>
+    <h3>{text}</h3>
+        {/* 
         {
-            level === "h1" && (
+            level === "h1" && ( 
                 isUppercase ? 
                     <h1 className="atmUppercase">{text}</h1>
-                :
-                <h1>{text}</h1>
+                : <h1>{text}</h1>
             )
         }
         {
@@ -53,7 +55,7 @@ const HeadingGeneral = ({ level, isUppercase, text }) => {
                 :
                 <h6>{text}</h6>
             )
-        }
+        } */}
     </>
   )
 };
@@ -61,7 +63,7 @@ const HeadingGeneral = ({ level, isUppercase, text }) => {
 export default HeadingGeneral;
 
 HeadingGeneral.propTypes = {
-    level: PropTypes.string,
+    level: PropTypes.string.isRequired,
     isUppercase: PropTypes.bool,
     text: PropTypes.string
 };

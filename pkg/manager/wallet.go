@@ -112,7 +112,7 @@ func (m *Manager) TransferToken(recipient string, amount float64) (string, error
 		tmp := UXMessage{
 			Title:       "Transaction successful",
 			Type:        "success",
-			Description: "transaction successful",
+			Description: "Transaction successful",
 		}
 		m.MakeToast(NewToastMessage(&tmp))
 	}()

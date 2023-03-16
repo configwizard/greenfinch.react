@@ -2,12 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import MiddleEllipsis from 'react-middle-ellipsis';
 
+// Components
 import HeadingGeneral from '../../atoms/HeadingGeneral';
+import IconFile from '../../atoms/IconFile';
 import IconFolder from '../../atoms/IconFolder';
 
 import './style.scss';
-
-// add categories up here for static, NFT, website
 
 export const ContentDisplay = {
     CONTAINER: 'container',
@@ -20,12 +20,13 @@ export const ContentCategory = {
     NFT: 'nft',
 }
 
-const ColumnData = ({ display, category, contentTitle, iconSize, data, file }) => {
-  return (
+const ColumnData = ({ display, category, dataType, contentTitle, iconSize, data, file }) => {
+console.log("DATA:", data, contentTitle )
+    return (
     <>
         {
-            display === "container" && (
-                category === "static" ? 
+            ( display === "container" &&
+                category === "static") ?
                 <>
                     <IconFolder
                         size={iconSize}
@@ -37,37 +38,38 @@ const ColumnData = ({ display, category, contentTitle, iconSize, data, file }) =
                                 level={"h6"}
                                 isUppercase={true}
                                 text={dataItem.contentDataTitle} />
-                            <MiddleEllipsis><span>{dataItem.contentDataValue}</span></MiddleEllipsis>
+                            <span>{dataItem.contentDataValue}</span>
                         </div>
                     ))}
                 </>
                 : null
-            )
         }
         {
-            display === "object" && (
-                category === "static" ? 
+            ( display === "object" &&
+                category === "static") ? 
                 <>
                     { 
                     file ? 
                         <figure className="atmObjectThumbnail">
                             <img className="mw-100" src={`data:image/png;base64,${file}`} alt={contentTitle} />
                         </figure>
-                    : null 
+                    : <IconFile
+                        type={dataType}
+                        size="medium"/>
                     }
-                    <MiddleEllipsis><span className="atmContentTitle">{contentTitle}</span></MiddleEllipsis>
+                    <span className="atmContentTitle">{contentTitle}</span>
+                    {/* <MiddleEllipsis><span className="atmContentTitle">{contentTitle}</span></MiddleEllipsis> */}
                      {data.map((dataItem, index) => (
                         <div key={index}>
                             <HeadingGeneral
                                 level={"h6"}
                                 isUppercase={true}
                                 text={dataItem.contentDataTitle} />
-                            <MiddleEllipsis><span>{dataItem.contentDataValue}</span></MiddleEllipsis>
+                            <span>{dataItem.contentDataValue}</span>
                         </div>
                     ))}
                 </>
                 : null
-            )
         }
     </>
   )

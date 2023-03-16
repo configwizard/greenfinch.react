@@ -36,6 +36,7 @@ const selectPermission = (rawPermission) => {
 }
 
 function filterContent(state, onObjectSelection, onObjectDelete, onObjectDownload, onObjectUpload, onContainerSelection, onContainerDelete) {
+    console.log("STATE:", state);
     if (state.selectedContainer == null) {
         return (
             <>
@@ -123,6 +124,7 @@ function filterContent(state, onObjectSelection, onObjectDelete, onObjectDownloa
                                     display="object"
                                     category="static"
                                     file={state.selectedObject.objectFile}
+                                    dataType={state.selectedObject.dataType}
                                     contentTitle={state.selectedObject.objectName}
                                     data={[
                                         {
