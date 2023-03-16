@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import MiddleEllipsis from 'react-middle-ellipsis';
 
 // Components
 import HeadingGeneral from '../../atoms/HeadingGeneral';
@@ -31,14 +30,14 @@ console.log("DATA:", data, contentTitle )
                     <IconFolder
                         size={iconSize}
                         type="native" />
-                    <MiddleEllipsis><span className="atmContentTitle">{contentTitle}</span></MiddleEllipsis>
+                    <span className="atmContentTitle utOverflowWrap">{contentTitle}</span>
                     {data.map((dataItem, index) => (
                         <div key={index}>
                             <HeadingGeneral
                                 level={"h6"}
                                 isUppercase={true}
                                 text={dataItem.contentDataTitle} />
-                            <span>{dataItem.contentDataValue}</span>
+                            <span className="utOverflowWrap">{dataItem.contentDataValue}</span>
                         </div>
                     ))}
                 </>
@@ -57,15 +56,14 @@ console.log("DATA:", data, contentTitle )
                         type={dataType}
                         size="medium"/>
                     }
-                    <span className="atmContentTitle">{contentTitle}</span>
-                    {/* <MiddleEllipsis><span className="atmContentTitle">{contentTitle}</span></MiddleEllipsis> */}
+                    <span className="atmContentTitle utOverflowWrap">{contentTitle}</span>
                      {data.map((dataItem, index) => (
                         <div key={index}>
                             <HeadingGeneral
                                 level={"h6"}
                                 isUppercase={true}
                                 text={dataItem.contentDataTitle} />
-                            <span>{dataItem.contentDataValue}</span>
+                            <span className="utOverflowWrap">{dataItem.contentDataValue}</span>
                         </div>
                     ))}
                 </>

@@ -26,7 +26,7 @@ const CardContentObjectRow = ({ onClick, dataType, objectFile, objectName, objec
                         <IconFile
                            type={dataType}
                            pendingDeleted={pendingDeleted}
-                           size="medium"/>
+                           size="small"/>
                     }
                 </div>
                 <div className="d-flex align-items-center flex-grow-1">

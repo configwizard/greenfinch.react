@@ -7,8 +7,6 @@ const HeadingGeneral = ({ level, isUppercase, text }) => {
     console.log("TEXT",  text)
   return (
     <>
-    <h3>{text}</h3>
-        {/* 
         {
             level === "h1" && ( 
                 isUppercase ? 
@@ -55,7 +53,7 @@ const HeadingGeneral = ({ level, isUppercase, text }) => {
                 :
                 <h6>{text}</h6>
             )
-        } */}
+        }
     </>
   )
 };

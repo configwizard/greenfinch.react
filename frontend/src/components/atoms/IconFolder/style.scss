@@ -1,10 +1,8 @@
 @import "../../../assets/greenfinch-variables.scss";
 
-.folder-icon { //Update classes
+.atmIconFolder {
     width: 90px;
     height: 70px;
-    display: inline-block;
-    margin: auto;
     position: relative;
     margin-bottom: 8px;
     margin-top: 12px;
@@ -22,7 +20,7 @@
     }
 }
 
-.native.folder-icon {
+.native.atmIconFolder {
     background: linear-gradient(180deg, $brandColorSecondary 0%, $brandColorPrimary 76%, $brandColorSecondary 100%);
     border-top: 4px solid $brandColorPrimary;
     &:before {
@@ -37,7 +35,7 @@
     }
 }
 
-.shared.folder-icon { //Update classes to reflect 'shared' palette e.g. blue
+.shared.atmIconFolder { //Update classes to reflect 'shared' palette e.g. blue
     background: linear-gradient(180deg, $brandColorSecondary 0%, $brandColorPrimary 76%, $brandColorSecondary 100%);
     border-top: 4px solid $brandColorPrimary;
     &:before {

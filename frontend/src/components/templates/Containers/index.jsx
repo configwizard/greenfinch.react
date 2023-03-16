@@ -200,10 +200,10 @@ class Containers extends React.Component {
                                         <>
                                             <div className="containerOptions">
                                                 <div className="row">
-                                                    <div className="col-6">
+                                                    <div className="col-8">
                                                         <BreadCrumb account={this.props.account} onRefresh={this.onRefresh} resetBreadcrumb={this.resetBreadcrumb} container={this.state.selectedContainer} object={this.state.selectedObject}></BreadCrumb>
                                                     </div>
-                                                    <div className="col-6">
+                                                    <div className="col-4">
                                                         <ControlBar resetBreadcrumb={this.resetBreadcrumb} changeView={this.onViewChange} viewMode={this.state.viewMode} selectedContainer={this.state.selectedContainer}></ControlBar>
                                                     </div>
                                                 </div>
