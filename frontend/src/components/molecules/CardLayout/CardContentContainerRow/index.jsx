@@ -14,10 +14,11 @@ const CardContentContainerRow = ({ onClick, containerName, containerSize, contai
         <button 
             type="button" 
             className="molViewContainersBody" 
-            onClick={onClick}>
+            onClick=
+                { pendingDeleted ? null : onClick}>
             <div className="d-flex">
                 <div className="atmContentFileIcon d-flex align-items-center">
-                    <i className="fa-sharp fa-solid fa-folder"/>
+                    <i className={`fa-sharp fa-solid fa-folder ${true ? "pendingDeleted" : null}`}/>
                 </div>
                 <div className="d-flex align-items-center flex-grow-1">
                     <div className="atmContentNameWrapper me-auto">

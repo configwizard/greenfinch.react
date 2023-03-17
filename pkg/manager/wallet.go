@@ -17,7 +17,6 @@ import (
 	"math"
 	"math/big"
 	"os"
-	"path"
 	"path/filepath"
 )
 
@@ -37,7 +36,7 @@ func (m *Manager) RecentWallets() (map[string]cleanedWallet, error) {
 	for k, v := range recentWallets {
 		cleaned := cleanedWallet{
 			Path: v,
-			Name: filepath.Base(v),
+			Name: filepath.Base(v), 
 		}
 		cleanWallets[k] = cleaned
 	}
@@ -79,6 +78,10 @@ func (m *Manager) TransferToken(recipient string, amount float64) (string, error
 	if err != nil {
 		return "", err
 	}
+	var url string = testNetExplorerUrl
+	if m.selectedNetwork.ID == "mainnet" {
+		url = mainnetExplorerUrl
+	}
 	go func() {
 		//re-use token expiration function to set the vub
 		stateResponse, err := a.Wait(txid, u, err)
@@ -102,10 +105,14 @@ func (m *Manager) TransferToken(recipient string, amount float64) (string, error
 		fmt.Printf("stack %s %+v\r\n", txid, stateResponse.Stack)
 		fmt.Printf("fault %s exception %+v\r\n", txid, stateResponse.FaultException)
 		fmt.Printf("vm state %s %+v\r\n", txid, stateResponse.VMState)
+		meta :=  make(map[string]string)
+		meta["url"] = url
+		meta["txid"] = stateResponse.Container.StringLE()
 		m.MakeNotification(NotificationMessage{
 			Title:       "Transaction successful",
 			Action: 	 "qr-code",
-			Type:        "success",
+			Type:        "success", 
+			Meta: meta,
 			Description: fmt.Sprintf("The transaction %s was successful", stateResponse.Container.StringLE()),
 			MarkRead:    false,
 		})
@@ -117,15 +124,15 @@ func (m *Manager) TransferToken(recipient string, amount float64) (string, error
 		m.MakeToast(NewToastMessage(&tmp))
 	}()
 
-	var url string = testNetExplorerUrl
-	if m.selectedNetwork.ID == "mainnet" {
-		url = mainnetExplorerUrl
-	}
+	meta :=  make(map[string]string)
+	meta["url"] = url
+	meta["txid"] = txid.StringLE()
 	m.MakeNotification(NotificationMessage{
 		Title:       "Transaction started...",
 		Action: 	"qr-code",
 		Type:        "info",
-		Description: fmt.Sprintf(path.Join(url, "0x%s"), txid.StringLE()),
+		Meta: meta,
+		Description: fmt.Sprintf("The transaction %s has started", txid.StringLE()),
 		MarkRead:    false,
 	})
 	tmp := UXMessage{

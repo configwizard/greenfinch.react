@@ -3,7 +3,7 @@ import JSONPretty from 'react-json-pretty';
 import QRCode from "react-qr-code";
 import Moment from "react-moment";
 
-import {getNotifications, deleteNotifications, deleteNotification} from "../../../manager/manager";
+import {getNotifications, deleteNotifications, deleteNotification, openInDefaultBrowser} from "../../../manager/manager";
 
 // Components
 import ButtonText from "../../atoms/ButtonText";
@@ -115,27 +115,29 @@ export default class TemplateNotifications extends React.Component {
                                                                                 <span className="notificationTitle">{notification.Title}</span>
                                                                             </div>
                                                                             <div className="ms-auto">
-                                                                                <span className="notificationTime"><Moment unix format="DD-MM-YY HH:MM">{notification.CreatedAt}</Moment></span>
+                                                                                <span className="notificationTime"><Moment unix format="DD-MM-YY HH:mm">{notification.CreatedAt}</Moment></span>
                                                                             </div>
                                                                         </div>
                                                                         <span className="notificationDesc">{notification.Description}</span>
                                    
-                                                                        {/* { 
-                                                                            notification.Description.contains("https:/dora.coz") ?
+                                                                            { 
+                                                                                notification.Meta !== null && notification.Meta["url"] ?
                                                                                 <div>
-                                                                                <ButtonText
-                                                                                // if includes a dora link in description
-                                                                                    hasIcon={true}
-                                                                                    type="dora"
-                                                                                    size="medium"
-                                                                                    isDisabled={false}
-                                                                                    faClass="fak fa-doracoz"
-                                                                                    text="View on Dora"/>
+                                                                                    <ButtonText
+                                                                                    // if includes a dora link in description
+                                                                                        hasIcon={true}
+                                                                                        type="dora"
+                                                                                        size="medium"
+                                                                                        isDisabled={false}
+                                                                                        faClass="fak fa-doracoz"
+                                                                                        onClick={() => {openInDefaultBrowser(notification.Meta["url"] + "/" + notification.Meta["txid"])}}
+                                                                                        text="View on Dora"/>
                                                                                 </div>
-                                                                            : null 
-                                                                        } */}
-                                                
-                                                                        { notification.Action !== undefined && notification.Action === "qr-code" ? <QRCode size={128} value={notification.Description} /> : null }
+                                                                                : null 
+                                                                            }
+                                                                          
+                                                                        {/* Add as modal to show QR code */}
+                                                                        { notification.Action !== undefined && notification.Action === "qr-code" && notification.Meta !== null ? <QRCode size={96} value={notification.Meta["url"] + "/" + notification.Meta["txid"]} /> : null }
                                                                        
                                                                         <div className="d-flex align-items-center">
                                                                             <div className="ms-auto">

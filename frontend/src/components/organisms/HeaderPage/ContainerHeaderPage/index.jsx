@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useModal } from '../../../organisms/Modal/ModalContext';
 
 // Components
 import HeadingGeneral from '../../../atoms/HeadingGeneral';
 import ButtonText from '../../../atoms/ButtonText';
+import { useModal } from '../../../organisms/Modal/ModalContext';
 
 import '../style.scss';
 
@@ -31,6 +31,13 @@ const ContainerHeaderPage = ({ pageTitle, hasButton, hasIcon, faClass, buttonTex
                             text={buttonText}
                             onClick={() => createNewContainer(setModal, unSetModal)} /> 
                         : null }
+                    <ButtonText
+                        size={"small"}
+                        type={"default"}
+                        hasIcon={true}
+                        faClass={"fa-sharp fa-solid fa-rotate"}
+                        isDisabled={false}
+                        text={"Force sync"} />
                 </div>
             </div>
         </div>

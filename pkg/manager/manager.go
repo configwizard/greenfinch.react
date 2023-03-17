@@ -38,6 +38,7 @@ type NotificationMessage struct {
 	Type        string
 	Action string
 	Description string
+	Meta map[string]string
 	CreatedAt string
 	MarkRead     bool
 }

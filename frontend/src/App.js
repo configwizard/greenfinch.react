@@ -125,13 +125,13 @@ class App extends React.Component {
                         <div className="templateShell d-flex flex-row">
                             <div className="flex-shrink-1">
                                 <NavbarSide refreshAccount={this.setStatusAccount} version={this.state.version} account={this.state.account}/>
-                            </div>
+                            </div> 
                             <div className="w-100">
                                 <Routes>
                                     <Route path="/" exact element={<PageHome refreshRecentWallets={this.refreshRecentWallets} recentWallets={this.state.recentWallets} account={this.state.account} selectedNetwork={this.state.selectedNetwork}/>} />
                                     <Route path="/containers" exact element={<PageContainers setStatusAccount={this.setStatusAccount} account={this.state.account}/>} />
                                     <Route path="/contacts" exact element={<PageContacts account={this.state.account}/>} />
-                                    <Route path="/shared" exact element={<PageShared/>} />
+                                    <Route path="/shared" exact element={<PageShared account={this.state.account}/>} />
                                     <Route path="/websites" exact element={<PageWebsites/>} />
                                     <Route path="/nfts" exact element={<PageNFTs/>} />
                                     <Route path="/notifications" exact element={<PageNotifications/>} />

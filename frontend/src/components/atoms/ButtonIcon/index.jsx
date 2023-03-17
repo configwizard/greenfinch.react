@@ -40,7 +40,7 @@ ButtonIcon.propTypes = {
 ButtonIcon.defaultProps = {
     type: ButtonType.DEFAULT,
     size: ButtonSize.MEDIUM,
-    buttonClass: '',
+    buttonClass: null,
     isDisabled: false,
     faClass: "fa-sharp fa-solid fa-flag"
 };                            

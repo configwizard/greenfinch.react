@@ -1,4 +1,5 @@
 import React from 'react';
+import { Form } from 'react-bootstrap';
 
 import { removeSharedContainer, listSharedContainers } from '../../../manager/sharedContainers';
 import { getObject} from '../../../manager/objects';
@@ -10,9 +11,34 @@ import ControlBar from '../../molecules/ControlBar';
 import BreadCrumb from '../../organisms/Breadcrumb';
 import SharedContainerHeaderPage from '../../organisms/HeaderPage/SharedContainerHeaderPage';
 import filterContent from "../Containers/FilterContent";
+import CompModalStandard from '../../organisms/Modal/ModalStandard';
+import {addSharedContainer} from "../../../manager/sharedContainers";
 
 // Central style sheet for templates
 import '../_settings/style.scss';
+
+const loadSharedContainer = (setModal, unSetModal) => { 
+    setModal(
+        <CompModalStandard
+            title={"Add shared container"}
+            hasSecondaryButton={true}
+            buttonTextPrimary={"Add"}
+            buttonTextSecondary={"Cancel"}
+            primaryClicked={async () => {
+                    const containerID = document.getElementById("sharedContainerID").value
+                    console.log("adding container ", containerID)
+                    await addSharedContainer(containerID)
+                }}
+            secondaryClicked={async () => unSetModal()}>
+        <Form.Group className="form-div">
+            <Form.Label>To add a shared container, enter the &lsquo;Container ID&rsquo;:</Form.Label>
+            <Form.Control 
+                id="sharedContainerID" 
+                type="text"
+                placeholder="Container ID"/>
+        </Form.Group>
+    </CompModalStandard>)
+}
 
 class SharedContainers extends React.Component {
     constructor(props) {
@@ -87,6 +113,7 @@ class SharedContainers extends React.Component {
         await this.setState({...state, objectList: [], selectedObject: null, selectedContainer: null})
     }
     render() {
+        console.log("props/state account", this.props.account, this.state.account)
         return (
             <div className="templatePage d-flex flex-column flex-grow-1">
                 <div className="row">
@@ -94,7 +121,9 @@ class SharedContainers extends React.Component {
                         <SharedContainerHeaderPage
                             pageTitle={"Containers shared with me"}
                             hasButton={true}
-                            isButtonDisabled={false}
+                            hasIcon={true}
+                            isButtonDisabled={this.props.account.address ? false : true}
+                            loadSharedContainer={loadSharedContainer}
                             faClass={"fa-sharp fa-solid fa-circle-plus"}
                             buttonText={"Add shared container"}
                         />
@@ -117,10 +146,13 @@ class SharedContainers extends React.Component {
                                         </div>
                                     </>
                                     : <NoContent
-                                        text={"You currently have no shared container."}
-                                        textAction={"Add your shared containers here"}
-                                        addAction={true}
-                                        isPageLink={false}
+                                        text={this.props.account.address ? "You currently have no shared container." : "You need a wallet to share containers."}
+                                        addAction={this.props.account.address ? true : false}
+                                        textAction={this.props.account.address ? "Add your shared containers here" : null}
+                                        isPageLink={this.props.account.address ? false : true}
+                                        textClick={loadSharedContainer}
+                                        to={this.props.account.address ? null :"/"}
+                                        label={this.props.account.address ? null : "Load a wallet to get started"}
                                     />
                                 }
                             </div>

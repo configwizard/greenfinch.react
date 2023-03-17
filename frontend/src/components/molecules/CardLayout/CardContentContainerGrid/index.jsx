@@ -13,7 +13,8 @@ const CardContentContainerGrid = ({ onClick, containerName, pendingDeleted }) =>
         <button 
             type="button"
             className="molViewContainersBody d-flex flex-column align-items-center justify-content-between"
-            onClick={onClick}>
+            onClick=
+            { pendingDeleted ? null : onClick} >
                 <IconFolder
                     size={"medium"}
                     pendingDeleted={pendingDeleted} />
