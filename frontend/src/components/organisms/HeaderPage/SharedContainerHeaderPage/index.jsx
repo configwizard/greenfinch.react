@@ -1,17 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Form } from 'react-bootstrap';
 
 // Components
 import HeadingGeneral from '../../../atoms/HeadingGeneral';
 import ButtonText from '../../../atoms/ButtonText';
 import { useModal } from '../../../organisms/Modal/ModalContext';
-import CompModalStandard from '../../../organisms/Modal/ModalStandard';
-import {addSharedContainer} from "../../../../manager/sharedContainers";
 
 import '../style.scss';
 
-const SharedContainerHeaderPage = ({ pageTitle, hasButton, hasButtonIcon, isButtonDisabled, faClass, buttonText, buttonAction }) => {
+const SharedContainerHeaderPage = ({ pageTitle, hasButton, hasButtonIcon, isButtonDisabled, faClass, buttonText, buttonAction, loadSharedContainer }) => {
     const { setModal, unSetModal } = useModal();
     return (
         <div className="HeaderPageWrapper">
@@ -32,28 +29,7 @@ const SharedContainerHeaderPage = ({ pageTitle, hasButton, hasButtonIcon, isButt
                             isDisabled={isButtonDisabled}
                             faClass={faClass}
                             text={buttonText}
-                            onClick={() => {
-                                setModal(
-                                    <CompModalStandard
-                                        title={"Add shared container"}
-                                        hasSecondaryButton={true}
-                                        buttonTextPrimary={"Add"}
-                                        buttonTextSecondary={"Cancel"}
-                                        primaryClicked={async () => {
-                                                const containerID = document.getElementById("sharedContainerID").value
-                                                console.log("adding container ", containerID)
-                                                await addSharedContainer(containerID)
-                                            }}
-                                        secondaryClicked={async () => unSetModal()}>
-                                        <Form.Group className="form-div">
-                                            <Form.Label>To add a shared container, enter the &lsquo;Container ID&rsquo;:</Form.Label>
-                                            <Form.Control 
-                                                id="sharedContainerID" 
-                                                type="text"
-                                                placeholder="Container ID"/>
-                                        </Form.Group>
-                                    </CompModalStandard>)
-                            }} />
+                            onClick={() => loadSharedContainer(setModal, unSetModal)} /> 
                         : null }
                 </div>
             </div>

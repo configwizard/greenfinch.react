@@ -6,6 +6,7 @@ import {Form} from "react-bootstrap";
 import { loadWalletWithoutPassword, loadWalletWithPath, newWallet, newWalletFromWIF, saveWalletWithoutPassword, deleteRecentWallet } from '../../../manager/manager.js'
 
 // Components
+import ButtonIcon from '../../atoms/ButtonIcon';
 import ButtonText from '../../atoms/ButtonText';
 import HeadingGeneral from '../../atoms/HeadingGeneral';
 import SpinnerLoading from '../../atoms/SpinnerLoading';
@@ -73,47 +74,6 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                             }
                                         }
                                     }/>
-                                <ButtonText
-                                    type={"default"}
-                                    size={"medium"}
-                                    hasIcon={false}
-                                    text={"Create new wallet"}
-                                    isDisabled={false}
-                                    onClick={
-                                        async () => {
-                                            try {
-                                                let walletPath = await saveWalletWithoutPassword()
-                                                if (walletPath === "") return
-                                            setModal(
-                                                <CompModalStandard
-                                                    title={"Wallet Password"}
-                                                    hasSecondaryButton={true}
-                                                    buttonTextPrimary={"Create"}
-                                                    buttonTextSecondary={"Cancel"}
-                                                    primaryClicked={async () => {
-                                                        if (document.getElementById("createWalletPassword").value === document.getElementById("createWalletPasswordMatch").value) {
-                                                            await newWallet(document.getElementById("createWalletPassword").value, walletPath)
-                                                        } else {
-                                                            alert("passwords do no match")
-                                                        }
-                                                        await unSetModal()
-                                                        await refreshRecentWallets()
-                                                    }}
-                                                    secondaryClicked={async () => unSetModal()}>
-                                                    <Form.Group className="form-div">
-                                                        <Form.Label>To create a new wallet, you will need a password:</Form.Label>
-                                                        <Form.Control id="createWalletPassword" type="password" placeholder="Password" />
-                                                    </Form.Group>
-                                                    <Form.Group className="form-div">
-                                                        <Form.Label>Re-enter password to confirm:</Form.Label>
-                                                        <Form.Control id="createWalletPasswordMatch" type="password" placeholder="Password" />
-                                                    </Form.Group>
-                                                </CompModalStandard>)
-                                            } catch (e) {
-                                                console.log("error loading wallet path ", e)
-                                            }
-                                        }
-                                    }/>
                             </div>
                         </div>
                         <div className="buttonStackHorizontal d-flex">
@@ -163,6 +123,47 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                             }
                                         }
                                     }/>
+                                <ButtonText
+                                    type={"default"}
+                                    size={"medium"}
+                                    hasIcon={false}
+                                    text={"Create new wallet"}
+                                    isDisabled={false}
+                                    onClick={
+                                        async () => {
+                                            try {
+                                                let walletPath = await saveWalletWithoutPassword()
+                                                if (walletPath === "") return
+                                            setModal(
+                                                <CompModalStandard
+                                                    title={"Wallet Password"}
+                                                    hasSecondaryButton={true}
+                                                    buttonTextPrimary={"Create"}
+                                                    buttonTextSecondary={"Cancel"}
+                                                    primaryClicked={async () => {
+                                                        if (document.getElementById("createWalletPassword").value === document.getElementById("createWalletPasswordMatch").value) {
+                                                            await newWallet(document.getElementById("createWalletPassword").value, walletPath)
+                                                        } else {
+                                                            alert("passwords do no match")
+                                                        }
+                                                        await unSetModal()
+                                                        await refreshRecentWallets()
+                                                    }}
+                                                    secondaryClicked={async () => unSetModal()}>
+                                                    <Form.Group className="form-div">
+                                                        <Form.Label>To create a new wallet, you will need a password:</Form.Label>
+                                                        <Form.Control id="createWalletPassword" type="password" placeholder="Password" />
+                                                    </Form.Group>
+                                                    <Form.Group className="form-div">
+                                                        <Form.Label>Re-enter password to confirm:</Form.Label>
+                                                        <Form.Control id="createWalletPasswordMatch" type="password" placeholder="Password" />
+                                                    </Form.Group>
+                                                </CompModalStandard>)
+                                            } catch (e) {
+                                                console.log("error loading wallet path ", e)
+                                            }
+                                        }
+                                    }/>
                             </div>
                         </div>
                     </div>
@@ -189,11 +190,10 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                         </div>
                                         {account && account.address === obj ? <div className="wallet-tag">active</div> : null}
                                         <div className="ms-auto">
-                                            <ButtonText
-                                                type="secondary"
+                                            <ButtonIcon
+                                                type="clean"
                                                 size="small"
-                                                hasIcon={false}
-                                                text={"Forget wallet"}
+                                                faClass="fa-sharp fa-solid fa-trash-can"
                                                 isDisabled={false}
                                                 onClick={async () => {
                                                     await deleteRecentWallet(obj)

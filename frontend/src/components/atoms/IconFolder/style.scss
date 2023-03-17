@@ -27,11 +27,10 @@
         background-color: $brandColorPrimary;
     }
     &.pending-deleted {
-        background: linear-gradient(180deg, $brandColorSecondary 0%, $brandColorPrimary 76%, $brandColorSecondary 100%);
-        border-top: 4px solid $brandColorPrimary;
-        &:before {
-            background-color: red;
-        }
+        opacity: 0.2;
+        pointer-events: none;
+        user-select: none;
+        cursor: not-allowed;
     }
 }
 
@@ -41,11 +40,10 @@
     &:before {
         background-color: $brandColorPrimary;
     }
-    &.pending-deleted { //Update classes
-        background: linear-gradient(180deg, $brandColorSecondary 0%, $brandColorPrimary 76%, $brandColorSecondary 100%);
-        border-top: 4px solid $brandColorPrimary;
-        &:before {
-            background-color: red;
-        }
+    &.pending-deleted {
+        opacity: 0.5;
+        pointer-events: none;
+        user-select: none;
+        cursor: not-allowed;
     }
 }

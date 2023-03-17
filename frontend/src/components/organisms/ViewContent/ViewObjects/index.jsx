@@ -16,14 +16,12 @@ function ViewObjects({shared, onDelete, onDownload, objectList, onObjectSelectio
                 {objectsLoaded && objectList.length > 0 ? objectList.map((item, i) =>
                     <div className="col-6 col-md-4 col-xl-3" key={i}>
                         <ViewObjectsGrid 
-                            hasOverlayMenu={!shared} 
                             onDelete={onDelete !== undefined ? () => {onDelete(item.id)} : null} //set to null if nothing to call
                             onDownload={() => {onDownload(item.attributes.FileName, item.id)}}
                             onObjectSelection={onObjectSelection}
                             item={item}
                             hasCheckbox={false} 
-                            hasDropdown={true}>
-                        </ViewObjectsGrid>
+                            hasDropdown={!shared}/>
                     </div>
                 ) : objectsLoaded ? 
                     <div className="atmStatusSmall"><i className="fa-sharp fa-solid fa-triangle-exclamation"/>&nbsp;There are no objects in this container.</div> 
@@ -38,13 +36,11 @@ function ViewObjects({shared, onDelete, onDownload, objectList, onObjectSelectio
                 {objectsLoaded && objectList.length > 0 ? objectList.map((item,i) =>
                     <div className="col-12 mt-0" key={i}>
                         <ViewObjectsRow 
-                            hasOverlayMenu={!shared}
                             onDelete={() => {onDelete(item.id)}} 
                             onObjectSelection={onObjectSelection} 
                             item={item} 
                             hasCheckbox={false} 
-                            hasDropdown={true}>
-                        </ViewObjectsRow>
+                            hasDropdown={!shared}/>
                     </div>
                 ) : objectsLoaded ? 
                     <div className="atmStatusSmall"><i className="fa-sharp fa-solid fa-triangle-exclamation"/>&nbsp;There are no objects in this container.</div> 

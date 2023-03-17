@@ -1,9 +1,9 @@
 import React from 'react';
+import { Form } from 'react-bootstrap';
 
 import { deleteContainer, listContainers, createContainer } from '../../../manager/containers.js';
 import { deleteObject, getObject, listObjects, uploadObject } from '../../../manager/objects.js';
 import { listContacts } from '../../../manager/contacts';
-import { Form } from 'react-bootstrap';
 
 // Components
 import NoContent from '../../atoms/NoContent';
@@ -15,12 +15,6 @@ import filterContent from './FilterContent';
 
 // Central style sheet for templates
 import '../_settings/style.scss';
-
-/*
-function TextClickAction() {
-    console.log("Button clicked, add modal onClick here")
-}
-*/
 
 const createNewContainer = (setModal, unSetModal) => { 
     setModal(
