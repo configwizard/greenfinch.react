@@ -3,6 +3,8 @@
 import {manager} from '../models';
 import {io} from '../models';
 import {object} from '../models';
+import {pool} from '../models';
+import {map[string]manager} from '../models';
 import {context} from '../models';
 
 export function AddContact(arg1:string,arg2:string,arg3:string,arg4:string):Promise<Array<manager.contact>>;
@@ -77,9 +79,9 @@ export function Notifications():Promise<Array<manager.NotificationMessage>>;
 
 export function OpenInDefaultBrowser(arg1:string):Promise<void>;
 
-export function Pool():Promise<any>;
+export function Pool():Promise<pool.Pool>;
 
-export function RecentWallets():Promise<{[key: string]: manager.cleanedWallet}>;
+export function RecentWallets():Promise<map[string]manager.cleanedWallet>;
 
 export function RemoveSharedContainer(arg1:string):Promise<Array<manager.Element>>;
 

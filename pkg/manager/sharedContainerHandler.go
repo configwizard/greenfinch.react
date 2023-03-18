@@ -17,6 +17,7 @@ import (
 	"log"
 	"path/filepath"
 	"sort"
+	"strings"
 	"sync"
 )
 
@@ -171,7 +172,7 @@ func (m *Manager) listSharedContainerObjectsAsync(containerID string) ([]Element
 				tmp.Attributes[a.Key()] = a.Value()
 			}
 			if filename, ok := tmp.Attributes[object.AttributeFileName]; ok {
-				tmp.Attributes["X_EXT"] = filepath.Ext(filename)[1:]
+				tmp.Attributes["X_EXT"] = strings.TrimPrefix(filepath.Ext(filename), ".")
 			} else {
 				tmp.Attributes["X_EXT"] = ""
 			}
@@ -233,7 +234,7 @@ func (m *Manager) ListSharedContainerObjects(containerID string, synchronised bo
 		}
 		//fmt.Println("object ", tmp.ID, tmp.PendingDeleted, tmp.ParentID)
 		if filename, ok := tmp.Attributes[object.AttributeFileName]; ok {
-			tmp.Attributes["X_EXT"] = filepath.Ext(filename)[1:]
+			tmp.Attributes["X_EXT"] = strings.TrimPrefix(filepath.Ext(filename), ".")
 		} else {
 			tmp.Attributes["X_EXT"] = ""
 		}
@@ -328,5 +329,16 @@ func (m *Manager) AddSharedContainer(containerID string) error {
 		fmt.Println("error saving shared container ", err)
 		return err
 	}
+	m.MakeNotification(NotificationMessage{
+		Title:       "Shared Container Added",
+		Type:        "success",
+		Description: "Shared container " + containerID + "added successfully",
+	})
+	m.MakeToast(NewToastMessage(&UXMessage{
+		Title:       "Creating Shared Container Successful",
+		Type:        "success",
+		Description: "Shared container added",
+		Closure:     false,
+	}))
 	return nil
 }

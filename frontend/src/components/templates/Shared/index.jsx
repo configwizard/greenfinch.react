@@ -27,7 +27,9 @@ const loadSharedContainer = (setModal, unSetModal) => {
             primaryClicked={async () => {
                     const containerID = document.getElementById("sharedContainerID").value
                     console.log("adding container ", containerID)
-                    await addSharedContainer(containerID)
+                    const resp = addSharedContainer(containerID)
+                    console.log("resp ", resp)
+                    await unSetModal()
                 }}
             secondaryClicked={async () => unSetModal()}>
         <Form.Group className="form-div">

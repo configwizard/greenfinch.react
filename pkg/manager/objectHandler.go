@@ -316,6 +316,10 @@ func (m *Manager) GetObjectMetaData(objectID, containerID string) (object.Object
 	if err != nil {
 		return object.Object{}, err
 	}
+	//fixme - crashed on shared container. Does this fix it?
+	if tmpWallet.Accounts[0].PrivateKey() == nil {
+		return object.Object{}, err
+	}
 	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
 
 	pKey := &keys.PrivateKey{PrivateKey: tmpKey}
