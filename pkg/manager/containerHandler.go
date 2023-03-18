@@ -202,6 +202,30 @@ func (m *Manager) listContainersAsync() ([]Element, error) {
 	if err != nil {
 		return []Element{}, err
 	}
+	/*
+		1. if a container exists on NeoFS, sync it
+		2. if it exists locally but not on NeoFS, delete it
+	*/
+	cached, err := cache.RetrieveContainers(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID)
+	if err != nil {
+		return nil, err
+	}
+	for _, v := range ids {
+		if _, ok := cached[v.String()]; ok {
+			delete(cached, v.String())
+		}
+	}
+	//so now whats left in cached, should be deleted locally
+	for k, _ := range cached {
+		err := cache.DeleteContainer(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID, k)
+		if err != nil {
+			m.MakeNotification(NotificationMessage{
+				Title:       "Error cleaning container",
+				Type:        "info",
+				Description: "Couldn't clean local container " + k,
+			})
+		}
+	}
 	fmt.Println("container ids,", len(ids), ids)
 	wg := sync.WaitGroup{}
 	var listContainers []Element

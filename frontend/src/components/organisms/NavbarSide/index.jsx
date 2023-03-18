@@ -84,7 +84,7 @@ const NavbarSide = (props) => {
                     </Tooltip>
                     <Tooltip content="Settings" direction="right">
                         <button type="button" className="navbarSide" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"><i className="fa-sharp fa-regular fa-gear" /></button>
-                        <DrawerSettings version={props.version}></DrawerSettings>
+                        <DrawerSettings selectedNetwork={props.selectedNetwork} version={props.version}></DrawerSettings>
                     </Tooltip>
                 </ul>
             </div>

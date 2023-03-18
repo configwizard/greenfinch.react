@@ -12,6 +12,13 @@ const enableCache = async (enable) => {
         console.log("error setting cache state", e)
     }
 }
+const forceSync = async() => {
+    try {
+        await window.go.manager.Manager.ForceSync()
+    } catch (e) {
+        console.log("failed to force sync", e)
+    }
+}
 const setNetwork = async (network) => {
     try {
         console.log("setting network to ", network)
@@ -180,6 +187,7 @@ const makeCopyToast = async(message) => {
 export {
     setNetwork,
     enableCache,
+    forceSync,
     enableLocalServer,
     getNotifications,
     deleteNotifications,

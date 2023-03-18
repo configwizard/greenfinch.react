@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import HeadingGeneral from '../../../atoms/HeadingGeneral';
 import ButtonText from '../../../atoms/ButtonText';
 import { useModal } from '../../../organisms/Modal/ModalContext';
-
+import {forceSync} from "../../../../manager/manager";
 import '../style.scss';
 
 const ContainerHeaderPage = ({ pageTitle, hasButton, hasIcon, faClass, buttonText, isButtonDisabled, createNewContainer }) => {
@@ -37,7 +37,8 @@ const ContainerHeaderPage = ({ pageTitle, hasButton, hasIcon, faClass, buttonTex
                         hasIcon={true}
                         faClass={"fa-sharp fa-solid fa-rotate"}
                         isDisabled={false}
-                        text={"Force sync"} />
+                        text={"Force sync"}
+                        onClick={forceSync}/>
                 </div>
             </div>
         </div>
