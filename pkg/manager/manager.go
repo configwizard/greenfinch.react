@@ -110,7 +110,6 @@ func (m *Manager) RetrieveWIF() (string, error) {
 		return "", err
 	}
 	key := keys.PrivateKey{PrivateKey: m.wallet.Accounts[0].PrivateKey().PrivateKey}
-	defer m.LockWallet()
 	clipboard.WriteAll(key.WIF())
 	return "", nil
 }
@@ -192,7 +191,7 @@ func (m *Manager) MakeNotification(message NotificationMessage) {
 	}
 	err = cache.UpsertNotification(message.User, m.selectedNetwork.ID, message.Id, marshal)
 	if err != nil {
-		fmt.Println("error upserting notifiation")
+		fmt.Println("error upserting notification")
 	}
 	fmt.Println("notification message ", message)
 	runtime.EventsEmit(m.ctx, "freshnotification", message)

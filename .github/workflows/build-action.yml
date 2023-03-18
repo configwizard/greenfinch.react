@@ -124,7 +124,7 @@ jobs:
   release:
     name: Create Github Release
     needs: package #don't want to create a release if a package failed to create.
-    if: github.ref == 'refs/heads/master' && startsWith(github.event.ref, 'refs/tags/v')
+    if: startsWith(github.event.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
@@ -143,7 +143,7 @@ jobs:
   deploy:
     name: Deploy artifacts
     needs: release
-    if: github.ref == 'refs/heads/master' && startsWith(github.event.ref, 'refs/tags/v')
+    if: startsWith(github.event.ref, 'refs/tags/v')
     strategy:
       matrix:
         platform: [windows-latest, macos-latest]

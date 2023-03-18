@@ -183,15 +183,28 @@ func (m *Manager) generateObjectStruct(objs []Element, containerID cid.ID) (uint
 }
 func (m *Manager) ForceSync() {
 	fmt.Println("force syncing")
-	if _, err := m.listContainersAsync(); err != nil {
-		fmt.Println("force sync error ", err)
+	tmp := UXMessage{
+		Title:       "Force syncing",
+		Type:        "info",
+		Description: "Please wait. This can take some time",
 	}
+	m.MakeToast(NewToastMessage(&tmp))
+	if cnts, err := m.listContainersAsync(true); err != nil {
+		fmt.Println("force sync error ", err)
+	} else {
+		for _, v := range cnts {
+			go func(id string) {
+				m.listObjectsAsync(id)
+			}(v.ID)
 
+		}
+	}
+	m.ContainersChanged()
 }
 
 //listContainersAsync should be purely used to refresh the database cache
 //todo: this needs to clean out the database as its a refresh of everything
-func (m *Manager) listContainersAsync() ([]Element, error) {
+func (m *Manager) listContainersAsync(synchronised bool) ([]Element, error) {
 	//var containers []Element
 	runtime.EventsEmit(m.ctx, "clearContainer", nil)
 	tmpWallet, err := m.retrieveWallet()
@@ -234,7 +247,7 @@ func (m *Manager) listContainersAsync() ([]Element, error) {
 		go func(vID cid.ID) {
 			//todo - this is meant to update the cache with the relevant objects. Lets check this out
 			defer wg.Done()
-			tmpContainer, err := m.prepareAndAppendContainer(vID)
+			tmpContainer, err := m.prepareAndAppendContainer(vID, synchronised)
 			str, err := json.MarshalIndent(tmpContainer, "", "  ")
 			if err != nil {
 				fmt.Println(err)
@@ -263,7 +276,7 @@ func (m *Manager) listContainersAsync() ([]Element, error) {
 }
 
 // prepareAndAppendContainer only used to update cache. Never as part of cache
-func (m *Manager) prepareAndAppendContainer(vID cid.ID) (Element, error) {
+func (m *Manager) prepareAndAppendContainer(vID cid.ID, synchronised bool) (Element, error) {
 	//c, err := m.Client()
 	//if err != nil {
 	//	log.Fatal("SERIOUS ERROR , could not retrieve client - in Go routine", err)
@@ -279,7 +292,7 @@ func (m *Manager) prepareAndAppendContainer(vID cid.ID) (Element, error) {
 	//var filters = obj.SearchFilters{}
 	//filters.AddRootFilter()
 	fmt.Printf("tmpContainer 1 %+v\r\n", tmpContainer)
-	list, err := m.ListContainerObjects(vID.String(), false, false)//object.QueryObjects(m.ctx, c, vID, filters, nil, sessionToken)
+	list, err := m.ListContainerObjects(vID.String(), synchronised, false)//object.QueryObjects(m.ctx, c, vID, filters, nil, sessionToken)
 	if err != nil {
 		fmt.Println("error querying objects of container", err)
 		tmpContainer.Errors = append(tmpContainer.Errors, err)
@@ -294,8 +307,8 @@ func (m *Manager) prepareAndAppendContainer(vID cid.ID) (Element, error) {
 }
 
 //this is going to be a bit of a hack whilst working out the best way to do size
-func (m Manager) getContainerSize(containerID string) (uint64, error) {
-	objects, err := m.ListContainerObjects(containerID, true, false) //in sync so just grab from file system
+func (m Manager) getContainerSize(containerID string, synchronised bool) (uint64, error) {
+	objects, err := m.ListContainerObjects(containerID, synchronised, false) //in sync so just grab from file system
 	if err != nil {
 		return 0, err
 	}
@@ -314,17 +327,17 @@ func (m *Manager) ListContainers(synchronised, deleted bool) ([]Element, error) 
 	//just go straight to getting them remotely first. Next time around will allow to retrieve from the database.
 	if !m.enableCaching { //fixme: potential issue where by this takes a while and the cache is re-enabled.....
 		fmt.Println("cache disabled, so listing from network...")
-		return m.listContainersAsync()
+		return m.listContainersAsync(false)
 	}
 	tmpContainers, err := cache.RetrieveContainers(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID)
 	if err != nil {
 		return nil, err
 	}
-	if len(tmpContainers) == 0 && synchronised {
+	if len(tmpContainers) == 0 || synchronised {
 		//we need to check there aren't any on the network
 		//todo notify frontend of database sync
 		fmt.Println(GetCurrentFunctionName(), " ListContainers caller is ", GetCallerFunctionName())
-		return m.listContainersAsync()
+		return m.listContainersAsync(false)
 	}
 	var unsortedContainers []Element
 	//now convert to the elements
@@ -336,7 +349,7 @@ func (m *Manager) ListContainers(synchronised, deleted bool) ([]Element, error) 
 			fmt.Println("warning - could not unmarshal container", k)
 			continue
 		}
-		if tmp.Size, err = m.getContainerSize(tmp.ID); err != nil {
+		if tmp.Size, err = m.getContainerSize(tmp.ID, false); err != nil {
 			fmt.Println("could no get container size ", err)
 			return nil, err
 		}
@@ -547,14 +560,24 @@ func (m *Manager) RestrictContainer(id string, publicKey string) error {
 	go func() {
 		if err := pl.SetEACL(m.ctx, prm); err != nil {
 			fmt.Errorf("save eACL via connection pool: %w", err)
-			tmp := UXMessage{
-				Title:       "Container Error",
+			m.MakeNotification(NotificationMessage{
+				Title:       "Sharing container Failed",
 				Type:        "error",
-				Description: "EACL failed" + err.Error(),
+				Description: "Couldn't share container" + id + " - " + err.Error(),
+			})
+			tmp := UXMessage{
+				Title:       "Sharing container failed",
+				Type:        "error",
+				Description: "Error sharing container",
 			}
 			m.MakeToast(NewToastMessage(&tmp))
 			return
 		}
+			m.MakeNotification(NotificationMessage{
+				Title:       "Sharing successful",
+				Type:        "error",
+				Description: "Successfully shared container " + id,
+			})
 			tmp := UXMessage{
 				Title:       "Sharing successful",
 				Type:        "success",

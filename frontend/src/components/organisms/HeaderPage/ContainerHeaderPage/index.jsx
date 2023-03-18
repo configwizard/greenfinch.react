@@ -21,6 +21,14 @@ const ContainerHeaderPage = ({ pageTitle, hasButton, hasIcon, faClass, buttonTex
                     />
                 </div>
                 <div className="ms-auto">
+                    <ButtonText
+                        size={"small"}
+                        type={"clean"}
+                        hasIcon={true}
+                        faClass={"fa-sharp fa-solid fa-rotate"}
+                        isDisabled={false}
+                        text={"Force sync"}
+                        onClick={forceSync}/>
                     { hasButton ? 
                         <ButtonText
                             size={"small"}
@@ -31,14 +39,6 @@ const ContainerHeaderPage = ({ pageTitle, hasButton, hasIcon, faClass, buttonTex
                             text={buttonText}
                             onClick={() => createNewContainer(setModal, unSetModal)} /> 
                         : null }
-                    <ButtonText
-                        size={"small"}
-                        type={"default"}
-                        hasIcon={true}
-                        faClass={"fa-sharp fa-solid fa-rotate"}
-                        isDisabled={false}
-                        text={"Force sync"}
-                        onClick={forceSync}/>
                 </div>
             </div>
         </div>

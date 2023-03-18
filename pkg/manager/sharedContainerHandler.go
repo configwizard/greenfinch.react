@@ -112,6 +112,17 @@ func (m *Manager) listSharedContainerObjectsAsync(containerID string) ([]Element
 	prms.SetFilters(filter)
 	objects, err := pl.SearchObjects(m.ctx, prms)
 	if err != nil {
+		m.MakeNotification(NotificationMessage{
+			Title:       "Shared Container Failed",
+			Type:        "error",
+			Description: "Couldn't search shared container" + err.Error(),
+		})
+		m.MakeToast(NewToastMessage(&UXMessage{
+			Title:       "Shared Container Failed",
+			Type:        "error",
+			Description: "Couldn't search shared container",
+			Closure:     false,
+		}))
 		return nil, err
 	}
 	var list []oid.ID
@@ -148,6 +159,17 @@ func (m *Manager) listSharedContainerObjectsAsync(containerID string) ([]Element
 					return
 				}
 				fmt.Errorf("read object header via connection pool: %w", err)
+				m.MakeNotification(NotificationMessage{
+					Title:       "Shared Container Failed",
+					Type:        "error",
+					Description: "Couldn't retrieve headers" + err.Error(),
+				})
+				m.MakeToast(NewToastMessage(&UXMessage{
+					Title:       "Shared Container Failed",
+					Type:        "error",
+					Description: "Couldn't retrieve headers",
+					Closure:     false,
+				}))
 				return
 			}
 
@@ -295,6 +317,17 @@ func (m *Manager) RemoveSharedContainer(containerId string) ([]Element, error) {
 		return nil, err
 	}
 	if err := cache.DeleteSharedContainer(tmpWallet.Accounts[0].Address, containerId); err != nil {
+		m.MakeNotification(NotificationMessage{
+			Title:       "Shared Container Failed",
+			Type:        "error",
+			Description: "Couldn't delete shared container" + err.Error(),
+		})
+		m.MakeToast(NewToastMessage(&UXMessage{
+			Title:       "Shared Container Failed",
+			Type:        "error",
+			Description: "Couldn't delete shared container",
+			Closure:     false,
+		}))
 		return nil, err
 	}
 	return m.ListSharedContainers()
@@ -314,9 +347,20 @@ func (m *Manager) AddSharedContainer(containerID string) error {
 		fmt.Println("error decoding container id ", err)
 		return err
 	}
-	cont, err := m.prepareAndAppendContainer(cnrID)
+	cont, err := m.prepareAndAppendContainer(cnrID, true)
 	if err != nil {
 		fmt.Println("error prepareAndAppendContainer - shared ", err)
+		m.MakeNotification(NotificationMessage{
+			Title:       "Shared Container Failed",
+			Type:        "error",
+			Description: "Shared container " + containerID + "failed to retrieve contents " + err.Error(),
+		})
+		m.MakeToast(NewToastMessage(&UXMessage{
+			Title:       "Shared Container Failed",
+			Type:        "error",
+			Description: "Adding shared container " + containerID + "failed",
+			Closure:     false,
+		}))
 		return err
 	}
 	fmt.Printf("shared container %+v\r\n", cont)

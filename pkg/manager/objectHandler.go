@@ -643,7 +643,7 @@ func (m *Manager) ListContainerObjects(containerID string, synchronised, deleted
 	if err != nil {
 		return []Element{}, err
 	}
-	if !m.enableCaching {
+	if !m.enableCaching { //just always get the sync objects
 		//what do we do here then for retrieving the objects from the network?
 		return m.listObjectsAsync(containerID)
 	}
@@ -651,7 +651,7 @@ func (m *Manager) ListContainerObjects(containerID string, synchronised, deleted
 	if err != nil {
 		return nil, err
 	}
-	if len(tmpObjects) == 0 && !synchronised {
+	if len(tmpObjects) == 0 && !synchronised { //only sync if forced to or you have no objects
 		//we need to check there aren't any on the network
 		//todo notify frontend of database sync
 		return m.listObjectsAsync(containerID)
