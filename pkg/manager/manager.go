@@ -177,6 +177,9 @@ func (m Manager) MarkNotificationRead(uuid string) error {
 	return nil
 }
 func (m *Manager) MakeNotification(message NotificationMessage) {
+	if message.Meta == nil {
+		message.Meta = make(map[string]string)
+	}
 	if m.wallet == nil {
 		fmt.Println("no wallet found")
 		return //no wallet yet to connect notifications with
@@ -384,6 +387,9 @@ var NotFound = errors.New("wallet not found")
 
 
 func (m *Manager) EnableLocalServer(enable bool) {
+	if m.wallet == nil {
+		return
+	}
 	if enable {
 		ctxWithCancel, cancel := context.WithCancel(m.ctx)
 		m.cancelContext = cancel

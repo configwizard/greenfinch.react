@@ -124,7 +124,7 @@ class App extends React.Component {
                         <Header account={this.state.account}></Header>
                         <div className="templateShell d-flex flex-row">
                             <div className="flex-shrink-1">
-                                <NavbarSide refreshAccount={this.setStatusAccount} version={this.state.version} account={this.state.account}/>
+                                <NavbarSide refreshAccount={this.setStatusAccount} selectedNetwork={this.state.selectedNetwork} version={this.state.version} account={this.state.account}/>
                             </div> 
                             <div className="w-100">
                                 <Routes>

@@ -335,7 +335,6 @@ func (m *Manager) GetObjectMetaData(objectID, containerID string) (object.Object
 		log.Fatal("error creating bearer token to upload object")
 	}
 	if bt != nil {
-		fmt.Println("using bearer token")
 		prmHead.UseBearer(*bt)
 	} else {
 		prmHead.UseKey(&tmpKey)
