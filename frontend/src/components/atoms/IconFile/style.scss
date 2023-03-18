@@ -36,14 +36,16 @@
         overflow: hidden;
     }
     &.small {
-        width: 24px;
-        height: 32px;
-        border-radius: 2px;
+        width: 21px;
+        height: 28px;
+        border-radius: 3px;
+        margin-bottom: 0;
         &:before {
             border-bottom-left-radius: 2px;
-            border-width: 5px;
+            border-width: 4px;
         }
         &:after {
+            content: none;
             padding: 2px;
             font-size: 0.7rem;
         }
@@ -74,8 +76,4 @@
             font-size: 1rem;
         }
     }
-}
-
-.atmIconFile.pending-deleted {
-    background-color: red;
 }

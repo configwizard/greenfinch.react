@@ -14,7 +14,7 @@ import '../../_settings/style.scss';
 export function ViewContainersGrid(props) {
     console.log("container grid item", props.item)
     return (
-        <section className="orgViewContainersGrid">
+        <section className={`orgViewContainersGrid ${props.item.PendingDeleted ? "utPendingDeleted" : null }`}>
             <div className="molViewContainersHeader d-flex flex-row justify-content-end">
                 { props.hasCheckbox ?
                     <div className="me-auto">
@@ -41,8 +41,7 @@ export function ViewContainersGrid(props) {
                     true,
                     props.item.attributes.Timestamp,
                     props.item.size)}}
-                containerName={props.item.attributes.Name}
-                pendingDeleted={props.item.PendingDeleted}>
+                containerName={props.item.attributes.Name}>
             </CardContentContainerGrid>
         </section>
     )
@@ -50,7 +49,7 @@ export function ViewContainersGrid(props) {
 export function ViewContainersRow(props) {
     console.log("container row item", props.item)
     return (
-        <section className="orgViewContainersRow">
+        <section className={`orgViewContainersRow ${props.item.PendingDeleted ? "utPendingDeleted" : null }`}>
             <div className="d-flex flex-row">
                 { props.hasCheckbox ? 
                     <ContentCheckbox></ContentCheckbox>
@@ -65,8 +64,7 @@ export function ViewContainersRow(props) {
                         props.item.size)}}
                     containerName={props.item.attributes.Name}
                     containerSize={props.item.size}
-                    containerOrigin={props.item.attributes.Timestamp}
-                    pendingDeleted={props.item.PendingDeleted}>
+                    containerOrigin={props.item.attributes.Timestamp}>
                 </CardContentContainerRow>
                 { props.hasDropdown ?
                     <ContentDropdown

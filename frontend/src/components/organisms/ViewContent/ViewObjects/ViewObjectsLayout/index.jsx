@@ -15,7 +15,7 @@ export function ViewObjectsGrid(props) {
     console.log("props.onDelete ", props.onDelete)
     console.log("object grid item", props.item)
     return (
-        <section className="orgViewObjectsGrid">
+        <section className={`orgViewObjectsGrid ${props.item.PendingDeleted ? "utPendingDeleted" :  null }`}>
             <div className="molViewObjectsHeader d-flex flex-row justify-content-end">
                 { props.hasCheckbox ?
                     <div className="me-auto">
@@ -43,8 +43,7 @@ export function ViewObjectsGrid(props) {
                 onClick={() => props.onObjectSelection(props.item.id, props.item.attributes.FileName, props.item.attributes.Thumbnail, props.item.size, props.item.attributes.Timestamp)}
                 objectFile={props.item.attributes.Thumbnail}
                 dataType={props.item.attributes.X_EXT}
-                objectName={props.item.attributes.FileName}
-                pendingDeleted={props.item.PendingDeleted}>
+                objectName={props.item.attributes.FileName}>
             </CardContentObjectGrid>
         </section>
     )
@@ -52,7 +51,7 @@ export function ViewObjectsGrid(props) {
 export function ViewObjectsRow(props) {
     console.log("object row item", props.item)
     return (
-        <section className="orgViewObjectsRow">
+        <section className={`orgViewObjectsRow ${props.item.PendingDeleted ? "utPendingDeleted" : null }`}>
             <div className="d-flex flex-row">
                 { props.hasCheckbox ? 
                     <ContentCheckbox></ContentCheckbox>
@@ -64,8 +63,7 @@ export function ViewObjectsRow(props) {
                     dataType={props.item.attributes.X_EXT}
                     objectName={props.item.attributes.FileName}
                     objectSize={props.item.size}
-                    uploadedAt={props.item.attributes.Timestamp}
-                    pendingDeleted={props.item.PendingDeleted}>
+                    uploadedAt={props.item.attributes.Timestamp}>
                 </CardContentObjectRow>
                 { props.hasDropdown ?
                     <ContentDropdown

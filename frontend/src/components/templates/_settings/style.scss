@@ -80,9 +80,13 @@ ol.home-ol {
     }
 }
 
-// Button Stack - Horizontal (start left)
-.buttonStackHorizontal, .buttonStackHorizontalHR {
-    &.me-auto {
+// Button Stack - Horizontal
+.buttonStackHorizontal {
+    width: 100%;
+    padding-bottom: $paddingSmall;
+    margin-bottom: $marginSmall;
+    border-bottom: 1px solid $brandColorDark-hint;
+    &.me-auto { // Start left
         & button {
             margin-right: $marginSmall;
             &:first-child {
@@ -94,11 +98,7 @@ ol.home-ol {
             }
         }
     }
-}
-
-// Button Stack - Horizontal (start right)
-.buttonStackHorizontal, .buttonStackHorizontalHR {
-    &.ms-auto {
+    &.ms-auto { // Start right
         & button {
             margin-left: $marginSmall;
             &:last-child {
@@ -106,18 +106,18 @@ ol.home-ol {
             }
         }
     }
-}
-
-// Button Stack - Horizontal, including line-break
-.buttonStackHorizontalHR {
-    width: 100%;
-    padding-bottom: $paddingSmall;
-    margin-bottom: $marginSmall;
-    border-bottom: 1px solid $brandColorDark-hint;
+    &:last-child, &:only-child {
+        padding-bottom: 0;
+        margin-bottom: 0;
+        border-bottom: none;
+    }
 }
 
 // Button Stack - Vertical
-.buttonStackVertical, .buttonStackVerticalHR {
+.buttonStackVertical {
+    padding-bottom: $paddingSmall;
+    margin-bottom: $marginSmall;
+    border-bottom: 1px solid $brandColorDark-hint;
     & button {
         display: block;
         margin-bottom: $marginXSmall;
@@ -125,13 +125,11 @@ ol.home-ol {
             margin-bottom: 0;
         }
     }
-}
-
-// Button Stack - Vertical, including line-break
-.buttonStackVerticalHR {
-    padding-bottom: $paddingSmall;
-    margin-bottom: $marginSmall;
-    border-bottom: 1px solid $brandColorDark-hint;
+    &:last-child, &:only-child {
+        padding-bottom: 0;
+        margin-bottom: 0;
+        border-bottom: none;
+    }
 }
 
 .atmWalletDonation {

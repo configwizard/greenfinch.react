@@ -49,7 +49,7 @@ function filterContent(state, onObjectSelection, onObjectDelete, onObjectDownloa
                     <div className="orgContainersGrid">
                         <div className="templateWrapper">
                             <div className="templateInner">
-                                <ViewContainers containerList={state.containerList} onDelete={onContainerDelete} viewMode={state.viewMode} onContainerSelection={onContainerSelection}></ViewContainers>
+                                <ViewContainers shared={state.shared} containerList={state.containerList} onDelete={onContainerDelete} viewMode={state.viewMode} onContainerSelection={onContainerSelection}></ViewContainers>
                             </div>
                         </div>
                     </div>
@@ -83,7 +83,7 @@ function filterContent(state, onObjectSelection, onObjectDelete, onObjectDownloa
                                 contentDataValue: fileSize(state.selectedContainer.size)
                             },
                         ]} />
-                    <div className="buttonStackVerticalHR">
+                    <div className="buttonStackVertical">
                         <ButtonContentContainerInfo
                             containerName={state.selectedContainer.containerName}
                             containerId={state.selectedContainer.containerID}
@@ -91,21 +91,21 @@ function filterContent(state, onObjectSelection, onObjectDelete, onObjectDownloa
                             containerCreated={<Moment unix format="DD MMM YY">{state.selectedContainer.createdAt}</Moment>}
                             containerSize={fileSize(state.selectedContainer.size)} />
                     </div>
-                    <div className="buttonStackVertical">
-                        { !state.shared ? <>
-                        <ButtonContentAction
-                            icon="fa-sharp fa-solid fa-upload"
-                            text="Upload to this container"
-                            onClick={onObjectUpload}/>
-                        <ButtonContentContainerShare
-                            containerId={state.selectedContainer.containerID}
-                            contacts={state.contacts}/>
-                        <ButtonContentContainerDelete
-                            containerName={state.selectedContainer.containerName}
-                            containerId={state.selectedContainer.containerID}
-                            containerDelete={onContainerDelete}/>
-                        </> : null }
-                    </div>
+                    { !state.shared ?
+                        <div className="buttonStackVertical">
+                            <ButtonContentAction
+                                icon="fa-sharp fa-solid fa-upload"
+                                text="Upload to this container"
+                                onClick={onObjectUpload}/>
+                            <ButtonContentContainerShare
+                                containerId={state.selectedContainer.containerID}
+                                contacts={state.contacts}/>
+                            <ButtonContentContainerDelete
+                                containerName={state.selectedContainer.containerName}
+                                containerId={state.selectedContainer.containerID}
+                                containerDelete={onContainerDelete}/>
+                        </div>
+                    : null }
                 </div>
                 <div className="col-6">
                     <div className="orgObjectsGrid">
@@ -142,7 +142,7 @@ function filterContent(state, onObjectSelection, onObjectDelete, onObjectDownloa
                                     ]} />
                             </div>
                             <div className="object-data" id={"objectData"}>
-                                <div className="buttonStackVerticalHR">
+                                <div className="buttonStackVertical">
                                     <ButtonContentObjectInfo
                                         objectId={state.selectedObject.objectID}
                                         objectFile={state.selectedObject.objectFile}

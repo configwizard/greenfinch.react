@@ -38,7 +38,7 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                         <SpinnerLoading hasText={true} isVisible={isVisible} text={"Wallet loading..."} />
                         <p>To use Greenfinch, a wallet is required. Either load an exisiting wallet or create a new wallet.</p>
                         
-                        <div className="buttonStackHorizontalHR d-flex">
+                        <div className="buttonStackHorizontal d-flex">
                             <div className="ms-auto">
                                 <ButtonText 
                                     type={"default"}
@@ -191,7 +191,7 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                         {account && account.address === obj ? <div className="wallet-tag">active</div> : null}
                                         <div className="ms-auto">
                                             <ButtonIcon
-                                                type="clean"
+                                                type="secondary"
                                                 size="small"
                                                 faClass="fa-sharp fa-solid fa-trash-can"
                                                 isDisabled={false}

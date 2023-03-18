@@ -15,9 +15,11 @@
         background-color: rgba($brandColorSecondary, 0.05);
         border: 1px solid $brandColorPrimary;
     }
+
 }
 
 .molViewContainersHeader, .molViewObjectsHeader {
+    min-height: $CardContentProportion;
     line-height: 1;
 }
 
@@ -74,6 +76,11 @@ button.molViewContainersBody, button.molViewObjectsBody {
             height: $CardContentProportion;
             width: $CardContentProportion;
         }
+        & .atmContentFileIcon {
+            margin: 0 $marginSmall;
+            height: $CardContentProportion;
+            width: $CardContentProportion;
+        }
         & .atmContentName {
             text-align: left;
         }
@@ -115,3 +122,26 @@ button.molViewContainersBody, button.molViewObjectsBody {
 .atmContentFileIcon {
     margin-right: $marginSmall;
 }
+
+// PendingDeleted 'tree'
+.orgViewContainersGrid, .orgViewObjectsGrid {
+    &.utPendingDeleted {
+        opacity: 0.3;
+        pointer-events: none;
+        user-select: none;
+        cursor: not-allowed;
+    }
+}
+
+.orgViewContainersRow, .orgViewObjectsRow {
+    &.utPendingDeleted {
+        opacity: 0.3;
+        pointer-events: none;
+        user-select: none;
+        cursor: not-allowed;
+    }
+}
+
+// Button becomes diasabled
+// dropdown becomes disabled
+// checkbox becomes disabled

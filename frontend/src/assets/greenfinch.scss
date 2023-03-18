@@ -127,8 +127,11 @@
 
 .atmStatusSmall {
     color: $brandColorDark;
-    font-size: 0.8rem;
+    font-size: 1rem;
     font-family: $brandFontSemi;
+    & i {
+        margin-right: $marginXSmall;
+    }
 }
 
 /* Styles: Typography

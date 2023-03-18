@@ -15,20 +15,22 @@ const CardContentObjectRow = ({ onClick, dataType, objectFile, objectName, objec
         <button 
             type="button" 
             className="molViewObjectsBody"
-            onClick={onClick}>
+            disabled={pendingDeleted ? true : false}
+            onClick={pendingDeleted ? null : onClick}>
             <div className="d-flex">
-                <div className="d-flex align-items-center">
-                    { objectFile && (dataType === "jpg" || "jpeg" || "png") ?
+                { objectFile && (dataType === "jpg" || "jpeg" || "png") ?
+                    <div className="d-flex align-items-center">
                         <figure className="atmContentFile d-flex align-items-center justify-content-center">
                             <img className="mw-100 mh-100" src={`data:image/png;base64,${objectFile}`} alt={objectName} data-type={dataType} />
-                        </figure> 
-                    : 
+                        </figure>
+                    </div>
+                : 
+                    <div className="atmContentFileIcon d-flex align-items-center justify-content-center">
                         <IconFile
-                           type={dataType}
-                           pendingDeleted={pendingDeleted}
-                           size="small"/>
-                    }
-                </div>
+                            type={dataType}
+                            size="small" />
+                    </div>
+                }
                 <div className="d-flex align-items-center flex-grow-1">
                     <div className="atmContentNameWrapper me-auto">
                         <MiddleEllipsis>

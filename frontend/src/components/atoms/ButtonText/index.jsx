@@ -57,7 +57,7 @@ ButtonText.defaultProps = {
     size: ButtonSize.MEDIUM,
     isDisabled: false,
     hasIcon: true,
-    buttonClass: null,
+    buttonClass: "",
     faClass: "fa-sharp fa-solid fa-flag",
     text: "Button text"
 };                            

@@ -14,15 +14,15 @@ const CardContentObjectGrid = ({ onClick, dataType, objectFile, objectName, pend
         <button 
             type="button"
             className="molViewObjectsBody d-flex flex-column align-items-center justify-content-between"
-            onClick={onClick}>
+            disabled={pendingDeleted ? true : false}
+            onClick={pendingDeleted ? null : onClick}>
                 { objectFile && (dataType === "jpg" || "jpeg" || "png") ? 
-                    <figure className={`d-flex align-items-center justify-content-center ${pendingDeleted ? "pending-deleted" : "" }`}>
+                    <figure className="d-flex align-items-center justify-content-center">
                         <img className="mw-100 mh-100" src={`data:image/png;base64,${objectFile}`} alt={objectName} data-type={dataType} />
                     </figure> 
                 : 
                     <IconFile
                         type={dataType}
-                        pendingDeleted={pendingDeleted}
                         size="medium"/>
                 }
                 <MiddleEllipsis>

@@ -12,6 +12,7 @@ export const ButtonSize = {
 export const ButtonType = {
     DEFAULT: 'default', 
     CLEAN: 'clean',
+    SECONDARY: 'secondary',
 }
 
 const ButtonIcon = ({ type, size, buttonClass, isDisabled, onClick, faClass }) => {
@@ -40,7 +41,7 @@ ButtonIcon.propTypes = {
 ButtonIcon.defaultProps = {
     type: ButtonType.DEFAULT,
     size: ButtonSize.MEDIUM,
-    buttonClass: null,
+    buttonClass: "",
     isDisabled: false,
     faClass: "fa-sharp fa-solid fa-flag"
 };                            

@@ -67,9 +67,6 @@ h4 {
         @include titleStyle(0.9rem);
         color: $brandColorSecondary-dark;
     }
-    & .atmButtonIconClean i {
-        color: $brandColorSecondary-dark;
-    }
 }
 
 .molDrawerRow {

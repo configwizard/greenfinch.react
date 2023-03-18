@@ -1,13 +1,14 @@
 import React from 'react';
-import JSONPretty from 'react-json-pretty';
-import QRCode from "react-qr-code";
-import Moment from "react-moment";
+//import JSONPretty from 'react-json-pretty';
+import QRCode from 'react-qr-code';
+import Moment from 'react-moment';
 
-import {getNotifications, deleteNotifications, deleteNotification, openInDefaultBrowser} from "../../../manager/manager";
+import {getNotifications, deleteNotifications, deleteNotification, openInDefaultBrowser} from '../../../manager/manager';
 
 // Components
-import ButtonText from "../../atoms/ButtonText";
-import NoContent from "../../atoms/NoContent";
+import ButtonText from '../../atoms/ButtonText';
+import NoContent from '../../atoms/NoContent';
+import ButtonQRCode from '../../molecules/ButtonsContent/ButtonQRCode';
 import HeaderPage from '../../organisms/HeaderPage';
 
 // Central style sheet for templates
@@ -18,6 +19,7 @@ import '../../molecules/Notification/style.scss';
 
 const runtime = require('@wailsapp/runtime');
 const notificationsEventName = 'freshnotification';
+
 
 export default class TemplateNotifications extends React.Component {
     constructor(props) {
@@ -76,7 +78,6 @@ export default class TemplateNotifications extends React.Component {
     }
     render() {
         console.log("this.state.list ", this.state.list)
-
         return (
             <div className="templatePage d-flex flex-column flex-grow-1">
                 <div className="row">
@@ -91,7 +92,7 @@ export default class TemplateNotifications extends React.Component {
                             // buttonAction={this.onClearNotifications} 
                         /> 
                         <div className="row justify-content-center">
-                            <div className="col-6">
+                            <div className="col-9 col-xl-6">
                                 <div className="templateWrapper">
                                     <div className="templateInner">
                                         
@@ -120,39 +121,32 @@ export default class TemplateNotifications extends React.Component {
                                                                         </div>
                                                                         <span className="notificationDesc">{notification.Description}</span>
                                    
-                                                                            { 
-                                                                                notification.Meta !== null && notification.Meta["url"] ?
-                                                                                <div>
+
+                                                                        { (notification.Meta !== null && notification.Meta["url"]) || (notification.Action !== undefined && notification.Action === "qr-code") ?
+                                                                        <div className="buttonStackHorizontal d-flex">  
+                                                                            <div className="ms-auto">
+                                                                                { notification.Action !== undefined && notification.Action === "qr-code" && notification.Meta !== null ? 
+                                                                                    <ButtonQRCode
+                                                                                        qrcode={<QRCode size={180} value={notification.Meta["url"] + "/" + notification.Meta["txid"]} />}/>
+                                                                                    : null }
+                                                                                { notification.Meta !== null && notification.Meta["url"] ?
                                                                                     <ButtonText
                                                                                     // if includes a dora link in description
                                                                                         hasIcon={true}
                                                                                         type="dora"
-                                                                                        size="medium"
+                                                                                        size="small"
                                                                                         isDisabled={false}
                                                                                         faClass="fak fa-doracoz"
                                                                                         onClick={() => {openInDefaultBrowser(notification.Meta["url"] + "/" + notification.Meta["txid"])}}
                                                                                         text="View on Dora"/>
-                                                                                </div>
-                                                                                : null 
-                                                                            }
-                                                                          
-                                                                        {/* Add as modal to show QR code */}
-                                                                        { notification.Action !== undefined && notification.Action === "qr-code" && notification.Meta !== null ? <QRCode size={96} value={notification.Meta["url"] + "/" + notification.Meta["txid"]} /> : null }
-                                                                       
-                                                                        <div className="d-flex align-items-center">
+                                                                                    : null }
+                                                                            </div>
+                                                                        </div>
+                                                                        : null }
+                                                                        <div className="buttonStackHorizontal d-flex">
                                                                             <div className="ms-auto">
-                                                                                { notification.Action !== undefined && notification.Action === "qr-code" ? 
-                                                                                <ButtonText
-                                                                                    // if includes a dora link in description
-                                                                                        hasIcon={true}
-                                                                                        type="default"
-                                                                                        size="small"
-                                                                                        isDisabled={false}
-                                                                                        faClass="fa-sharp fa-solid fa-qrcode"
-                                                                                        text="QR code available"/>
-                                                                                : null }
                                                                                 <ButtonText 
-                                                                                    type="default"
+                                                                                    type="secondary"
                                                                                     size="small"
                                                                                     hasIcon={true}
                                                                                     faClass={"fa-sharp fa-solid fa-trash-can"}
@@ -171,7 +165,6 @@ export default class TemplateNotifications extends React.Component {
                                                     text={"You currently have no notifications to view."}
                                                     addAction={false} />
                                         }
-                                        
                                     </div>
                                 </div>
                             </div>

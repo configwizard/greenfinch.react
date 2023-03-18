@@ -44,15 +44,15 @@
 }
 .molModalBody {
     padding: $paddingMedium $paddingSmall;
-}
-.molModalFooter {
-    padding: $paddingSmall;
-}
-.molModalBody {
     & .atmButtonText {
         font-size: 0.8rem;
     }
 }
+
+.molModalFooter {
+    padding: $paddingSmall;
+}
+
 .molModalWrapper {
     background: rgba(0,0,0,0.6);
     border: none;

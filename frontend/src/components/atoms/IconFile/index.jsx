@@ -21,9 +21,9 @@ export const IconFileType = {
     XLS: '.xls',
 }
 
-const IconFile = ({ type, size, pendingDeleted }) => {
+const IconFile = ({ type, size }) => {
     return (
-        <div className={`atmIconFile ${[type]} ${[size]} ${pendingDeleted ? "pending-deleted" : null }` } data-type={`${[type]}`}></div>
+        <div className={`atmIconFile ${[type]} ${[size]}` } data-type={`${[type]}`}></div>
     )
 }
 export default IconFile;
@@ -31,11 +31,9 @@ export default IconFile;
 IconFile.propTypes = {
     size: PropTypes.oneOf(Object.keys(IconFileSize)),
     type: PropTypes.oneOf(Object.keys(IconFileType)),
-    pendingDeleted: PropTypes.bool,
 };
 
 IconFile.defaultProps = {
     size: IconFileSize.MEDIUM,
     type: IconFileType.GENERIC,
-    pendingDeleted: "false",
 };  

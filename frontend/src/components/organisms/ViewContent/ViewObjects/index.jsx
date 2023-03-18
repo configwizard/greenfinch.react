@@ -24,7 +24,7 @@ function ViewObjects({shared, onDelete, onDownload, objectList, onObjectSelectio
                             hasDropdown={!shared}/>
                     </div>
                 ) : objectsLoaded ? 
-                    <div className="atmStatusSmall"><i className="fa-sharp fa-solid fa-triangle-exclamation"/>&nbsp;There are no objects in this container.</div> 
+                    <div className="atmStatusSmall"><i className="fa-sharp fa-solid fa-triangle-exclamation"/>There are no objects in this container.</div> 
                     : 
                     <SpinnerLoading hasText={true} text={"Loading..."} size={"small"}/>
                 }
@@ -43,7 +43,7 @@ function ViewObjects({shared, onDelete, onDownload, objectList, onObjectSelectio
                             hasDropdown={!shared}/>
                     </div>
                 ) : objectsLoaded ? 
-                    <div className="atmStatusSmall"><i className="fa-sharp fa-solid fa-triangle-exclamation"/>&nbsp;There are no objects in this container.</div> 
+                    <div className="atmStatusSmall"><i className="fa-sharp fa-solid fa-triangle-exclamation"/>There are no objects in this container.</div> 
                     : 
                     <SpinnerLoading hasText={true} text={"Loading..."} size={"small"}/>
                 }

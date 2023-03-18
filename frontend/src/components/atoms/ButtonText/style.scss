@@ -28,6 +28,7 @@
     }
     &.clean, &.secondary {
         border: 1px solid rgba(0,0,0,0.06);
+        color: $brandColorDark;
         background-color: rgba(0,0,0,0.03);
         &:hover {
             text-decoration: none;
@@ -40,7 +41,7 @@
         background-color: $brandColorDark;
         &:hover {
             text-decoration: none;
-            color: $brandColorWhite;
+            color: $doraPurple;
             background-color: $brandColorDark;
         }
     }
@@ -48,16 +49,12 @@
 
 .me-auto {
     & .atmButtonText {
-        &.default, &.clean, &.primary, &.secondary {
-            margin-right: $marginXSmall;
-        }
+        margin-right: $marginXSmall;
     }
 }
 
 .ms-auto {
     & .atmButtonText {
-        &.default, &.clean, &.primary, &.secondary {
-            margin-left: $marginXSmall;
-        }
+        margin-left: $marginXSmall;
     }
 }

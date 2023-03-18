@@ -20,19 +20,19 @@ const ControlBar = ({containers, selectedContainer, onSelected, changeView, view
             <div className="ms-auto">
                 <ButtonIcon
                     type={"default"}
-                    size={"small"}
+                    size={"medium"}
                     isDisabled={selectedContainer ? false : true}
                     faClass={"fa-sharp fa-solid fa-left-to-line"}
                     onClick={()=>{resetBreadcrumb()}} />
                 <ButtonIcon
                     type={"default"}
-                    size={"small"}
+                    size={"medium"}
                     buttonClass={viewMode === 'grid' ? "active" : null}
                     faClass={"fa-sharp fa-solid fa-table-cells-large"}
                     onClick={()=>{changeView("grid")}} />
                 <ButtonIcon
                     type={"default"}
-                    size={"small"}
+                    size={"medium"}
                     buttonClass={viewMode === 'grid' ? null : 'active'}
                     faClass={"fa-sharp fa-solid fa-list"}
                     onClick={()=>{changeView("list")}} />

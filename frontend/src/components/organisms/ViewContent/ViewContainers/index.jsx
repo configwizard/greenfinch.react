@@ -12,7 +12,7 @@ class ViewContainers extends React.Component {
         this.state = {}
     }
     render() {
-        const {containerList, viewMode} = this.props
+        const {shared, containerList, viewMode} = this.props
         console.log("containerList", containerList)
         if (viewMode === "grid") {
         return (
@@ -24,7 +24,7 @@ class ViewContainers extends React.Component {
                             onContainerSelection={this.props.onContainerSelection} 
                             item={item}
                             hasCheckbox={false} 
-                            hasDropdown={true}>
+                            hasDropdown={!shared}>
                         </ViewContainersGrid>
                     </div>
                 )}
@@ -40,7 +40,7 @@ class ViewContainers extends React.Component {
                                 onContainerSelection={this.props.onContainerSelection} 
                                 item={item}
                                 hasCheckbox={false} 
-                                hasDropdown={true}>
+                                hasDropdown={!shared}>
                             </ViewContainersRow>
                         </div>
                     )}

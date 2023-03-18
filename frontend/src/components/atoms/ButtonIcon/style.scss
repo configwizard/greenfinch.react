@@ -1,10 +1,25 @@
 @import "../../../assets/greenfinch-variables.scss";
 
 .atmButtonIcon {
+    border-radius: $brandBorderRadius;
+    &.small {
+        font-size: 0.7rem;
+        min-width: 0.7rem;
+        padding: 3px 6px;
+    }
+    &.medium {
+        font-size: 1rem;
+        min-width: 1rem;
+        padding: 4px 8px;
+    }
+    &.large {
+        font-size: 1.2rem;
+        min-width: 1.2rem;
+        padding: 5px 10px;
+    }
     &.default {
         color: $brandColorWhite;
         background-color: $brandColorDark;
-        border-radius: $brandBorderRadius;
         &.active {
             color: $brandColorPrimary;
             background-color: $brandColorDark; 
@@ -14,21 +29,7 @@
             color: $brandColorPrimary;
             background-color: $brandColorDark; 
         }
-        &.small {
-            font-size: 0.8rem;
-            min-width: 0.8rem;
-            padding: 4px 8px;
-        }
-        &.medium {
-            font-size: 1rem;
-            min-width: 1rem;
-            padding: 4px 8px;
-        }
-        &.large {
-            font-size: 1.2rem;
-            min-width: 1.2rem;
-            padding: 5px 10px;
-        }
+       
     }
     &.clean {
         color: $brandColorDark;
@@ -40,22 +41,20 @@
             background-color: transparent;
             color: $brandColorPrimary;
         }
-        &.small {
-            font-size: 1rem;
-            min-width: 1rem;
-            padding: 4px 0;
-        }
-        &.medium {
-            font-size: 1.2rem;
-            min-width: 1.2rem;
-            padding: 5px 0;
-        }
-        &.large {
-            font-size: 1.4rem;
-            min-width: 1.4rem;
-            padding: 6px 0;
-        }
     }
+    &.secondary {
+        color: $brandColorDark;
+        border: 1px solid rgba(0,0,0,0.06);
+        background-color: rgba(0,0,0,0.03);
+        & i {
+            color: $brandColorDark;
+        }
+        &:hover {
+            text-decoration: none;
+            color: $brandColorDark;
+            background-color: rgba(0,0,0,0.1);
+        }
+    }  
 }
 
 .me-auto {

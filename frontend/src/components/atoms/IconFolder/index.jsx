@@ -14,21 +14,19 @@ export const IconFolderType = {
     SHARED: 'shared',
 }
 
-const IconFolder = ({ type, size, pendingDeleted }) => {
+const IconFolder = ({ type, size }) => {
     return (
-        <div className={`${[type]} ${[size]} atmIconFolder ${pendingDeleted ? "pending-deleted" : null }` } data-type={`${[type]}`}></div>
+        <div className={`atmIconFolder ${[type]} ${[size]}`}></div>
     )
 }
 export default IconFolder ;
 
 IconFolder.propTypes = {
     size: PropTypes.oneOf(Object.keys(IconFolderSize)),
-    type: PropTypes.oneOf(Object.keys(IconFolderType)),
-    pendingDeleted: PropTypes.bool,
+    type: PropTypes.oneOf(Object.keys(IconFolderType)).isRequired,
 };
 
 IconFolder.defaultProps = {
     size: IconFolderSize.MEDIUM,
     type: IconFolderType.NATIVE,
-    pendingDeleted: "false",
 };  

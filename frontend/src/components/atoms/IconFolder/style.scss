@@ -26,12 +26,6 @@
     &:before {
         background-color: $brandColorPrimary;
     }
-    &.pending-deleted {
-        opacity: 0.2;
-        pointer-events: none;
-        user-select: none;
-        cursor: not-allowed;
-    }
 }
 
 .shared.atmIconFolder { //Update classes to reflect 'shared' palette e.g. blue
@@ -39,11 +33,5 @@
     border-top: 4px solid $brandColorPrimary;
     &:before {
         background-color: $brandColorPrimary;
-    }
-    &.pending-deleted {
-        opacity: 0.5;
-        pointer-events: none;
-        user-select: none;
-        cursor: not-allowed;
     }
 }
