@@ -434,12 +434,13 @@ func (m *Manager) GetAccountInformation() (Account, error) {
 	}
 	fmt.Printf("retrieved balances %+v\r\n", balances)
 
-	fmt.Println("getting account information ", m.pool)
+
 	pl, err := m.Pool()
 	if err != nil {
+		fmt.Println("error retrieving pool. ", err)
 		return Account{}, err
 	}
-
+	fmt.Println("getting account information ", m.pool)
 	userID := user.ID{}
 	user.IDFromKey(&userID, m.wallet.Accounts[0].PrivateKey().PrivateKey.PublicKey)
 	blGet := pool.PrmBalanceGet{}
@@ -448,7 +449,7 @@ func (m *Manager) GetAccountInformation() (Account, error) {
 	fmt.Println("waiting to retrieve result")
 	res, err := pl.Balance(context.Background(), blGet)
 	if err != nil {
-		fmt.Errorf("error %w", err)
+		fmt.Errorf("error retrieving balance %w", err)
 		return Account{}, err
 	}
 

@@ -28,11 +28,11 @@ func GetPool(ctx context.Context, key ecdsa.PrivateKey, peers map[string]config.
 		prm.AddNode(pool.NewNodeParam(peer.Priority, peer.Address, float64(peer.Weight)))
 	}
 
-	prm.SetNodeDialTimeout(4 * time.Minute)
-	prm.SetNodeStreamTimeout(4 * time.Minute)
-	prm.SetHealthcheckTimeout(4 * time.Minute)
-	prm.SetClientRebalanceInterval(4 * time.Minute)
-	prm.SetErrorThreshold(1)
+	prm.SetNodeDialTimeout(5 * time.Minute)
+	prm.SetNodeStreamTimeout(5 * time.Minute)
+	prm.SetHealthcheckTimeout(5 * time.Minute)
+	prm.SetClientRebalanceInterval(5 * time.Minute)
+	prm.SetErrorThreshold(5)
 	prm.SetKey(&key)
 	//todo does this need setting or does this have a default?
 	//prm.SetSessionExpirationDuration(10)

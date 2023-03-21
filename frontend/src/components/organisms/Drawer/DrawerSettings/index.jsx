@@ -8,7 +8,6 @@ import ButtonToggle from '../../../atoms/ButtonToggle';
 import '../_settings/style.scss';
 
 const DrawerSettings = (props) => {
-    props.version = "v1.2.3"
     return (
         <>
             <div className="offcanvas offcanvas-end" tabIndex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">

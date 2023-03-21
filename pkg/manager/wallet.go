@@ -188,21 +188,7 @@ func (m *Manager) NewWalletFromWIF(password, wif, filepath string) error {
 	//runtime.EventsEmit(m.ctx, "select_wallet", false)
 	return nil
 }
-func (m *Manager) NewWallet(password string) error {
-	homeDir, err := os.UserHomeDir()
-	fmt.Println("saving to ")
-	filepath, err := runtime.SaveFileDialog(m.ctx, runtime.SaveDialogOptions{
-		DefaultDirectory:           homeDir,
-		DefaultFilename:            "wallet.json",
-		Title:                      "Choose where to save file to",
-		Filters:                    nil,
-		ShowHiddenFiles:            false,
-		CanCreateDirectories:       true,
-		TreatPackagesAsDirectories: false,
-	})
-	if err != nil {
-		return err
-	}
+func (m *Manager) NewWallet(password, filepath string) error {
 	if filepath == "" {
 		fmt.Println("no filepath. Bailing out")
 		return nil
