@@ -16,6 +16,12 @@
                 color: $toastColorError;
             }
         }
+        &.running {
+            background-color: $toastColorRunning;
+            & span.toastTitle  {
+                color: $toastColorRunning;
+            }
+        }
         &.warning {
             background-color: $toastColorWarning;
             & span.toastTitle  {
