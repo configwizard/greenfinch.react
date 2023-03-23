@@ -18,7 +18,7 @@ const iconSelector = (type) => {
         case 'warning':
             return 'fa-sharp fa-solid fa-triangle-exclamation';
         case 'running':
-            return 'fa-sharp fa-solid fa-rotate fa-spin';
+            return 'fa-solid fa-spinner fa-spin';
         case 'info':
             return 'fa-sharp fa-solid fa-circle-info';
         default:

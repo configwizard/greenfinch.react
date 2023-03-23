@@ -5,7 +5,8 @@ import PropTypes from 'prop-types';
 import HeadingGeneral from '../../../atoms/HeadingGeneral';
 import ButtonText from '../../../atoms/ButtonText';
 import { useModal } from '../../../organisms/Modal/ModalContext';
-import {forceSync} from "../../../../manager/manager";
+import {makeRunningToast} from "../../../../manager/manager";
+
 import '../style.scss';
 
 const ContainerHeaderPage = ({ pageTitle, hasButton, hasIcon, faClass, buttonText, isButtonDisabled, createNewContainer }) => {
@@ -28,7 +29,7 @@ const ContainerHeaderPage = ({ pageTitle, hasButton, hasIcon, faClass, buttonTex
                         faClass={"fa-sharp fa-solid fa-rotate"}
                         isDisabled={false}
                         text={"Force sync"}
-                        onClick={forceSync}/>
+                        onClick={() => makeRunningToast("Run and run and run...")}/>
                     { hasButton ? 
                         <ButtonText
                             size={"small"}
