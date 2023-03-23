@@ -172,6 +172,18 @@ const getVersion = async() => {
         console.log("could not get version", e)
     }
 }
+const makeRunningToast = async(message) => {
+    try {
+        let o = { 
+            Type: "running",
+            Title: "Running",
+            Description: message
+        }
+        await window.go.manager.Manager.MakeToast(o)
+    } catch(e) {
+        console.log("could not make running toast", e)
+    }
+}
 const makeCopyToast = async(message) => {
     try {
         let o = { 
@@ -180,7 +192,7 @@ const makeCopyToast = async(message) => {
         }
         await window.go.manager.Manager.MakeToast(o)
     } catch(e) {
-        console.log("could not make toast", e)
+        console.log("could not make copy toast", e)
     }
 }
 
@@ -207,5 +219,6 @@ export {
     loadWalletWithoutPassword,
     saveWalletWithoutPassword,
     getVersion,
+    makeRunningToast,
     makeCopyToast
 }
