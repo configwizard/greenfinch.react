@@ -8,18 +8,18 @@ import './style.scss';
 
 // change this up to clean, default/primary(modal) and secondary 
 
-export const ButtonSize = {
-    SMALL: 'small',
-    MEDIUM: 'medium',
-    LARGE: 'large',
-}
-
 export const ButtonType = {
     DEFAULT: 'default', 
     CLEAN: 'clean',
     PRIMARY: 'primary',
     SECONDARY: 'secondary',
     DORA: 'dora',
+}
+
+export const ButtonSize = {
+    SMALL: 'small',
+    MEDIUM: 'medium',
+    LARGE: 'large',
 }
 
 const ButtonText = ({ type, size, buttonClass, isDisabled, onClick, hasIcon, faClass, text }) => {
@@ -58,6 +58,6 @@ ButtonText.defaultProps = {
     isDisabled: false,
     hasIcon: true,
     buttonClass: "",
-    faClass: "fa-sharp fa-solid fa-flag",
+    faClass: "fa-sharp fa-solid fa-envelope",
     text: "Button text"
 };                            
