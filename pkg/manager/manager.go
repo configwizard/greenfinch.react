@@ -450,6 +450,18 @@ func (m *Manager) GetAccountInformation() (Account, error) {
 	res, err := pl.Balance(context.Background(), blGet)
 	if err != nil {
 		fmt.Errorf("error retrieving balance %w", err)
+		m.MakeNotification(NotificationMessage{
+			Title:       "Connecting to NeoFS error",
+			Type:        "error",
+			Description: "Connecting to NeoFS failed attempting to retrieve balance. There seems to be an issue" + err.Error(),
+			MarkRead:    false,
+		})
+		tmp := UXMessage{
+			Title:       "Connecting to NeoFS error",
+			Type:        "error",
+			Description: "See notifications for more information",
+		}
+		m.MakeToast(NewToastMessage(&tmp))
 		return Account{}, err
 	}
 
