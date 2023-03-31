@@ -11,15 +11,15 @@ export default {
 // We create a “template” of how args map to rendering
 const Template = (args) => <ButtonClose {...args} />; 
 
-export const Default = Template.bind({});
-Default.args = {
+export const Small = Template.bind({});
+Small.args = {
     type: 'default',
     hasIcon: true,
     faClass: "fa-sharp fa-solid fa-flag",
 };
 
-export const Clean = Template.bind({});
-Clean.args = {
+export const Medium = Template.bind({});
+Medium.args = {
     type: 'clean',
     hasIcon: true,
     faClass: "fa-sharp fa-solid fa-flag",
