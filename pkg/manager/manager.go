@@ -227,35 +227,42 @@ func (m *Manager) checkForVersion() {
 		time.Sleep(1 * time.Second) //lets make sure we are ready to show the version issue
 		//if v1 is older than v2, then compare returns -1
 		//http://localhost:8000/version.json
-		resp, err := http.Get("https://greenfinch.app/version.json")
+		resp, err := http.Get("https://api.github.com/repos/configwizard/greenfinch.react/releases/latest")
 		if err != nil {
 			log.Println("err retrieving version", err)
 		} else {
 			var metadata struct {
-				RemoteVersion string `json:"binary_version"`
+				RemoteVersion string `json:"tag_name"`
 			}
 			body, err := ioutil.ReadAll(resp.Body)
 			if err != nil {
 				log.Println("Error retrieving remote version body", err)
 			}
 			fmt.Println("version check received", string(body))
-			json.Unmarshal(body, &metadata)
-			remoteVersion, _ := semver.Make(metadata.RemoteVersion)
+			if err := json.Unmarshal(body, &metadata); err != nil {
+				fmt.Println("unmarshalling error ", err)
+				return
+			}
+			fmt.Println("metadata ", metadata)
+			trimmedRemoteVersion := strings.TrimPrefix(metadata.RemoteVersion, "v")
+			remoteVersion, _ := semver.Make(trimmedRemoteVersion)
+			fmt.Println("remote version ", remoteVersion)
 			fmt.Println("parsing ", m.version)
-			tmpVersion := strings.TrimPrefix(m.version, "v")
-			v, err := semver.Parse(tmpVersion)
+			trimmedLocalVersion := strings.TrimPrefix(m.version, "v")
+			v, err := semver.Parse(trimmedLocalVersion)
 			if err != nil {
 				log.Println("error with versioning. Not Semantic", err)
 				tmp := NewToastMessage(&UXMessage{
 					Title:       "Checking for update",
 					Type:        "warning",
-					Description: "Error with versioning " + err.Error() + " - " + m.version + " - " + tmpVersion,
+					Description: "Error with versioning " + err.Error() + " - " + m.version + " - " + trimmedLocalVersion,
 				})
 				m.MakeToast(tmp)
 				return
 			}
 
-			log.Printf("version %s", v)
+
+			log.Printf("version %+v comparing to %s - %d \r\n", v, remoteVersion, v.Compare(remoteVersion))
 			if v.Compare(remoteVersion) < 0 {
 				tmp := NewToastMessage(&UXMessage{
 					Title:       "Update Available",
