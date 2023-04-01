@@ -4,7 +4,7 @@ on:
   # This Action only starts when you go to Actions and manually run the workflow.
   push:
 #    branches:
-      - master #don't run when master is pushed so doesn't mess up releases
+#      - master #don't run when master is pushed so doesn't mess up releases
 #    # Sequence of patterns matched against refs/tags
 #    tags:
 #      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
@@ -41,18 +41,19 @@ jobs:
         run: |
           cd frontend && npm run build
       # You may need to manually build you frontend manually here, unless you have configured frontend build and install commands in wails.json.
+      - name: Set semver version
+        id: semver_version
+        uses: LykkeBusiness/get-semver-from-tag-action@v1.0.2
+        if: startsWith(github.event.ref, 'refs/tags/v')
+        with:
+          tag: ${{ github.ref }}
       - name: Get Wails
         run: go install github.com/wailsapp/wails/v2/cmd/wails@latest
       - name: Build Wails app
         env:
           CI: false
-          REF: ${{ github.ref }}
         run: |
-          wails build -debug -ldflags "-X main.version=${REF##*/}"
-      - name: check env on macOS
-        if: matrix.platform == 'macos-latest'
-        run: |
-          echo "ref " $REF ${REF##*/}
+          wails build -debug -ldflags "-X main.version=${{ steps.semver_version.outputs.prefixed }}"
       - name: MacOS download gon for code signing and app notarization
         if: matrix.platform == 'macos-latest'
         run: |
@@ -129,14 +130,20 @@ jobs:
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
+      - name: Set semver version
+        id: semver_version
+        uses: LykkeBusiness/get-semver-from-tag-action@v1.0.2
+        if: startsWith(github.event.ref, 'refs/tags/v')
+        with:
+          tag: ${{ github.ref }}
       - name: Create release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          tag_name: ${{ steps.semver_version.outputs.prefixed }}
+          release_name: Release ${{ steps.semver_version.outputs.prefixed }}
           body: ${{ github.event.head_commit.message }}
           draft: false
           prerelease: false
