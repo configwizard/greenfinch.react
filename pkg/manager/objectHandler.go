@@ -154,11 +154,6 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 	if err != nil {
 		return nil, err
 	}
-	//for the time being we have to use a client directly
-	//cfg, err := config.ReadConfig("cfg", m.configLocation)
-	//if err != nil {
-	//	return nil, err
-	//}
 	addr := m.selectedNetwork.StorageNodes["0"].Address //cfg.Peers["0"].Address //we need to find the top priority addr really here
 	prmCli := client.PrmInit{}
 	prmCli.SetDefaultPrivateKey(tmpKey)
@@ -186,24 +181,29 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 		log.Println("error writing object header ", err)
 		return nil, err
 	}
-	var cancelUpload chan bool
+	var cancelUpload chan error
 	go func() {
 		defer wg.Done()
 		progressChan := progress.NewTicker(m.ctx, reader, fileStats.Size(), 50*time.Millisecond)
 		for p := range progressChan {
 			select {
-				case <-cancelUpload:
+				case err := <-cancelUpload:
 					tmp := NewProgressMessage(&ProgressMessage{
 						Title:    "Uploading object",
 						Show:     false,
 					})
 					m.SetProgressPercentage(tmp)
-					var o interface{}
-					m.SendSignal("freshUpload", o)
+					m.MakeNotification(NotificationMessage{
+						Title:       "Upload cancelled",
+						Type:        "error",
+						Description: "Upload cancelled - " + err.Error(),
+						MarkRead:    false,
+					})
+					m.SendSignal("freshUpload", nil)
 					m.MakeToast(NewToastMessage(&UXMessage{
 						Title:       "Uploading cancelled",
 						Type:        "error",
-						Description: "Uploading " + filename + " failed",
+						Description: "Uploading " + filename + " cancelled",
 					}))
 					return
 			default:
@@ -237,6 +237,13 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 		// update progress bar
 		n, err := (*reader).Read(buf)
 		if !objWriter.WritePayloadChunk(buf[:n]) {
+			cancelUpload <- err
+			m.MakeNotification(NotificationMessage{
+				Title:       "Upload failed",
+				Type:        "error",
+				Description: fmt.Sprintf("Could not write payload chunk %s", err.Error()),
+				MarkRead:    false,
+			})
 			break
 		}
 		if errors.Is(err, io.EOF) {
@@ -245,7 +252,7 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 	}
 	res, err := objWriter.Close()
 	if err != nil {
-		cancelUpload <- true
+		cancelUpload <- err
 		m.MakeNotification(NotificationMessage{
 			Title:       "Upload failed",
 			Type:        "error",
@@ -254,7 +261,6 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 		})
 		return nil, err
 	}
-	fmt.Println("res error", res.Status())
 	objectID := res.StoredObjectID()
 	wg.Wait()
 	fmt.Println("uploaded object with id ", objectID.String())
@@ -268,7 +274,6 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 	for _, a := range obj.Attributes() {
 		el.Attributes[a.Key()] = a.Value()
 	}
-
 	if data, err := json.Marshal(el); err != nil {
 		return []Element{}, err
 	} else {
@@ -419,6 +424,7 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 		return nil, err
 	}
 
+	log.Println("creating session token for download")
 	sc, err := tokens.BuildObjectSessionToken(pKey, iAt, iAt, exp, session.VerbObjectGet, cnrID, resSession)
 	if err != nil {
 		log.Println("error creating session token to create a container", err)
@@ -427,7 +433,6 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 	getInit := client.PrmObjectGet{}
 	getInit.WithinSession(*sc)
 	getInit.FromContainer(cnrID)
-	//getInit.WithBearerToken(*bt)
 	getInit.ByID(objID)
 	dstObject := &object.Object{}
 	objReader, err := cli.ObjectGetInit(m.ctx, getInit)
@@ -444,17 +449,19 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 		log.Println("res for failure to read header ", res.Status())
 		return nil, errors.New(fmt.Sprintf("error with reading header %s\r\n", res.Status()))
 	}
-	var cancelDownload chan bool
+	var cancelDownload chan error
 	c := progress.NewWriter(writer)
 	wg := sync.WaitGroup{}
 	wg.Add(1)
+	log.Println("starting progress bar")
 	go func() {
 		defer wg.Done()
 		progressChan := progress.NewTicker(m.ctx, c, int64(dstObject.PayloadSize()), 50*time.Millisecond)
 		for p := range progressChan {
 
 			select {
-			case <-cancelDownload:
+			case err := <-cancelDownload:
+				log.Println("download was cancelled")
 				tmp := NewProgressMessage(&ProgressMessage{
 					Title: "Downloading object",
 					Show:  false,
@@ -465,6 +472,12 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 					Type:        "error",
 					Description: "Downloading " + path.Base(fp) + " failed",
 				}))
+				m.MakeNotification(NotificationMessage{
+					Title:       "Download cancelled",
+					Type:        "error",
+					Description: "Download cancelled " + err.Error(),
+					MarkRead:    false,
+				})
 				return
 			default:
 				fmt.Printf("\r%v remaining...", p.Remaining().Round(50*time.Millisecond))
@@ -499,13 +512,26 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 			break
 		}
 		if _, err := (*c).Write(buf[:n]); err != nil {
+			cancelDownload <- err
+			m.MakeNotification(NotificationMessage{
+				Title:       "Download error",
+				Type:        "error",
+				Description: "Downloading error - error writing to buffer " + err.Error(),
+				MarkRead:    false,
+			})
+			tmp := NewToastMessage(&UXMessage{
+				Title:       "Download error",
+				Type:        "success",
+				Description: "Downloading error - see notificaitions",
+			})
+			m.MakeToast(tmp)
 			fmt.Println("error writing buffer ", err)
 			break
 		}
 	}
 	res, err := objReader.Close()
 	if err != nil {
-		cancelDownload <- true
+		cancelDownload <- err
 		m.MakeNotification(NotificationMessage{
 			Title:       "Download failed",
 			Type:        "error",
