@@ -201,14 +201,14 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 					m.MakeNotification(NotificationMessage{
 						Title:       "Upload cancelled",
 						Type:        "error",
-						Description: "Upload cancelled - " + err.Error(),
+						Description: "Upload cancelled due to - " + err.Error(),
 						MarkRead:    false,
 					})
 					m.SendSignal("freshUpload", nil)
 					m.MakeToast(NewToastMessage(&UXMessage{
 						Title:       "Uploading cancelled",
 						Type:        "error",
-						Description: "Uploading " + filename + " cancelled",
+						Description: "Uploading " + filename + " cancelled due to error",
 					}))
 					return
 			default:
@@ -243,12 +243,6 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 		n, err := (*reader).Read(buf)
 		if !objWriter.WritePayloadChunk(buf[:n]) {
 			cancelUpload <- err
-			m.MakeNotification(NotificationMessage{
-				Title:       "Upload failed",
-				Type:        "error",
-				Description: fmt.Sprintf("Could not write payload chunk %s", err.Error()),
-				MarkRead:    false,
-			})
 			break
 		}
 		if errors.Is(err, io.EOF) {
@@ -258,12 +252,6 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 	res, err := objWriter.Close()
 	if err != nil {
 		cancelUpload <- err
-		m.MakeNotification(NotificationMessage{
-			Title:       "Upload failed",
-			Type:        "error",
-			Description: fmt.Sprintf("Failed to create object due to: %s", err.Error()),
-			MarkRead:    false,
-		})
 		return nil, err
 	}
 	objectID := res.StoredObjectID()
@@ -397,10 +385,6 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 		return nil, err
 	}
 
-	//cfg, err := config.ReadConfig("cfg", m.configLocation)
-	//if err != nil {
-	//	return nil, err
-	//}
 	addr := m.selectedNetwork.StorageNodes["0"].Address
 
 	prmCli := client.PrmInit{}
@@ -449,10 +433,6 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 	wg.Add(1)
 	log.Println("starting progress bar for payload (size) ", dstObject.PayloadSize())
 
-
-	/*
-		i think the issue is this function is no longer 'attached' and the channel cancelDownload no longer exists so can't send mssage
-	 */
 	go func() {
 		defer wg.Done()
 		progressChan := progress.NewTicker(m.ctx, c, int64(dstObject.PayloadSize()), 50*time.Millisecond)
@@ -466,15 +446,10 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 						Show:  false,
 					})
 					m.SetProgressPercentage(tmp)
-					m.MakeToast(NewToastMessage(&UXMessage{
-						Title:       "Downloading cancelled",
-						Type:        "error",
-						Description: "Downloading " + path.Base(fp) + " failed",
-					}))
 					m.MakeNotification(NotificationMessage{
-						Title:       "Download cancelled",
+						Title:       "Download failed due to an error",
 						Type:        "error",
-						Description: "Download cancelled " + err.Error(),
+						Description: "Download failed " + err.Error(),
 						MarkRead:    false,
 					})
 					return
@@ -510,12 +485,6 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 		if _, err := (c).Write(buf[:n]); err != nil {
 			fmt.Println("error writing to buffer ", err)
 			m.cancelcontext <- err
-			m.MakeNotification(NotificationMessage{
-				Title:       "Download error",
-				Type:        "error",
-				Description: "Downloading error - error writing to buffer " + err.Error(),
-				MarkRead:    false,
-			})
 			tmp := NewToastMessage(&UXMessage{
 				Title:       "Download error",
 				Type:        "error",
@@ -533,24 +502,17 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 			failCount++
 			if failCount >= 100 {
 				fmt.Println("failed to read ", n, " bytes 100 times")
-				m.cancelcontext <- errors.New("download failed to start")
-				m.MakeNotification(NotificationMessage{
-					Title:       "Download error",
-					Type:        "error",
-					Description: "Downloading error - download did not start. For some reason this file is not successfully downloading. There may be a connection issue",
-					MarkRead:    false,
-				})
 				tmp := NewToastMessage(&UXMessage{
 					Title:       "Download error",
 					Type:        "error",
 					Description: "Download failed to start. Cancelling automatically.",
 				})
 				m.MakeToast(tmp)
+				m.cancelcontext <- errors.New("download failed to start")
 				break
 			}
 		}
 	}
-	fmt.Println("closing progress bar")
 	end := NewProgressMessage(&ProgressMessage{
 		Title: "Downloading object",
 		Show:  false,
@@ -559,12 +521,6 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 	res, err := objReader.Close()
 	if err != nil {
 		m.cancelcontext <- err
-		m.MakeNotification(NotificationMessage{
-			Title:       "Download failed",
-			Type:        "error",
-			Description: fmt.Sprintf("Failed to download object due to: %s", err.Error()),
-			MarkRead:    false,
-		})
 		return nil, err
 	}
 	fmt.Println("res error", res.Status())

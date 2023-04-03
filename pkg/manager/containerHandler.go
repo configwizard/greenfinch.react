@@ -506,6 +506,11 @@ func (m *Manager) RestrictContainer(id string, publicKey string) error {
 		Description: "Please wait...",
 	}
 	m.MakeToast(NewToastMessage(&tmp))
+	m.MakeNotification(NotificationMessage{
+		Title:       "Sharing container started",
+		Type:        "info",
+		Description: "starting sharing container " + id + " with " + publicKey,
+	})
 	cnrID := cid.ID{}
 	if err := cnrID.DecodeString(id); err != nil {
 		tmp := UXMessage{
@@ -521,12 +526,20 @@ func (m *Manager) RestrictContainer(id string, publicKey string) error {
 		return err
 	}
 
+	pl, err := m.Pool()
+	if err != nil {
+		fmt.Errorf("%w", err)
+		return err
+	}
+
 	//this doesn't feel correct??
 	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
 	pKey := &keys.PrivateKey{PrivateKey: tmpKey}
 
 	//todo: how do you attach a new session to a session Container?
-	sc, err := tokens.BuildContainerSessionToken(pKey, 500, 500, 500, cnrID, session.VerbContainerPut, *pKey.PublicKey())
+	iAt, exp, err := gspool.TokenExpiryValue(m.ctx, pl, 100)
+
+	sc, err := tokens.BuildContainerSessionToken(pKey, iAt, iAt, exp, cnrID, session.VerbContainerSetEACL, *pKey.PublicKey())
 	if err != nil {
 		return err
 	}
@@ -551,11 +564,6 @@ func (m *Manager) RestrictContainer(id string, publicKey string) error {
 	if sc != nil {
 		prm.WithinSession(*sc) //todo = what if the sc is nil? Why continue?
 	}
-	pl, err := m.Pool()
-	if err != nil {
-		fmt.Errorf("%w", err)
-		return err
-	}
 
 	go func() {
 		if err := pl.SetEACL(m.ctx, prm); err != nil {
@@ -575,7 +583,7 @@ func (m *Manager) RestrictContainer(id string, publicKey string) error {
 		}
 			m.MakeNotification(NotificationMessage{
 				Title:       "Sharing successful",
-				Type:        "error",
+				Type:        "success",
 				Description: "Successfully shared container " + id,
 			})
 			tmp := UXMessage{
