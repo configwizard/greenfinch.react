@@ -154,7 +154,7 @@ function filterContent(state, onObjectSelection, onObjectDelete, onObjectDownloa
                                     <ButtonContentAction
                                         icon="fa-sharp fa-solid fa-download"
                                         text="Download this object" 
-                                        onClick={() => {onObjectDownload(state.selectedObject.objectFile, state.selectedObject.objectID)}} />
+                                        onClick={() => {onObjectDownload(state.selectedObject.objectName, state.selectedObject.objectID)}} />
                                     { state.selectedContainer.permissions === 264211711 || 264224767 ?
                                         <ButtonText 
                                             type="clean"

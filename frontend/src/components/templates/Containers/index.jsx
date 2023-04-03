@@ -134,6 +134,7 @@ class Containers extends React.Component {
         if (this.state.selectedContainer == null) {
             return
         }
+        console.log("downloading ", name)
         await getObject(name, id, this.state.selectedContainer.containerID)
     }
     // onObjectDownload = async() => {

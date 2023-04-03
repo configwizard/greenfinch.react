@@ -61,6 +61,11 @@ func setMimeType(filename string, filtered *map[string]string) {
 		}
 	}
 }
+
+func (m *Manager) CancelContext() {
+	fmt.Println("user concelled context")
+	m.cancelcontext <- errors.New("cancelled from UI by user")
+}
 func (m *Manager) UploadObject(containerID, fp string, filtered map[string]string) ([]Element, error) {
 
 	tmpWallet, err := m.retrieveWallet()
@@ -449,44 +454,48 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 		log.Println("res for failure to read header ", res.Status())
 		return nil, errors.New(fmt.Sprintf("error with reading header %s\r\n", res.Status()))
 	}
-	var cancelDownload chan error
 	c := progress.NewWriter(writer)
 	wg := sync.WaitGroup{}
 	wg.Add(1)
-	log.Println("starting progress bar")
+	log.Println("starting progress bar for payload (size) ", dstObject.PayloadSize())
+
+
+	/*
+		i think the issue is this function is no longer 'attached' and the channel cancelDownload no longer exists so can't send mssage
+	 */
 	go func() {
 		defer wg.Done()
 		progressChan := progress.NewTicker(m.ctx, c, int64(dstObject.PayloadSize()), 50*time.Millisecond)
 		for p := range progressChan {
 
 			select {
-			case err := <-cancelDownload:
-				log.Println("download was cancelled")
-				tmp := NewProgressMessage(&ProgressMessage{
-					Title: "Downloading object",
-					Show:  false,
-				})
-				m.SetProgressPercentage(tmp)
-				m.MakeToast(NewToastMessage(&UXMessage{
-					Title:       "Downloading cancelled",
-					Type:        "error",
-					Description: "Downloading " + path.Base(fp) + " failed",
-				}))
-				m.MakeNotification(NotificationMessage{
-					Title:       "Download cancelled",
-					Type:        "error",
-					Description: "Download cancelled " + err.Error(),
-					MarkRead:    false,
-				})
-				return
-			default:
-				fmt.Printf("\r%v remaining...", p.Remaining().Round(50*time.Millisecond))
-				tmp := NewProgressMessage(&ProgressMessage{
-					Title:    "Downloading object",
-					Progress: int(p.Percent()),
-					Show:     true,
-				})
-				m.SetProgressPercentage(tmp)
+				case err := <-m.cancelcontext: //cancel download needs to be callable globally so that its detection. My guess is its been cleaned up
+					log.Println("download was cancelled")
+					tmp := NewProgressMessage(&ProgressMessage{
+						Title: "Downloading object",
+						Show:  false,
+					})
+					m.SetProgressPercentage(tmp)
+					m.MakeToast(NewToastMessage(&UXMessage{
+						Title:       "Downloading cancelled",
+						Type:        "error",
+						Description: "Downloading " + path.Base(fp) + " failed",
+					}))
+					m.MakeNotification(NotificationMessage{
+						Title:       "Download cancelled",
+						Type:        "error",
+						Description: "Download cancelled " + err.Error(),
+						MarkRead:    false,
+					})
+					return
+				default:
+					fmt.Printf("\r%v remaining...", p.Remaining().Round(250*time.Millisecond))
+					tmp := NewProgressMessage(&ProgressMessage{
+						Title:    "Downloading object",
+						Progress: int(p.Percent()),
+						Show:     true,
+					})
+					m.SetProgressPercentage(tmp)
 			}
 		}
 		tmp := NewToastMessage(&UXMessage{
@@ -504,6 +513,7 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 		fmt.Println("\rdownload is completed")
 	}()
 	buf := make([]byte, 1024)
+	failCount := 0 //if the download seems to not be downloading we count the number of times, and throw an error/cancel the download
 	for {
 		n, err := objReader.Read(buf)
 		// get total size from object header and update progress bar based on n bytes received
@@ -512,7 +522,8 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 			break
 		}
 		if _, err := (*c).Write(buf[:n]); err != nil {
-			cancelDownload <- err
+			fmt.Println("error writing to buffer ", err)
+			m.cancelcontext <- err
 			m.MakeNotification(NotificationMessage{
 				Title:       "Download error",
 				Type:        "error",
@@ -521,17 +532,40 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 			})
 			tmp := NewToastMessage(&UXMessage{
 				Title:       "Download error",
-				Type:        "success",
-				Description: "Downloading error - see notificaitions",
+				Type:        "error",
+				Description: "Downloading error - see notifications",
 			})
 			m.MakeToast(tmp)
 			fmt.Println("error writing buffer ", err)
 			break
 		}
+		if n == 0 { //todo - check if % complete is not moving
+			fmt.Println("failed to read ", n, " bytes")
+			failCount++
+			if failCount >= 100 {
+				m.cancelcontext <- errors.New("download failed to start")
+				m.MakeNotification(NotificationMessage{
+					Title:       "Download error",
+					Type:        "error",
+					Description: "Downloading error - download did not start. For some reason this file is not successfully downloading. There may be a connection issue",
+					MarkRead:    false,
+				})
+				tmp := NewToastMessage(&UXMessage{
+					Title:       "Download error",
+					Type:        "error",
+					Description: "Download failed to start. Cancelling automatically.",
+				})
+				m.MakeToast(tmp)
+				return nil, errors.New("download failed to start")
+			}
+		} else {
+			fmt.Println("all good, downloading count is ", failCount)
+		}
 	}
+
 	res, err := objReader.Close()
 	if err != nil {
-		cancelDownload <- err
+		m.cancelcontext <- err
 		m.MakeNotification(NotificationMessage{
 			Title:       "Download failed",
 			Type:        "error",

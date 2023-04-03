@@ -2,7 +2,8 @@ import React from 'react';
 import { Progress } from 'react-sweet-progress';
 import 'react-sweet-progress/lib/style.css';
 
-import ButtonClose from '../../atoms/ButtonClose';
+import ButtonClose, {ButtonCancel} from '../../atoms/ButtonClose';
+import { cancelContext } from "../../../manager/manager.js";
 
 import './style.scss';
 
@@ -42,7 +43,7 @@ export default class ProgressBar extends React.Component {
                 <div className="molProgressWrapper">
                     <div className="molProgressInner d-flex">
                         <div className="molProgressContent d-flex flex-column">
-                            <ButtonClose type="div" size="small" onClick={async () => {await this.setState({...this.state, show: false})}} />
+                            <ButtonCancel type="div" size="small" onClick={async () => {await cancelContext(); await this.setState({...this.state, show: false})}} />
                             <div>
                                 <span className="atmProgressTitle">Progress</span>
                             </div>

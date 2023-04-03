@@ -93,6 +93,7 @@ type Manager struct {
 	password      string //warning this is not a good idea
 	DEBUG         bool
 	enableCaching bool
+	cancelcontext chan error
 }
 
 const (
@@ -238,7 +239,6 @@ func (m *Manager) checkForVersion() {
 			if err != nil {
 				log.Println("Error retrieving remote version body", err)
 			}
-			fmt.Println("version check received", string(body))
 			if err := json.Unmarshal(body, &metadata); err != nil {
 				fmt.Println("unmarshalling error ", err)
 				return
@@ -325,6 +325,7 @@ func NewFileSystemManager(version string, dbLocation string, DEBUG bool) (*Manag
 		pool:    nil,
 		ctx:   nil,
 		DEBUG: DEBUG,
+		cancelcontext: make(chan error),
 	}, nil
 }
 

@@ -9,9 +9,9 @@ const listObjects = async (containerID, showDeleted=false) => {
 }
 //contanierID Q9dpMA6t7drq8KJB5qa7jQ6JN6GMSGBH3qrxHN7v2TC
 //objectID BWMzu5CGatL4n9idE2K3PTojynfAmoykaiVtKdeDm7iD
-const getObject = async (objId, filename, containerID) => {
+const getObject = async (filename, objId, containerID) => {
     try {
-        let metaData = await window.go.manager.Manager.Download(objId, filename, containerID)
+        let metaData = await window.go.manager.Manager.Download(filename, objId, containerID)
         return metaData
     } catch(e) {
         console.log("error retrieving object", e, "container id", containerID, "object id", objId)

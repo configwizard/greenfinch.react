@@ -164,6 +164,14 @@ const copyTextToClipboard = async(txt) => {
         console.log("error loading wallet", e)
     }
 }
+
+const cancelContext = async() => {
+    try {
+        await window.go.manager.Manager.CancelContext()
+    } catch(e) {
+        console.log("could not cancel context", e)
+    }
+}
 const getVersion = async() => {
     try {
         const v = await window.go.manager.Manager.GetVersion()
@@ -206,6 +214,7 @@ export {
     loadWalletWithPath,
     loadWalletWithoutPassword,
     saveWalletWithoutPassword,
+    cancelContext,
     getVersion,
     makeCopyToast
 }

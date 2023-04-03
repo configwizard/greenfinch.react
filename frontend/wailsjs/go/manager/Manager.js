@@ -10,6 +10,10 @@ export function AddSharedContainer(arg1) {
   return window['go']['manager']['Manager']['AddSharedContainer'](arg1);
 }
 
+export function CancelContext() {
+  return window['go']['manager']['Manager']['CancelContext']();
+}
+
 export function ContainersChanged() {
   return window['go']['manager']['Manager']['ContainersChanged']();
 }

@@ -88,6 +88,7 @@
     "@storybook/preset-create-react-app": "^3.2.0",
     "@storybook/react": "^6.4.20",
     "@storybook/testing-library": "^0.0.9",
+    "cypress": "^12.9.0",
     "react-error-overlay": "^6.0.9"
   },
   "optionalDependencies": {
