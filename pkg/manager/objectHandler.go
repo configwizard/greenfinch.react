@@ -362,17 +362,7 @@ func (m *Manager) GetObjectMetaData(objectID, containerID string) (object.Object
 		fmt.Errorf("read object header via connection pool: %w", err)
 		return object.Object{}, err
 	}
-	//
-	//for _, attr := range hdr.Attributes() {
-	//	key := attr.Key()
-	//	val := attr.Value()
-	//	//fmt.Println(key, val)
-	//	switch key {
-	//	case object.AttributeFileName:
-	//	case object.AttributeTimestamp:
-	//	case object.AttributeContentType:
-	//	}
-	//}
+
 	return hdr, nil
 }
 
@@ -517,11 +507,7 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 	for {
 		n, err := objReader.Read(buf)
 		// get total size from object header and update progress bar based on n bytes received
-		if errors.Is(err, io.EOF) {
-			fmt.Println("end of file")
-			break
-		}
-		if _, err := (*c).Write(buf[:n]); err != nil {
+		if _, err := (c).Write(buf[:n]); err != nil {
 			fmt.Println("error writing to buffer ", err)
 			m.cancelcontext <- err
 			m.MakeNotification(NotificationMessage{
@@ -539,10 +525,14 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 			fmt.Println("error writing buffer ", err)
 			break
 		}
+		if errors.Is(err, io.EOF) {
+			fmt.Println("end of file")
+			break
+		}
 		if n == 0 { //todo - check if % complete is not moving
-			fmt.Println("failed to read ", n, " bytes")
 			failCount++
 			if failCount >= 100 {
+				fmt.Println("failed to read ", n, " bytes 100 times")
 				m.cancelcontext <- errors.New("download failed to start")
 				m.MakeNotification(NotificationMessage{
 					Title:       "Download error",
@@ -556,13 +546,16 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 					Description: "Download failed to start. Cancelling automatically.",
 				})
 				m.MakeToast(tmp)
-				return nil, errors.New("download failed to start")
+				break
 			}
-		} else {
-			fmt.Println("all good, downloading count is ", failCount)
 		}
 	}
-
+	fmt.Println("closing progress bar")
+	end := NewProgressMessage(&ProgressMessage{
+		Title: "Downloading object",
+		Show:  false,
+	})
+	m.SetProgressPercentage(end)
 	res, err := objReader.Close()
 	if err != nil {
 		m.cancelcontext <- err
@@ -575,6 +568,7 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 		return nil, err
 	}
 	fmt.Println("res error", res.Status())
+	wg.Wait()
 	return []byte{}, nil
 }
 
