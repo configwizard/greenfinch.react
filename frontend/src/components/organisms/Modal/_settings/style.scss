@@ -1,6 +1,15 @@
 @import "../../../../assets/greenfinch-variables.scss";
 
 // Modal styles from demo (stackoverflow: )
+
+.modal--size-sm {
+    width: calc(var(--spacing) * 20);
+}
+
+.modal--size-med {
+    width: calc(var(--spacing) * 30);
+}
+
 .orgModal {
     --spacing: 24px;
     display: flex;
@@ -20,110 +29,107 @@
         left: 0;
         width: 100%;
         height: 100%;
+        background: rgba(0,0,0,0.3);
+        border: none;
+        cursor: default;
     }
     & .molModalContainer {
         position: relative;
         width: calc(var(--spacing) * 30);
         max-width: 100%;
+        border-radius: 5px;
+        border: 1px solid $brandColorDark-hint;
+        background-color: #ffffff;
+        box-shadow: 0px 20px 32px -8px rgba(0,0,0, 0.25);
         & .modal__close-btn {
+            background: transparent;
+            border: none;
             position: absolute;
             top: 16px;
-            right: 19px;
+            right: 16px;
             padding: 0;
+            & i {
+                transition: $brandTransitionSpeed;
+                padding: 5px 10px;
+                color: rgba($brandColorDark, 0.5);
+                background-color: rgba(0,0,0,0);
+                font-size: 1.5rem;
+                border-radius: 3px;
+                cursor: pointer;
+                &:hover {
+                    color: rgba($brandColorDark, 1);
+                    background-color: rgba(0,0,0,0.05);
+                }
+            }
         }
     }
 }
-.molModalHeader {
-    background-color: darken($brandColorLight,4%);
-    padding: $paddingMedium $paddingSmall;
-    & h2 {
-        @include titleStyle(1.1rem);
-        color: $brandColorDark;
-        margin-bottom: 0;
-    }
-}
-.molModalBody {
-    padding: $paddingMedium $paddingSmall;
-    & .atmButtonText {
-        font-size: 0.8rem;
-    }
-}
 
-.molModalFooter {
-    padding: $paddingSmall;
-}
-
-.molModalWrapper {
-    background: rgba(0,0,0,0.6);
-    border: none;
-    cursor: default;
-} 
-.molModalContainer {
-    border-radius: 5px;
-    border: 1px solid $brandColorDark-hint;
-    background-color: #ffffff;
-    box-shadow: 0px 20px 32px -8px rgba(0,0,0, 0.25);
-}   
-.modal__close-btn {
-    background: transparent;
-    border: none;
-    & i {
-        transition: $brandTransitionSpeed;
-        padding: 5px 10px;
-        color: rgba($brandColorDark, 0.5);
-        background-color: rgba(0,0,0,0);
-        font-size: 1.5rem;
-        border-radius: 3px;
-        cursor: pointer;
-        &:hover {
-            color: rgba($brandColorDark, 1);
-            background-color: rgba(0,0,0,0.05);
-        }
-    }
-}
-.molModalBody {
-    & h3 {
-        color: $brandColorDark;
-        font-size: 1.6rem;
-        font-family: $brandFontBold;
-    }
-    & h4 {
-        color: $brandColorDark;
-        font-size: 1.3rem;
-        font-family: $brandFontSemi;
-    }
-    & .form-label {
-        color: $brandColorDark;
-        font-family: $brandFontSemi;
-        font-size: 0.9rem;
-    }
-    & .form-text {
-        color: $brandColorDark;
-        font-family: $brandFontReg;
-        font-size: 0.7rem;
-    }
-}
-.molModalFooter {
-    background-color: $brandColorLight;
-}
 .orgModalBrand {
-    & p {
-        font-size: 1.2rem;
-        font-family: $brandFontSemi;
+    & .molModalHeader {
+        background-color: darken($brandColorLight,4%);
+        padding: $paddingMedium $paddingSmall;
+        & h2 {
+            @include titleStyle(1.1rem);
+            color: $brandColorDark;
+            margin-bottom: 0;
+        }
     }
-}
-// Close button
-i.fa-xmark {
-    transition: $brandTransitionSpeed;
-    border-radius: 2px;
-    cursor: pointer;
-    padding: 5px;
-    &:hover {
-        background-color: rgba(0,0,0,0.05);
+    & .molModalBody {
+        padding: $paddingMedium $paddingSmall;
+        & .atmButtonText {
+            font-size: 0.8rem;
+        }
+        & h3 {
+            color: $brandColorDark;
+            font-size: 1.6rem;
+            font-family: $brandFontBold;
+        }
+        & h4 {
+            color: $brandColorDark;
+            font-size: 1.3rem;
+            font-family: $brandFontSemi;
+        }
+        & p {
+            font-size: 1.2rem;
+            font-family: $brandFontSemi;
+        }
+        & .form-label {
+            color: $brandColorDark;
+            font-family: $brandFontSemi;
+            font-size: 0.9rem;
+        }
+        & .form-text {
+            color: $brandColorDark;
+            font-family: $brandFontReg;
+            font-size: 0.7rem;
+        }
+    }
+    & .molModalFooter {
+        background-color: $brandColorLight;
+        padding: $paddingSmall;
     }
 }
 
 .orgModal em {
     font-style: normal;
     font-family: $brandFontBold;
+}
+
+.orgModalLoading {
+    .molModalHeader {
+        height: 200px;
+        padding: $paddingSmall;
+        background: red;
+    }
+    .molModalBody {
+        height: 150px;
+        padding: $paddingSmall;
+        background: green;
+    }
+    .molModalFooter {
+        height: 50px;
+        padding: $paddingSmall;
+        background: purple;
+    }
 }
