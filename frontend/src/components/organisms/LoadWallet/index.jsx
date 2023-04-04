@@ -10,6 +10,7 @@ import ButtonIcon from '../../atoms/ButtonIcon';
 import ButtonText from '../../atoms/ButtonText';
 import HeadingGeneral from '../../atoms/HeadingGeneral';
 import SpinnerLoading from '../../atoms/SpinnerLoading';
+import CompModalLoading from "../Modal/ModalLoading";
 import CompModalStandard from "../Modal/ModalStandard";
 
 import './style.scss';

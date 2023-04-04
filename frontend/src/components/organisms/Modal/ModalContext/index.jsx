@@ -1,5 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
+// Central style sheet for modals
+import '../_settings/style.scss';
+
+
 const ModalContext = React.createContext()
 
 const Modal = ({ modal, unSetModal }) => {
@@ -22,7 +26,7 @@ const Modal = ({ modal, unSetModal }) => {
             <button className="molModalWrapper" onClick={unSetModal} />{/* outside modal i.e. backdrop */}
             <div className="molModalContainer">
                 <button className="modal__close-btn" onClick={unSetModal}>
-                    <i className="fa-sharp fa-solid fa-xmark fa-fw"/>
+                    <i className="fa-sharp fa-solid fa-xmark"/>
                 </button>
                 { modal }
             </div>
