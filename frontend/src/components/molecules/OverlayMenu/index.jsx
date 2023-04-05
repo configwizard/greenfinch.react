@@ -28,7 +28,9 @@ function OverlayMenu(props) {
                             className="atmButtonBase nav-link" 
                             onClick={() => {
                                 setModal(
-                                <CompModalStandard 
+                                <CompModalStandard
+                                    unSetModal={async () => unSetModal()}
+                                    size={"medium"}
                                     title={"Confirmation"} 
                                     hasSecondaryButton={true}
                                     buttonTextPrimary={"Yes"} 

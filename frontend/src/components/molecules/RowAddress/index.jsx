@@ -48,6 +48,8 @@ const RowAddress = ({first, contact, deleteContact}) => {
                         () => {
                             setModal(
                                 <CompModalStandard
+                                    unSetModal={async () => unSetModal()}
+                                    size={"medium"}
                                     title={"Add new contact"}
                                     hasSecondaryButton={true}
                                     buttonTextPrimary={"Send"}

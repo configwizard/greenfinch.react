@@ -19,6 +19,8 @@ import '../_settings/style.scss';
 const createNewContainer = (setModal, unSetModal) => { 
     setModal(
     <CompModalStandard
+        unSetModal={async () => unSetModal()}
+        size={"medium"}
         title={"Create new container"}
         hasSecondaryButton={true}
         buttonTextPrimary={"Create"}

@@ -20,6 +20,8 @@ const ButtonContentObjectInfo = ({ objectName, objectId, objectFile, objectSize,
             onClick={() => {
                 setModal(
                 <CompModalStandard
+                    unSetModal={async () => unSetModal()}
+                    size={"medium"}
                     title={"Object properties"}
                     hasSecondaryButton={false}
                     buttonTextPrimary={"Close"}

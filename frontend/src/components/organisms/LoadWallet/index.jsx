@@ -10,7 +10,6 @@ import ButtonIcon from '../../atoms/ButtonIcon';
 import ButtonText from '../../atoms/ButtonText';
 import HeadingGeneral from '../../atoms/HeadingGeneral';
 import SpinnerLoading from '../../atoms/SpinnerLoading';
-import CompModalLoading from "../Modal/ModalLoading";
 import CompModalStandard from "../Modal/ModalStandard";
 
 import './style.scss';
@@ -54,6 +53,8 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                                 if (walletPath === "") return
                                                 setModal(
                                                     <CompModalStandard
+                                                        unSetModal={async () => unSetModal()}
+                                                        size={"medium"}
                                                         title={"Wallet Password"}
                                                         hasSecondaryButton={true}
                                                         buttonTextPrimary={"Load wallet"}
@@ -92,6 +93,8 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                                 if (walletPath === "") return
                                                 setModal(
                                                     <CompModalStandard
+                                                        unSetModal={async () => unSetModal()}
+                                                        size={"medium"}
                                                         title={"Wallet Password"}
                                                         hasSecondaryButton={true}
                                                         buttonTextPrimary={"Create"}
@@ -137,6 +140,8 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                                 if (walletPath === "") return
                                             setModal(
                                                 <CompModalStandard
+                                                    unSetModal={async () => unSetModal()}
+                                                    size={"medium"}
                                                     title={"Wallet Password"}
                                                     hasSecondaryButton={true}
                                                     buttonTextPrimary={"Create"}
@@ -211,6 +216,8 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                                     () => {
                                                         setModal(
                                                             <CompModalStandard
+                                                                unSetModal={async () => unSetModal()}
+                                                                size={"medium"}
                                                                 title={"Load recent wallet"}
                                                                 hasSecondaryButton={true}
                                                                 buttonTextPrimary={"Confirm"}

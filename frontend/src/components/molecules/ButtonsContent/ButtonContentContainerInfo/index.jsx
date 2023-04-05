@@ -18,6 +18,8 @@ const ButtonContentContainerInfo = ({ containerName, containerId, containerPermi
             onClick={() => {
                 setModal(
                 <CompModalStandard
+                    unSetModal={async () => unSetModal()}
+                    size={"medium"}
                     title={"Container properties"}
                     hasSecondaryButton={false}
                     buttonTextPrimary={"Close"}
