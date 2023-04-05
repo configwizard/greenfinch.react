@@ -14,6 +14,8 @@ import '../_settings/style.scss';
 const createNewContact = async (setModal, createContact, unSetModal) => {
     setModal(
     <CompModalStandard
+        unSetModal={async () => unSetModal()}
+        size={"medium"}
         title={"Add new contact"}
         hasSecondaryButton={true}
         buttonTextPrimary={"Add"}

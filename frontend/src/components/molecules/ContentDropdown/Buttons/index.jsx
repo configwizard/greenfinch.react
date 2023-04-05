@@ -13,7 +13,9 @@ export function DeleteButton(props){
             className="atmButtonBase dropdown-item"
             onClick={() => {
                 setModal(
-                <CompModalStandard 
+                <CompModalStandard
+                    unSetModal={async () => unSetModal()}
+                    size={"medium"}
                     title={"Confirmation"} 
                     hasSecondaryButton={true}
                     buttonTextPrimary={"Yes"} 

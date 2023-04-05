@@ -18,6 +18,8 @@ const ButtonQRCode = ({ qrcode }) => {
             onClick={() => {
                 setModal(
                 <CompModalStandard
+                    unSetModal={async () => unSetModal()}
+                    size={"medium"}
                     title={"QR Code available"}
                     hasSecondaryButton={false}
                     buttonTextPrimary={"Close"}

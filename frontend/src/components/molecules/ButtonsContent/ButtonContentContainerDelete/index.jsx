@@ -18,6 +18,8 @@ const ButtonContentContainerDelete = ({ containerName, containerDelete, containe
             onClick={() => {
                 setModal(
                 <CompModalStandard
+                    unSetModal={async () => unSetModal()}
+                    size={"medium"}
                     title={"Are you sure?"}
                     buttonTextPrimary={"Yes"}
                     hasSecondaryButton={true}

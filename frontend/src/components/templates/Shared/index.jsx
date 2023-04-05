@@ -20,6 +20,9 @@ import '../_settings/style.scss';
 const loadSharedContainer = (setModal, unSetModal) => { 
     setModal(
         <CompModalStandard
+            unSetModal={async () => unSetModal()}
+            
+            size={"medium"}
             title={"Add shared container"}
             hasSecondaryButton={true}
             buttonTextPrimary={"Add"}

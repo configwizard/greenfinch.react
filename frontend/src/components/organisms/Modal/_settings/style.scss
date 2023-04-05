@@ -33,34 +33,43 @@
         border: none;
         cursor: default;
     }
+    & .test {
+        width:100%;
+    }
     & .molModalContainer {
         position: relative;
-        width: calc(var(--spacing) * 30);
         max-width: 100%;
         border-radius: 5px;
         border: 1px solid $brandColorDark-hint;
         background-color: #ffffff;
         box-shadow: 0px 20px 32px -8px rgba(0,0,0, 0.25);
-        & .modal__close-btn {
-            background: transparent;
-            border: none;
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            padding: 0;
-            & i {
-                transition: $brandTransitionSpeed;
-                padding: 5px 10px;
-                color: rgba($brandColorDark, 0.5);
-                background-color: rgba(0,0,0,0);
-                font-size: 1.5rem;
-                border-radius: 3px;
-                cursor: pointer;
-                &:hover {
-                    color: rgba($brandColorDark, 1);
-                    background-color: rgba(0,0,0,0.05);
-                }
-            }
+        &.small {
+            width: calc(var(--spacing) * 20);
+        }
+        &.medium {
+            width: calc(var(--spacing) * 30);
+        }
+    }
+}
+
+.modal__close-btn {
+    background: transparent;
+    border: none;
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 0;
+    & i {
+        transition: $brandTransitionSpeed;
+        padding: 5px 10px;
+        color: rgba($brandColorDark, 0.5);
+        background-color: rgba(0,0,0,0);
+        font-size: 1.5rem;
+        border-radius: 3px;
+        cursor: pointer;
+        &:hover {
+            color: rgba($brandColorDark, 1);
+            background-color: rgba(0,0,0,0.05);
         }
     }
 }
