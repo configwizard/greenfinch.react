@@ -47,24 +47,70 @@ func isErrAccessDenied(err error) (string, bool) {
 		return err.Reason(), true
 	}
 }
-func setMimeType(filename string, filtered *map[string]string) {
-	if _, ok := (*filtered)["Content-Type"]; ok {
-		return
-	}
+func mime(filename string) string {
 	ext := filepath.Ext(filename)
 	var m []Mimes
 	json.Unmarshal([]byte(mimes), &m)
 	for _, v := range m {
 		if v.Extension == ext {
-			(*filtered)["Content-Type"] = v.MimeType
-			return
+			return v.MimeType
 		}
+	}
+	return ""
+}
+func setMimeType(filename string, filtered *map[string]string) {
+	if _, ok := (*filtered)["Content-Type"]; ok {
+		return
+	}
+	if m := mime(filename); m != "" {
+		(*filtered)["Content-Type"] = m
 	}
 }
 
 func (m *Manager) CancelContext() {
 	fmt.Println("user concelled context")
 	m.cancelcontext <- errors.New("cancelled from UI by user")
+}
+
+func (m *Manager) UploadTree(containerId string, tree map[string][]string) error {
+	tmpWallet, err := m.retrieveWallet()
+	if err != nil {
+		return err
+	}
+	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
+
+	userID := user.ID{}
+	user.IDFromKey(&userID, tmpKey.PublicKey)
+	cnrID := cid.ID{}
+	if err := cnrID.DecodeString(containerId); err != nil {
+		return err
+	}
+	//var filtered = make(map[string]string) //this is some map of predefined attributes the user can set
+	var attributes []object.Attribute
+	for relativePath, list := range tree { //todo this could be just an array of relative paths depending on frontend
+		for _, f := range list {
+			if m := mime(f); m != "" {
+				attribute := object.NewAttribute()
+				attribute.SetKey("Content-Type")
+				attribute.SetValue(m)
+				attributes = append(attributes, *attribute)
+			}
+			filePathAttr := object.NewAttribute()
+			filePathAttr.SetKey(object.AttributeFilePath)
+			filePathAttr.SetValue(filepath.Join(relativePath, f))
+			attributes = append(attributes, *filePathAttr)
+
+			fileNameAttr := object.NewAttribute()
+			fileNameAttr.SetKey(object.AttributeFileName)
+			fileNameAttr.SetValue(f)
+			attributes = append(attributes, *fileNameAttr)
+
+			timestamp := object.NewAttribute()
+			timestamp.SetKey(object.AttributeTimestamp)
+			timestamp.SetValue(strconv.FormatInt(time.Now().Unix(), 10))
+			attributes = append(attributes, *timestamp)
+		}
+	}
 }
 func (m *Manager) UploadObject(containerID, fp string, filtered map[string]string) ([]Element, error) {
 
