@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import './style.scss';
+import './_settings/style.scss';
 
 export const SpinnerSize = {
     SMALL: 'small',
@@ -13,7 +13,7 @@ const SpinnerLoading = ({ size, hasText, text, isVisible }) => {
     return (
         isVisible ? (
             <div className={`atmSpinnerLoading ${[size]}`}>
-                <i className="fa-sharp fa-solid fa-spinner"/> 
+                <div class="dot-flashing"></div>
                 { hasText ? 
                     <span>{text}</span>
                 : null }

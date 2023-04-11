@@ -1,0 +1,38 @@
+// Dot Flashing
+@import './dot-variables.scss';
+@import './dot-mixins.scss';
+ 
+.dot-flashing {
+    position: relative;
+    @include dot;
+    animation: dot-flashing 0.6s infinite linear alternate;
+    animation-delay: .3s;
+    &::before,
+    &::after {
+        content: '';
+        display: inline-block;
+        position: absolute;
+        top: 0;
+    }
+    &::before {
+        left: - $dot-spacing;
+        @include dot($bg-color: $dot-before-color);
+        animation: dot-flashing 0.6s infinite alternate;
+        animation-delay: 0s;
+    }
+    &::after {
+        left: $dot-spacing;
+        @include dot($bg-color: $dot-after-color);
+        animation: dot-flashing 0.6s infinite alternate;
+        animation-delay: 0.6s;
+    }
+}
+
+@keyframes dot-flashing {
+    0% {
+        background-color: rgba($dot-color, 1);
+    }
+    50%, 100% {
+        background-color: rgba($dot-color, .2);
+    }
+}
