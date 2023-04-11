@@ -1,4 +1,7 @@
-@import "../../../assets/greenfinch-variables.scss";
+@import "../../../../assets/greenfinch-variables.scss";
+
+@import "./dot-flashing.scss";
+@import "./dot-spin.scss";
 
 .atmSpinnerLoading {
     font-size: 0.8rem;
@@ -18,3 +21,8 @@
         font-size: 1.2rem;
     }
 }
+
+// Three Dots: https://github.com/nzbin/three-dots
+
+// We need to work out a way tht brings in everything here, overrides what is required by the other files
+// e.g. $dot-color
