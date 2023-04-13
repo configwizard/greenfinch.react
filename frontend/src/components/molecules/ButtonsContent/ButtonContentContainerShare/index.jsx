@@ -25,6 +25,8 @@ const ButtonContentContainerShare = ({containerId, contacts}) => {
             onClick={() => {
                 setModal(
                 <CompModalStandard
+                    unSetModal={async () => unSetModal()}
+                    size={"medium"}
                     title={"Share this container"}
                     hasSecondaryButton={true}
                     buttonTextPrimary={"Share"}

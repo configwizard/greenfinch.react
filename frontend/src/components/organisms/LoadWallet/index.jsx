@@ -9,7 +9,6 @@ import { loadWalletWithoutPassword, loadWalletWithPath, newWallet, newWalletFrom
 import ButtonIcon from '../../atoms/ButtonIcon';
 import ButtonText from '../../atoms/ButtonText';
 import HeadingGeneral from '../../atoms/HeadingGeneral';
-import SpinnerLoading from '../../atoms/SpinnerLoading';
 import CompModalStandard from "../Modal/ModalStandard";
 
 import './style.scss';
@@ -33,9 +32,7 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                         <HeadingGeneral 
                             level={"h5"}
                             isUppercase={true}
-                            text={"Get started"}
-                        />
-                        <SpinnerLoading hasText={true} isVisible={true} text={"Wallet loading..."} />
+                            text={"Get started"} />
                         <p>To use Greenfinch, a wallet is required. Either load an exisiting wallet or create a new wallet.</p>
                         
                         <div className="buttonStackHorizontal d-flex">
