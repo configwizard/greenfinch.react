@@ -3,11 +3,11 @@
 
 @import "../../../../assets/greenfinch-variables.scss";
 
-$dot-width: 10px !default;
-$dot-height: 10px !default;
+$dot-width: 12px !default; // default: 10px
+$dot-height: 12px !default; // default: 10px
 $dot-radius: $dot-width * .5 !default;
 
-$dot-color: $brandColorDark !default;
+$dot-color: $brandColorLight !default;
 $dot-bg-color: $dot-color !default;
 $dot-before-color: $dot-color !default;
 $dot-after-color: $dot-color !default;

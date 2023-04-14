@@ -3,22 +3,29 @@
 @import "./dot-flashing.scss";
 @import "./dot-spin.scss";
 
-.atmSpinnerLoading {
-    font-size: 0.8rem;
-    font-family: $brandFontSemi;
-    color: $brandColorDark;
-    display: block;
-    & span {
-        margin-left: $marginXSmall;
-    }
+.atmSpinnerWrapper {
+    position: relative;
+    padding: 32px 5%;
     &.small {
         font-size: 0.8rem;
     }
     &.medium {
-        font-size: 1rem;
-    }
-    &.medium {
         font-size: 1.2rem;
+    }
+    &.large {
+        font-size: 1.6rem;
+    }
+    .atmSpinnerInner {
+        position: relative;
+        padding: 32px 0;
+        margin: 5px -5%;
+        overflow: hidden;
+        font-size: 0.8rem;
+    }
+    & .atmSpinnerText {
+        font-family: $brandFontSemi;
+        padding: $paddingXSmall $paddingSmall;
+        color: $brandColorLight;
     }
 }
 

@@ -29,7 +29,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0,0,0,0.3);
+        background: rgba(0,0,0,0.5);
         border: none;
         cursor: default;
     }
@@ -40,7 +40,7 @@
         position: relative;
         max-width: 100%;
         border-radius: 5px;
-        border: 1px solid $brandColorDark-hint;
+        //border: 1px solid $brandColorDark-hint;
         background-color: #ffffff;
         box-shadow: 0px 20px 32px -8px rgba(0,0,0, 0.25);
         &.small {
@@ -127,18 +127,25 @@
 
 .orgModalLoading {
     .molModalHeader {
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
         height: 200px;
         padding: $paddingSmall;
-        background: red;
+        background: $brandColorDark;
     }
     .molModalBody {
-        height: 150px;
-        padding: $paddingSmall;
-        background: green;
+        text-align: center;
+        font-family: $brandFontSemi;
+        padding: $paddingMedium;
+        & span {
+            font-size: 1.1rem;
+            line-height: 1.25;
+        }
     }
     .molModalFooter {
-        height: 50px;
+        height: 60px;
         padding: $paddingSmall;
-        background: purple;
+        border-bottom-left-radius: 5px;
+        border-bottom-right-radius: 5px;
     }
 }

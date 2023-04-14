@@ -1,5 +1,6 @@
 import React from 'react';
 import { Form } from "react-bootstrap";
+import { useModal } from '../../organisms/Modal/ModalContext';
 import {transferGasToContact, copyTextToClipboard, makeCopyToast} from "../../../manager/manager.js"
 
 // Components
@@ -7,6 +8,7 @@ import ButtonText from '../../atoms/ButtonText';
 import HeadingGeneral from '../../atoms/HeadingGeneral';
 import HeaderPage from '../../organisms/HeaderPage';
 import LoadWallet from '../../organisms/LoadWallet';
+import CompModalLoading from "../../organisms/Modal/ModalLoading";
 import { SectionHomepage, SectionSupport } from '../../organisms/HomeSections';
 
 import {openInDefaultBrowser} from "../../../manager/manager";
@@ -17,13 +19,34 @@ import '../_settings/style.scss';
 const TemplateHome = ({ account, recentWallets, refreshRecentWallets, selectedNetwork, walletId }) => {
     let walletDonation = "Nfv6SYe5QiAxpeSzpy11NWKyoyDSHp47f1"
     console.log("NETWORK", selectedNetwork);
+    const { setModal, unSetModal } = useModal()
     return (
         <div className="templatePage d-flex flex-column flex-grow-1">
             <div className="row">
                 <div className="col-12">
                     <HeaderPage 
                         pageTitle={"Welcome to Greenfinch"} 
-                        hasButton={false} />
+                        hasButton={true} 
+                        isButtonDisabled={false}
+                        hasButtonIcon={true}
+                        faClass={"fa-sharp fa-solid fa-spinner"}
+                        buttonText={"Launch spinner modal (escape to kill)"}                       
+                        buttonAction={
+                            () => {
+                                setModal(
+                                    <CompModalLoading
+                                        unSetModal={async () => unSetModal()}
+                                        theme={"dark"}
+                                        size={"small"}
+                                        hasCloseWrapper={false}
+                                        hasCloseCorner={false}
+                                        hasPrimaryButton={false}
+                                        loadingMessage={"Loading..."}>
+                                            <span>Add sample content here for when required. Add sample content here for when required. Add sample content here for when required</span>
+                                    </CompModalLoading>)
+                            }
+                        }
+                        />
                     <div className="row">
                         <div className="col-6">
                             <div className="templateWrapper">

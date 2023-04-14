@@ -2,8 +2,8 @@
 @import './dot-variables.scss';
 @import './dot-mixins.scss';
  
-$x1: $dot-spacing * 1.2;
-$y1: $dot-spacing * 1.2;
+$x1: $dot-spacing * 1.5; // default: 1.2
+$y1: $dot-spacing * 1.5; // default: 1.2
 $-x1: - $x1;
 $-y1: - $y1;
 
