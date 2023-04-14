@@ -39,7 +39,7 @@ const CompModalStandard = props => {
                                         isDisabled={false}
                                         onClick={() => {props.secondaryClicked()}} />
                                         : null
-                                }
+                                }  
                                 <ButtonText
                                     type="primary"
                                     size="medium"
@@ -63,6 +63,5 @@ CompModalStandard.propTypes = {
 CompModalStandard.defaultProps = {
     size: ModalSize.MEDIUM,
 }
-
 
 export default CompModalStandard;
