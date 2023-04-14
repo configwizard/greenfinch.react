@@ -22,10 +22,7 @@ const Modal = ({ modal, unSetModal }) => {
 
     return (
         <section className="orgModal">
-            <button className="molModalWrapper" onClick={unSetModal} />{/* outside modal i.e. backdrop */}
-            <div>
-                { modal }
-            </div>
+            { modal }
         </section>
     )
 }
