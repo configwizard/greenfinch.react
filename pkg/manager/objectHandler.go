@@ -112,6 +112,8 @@ func (m *Manager) UploadTree(containerId string, tree map[string][]string) error
 		}
 	}
 }
+
+func
 func (m *Manager) UploadObject(containerID, fp string, filtered map[string]string) ([]Element, error) {
 
 	tmpWallet, err := m.retrieveWallet()
@@ -173,6 +175,7 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 		attributes = append(attributes, *timestamp)
 	}
 	pKey := &keys.PrivateKey{PrivateKey: tmpKey}
+
 	obj := object.New()
 	obj.SetContainerID(cnrID)
 	obj.SetOwnerID(&userID)
