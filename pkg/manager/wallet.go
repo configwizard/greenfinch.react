@@ -277,30 +277,21 @@ func (m *Manager) LoadWalletWithPath(password, filepath string) error {
 	}
 	m.MakeToast(NewToastMessage(&tmp))
 
-	//todo - was this to get it to force update the client? Should we do the same for the pool?
-	//if _, err = m.Client(); err != nil {
-	//	tmp := UXMessage{
-	//		Title:       "Error retrieving client",
-	//		Type:        "error",
-	//		Description: err.Error(),
-	//	}
-	//	m.MakeToast(NewToastMessage(&tmp))
-	//	fmt.Println("error retrieving client: ", err)
-	//	return err
-	//}
-	vanityWallet, err := m.GetAccountInformation()
-	if err != nil {
-		tmp := UXMessage{
-			Title:       "Error opening wallet",
-			Type:        "error",
-			Description: err.Error(),
+	go func() {
+		vanityWallet, err := m.GetAccountInformation()
+		if err != nil {
+			tmp := UXMessage{
+				Title:       "Error opening wallet",
+				Type:        "error",
+				Description: err.Error(),
+			}
+			m.MakeToast(NewToastMessage(&tmp))
 		}
-		m.MakeToast(NewToastMessage(&tmp))
-		return err
-	}
-	fmt.Printf("setting vanity wallet %+v\r\n", vanityWallet)
-	runtime.EventsEmit(m.ctx, "fresh_wallet", vanityWallet)
-	runtime.EventsEmit(m.ctx, "select_wallet", false)
+		fmt.Printf("setting vanity wallet %+v\r\n", vanityWallet)
+		runtime.EventsEmit(m.ctx, "fresh_wallet", vanityWallet)
+		runtime.EventsEmit(m.ctx, "select_wallet", false)
+	}()
+
 	return nil
 }
 func (m *Manager) LoadWallet(password string) error {

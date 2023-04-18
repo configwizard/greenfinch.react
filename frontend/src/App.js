@@ -76,16 +76,25 @@ class App extends React.Component {
                 neoBalance: 0
             },
             selectedNetwork: null,
-            recentWallets: []
+            recentWallets: [],
+            lockUI: false
         };
     }
     componentDidMount = async() => {
+        window.runtime.EventsOn("freshtoast", async (message) => {
+            console.log("checking for error ", message)
+            if (message.Type == "error") {
+                //run a shut down routine
+                await this.setLock(false) //remove the loading modal
+            }
+        })
         window.runtime.EventsOn("fresh_wallet", async (newAccount) => {
             console.log("fresh_wallet response", newAccount)
             const walletData  = await getAccountInformation()
             const account = prepareWalletData(walletData)
             console.log("setting wallet details to ", account)
             await this.setState({account})
+            await this.setLock(false) //remove the loading modal
         })
         // const [selectedNetwork, setSelectedNetwork] = useState({Name: "Test Net"});
         // const [count, setCount] = React.useState(0);
@@ -101,6 +110,10 @@ class App extends React.Component {
         //FAKER remove in reality
         // const account = prepareWalletData({})
         // await this.setState({account})
+    }
+    setLock = async (val) => {
+        console.log("setting lock to ", val)
+        await this.setState({...this.state, lockUI: val})
     }
     setStatusAccount = async () => {
         const walletData  = await getAccountInformation()
@@ -128,7 +141,7 @@ class App extends React.Component {
                             </div> 
                             <div className="w-100">
                                 <Routes>
-                                    <Route path="/" exact element={<PageHome refreshRecentWallets={this.refreshRecentWallets} recentWallets={this.state.recentWallets} account={this.state.account} selectedNetwork={this.state.selectedNetwork}/>} />
+                                    <Route path="/" exact element={<PageHome setLock={this.setLock} lockUI={this.state.lockUI} refreshRecentWallets={this.refreshRecentWallets} recentWallets={this.state.recentWallets} account={this.state.account} selectedNetwork={this.state.selectedNetwork}/>} />
                                     <Route path="/containers" exact element={<PageContainers setStatusAccount={this.setStatusAccount} account={this.state.account}/>} />
                                     <Route path="/contacts" exact element={<PageContacts account={this.state.account}/>} />
                                     <Route path="/shared" exact element={<PageShared account={this.state.account}/>} />

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form } from "react-bootstrap";
 import { useModal } from '../../organisms/Modal/ModalContext';
 import {transferGasToContact, copyTextToClipboard, makeCopyToast} from "../../../manager/manager.js"
@@ -16,17 +16,44 @@ import {openInDefaultBrowser} from "../../../manager/manager";
 // Central style sheet for templates
 import '../_settings/style.scss';
 
-const TemplateHome = ({ account, recentWallets, refreshRecentWallets, selectedNetwork, walletId }) => {
+const TemplateHome = ({ lockUI, account, recentWallets, refreshRecentWallets, selectedNetwork, walletId, setLock }) => {
     let walletDonation = "Nfv6SYe5QiAxpeSzpy11NWKyoyDSHp47f1"
     console.log("NETWORK", selectedNetwork);
     const { setModal, unSetModal } = useModal()
+    const loadingMessages = [
+        "connecting to network...",
+    ]
+
+    useEffect(() => {
+        console.log("received lockUI ", lockUI)
+        if (lockUI) {
+            setModal(
+                <CompModalLoading
+                    unSetModal={async () => unSetModal()}
+                    theme={"dark"}
+                    size={"small"}
+                    hasCloseWrapper={false}
+                    hasCloseCorner={false}
+                    hasPrimaryButton={false}
+                    loadingMessage={"Loading..."}
+                >
+                  <span>
+                    Depending on certain conditions, connecting to the network can take some time. Please be patient
+                  </span>
+                </CompModalLoading>
+            );
+        } else {
+            unSetModal();
+        }
+    }, [lockUI]);
     return (
+
         <div className="templatePage d-flex flex-column flex-grow-1">
             <div className="row">
                 <div className="col-12">
                     <HeaderPage 
                         pageTitle={"Welcome to Greenfinch"} 
-                        hasButton={true} 
+                        hasButton={false}
                         isButtonDisabled={false}
                         hasButtonIcon={true}
                         faClass={"fa-sharp fa-solid fa-spinner"}
@@ -150,7 +177,8 @@ const TemplateHome = ({ account, recentWallets, refreshRecentWallets, selectedNe
                                         account={account}
                                         walletId={walletId}
                                         recentWallets={recentWallets}
-                                        refreshRecentWallets={refreshRecentWallets} />
+                                        refreshRecentWallets={refreshRecentWallets}
+                                        setLock={setLock} />
                                 </div>
                             </div>
                         </div>

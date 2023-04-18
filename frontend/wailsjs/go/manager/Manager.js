@@ -150,8 +150,8 @@ export function OpenInDefaultBrowser(arg1) {
   return window['go']['manager']['Manager']['OpenInDefaultBrowser'](arg1);
 }
 
-export function Pool() {
-  return window['go']['manager']['Manager']['Pool']();
+export function Pool(arg1) {
+  return window['go']['manager']['Manager']['Pool'](arg1);
 }
 
 export function RecentWallets() {

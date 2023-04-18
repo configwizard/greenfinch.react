@@ -209,7 +209,7 @@ func (m *Manager) SetSelectedNetwork(network string) (NetworkData, error) {
 	//here, everything should be reset, new pool etc, any clients referencing should now get from the managers networkData object.
 	m.NetworkChangeNotification()//update the front end of network change
 	m.pool = nil //reload the pool for the new network
-	if _, err := m.Pool(); err != nil {
+	if _, err := m.Pool(false); err != nil {
 		return NetworkData{}, err
 	}
 	return m.selectedNetwork, nil
@@ -353,17 +353,18 @@ func (m *Manager) SetWalletDebugging(walletPath, password string) error {
 		return err
 	}
 	m.ctx = context.Background()
-	_, err = m.Pool()
+	_, err = m.Pool(false)
 	return err
 }
 
 // todo we will want to have things dependent on the wallet controlled elsewhere with singletons and no other way of getting the value
 // todo remove the need to pass the private key to the api (usually for getOwnerID - however this should be passed into the backend
-func (m *Manager) Pool() (*pool.Pool, error) {
+func (m *Manager) Pool(forceRenew bool) (*pool.Pool, error) {
+	//force renew is required between wallet changes otherwise the wallet is connected to a pool from a different wallet
 	if m.wallet == nil { //i wonder if the pool can be the ephemeral wallet so we can make these requests quickly
 		return nil, errors.New("no wallet selected yet")
 	}
-	if m.pool == nil {
+	if forceRenew || m.pool == nil {
 		//config, err := config.ReadConfig("cfg", m.configLocation)
 		//if err != nil {
 		//	fmt.Println("error reading config ", err)
@@ -440,13 +441,14 @@ func (m *Manager) GetAccountInformation() (Account, error) {
 	if err != nil {
 		return Account{}, err
 	}
-	fmt.Printf("retrieved balances %+v\r\n", balances)
+	if len(balances) == 0 {
+		return Account{}, errors.New("could not retrieve balances")
+	}
 
-
-	pl, err := m.Pool()
+	pl, err := m.Pool(true)
 	if err != nil {
 		fmt.Println("error retrieving pool. ", err)
-		return Account{}, err
+		return Account{}, errors.New("error connecting to node " + err.Error())
 	}
 	fmt.Println("getting account information ", m.pool)
 	userID := user.ID{}

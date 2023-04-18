@@ -19,6 +19,7 @@ import (
 	"github.com/nspcc-dev/neo-go/pkg/wallet"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type RPC_NETWORK string
@@ -107,7 +108,9 @@ type Nep17Tokens struct {
 func GetNep17Balances(walletAddress string, network RPC_NETWORK) (map[string]Nep17Tokens, error) {
 	ctx := context.Background()
 	// use endpoint addresses of public RPC nodes, e.g. from https://dora.coz.io/monitor
-	cli, err := client.New(ctx, string(network), client.Options{})
+	cli, err := client.New(ctx, string(network), client.Options{
+		RequestTimeout: 60 * time.Second,
+	})
 	if err != nil {
 		return map[string]Nep17Tokens{}, err
 	}
@@ -121,7 +124,10 @@ func GetNep17Balances(walletAddress string, network RPC_NETWORK) (map[string]Nep
 		return map[string]Nep17Tokens{}, err
 	}
 	balances, err := cli.GetNEP17Balances(recipient)
-
+	if err != nil {
+		fmt.Println("could not retrieve balances ", err)
+		return map[string]Nep17Tokens{}, err
+	}
 	tokens := make(map[string]Nep17Tokens)
 	for _, v := range balances.Balances {
 		tokInfo := Nep17Tokens{}

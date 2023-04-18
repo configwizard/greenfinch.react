@@ -72,7 +72,7 @@ func (m *Manager) listSharedContainerObjectsAsync(containerID string) ([]Element
 	if err := cnrID.DecodeString(containerID); err != nil {
 		log.Fatal("couldn't decode containerID")
 	}
-	pl, err := m.Pool()
+	pl, err := m.Pool(false)
 	if err != nil {
 		return []Element{}, err
 	}

@@ -3,7 +3,15 @@ import { useModal } from '../../organisms/Modal/ModalContext';
 import {Form} from "react-bootstrap";
 
 // Actual
-import { loadWalletWithoutPassword, loadWalletWithPath, newWallet, newWalletFromWIF, saveWalletWithoutPassword, deleteRecentWallet } from '../../../manager/manager.js'
+import {
+    loadWalletWithoutPassword,
+    loadWalletWithPath,
+    newWallet,
+    newWalletFromWIF,
+    saveWalletWithoutPassword,
+    deleteRecentWallet,
+    makeCopyToast
+} from '../../../manager/manager.js'
 
 // Components
 import ButtonIcon from '../../atoms/ButtonIcon';
@@ -13,7 +21,7 @@ import CompModalStandard from "../Modal/ModalStandard";
 
 import './style.scss';
 
-const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
+const LoadWallet = ({account, recentWallets, setLock, refreshRecentWallets}) => {
     const { setModal, unSetModal } = useModal()
     const { isVisible, setIsVisible } = useState(false)
     console.log("propogating wallet", account, recentWallets)
@@ -58,9 +66,14 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                                         buttonTextSecondary={"Cancel"}
                                                         primaryClicked={async () => {
                                                             console.log("waiting to load wallet with path ", walletPath)
-                                                            await loadWalletWithPath(document.getElementById("loadWalletPassword").value, walletPath);
-                                                            await unSetModal()
-                                                            await refreshRecentWallets()
+                                                            const err = await loadWalletWithPath(document.getElementById("loadWalletPassword").value, walletPath);
+                                                            if (!err) {
+                                                                await unSetModal()
+                                                                console.log("setting lock to true")
+                                                                await setLock(true)
+                                                                await refreshRecentWallets()
+                                                            }
+
                                                         }}
                                                         secondaryClicked={async () => unSetModal()}>
                                                         <Form.Group className="form-div">
@@ -98,12 +111,16 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                                         buttonTextSecondary={"Cancel"}
                                                         primaryClicked={async () => {
                                                             if (document.getElementById("createWalletPassword").value === document.getElementById("createWalletPasswordMatch").value) {
-                                                                await newWalletFromWIF(document.getElementById("createWalletPassword").value, document.getElementById("createWalletFromWIF").value, walletPath)
+                                                                const err = await newWalletFromWIF(document.getElementById("createWalletPassword").value, document.getElementById("createWalletFromWIF").value, walletPath)
+                                                                if (!err) {
+                                                                        await unSetModal()
+                                                                        await refreshRecentWallets()
+                                                                        console.log("setting lock to true")
+                                                                        await setLock(true) //todo this will lock the screen if the password is wrong
+                                                                }
                                                             } else {
                                                                 alert("passwords do no match")
                                                             }
-                                                            await unSetModal()
-                                                            await refreshRecentWallets()
                                                         }}
                                                         secondaryClicked={async () => unSetModal()}>
                                                         <Form.Group className="form-div">
@@ -145,12 +162,16 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                                     buttonTextSecondary={"Cancel"}
                                                     primaryClicked={async () => {
                                                         if (document.getElementById("createWalletPassword").value === document.getElementById("createWalletPasswordMatch").value) {
-                                                            await newWallet(document.getElementById("createWalletPassword").value, walletPath)
+                                                            const err = await newWallet(document.getElementById("createWalletPassword").value, walletPath)
+                                                            if (!err) {
+                                                                    await unSetModal()
+                                                                    console.log("setting lock to true")
+                                                                    await setLock(true) //todo this will lock the screen if the password is wrong
+                                                                await refreshRecentWallets()
+                                                            }
                                                         } else {
                                                             alert("passwords do no match")
                                                         }
-                                                        await unSetModal()
-                                                        await refreshRecentWallets()
                                                     }}
                                                     secondaryClicked={async () => unSetModal()}>
                                                     <Form.Group className="form-div">
@@ -220,9 +241,13 @@ const LoadWallet = ({account, recentWallets, refreshRecentWallets}) => {
                                                                 buttonTextPrimary={"Confirm"}
                                                                 buttonTextSecondary={"Cancel"}
                                                                 primaryClicked={async () => {
-                                                                    loadWalletWithPath(document.getElementById("loadWalletFromPathPassword").value, recentWallets[obj].Path)
-                                                                    await unSetModal()
-                                                                    await setIsVisible(true)
+                                                                    const err = await loadWalletWithPath(document.getElementById("loadWalletFromPathPassword").value, recentWallets[obj].Path)
+                                                                    if (!err) {
+                                                                            await unSetModal()
+                                                                            console.log("setting lock to true")
+                                                                            await setLock(true) //todo this will lock the screen if the password is wrong
+                                                                            await setIsVisible(true)
+                                                                        }
                                                                     }
                                                                 }
                                                                 secondaryClicked={async () => unSetModal()}>

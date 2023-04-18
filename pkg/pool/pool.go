@@ -3,6 +3,7 @@ package pool
 import (
 	"context"
 	"crypto/ecdsa"
+	"fmt"
 	"github.com/amlwwalker/greenfinch.react/pkg/config"
 	"github.com/nspcc-dev/neofs-sdk-go/pool"
 	"time"
@@ -28,20 +29,22 @@ func GetPool(ctx context.Context, key ecdsa.PrivateKey, peers map[string]config.
 		prm.AddNode(pool.NewNodeParam(peer.Priority, peer.Address, float64(peer.Weight)))
 	}
 
-	prm.SetNodeDialTimeout(5 * time.Minute)
-	prm.SetNodeStreamTimeout(5 * time.Minute)
-	prm.SetHealthcheckTimeout(5 * time.Minute)
-	prm.SetClientRebalanceInterval(5 * time.Minute)
-	prm.SetErrorThreshold(5)
+	prm.SetNodeDialTimeout(30 * time.Second)
+	prm.SetNodeStreamTimeout(30 * time.Second)
+	prm.SetHealthcheckTimeout(30 * time.Second)
+	prm.SetClientRebalanceInterval(30 * time.Second)
+	prm.SetErrorThreshold(2)
 	prm.SetKey(&key)
 	//todo does this need setting or does this have a default?
 	//prm.SetSessionExpirationDuration(10)
 	p, err := pool.NewPool(prm)
 	if err != nil {
+		fmt.Println("could not create pool", err)
 		return p, err
 	}
 
 	if err = p.Dial(ctx); err != nil {
+		fmt.Println("pool failed to dial ", err)
 		return p, err
 	}
 

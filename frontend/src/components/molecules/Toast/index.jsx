@@ -36,6 +36,9 @@ export default class ItemToast extends React.Component {
     async componentDidMount () {
         console.log("mounting")
         window.runtime.EventsOn(name, async (message) => {
+            if (message.Type == "error") {
+                //run a shut down routine
+            }
             console.log(message)
             await this.makeToast(message)
         })

@@ -150,7 +150,7 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 
 	obj.SetPayloadSize(uint64(fileStats.Size()))
 
-	pl, err := m.Pool()
+	pl, err := m.Pool(false)
 	if err != nil {
 		return []Element{}, err
 	}
@@ -322,7 +322,7 @@ func (m *Manager) GetObjectMetaData(objectID, containerID string) (object.Object
 
 	pKey := &keys.PrivateKey{PrivateKey: tmpKey}
 
-	pl, err := m.Pool()
+	pl, err := m.Pool(false)
 
 	target := eacl.Target{}
 	target.SetRole(eacl.RoleUser)
@@ -375,7 +375,7 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 
 	pKey := &keys.PrivateKey{PrivateKey: tmpKey}
 
-	pl, err := m.Pool()
+	pl, err := m.Pool(false)
 	if err != nil {
 		return nil, err
 	}
@@ -548,7 +548,7 @@ func (m *Manager) listObjectsAsync(containerID string) ([]Element, error) {
 	}
 	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
 
-	pl, err := m.Pool()
+	pl, err := m.Pool(false)
 	if err != nil {
 		return []Element{}, err
 	}
@@ -771,7 +771,7 @@ func (m *Manager) DeleteObject(objectID, containerID string) ([]Element, error) 
 	var prmDelete pool.PrmObjectDelete
 	prmDelete.SetAddress(addr)
 
-	pl, err := m.Pool()
+	pl, err := m.Pool(false)
 	if err != nil {
 		log.Println("error retrieving pool ", err)
 		return nil, err

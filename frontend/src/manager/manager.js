@@ -88,6 +88,7 @@ const newWallet = async (password, walletPath) => {
         await window.go.manager.Manager.NewWallet(password, walletPath)
     } catch(e) {
         console.log("error creating new wallet", e)
+        return e
     }
 }
 const loadWallet = async (password) => {
@@ -132,6 +133,7 @@ const newWalletFromWIF = async (password, wif, path) => {
         await window.go.manager.Manager.NewWalletFromWIF(password, wif, path)
     } catch(e) {
         console.log("error creating wallet from WIF", e)
+        return e
     }
 }
 const loadWalletWithPath = async (password, path) => {
@@ -139,6 +141,7 @@ const loadWalletWithPath = async (password, path) => {
         await window.go.manager.Manager.LoadWalletWithPath(password, path)
     } catch(e) {
         console.log("error loading wallet", e)
+        return e
     }
 }
 const retrieveRecentWallets = async() => {

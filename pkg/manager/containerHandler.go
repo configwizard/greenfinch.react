@@ -47,7 +47,7 @@ func (m *Manager) listContainerIDs() ([]cid.ID, error) {
 	var prm pool.PrmContainerList
 	prm.SetOwnerID(userID)
 
-	pl, err := m.Pool()
+	pl, err := m.Pool(false)
 	if err != nil {
 		return nil, err
 	}
@@ -282,7 +282,7 @@ func (m *Manager) prepareAndAppendContainer(vID cid.ID, synchronised bool) (Elem
 	//	log.Fatal("SERIOUS ERROR , could not retrieve client - in Go routine", err)
 	//	return Element{}, err
 	//}
-	pl, err := m.Pool()
+	pl, err := m.Pool(false)
 	if err != nil {
 		return Element{}, err
 	}
@@ -390,7 +390,7 @@ func (m *Manager) DeleteContainer(id string) ([]Element, error) {
 	}
 	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
 	pKey := &keys.PrivateKey{PrivateKey: tmpKey}
-	pl, err := m.Pool()
+	pl, err := m.Pool(false)
 	if err != nil {
 		return []Element{}, err
 	}
@@ -526,7 +526,7 @@ func (m *Manager) RestrictContainer(id string, publicKey string) error {
 		return err
 	}
 
-	pl, err := m.Pool()
+	pl, err := m.Pool(false)
 	if err != nil {
 		fmt.Errorf("%w", err)
 		return err
@@ -608,7 +608,7 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
 	pKey := &keys.PrivateKey{PrivateKey: tmpKey}
 
-	pl, err := m.Pool()
+	pl, err := m.Pool(false)
 	if err != nil {
 		return err
 	}
