@@ -87,13 +87,14 @@ type Manager struct {
 	//key                    *ecdsa.PrivateKey
 	version string
 	//c                      *cache.Cache
-	ctx           context.Context
-	cancelContext context.CancelFunc
-	wallet        *wal.Wallet
-	password      string //warning this is not a good idea
-	DEBUG         bool
-	enableCaching bool
-	cancelcontext chan error
+	ctx                 context.Context
+	wallet              *wal.Wallet
+	password            string //warning this is not a good idea
+	DEBUG               bool
+	enableCaching       bool
+	cancelServerContext context.CancelFunc
+	uploadCancelFunc, downloadCancelFunc            context.CancelFunc
+	cancelUploadCtx, cancelDownloadCtx context.Context
 }
 
 const (
@@ -325,7 +326,6 @@ func NewFileSystemManager(version string, dbLocation string, DEBUG bool) (*Manag
 		pool:    nil,
 		ctx:   nil,
 		DEBUG: DEBUG,
-		cancelcontext: make(chan error),
 	}, nil
 }
 
@@ -400,10 +400,10 @@ func (m *Manager) EnableLocalServer(enable bool) {
 	}
 	if enable {
 		ctxWithCancel, cancel := context.WithCancel(m.ctx)
-		m.cancelContext = cancel
+		m.cancelServerContext = cancel
 		go m.SetupServer(ctxWithCancel)
 	} else {
-		m.cancelContext()
+		m.cancelServerContext()
 	}
 }
 func (m *Manager) retrieveWallet() (*wal.Wallet, error) {
@@ -441,10 +441,7 @@ func (m *Manager) GetAccountInformation() (Account, error) {
 	if err != nil {
 		return Account{}, err
 	}
-	if len(balances) == 0 {
-		return Account{}, errors.New("could not retrieve balances")
-	}
-
+	//todo - if we don't get a connection we get no balances, so this takes and age. Fine with spinner but we should be able to detect if we couldn't retrieve balances
 	pl, err := m.Pool(true)
 	if err != nil {
 		fmt.Println("error retrieving pool. ", err)

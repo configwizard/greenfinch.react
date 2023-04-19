@@ -36,7 +36,26 @@ type NetworkData struct{
 	StorageNodes map[string]config.Peer
 	RpcNodes     []string
 }
+type NodeSelection struct {
+	Nodes   []config.Peer
+	current int
+}
+func (s *NodeSelection) getNext() (config.Peer, error) {
+	if s.current == len(s.Nodes) - 1 {
+		return config.Peer{}, errors.New("Could not connect to any nodes, please try later")
+	}
+	node := s.Nodes[s.current]
+	s.current = s.current + 1 // % len(s.Nodes) unless we want truly round robin connections...
+	return node, nil
+}
 
+func NewNetworkSelector(nodes []config.Peer) NodeSelection {
+	nodeSelection := NodeSelection{
+		Nodes:   nodes,
+		current: 0,
+	}
+	return nodeSelection
+}
 var networks = map[Network]NetworkData{
 	"mainnet": {
 		Name: "Main Net",
@@ -160,21 +179,26 @@ func thumbnail(ioReader io.Reader) ([]byte, error) {
 	if err != nil {
 		return []byte{}, err
 	}
+	if len(rawBody) == 0 {
+		return []byte{}, errors.New("no bytes to process")
+	}
 	// Restore the io.ReadCloser to it's original state
 	ioReader = (io.Reader)(ioutil.NopCloser(bytes.NewBuffer(rawBody)))
 	srcImage, format, err := image.Decode(bytes.NewReader(rawBody))
-	fmt.Println("format detected", format, err)
+	fmt.Println("format detected -", format, " - ", err)
 	if err != nil {
-		//check if its a pdf
-		doc, err := fitz.NewFromReader(ioReader)
-		if err != nil {
-			fmt.Println("could not open using fitz. Not pdf? ", err)
-		} else {
-			if srcImage, err = doc.Image(0); err != nil {
-				return nil, err
+		if ioReader != nil {
+			//check if its a pdf
+			doc, err := fitz.NewFromReader(ioReader)
+			if err != nil {
+				fmt.Println("could not open using fitz. Not pdf? ", err)
+			} else {
+				if srcImage, err = doc.Image(0); err != nil {
+					return nil, err
+				}
+				format = "png" //fake it to save as a png
+				fmt.Println("saving the pdf")
 			}
-			format = "png" //fake it to save as a png
-			fmt.Println("saving the pdf")
 		}
 	}
 	if format != "jpeg" && format != "png" {

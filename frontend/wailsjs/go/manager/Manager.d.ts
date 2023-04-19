@@ -11,7 +11,7 @@ export function AddContact(arg1:string,arg2:string,arg3:string,arg4:string):Prom
 
 export function AddSharedContainer(arg1:string):Promise<void>;
 
-export function CancelContext():Promise<void>;
+export function CancelObjectContext():Promise<void>;
 
 export function ContainersChanged():Promise<void>;
 

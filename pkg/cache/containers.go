@@ -61,6 +61,7 @@ func DeleteContainer(wallet, network, id string) error {
 	})
 }
 func RetrieveContainers(wallet, network string) (map[string][]byte, error) {
+	fmt.Println("looking for containers in ", network, " for wallet ", wallet)
 	containers := make(map[string][]byte)
 	err := db.View(func(tx *bolt.Tx) error {
 		nb := tx.Bucket([]byte(network))

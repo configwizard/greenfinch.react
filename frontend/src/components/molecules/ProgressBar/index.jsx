@@ -2,8 +2,10 @@ import React from 'react';
 import { Progress } from 'react-sweet-progress';
 import 'react-sweet-progress/lib/style.css';
 
-import ButtonClose, {ButtonCancel} from '../../atoms/ButtonClose';
-import { cancelContext } from "../../../manager/manager.js";
+import ButtonClose from '../../atoms/ButtonClose';
+import ButtonIcon from '../../atoms/ButtonIcon';
+
+import { cancelObjectContext } from "../../../manager/manager.js";
 
 import './style.scss';
 
@@ -43,12 +45,10 @@ export default class ProgressBar extends React.Component {
                 <div className="molProgressWrapper">
                     <div className="molProgressInner d-flex">
                         <div className="molProgressContent d-flex flex-column">
-                            <ButtonCancel type="div" size="small" onClick={async () => {await cancelContext(); await this.setState({...this.state, show: false})}} />
                             <div>
                                 <span className="atmProgressTitle">Progress</span>
                             </div>
                             <div className="molProgressUnit">
-                                {/* <span className="atmProgressItem">File title here</span> */}
                                 <Progress
                                     theme={{
                                         success: {
@@ -63,6 +63,7 @@ export default class ProgressBar extends React.Component {
                                     }}
                                     strokeWidth={15}
                                     percent={this.state.percentage}/>
+                                <ButtonIcon size={"small"} type={"default"} isDisabled={false} faClass={"fa-sharp fa-solid fa-xmark"} onClick={async () => {await cancelObjectContext(); await this.setState({...this.state, show: false})}}></ButtonIcon>
                             </div>
                         </div>
                     </div>

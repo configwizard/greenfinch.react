@@ -168,9 +168,9 @@ const copyTextToClipboard = async(txt) => {
     }
 }
 
-const cancelContext = async() => {
+const cancelObjectContext = async() => {
     try {
-        await window.go.manager.Manager.CancelContext()
+        await window.go.manager.Manager.CancelObjectContext()
     } catch(e) {
         console.log("could not cancel context", e)
     }
@@ -183,11 +183,11 @@ const getVersion = async() => {
         console.log("could not get version", e)
     }
 }
-const makeRunningToast = async(message) => {
+const makeRunningToast = async(title, type, message) => {
     try {
         let o = { 
-            Type: "running",
-            Title: "Running",
+            Title: title,
+            Type: type,
             Description: message
         }
         await window.go.manager.Manager.MakeToast(o)
@@ -229,7 +229,7 @@ export {
     loadWalletWithPath,
     loadWalletWithoutPassword,
     saveWalletWithoutPassword,
-    cancelContext,
+    cancelObjectContext,
     getVersion,
     makeRunningToast,
     makeCopyToast

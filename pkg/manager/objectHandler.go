@@ -1,6 +1,7 @@
 package manager
 
 import (
+	"context"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
@@ -19,6 +20,7 @@ import (
 	"github.com/nspcc-dev/neofs-sdk-go/pool"
 	"github.com/nspcc-dev/neofs-sdk-go/session"
 	"github.com/nspcc-dev/neofs-sdk-go/user"
+	"golang.org/x/exp/maps"
 	"image"
 	"io"
 	"log"
@@ -62,9 +64,32 @@ func setMimeType(filename string, filtered *map[string]string) {
 	}
 }
 
-func (m *Manager) CancelContext() {
-	fmt.Println("user concelled context")
-	m.cancelcontext <- errors.New("cancelled from UI by user")
+func (m *Manager) CancelObjectContext() {
+	fmt.Println("user cancelled context")
+	if m.cancelUploadCtx != nil {
+		ctxWithMsg, cancel := context.WithCancel(m.cancelUploadCtx)
+		// Store the error message in the context
+		ctxWithMsg = context.WithValue(ctxWithMsg, "error", errors.New("user cancelled upload"))
+		cancel()
+	}
+	if m.uploadCancelFunc != nil {
+		// Cancel the context using the cancel function
+		m.uploadCancelFunc()
+		// Create a new context with a cancel function
+		ctxWithMsg, cancel := context.WithCancel(m.cancelUploadCtx)
+		defer cancel()
+		// Store the error message in the context
+		ctxWithMsg = context.WithValue(ctxWithMsg, "error", errors.New("user cancelled download"))
+	}
+	if m.downloadCancelFunc != nil {
+		// Cancel the context using the cancel function
+		m.downloadCancelFunc()
+		// Create a new context with a cancel function
+		ctxWithMsg, cancel := context.WithCancel(m.cancelDownloadCtx)
+		defer cancel()
+		// Store the error message in the context
+		ctxWithMsg = context.WithValue(ctxWithMsg, "error", errors.New("user cancelled download"))
+	}
 }
 func (m *Manager) UploadObject(containerID, fp string, filtered map[string]string) ([]Element, error) {
 
@@ -159,14 +184,37 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 	if err != nil {
 		return nil, err
 	}
-	addr := m.selectedNetwork.StorageNodes["0"].Address //cfg.Peers["0"].Address //we need to find the top priority addr really here
+	cancelCtx, cnclF := context.WithCancel(context.Background())
+	m.cancelUploadCtx = cancelCtx
+	m.uploadCancelFunc = cnclF
+	nodes := maps.Values(m.selectedNetwork.StorageNodes)
+	nodeSelection := NewNetworkSelector(nodes)
+	//addr := m.selectedNetwork.StorageNodes["0"].Address //cfg.Peers["0"].Address //we need to find the top priority addr really here
 	prmCli := client.PrmInit{}
 	prmCli.SetDefaultPrivateKey(tmpKey)
 	var prmDial client.PrmDial
-	prmDial.SetServerURI(addr)
-	cli := client.Client{}
-	cli.Init(prmCli)
-	cli.Dial(prmDial)
+
+	prmDial.SetTimeout(30 * time.Second)
+	prmDial.SetStreamTimeout(30 * time.Second)
+	prmDial.SetContext(cancelCtx)
+	var cli client.Client
+	for {
+		node, err := nodeSelection.getNext()
+		if err != nil {
+			fmt.Println("selecting node threw an error ", err)
+			continue
+		}
+		prmDial.SetServerURI(node.Address)
+		cli.Init(prmCli)
+		if err := cli.Dial(prmDial); err != nil {
+			fmt.Printf("Error connecting to node %s: %s\n", node.Address, err)
+			m.MakeToast(UXMessage{Type: "warning", Title: "issues conneting", Description: "please wait, attempting to fix"})
+			m.MakeNotification(NotificationMessage{Type: "warning", Title: "warning", Description: "failed to connect to " + node.Address + " attempting another"})
+			continue
+		} else {
+			break
+		}
+	}
 
 	prmSession := client.PrmSessionCreate{}
 	prmSession.UseKey(tmpKey)
@@ -186,13 +234,18 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 		log.Println("error writing object header ", err)
 		return nil, err
 	}
-	var cancelUpload chan error
-	go func() {
+	//var cancelUpload chan error
+	go func(ctx context.Context) {
 		defer wg.Done()
-		progressChan := progress.NewTicker(m.ctx, reader, fileStats.Size(), 50*time.Millisecond)
+		progressChan := progress.NewTicker(m.ctx, reader, fileStats.Size(), 250*time.Millisecond)
 		for p := range progressChan {
 			select {
-				case err := <-cancelUpload:
+				case <-ctx.Done():
+					errMsg, ok := ctx.Value("error").(string)
+					if !ok {
+						errMsg = "user action"
+					}
+					fmt.Println("upload was cancelled ", errMsg)
 					tmp := NewProgressMessage(&ProgressMessage{
 						Title:    "Uploading object",
 						Show:     false,
@@ -201,18 +254,13 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 					m.MakeNotification(NotificationMessage{
 						Title:       "Upload cancelled",
 						Type:        "error",
-						Description: "Upload cancelled due to - " + err.Error(),
+						Description: "Upload " + filename + " cancelled due to - " + errMsg,
 						MarkRead:    false,
 					})
 					m.SendSignal("freshUpload", nil)
-					m.MakeToast(NewToastMessage(&UXMessage{
-						Title:       "Uploading cancelled",
-						Type:        "error",
-						Description: "Uploading " + filename + " cancelled due to error",
-					}))
 					return
 			default:
-				fmt.Printf("\r%v remaining...", p.Remaining().Round(50*time.Millisecond))
+				fmt.Printf("\r%v remaining...", p.Remaining().Round(250*time.Millisecond))
 				tmp := NewProgressMessage(&ProgressMessage{
 					Title:    "Uploading object",
 					Progress: int(p.Percent()),
@@ -236,22 +284,62 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 		m.SendSignal("freshUpload", o)
 		m.MakeToast(tmp)
 		fmt.Println("\rupload is completed")
-	}()
+	}(m.cancelUploadCtx)
 	buf := make([]byte, 1024) // 1 MiB
+	failCount := 0
+	var endOfFile bool
 	for {
-		// update progress bar
-		n, err := (*reader).Read(buf)
-		if !objWriter.WritePayloadChunk(buf[:n]) {
-			cancelUpload <- err
-			break
+		select {
+		case <-m.cancelUploadCtx.Done():
+			return nil, errors.New("cancelled by user")
+		default:
+			// update progress bar
+			n, err := (*reader).Read(buf)
+			if !objWriter.WritePayloadChunk(buf[:n]) {
+				ctxWithMsg, cancel := context.WithCancel(m.cancelUploadCtx)
+				defer cancel()
+				// Store the error message in the context
+				ctxWithMsg = context.WithValue(ctxWithMsg, "error", err.Error())
+				cancel()
+				m.uploadCancelFunc()
+				endOfFile = true
+				break
+			}
+			if errors.Is(err, io.EOF) {
+				endOfFile = true
+				break
+			}
+			if n == 0 { //todo - check if % complete is not moving
+				failCount++
+				if failCount >= 100 {
+					fmt.Println("failed to write ", n, " bytes 100 times")
+					tmp := NewToastMessage(&UXMessage{
+						Title:       "Upload error",
+						Type:        "error",
+						Description: "Upload failed to start. Cancelling automatically.",
+					})
+					m.MakeToast(tmp)
+					ctxWithMsg, cancel := context.WithCancel(m.cancelUploadCtx)
+					defer cancel()
+					ctxWithMsg = context.WithValue(ctxWithMsg, "error", errors.New("user cancelled download"))
+					cancel()
+					m.uploadCancelFunc()
+					endOfFile = true
+					break
+				}
+			}
 		}
-		if errors.Is(err, io.EOF) {
+		if endOfFile {
 			break
 		}
 	}
 	res, err := objWriter.Close()
 	if err != nil {
-		cancelUpload <- err
+		ctxWithMsg, cancel := context.WithCancel(m.cancelUploadCtx)
+		defer cancel()
+		ctxWithMsg = context.WithValue(ctxWithMsg, "error", errors.New("user cancelled download"))
+		cancel()
+		m.downloadCancelFunc()
 		return nil, err
 	}
 	objectID := res.StoredObjectID()
@@ -385,15 +473,36 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 		return nil, err
 	}
 
-	addr := m.selectedNetwork.StorageNodes["0"].Address
-
+	cancelCtx, cnclF := context.WithCancel(context.Background())
+	m.cancelDownloadCtx = cancelCtx
+	m.downloadCancelFunc = cnclF
+	nodes := maps.Values(m.selectedNetwork.StorageNodes)
+	nodeSelection := NewNetworkSelector(nodes)
+	//addr := m.selectedNetwork.StorageNodes["0"].Address //cfg.Peers["0"].Address //we need to find the top priority addr really here
 	prmCli := client.PrmInit{}
 	prmCli.SetDefaultPrivateKey(tmpKey)
 	var prmDial client.PrmDial
-	prmDial.SetServerURI(addr)
-	cli := client.Client{}
-	cli.Init(prmCli)
-	cli.Dial(prmDial)
+
+	prmDial.SetTimeout(30 * time.Second)
+	prmDial.SetStreamTimeout(30 * time.Second)
+	prmDial.SetContext(cancelCtx)
+	var cli client.Client
+	for {
+		node, err := nodeSelection.getNext()
+		if err != nil {
+			return nil, err
+		}
+		prmDial.SetServerURI(node.Address)
+		cli.Init(prmCli)
+		if err := cli.Dial(prmDial); err != nil {
+			fmt.Printf("Error connecting to node %s: %s\n", node.Address, err)
+			m.MakeToast(UXMessage{Type: "warning", Title: "issues conneting", Description: "please wait, attempting to fix"})
+			m.MakeNotification(NotificationMessage{Type: "warning", Title: "warning", Description: "failed to connect to " + node.Address + " attempting another"})
+			continue
+		} else {
+			break
+		}
+	}
 
 	prmSession := client.PrmSessionCreate{}
 	prmSession.UseKey(tmpKey)
@@ -433,23 +542,26 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 	wg.Add(1)
 	log.Println("starting progress bar for payload (size) ", dstObject.PayloadSize())
 
-	go func() {
+	go func(ctx context.Context) {
 		defer wg.Done()
 		progressChan := progress.NewTicker(m.ctx, c, int64(dstObject.PayloadSize()), 50*time.Millisecond)
 		for p := range progressChan {
-
 			select {
-				case err := <-m.cancelcontext: //cancel download needs to be callable globally so that its detection. My guess is its been cleaned up
-					log.Println("download was cancelled")
+			case <-ctx.Done():
+					errMsg, ok := ctx.Value("error").(string)
+					if !ok {
+						errMsg = "user action"
+					}
+					fmt.Println("download was cancelled ", errMsg)
 					tmp := NewProgressMessage(&ProgressMessage{
 						Title: "Downloading object",
 						Show:  false,
 					})
 					m.SetProgressPercentage(tmp)
 					m.MakeNotification(NotificationMessage{
-						Title:       "Download failed due to an error",
+						Title:       "Download cancelled",
 						Type:        "error",
-						Description: "Download failed " + err.Error(),
+						Description: "Download cancelled " + errMsg,
 						MarkRead:    false,
 					})
 					return
@@ -476,41 +588,61 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 		})
 		m.SetProgressPercentage(end)
 		fmt.Println("\rdownload is completed")
-	}()
+	}(m.cancelDownloadCtx)
 	buf := make([]byte, 1024)
 	failCount := 0 //if the download seems to not be downloading we count the number of times, and throw an error/cancel the download
+	var endOfFile bool
 	for {
-		n, err := objReader.Read(buf)
-		// get total size from object header and update progress bar based on n bytes received
-		if _, err := (c).Write(buf[:n]); err != nil {
-			fmt.Println("error writing to buffer ", err)
-			m.cancelcontext <- err
-			tmp := NewToastMessage(&UXMessage{
-				Title:       "Download error",
-				Type:        "error",
-				Description: "Downloading error - see notifications",
-			})
-			m.MakeToast(tmp)
-			fmt.Println("error writing buffer ", err)
-			break
-		}
-		if errors.Is(err, io.EOF) {
-			fmt.Println("end of file")
-			break
-		}
-		if n == 0 { //todo - check if % complete is not moving
-			failCount++
-			if failCount >= 100 {
-				fmt.Println("failed to read ", n, " bytes 100 times")
+		select {
+		case <-m.cancelDownloadCtx.Done():
+			fmt.Println("ending download")
+			return nil, errors.New("cancelled by user")
+		default:
+			n, err := objReader.Read(buf)
+			// get total size from object header and update progress bar based on n bytes received
+			if _, err := (c).Write(buf[:n]); err != nil {
+				fmt.Println("error writing to buffer ", err)
+				ctxWithMsg, cancel := context.WithCancel(m.cancelDownloadCtx)
+				// Store the error message in the context
+				ctxWithMsg = context.WithValue(ctxWithMsg, "error", err.Error())
+				cancel()
+				m.downloadCancelFunc()
 				tmp := NewToastMessage(&UXMessage{
 					Title:       "Download error",
 					Type:        "error",
-					Description: "Download failed to start. Cancelling automatically.",
+					Description: "Downloading error - see notifications",
 				})
 				m.MakeToast(tmp)
-				m.cancelcontext <- errors.New("download failed to start")
+				endOfFile = true
 				break
 			}
+			if errors.Is(err, io.EOF) {
+				fmt.Println("end of file")
+				endOfFile = true
+				break
+			}
+			if n == 0 { //todo - check if % complete is not moving
+				failCount++
+				if failCount >= 100 {
+					fmt.Println("failed to read ", n, " bytes 100 times")
+					tmp := NewToastMessage(&UXMessage{
+						Title:       "Download error",
+						Type:        "error",
+						Description: "Download failed to start. Cancelling automatically.",
+					})
+					m.MakeToast(tmp)
+					ctxWithMsg, cancel := context.WithCancel(m.cancelDownloadCtx)
+					// Store the error message in the context
+					ctxWithMsg = context.WithValue(ctxWithMsg, "error", err.Error())
+					cancel()
+					m.downloadCancelFunc()
+					endOfFile = true
+					break
+				}
+			}
+		}
+		if endOfFile {
+			break
 		}
 	}
 	end := NewProgressMessage(&ProgressMessage{
@@ -520,7 +652,11 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 	m.SetProgressPercentage(end)
 	res, err := objReader.Close()
 	if err != nil {
-		m.cancelcontext <- err
+		// If an error occurs, cancel the context with a message
+		ctxWithMsg, cancel := context.WithCancel(m.cancelDownloadCtx)
+		ctxWithMsg = context.WithValue(ctxWithMsg, "error", err.Error())
+		cancel()
+		m.downloadCancelFunc()
 		return nil, err
 	}
 	fmt.Println("res error", res.Status())
@@ -590,6 +726,9 @@ func (m *Manager) listObjectsAsync(containerID string) ([]Element, error) {
 	}); err != nil {
 		log.Println("error listing objects %s\r\n", err)
 		return nil, err
+	}
+	if len(list) == 0 { //there are none so stop here
+		return []Element{}, nil
 	}
 	fmt.Printf("list objects %+v\r\n", list)
 	wg := sync.WaitGroup{}

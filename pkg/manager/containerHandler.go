@@ -55,7 +55,6 @@ func (m *Manager) listContainerIDs() ([]cid.ID, error) {
 	if err != nil {
 		fmt.Errorf("list user containers via connection pool: %w", err)
 	}
-	log.Printf("%v\r\n", r)
 	return r, err
 }
 func (m *Manager) ListContainerIDs() ([]string, error) {
@@ -182,13 +181,6 @@ func (m *Manager) generateObjectStruct(objs []Element, containerID cid.ID) (uint
 	return size, newObjs
 }
 func (m *Manager) ForceSync() {
-	fmt.Println("force syncing")
-	tmp := UXMessage{
-		Title:       "Force syncing",
-		Type:        "info",
-		Description: "Please wait. This can take some time",
-	}
-	m.MakeToast(NewToastMessage(&tmp))
 	if cnts, err := m.listContainersAsync(true); err != nil {
 		fmt.Println("force sync error ", err)
 	} else {
@@ -219,6 +211,9 @@ func (m *Manager) listContainersAsync(synchronised bool) ([]Element, error) {
 		1. if a container exists on NeoFS, sync it
 		2. if it exists locally but not on NeoFS, delete it
 	*/
+	if len(ids) == 0 { //don't go on there are no containers
+		return []Element{}, nil
+	}
 	cached, err := cache.RetrieveContainers(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID)
 	if err != nil {
 		return nil, err

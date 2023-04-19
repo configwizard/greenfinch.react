@@ -119,15 +119,15 @@ func (m *Manager) Download(filename, objectID, containerID string) error {
 	byt, err := m.Get(objectID, containerID, filepath, f)
 	if err != nil {
 		m.MakeNotification(NotificationMessage{
-			Title:       "Retrieving object error",
+			Title:       "Error downloading",
 			Type:        "error",
-			Description: fmt.Sprintf("Retrieving object at path %s failing %s", path.Base(filepath), err.Error()),
+			Description: fmt.Sprintf("Downloading object at path %s error %s", path.Base(filepath), err.Error()),
 			MarkRead:    false,
 		})
 		tmp := NewToastMessage(&UXMessage{
 			Title:       "Error downloading",
 			Type:        "error",
-			Description: "Downloading " + path.Base(filepath) + " failed: " + err.Error(),
+			Description: "Downloading " + path.Base(filepath) + " error: " + err.Error(),
 		})
 		m.MakeToast(tmp)
 	}

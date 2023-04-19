@@ -20,16 +20,6 @@ const ButtonClose = ({ onClick, size, type }) => {
     )
 }
 
-
-export const ButtonCancel = ({ onClick, size, type }) => {
-    return (
-        <div className={`atmButtonClose ${[size]} ${[type]}`}>
-            <i className="fa-sharp fa-solid fa-stop" onClick={onClick} />
-        </div>
-    )
-}
-
-
 export default ButtonClose;
 
 ButtonClose.propTypes = {
