@@ -230,10 +230,6 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 	putInit := client.PrmObjectPutInit{}
 	putInit.WithinSession(*sc)
 	objWriter, err := cli.ObjectPutInit(m.ctx, putInit)
-	if !objWriter.WriteHeader(*obj) || err != nil {
-		log.Println("error writing object header ", err)
-		return nil, err
-	}
 	//var cancelUpload chan error
 	go func(ctx context.Context) {
 		defer wg.Done()
@@ -333,6 +329,10 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 			break
 		}
 	}
+	if !objWriter.WriteHeader(*obj) || err != nil {
+		log.Println("error writing object header ", err)
+		return nil, err
+	}
 	res, err := objWriter.Close()
 	if err != nil {
 		ctxWithMsg, cancel := context.WithCancel(m.cancelUploadCtx)
@@ -355,6 +355,8 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 	for _, a := range obj.Attributes() {
 		el.Attributes[a.Key()] = a.Value()
 	}
+	checksum, _ := obj.PayloadChecksum()
+	el.Attributes[payloadHeader] = checksum.String()
 	if data, err := json.Marshal(el); err != nil {
 		return []Element{}, err
 	} else {
@@ -759,6 +761,8 @@ func (m *Manager) listObjectsAsync(containerID string) ([]Element, error) {
 			} else {
 				tmp.Attributes["X_EXT"] = ""
 			}
+			checksum, _ := head.PayloadChecksum()
+			tmp.Attributes[payloadHeader] = checksum.String()
 			tmp.Size = head.PayloadSize()
 			if err != nil {
 				fmt.Println(err)

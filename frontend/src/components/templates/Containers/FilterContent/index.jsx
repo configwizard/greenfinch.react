@@ -16,7 +16,6 @@ import ButtonContentContainerInfo from '../../../molecules/ButtonsContent/Button
 import ButtonContentContainerShare from '../../../molecules/ButtonsContent/ButtonContentContainerShare';
 import ButtonContentContainerDelete from '../../../molecules/ButtonsContent/ButtonContentContainerDelete';
 
-
 // Central style sheet for templates
 import '../../_settings/style.scss';
 
@@ -34,6 +33,7 @@ const selectPermission = (rawPermission) => {
             return rawPermission.toString(16)
     }
 }
+const hostingURL = "https://public.greenfinch.app/"
 
 function filterContent(state, onObjectSelection, onObjectDelete, onObjectDownload, onObjectUpload, onContainerSelection, onContainerDelete) {
     console.log("STATE:", state);
@@ -163,7 +163,7 @@ function filterContent(state, onObjectSelection, onObjectDelete, onObjectDownloa
                                             faClass={"fa-sharp fa-solid fa-arrow-up-right-from-square"}
                                             text={"View object in web browser"}
                                             isDisabled={false}
-                                            onClick={() => openInDefaultBrowser(`https://http.t5.fs.neo.org/${state.selectedContainer.containerID}/${state.selectedObject.objectID}`)} />
+                                            onClick={() => openInDefaultBrowser(`${hostingURL}/${state.selectedContainer.containerID}/${state.selectedObject.objectID}`)} />
                                     : null }
                                 </div>
                             </div>

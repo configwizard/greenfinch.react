@@ -169,6 +169,8 @@ func (m *Manager) generateObjectStruct(objs []Element, containerID cid.ID) (uint
 		for _, a := range head.Attributes() {
 			o.Attributes[a.Key()] = a.Value()
 		}
+		checksum, _ := head.PayloadChecksum()
+		o.Attributes[payloadHeader] = checksum.String()
 		if filename, ok := o.Attributes[obj.AttributeFileName]; ok {
 			o.Attributes["X_EXT"] = strings.TrimPrefix(filepath.Ext(filename), ".")
 		} else {

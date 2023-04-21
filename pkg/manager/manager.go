@@ -28,9 +28,11 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
-//const testNetExplorerUrl = "https://testnet.explorer.onegate.space/transactionInfo"
 const testNetExplorerUrl = "https://dora.coz.io/transaction/neo3/testnet"
 const mainnetExplorerUrl = "https://dora.coz.io/transaction/neo3/mainnet"
+
+const payloadHeader = "payload_checksum"
+
 type NotificationMessage struct {
 	Id          string
 	User		string //who is this message for so we can store it in the database
