@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import PropTypes from 'prop-types';
 
 // Components
@@ -8,9 +8,32 @@ import { useModal } from '../../../organisms/Modal/ModalContext';
 import {forceSync, makeRunningToast} from "../../../../manager/manager";
 
 import '../style.scss';
+import CompModalLoading from "../../Modal/ModalLoading";
 
-const ContainerHeaderPage = ({ pageTitle, hasButton, hasIcon, faClass, buttonText, isButtonDisabled, createNewContainer }) => {
+const ContainerHeaderPage = ({ lockUI, pageTitle, hasButton, hasIcon, faClass, buttonText, isButtonDisabled, createNewContainer, setLock }) => {
     const { setModal, unSetModal } = useModal();
+    useEffect(() => {
+        console.log("received lockUI ", lockUI)
+        if (lockUI) {
+            setModal(
+                <CompModalLoading
+                    unSetModal={async () => unSetModal()}
+                    theme={"dark"}
+                    size={"small"}
+                    hasCloseWrapper={false}
+                    hasCloseCorner={false}
+                    hasPrimaryButton={false}
+                    loadingMessage={"force syncing..."}
+                >
+                  <span>
+                    Depending on certain conditions, connecting to the network can take some time. Please be patient
+                  </span>
+                </CompModalLoading>
+            );
+        } else {
+            unSetModal();
+        }
+    }, [lockUI]);
     return (
         <div className="HeaderPageWrapper">
             <div className="HeaderPageInner d-flex align-items-center">
@@ -29,7 +52,7 @@ const ContainerHeaderPage = ({ pageTitle, hasButton, hasIcon, faClass, buttonTex
                         faClass={"fa-sharp fa-solid fa-rotate"}
                         isDisabled={false}
                         text={"Force sync"}
-                        onClick={async () => {makeRunningToast("force syncing", "running", "force syncing can take a bit of time..."); await forceSync()}}/>
+                        onClick={async () => {await setLock(true); await forceSync(); await setLock(false);}}/>
                     { hasButton ? 
                         <ButtonText
                             size={"small"}

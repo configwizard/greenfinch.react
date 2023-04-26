@@ -33,7 +33,7 @@ const selectPermission = (rawPermission) => {
             return rawPermission.toString(16)
     }
 }
-const hostingURL = "https://public.greenfinch.app/"
+const hostingURL = "https://public.greenfinch.app"
 
 function filterContent(state, onObjectSelection, onObjectDelete, onObjectDownload, onObjectUpload, onContainerSelection, onContainerDelete) {
     console.log("STATE:", state);

@@ -137,6 +137,10 @@ func (m *Manager) DomReady(ctx context.Context) {
 		m.MakeToast(tmp)
 		runtime.EventsEmit(m.ctx, "select_wallet", true)
 	}
+
+	if _, err := m.SetSelectedNetwork("mainnet"); err != nil {
+		log.Fatal("could not select network ", err)
+	}
 }
 func (m Manager) Notifications() ([]NotificationMessage, error){
 	if m.wallet == nil {
@@ -211,10 +215,13 @@ func (m *Manager) SetSelectedNetwork(network string) (NetworkData, error) {
 	fmt.Println("selected network is network ", m.selectedNetwork)
 	//here, everything should be reset, new pool etc, any clients referencing should now get from the managers networkData object.
 	m.NetworkChangeNotification()//update the front end of network change
-	m.pool = nil //reload the pool for the new network
-	if _, err := m.Pool(false); err != nil {
-		return NetworkData{}, err
+	if m.wallet != nil {
+		m.pool = nil //reload the pool for the new network
+		if _, err := m.Pool(false); err != nil {
+			return NetworkData{}, err
+		}
 	}
+
 	return m.selectedNetwork, nil
 }
 
@@ -319,16 +326,18 @@ func NewFileSystemManager(version string, dbLocation string, DEBUG bool) (*Manag
 	if err != nil {
 		log.Fatal(err)
 	}
-	return &Manager{
+	m := &Manager{
 		configLocation: wd,
 		gateAccount: *ephemeralAccount, //used to make requests to RPC endpoints and works on behalf of the user so never to expose their key anywhere
-		selectedNetwork: networks[Network("testnet")], //this should be set/stored in the database when the user selects it and once they have logged in update it.
+		selectedNetwork: networks[Network("mainnet")], //this should be set/stored in the database when the user selects it and once they have logged in update it.
 		version: version,
 		enableCaching: true,
 		pool:    nil,
 		ctx:   nil,
 		DEBUG: DEBUG,
-	}, nil
+	}
+
+	return m, nil
 }
 
 func (m *Manager) SetWalletDebugging(walletPath, password string) error {

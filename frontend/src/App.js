@@ -142,7 +142,7 @@ class App extends React.Component {
                             <div className="w-100">
                                 <Routes>
                                     <Route path="/" exact element={<PageHome setLock={this.setLock} lockUI={this.state.lockUI} refreshRecentWallets={this.refreshRecentWallets} recentWallets={this.state.recentWallets} account={this.state.account} selectedNetwork={this.state.selectedNetwork}/>} />
-                                    <Route path="/containers" exact element={<PageContainers setStatusAccount={this.setStatusAccount} account={this.state.account}/>} />
+                                    <Route path="/containers" exact element={<PageContainers setLock={this.setLock} lockUI={this.state.lockUI} setStatusAccount={this.setStatusAccount} account={this.state.account}/>} />
                                     <Route path="/contacts" exact element={<PageContacts account={this.state.account}/>} />
                                     <Route path="/shared" exact element={<PageShared account={this.state.account}/>} />
                                     <Route path="/websites" exact element={<PageWebsites/>} />

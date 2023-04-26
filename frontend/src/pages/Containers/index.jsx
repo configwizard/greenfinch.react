@@ -7,7 +7,7 @@ class PageContainers extends React.Component {
     render() {
         console.log("propogating wallet", this.props.account)
         return (
-            <Containers account={this.props.account} refreshAccount={this.props.setStatusAccount}/>
+            <Containers setLock={this.props.setLock} lockUI={this.props.lockUI} account={this.props.account} refreshAccount={this.props.setStatusAccount}/>
         );
     }
 }

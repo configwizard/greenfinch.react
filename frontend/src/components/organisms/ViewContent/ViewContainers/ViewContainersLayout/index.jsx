@@ -12,7 +12,6 @@ import { DeleteButton } from '../../../../molecules/ContentDropdown/Buttons';
 import '../../_settings/style.scss';
 
 export function ViewContainersGrid(props) {
-    console.log("container grid item", props.item)
     return (
         <section className={`orgViewContainersGrid ${props.item.PendingDeleted ? "utPendingDeleted" : null }`}>
             <div className="molViewContainersHeader d-flex flex-row justify-content-end">

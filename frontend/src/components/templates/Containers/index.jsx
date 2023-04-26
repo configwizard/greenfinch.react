@@ -181,7 +181,9 @@ class Containers extends React.Component {
             <div className="templatePage d-flex flex-column flex-grow-1">
                 <div className="row">
                     <div className="col-12">
-                        <ContainerHeaderPage 
+                        <ContainerHeaderPage
+                            lockUI={this.props.lockUI}
+                            setLock={this.props.setLock}
                             pageTitle={"Containers"} 
                             hasButton={true}
                             hasIcon={true}

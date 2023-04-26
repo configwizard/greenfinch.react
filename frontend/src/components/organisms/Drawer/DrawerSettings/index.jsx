@@ -23,7 +23,7 @@ const DrawerSettings = (props) => {
                            type={"default"}
                            toogleName={"default"}
                            toggleId={"default"}
-                           initialToggle={false}
+                           initialToggle={true}
                            isDisabled={false}
                            onToggle={async (isToggled) => {
                                if (isToggled) {

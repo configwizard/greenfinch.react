@@ -230,6 +230,13 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 	putInit := client.PrmObjectPutInit{}
 	putInit.WithinSession(*sc)
 	objWriter, err := cli.ObjectPutInit(m.ctx, putInit)
+	if err != nil {
+		log.Println("could not putInit upload ", err)
+	}
+	if !objWriter.WriteHeader(*obj) || err != nil {
+		log.Println("error writing object header ", err)
+		return nil, err
+	}
 	//var cancelUpload chan error
 	go func(ctx context.Context) {
 		defer wg.Done()
@@ -292,13 +299,13 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 			// update progress bar
 			n, err := (*reader).Read(buf)
 			if !objWriter.WritePayloadChunk(buf[:n]) {
-				ctxWithMsg, cancel := context.WithCancel(m.cancelUploadCtx)
-				defer cancel()
-				// Store the error message in the context
-				ctxWithMsg = context.WithValue(ctxWithMsg, "error", err.Error())
-				cancel()
-				m.uploadCancelFunc()
-				endOfFile = true
+				//ctxWithMsg, cancel := context.WithCancel(m.cancelUploadCtx)
+				//defer cancel()
+				//// Store the error message in the context
+				//ctxWithMsg = context.WithValue(ctxWithMsg, "error", "no payload data")
+				//cancel()
+				//m.uploadCancelFunc()
+				//endOfFile = true
 				break
 			}
 			if errors.Is(err, io.EOF) {
@@ -328,10 +335,6 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 		if endOfFile {
 			break
 		}
-	}
-	if !objWriter.WriteHeader(*obj) || err != nil {
-		log.Println("error writing object header ", err)
-		return nil, err
 	}
 	res, err := objWriter.Close()
 	if err != nil {
