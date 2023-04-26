@@ -62,20 +62,44 @@ func (m *Manager) TransferToken(recipient string, amount float64) (string, error
 	c, err := rpcclient.New(context.Background(), m.selectedNetwork.RpcNodes[0], rpcclient.Options{})
 
 	if err != nil {
+		tmp := UXMessage{
+			Title:       "Transaction failed",
+			Type:        "error",
+			Description: err.Error(),
+		}
+		m.MakeToast(NewToastMessage(&tmp))
 		return "", err
 	}
 	a, err := actor.NewSimple(c, m.wallet.Accounts[0])
 	if err != nil {
+		tmp := UXMessage{
+			Title:       "Transaction failed",
+			Type:        "error",
+			Description: err.Error(),
+		}
+		m.MakeToast(NewToastMessage(&tmp))
 		return "", err
 	}
 	n17 := nep17.New(a, gas.Hash)
 
 	tgtAcc, err := address.StringToUint160(recipient)
 	if err != nil {
+		tmp := UXMessage{
+			Title:       "Transaction failed",
+			Type:        "error",
+			Description: err.Error(),
+		}
+		m.MakeToast(NewToastMessage(&tmp))
 		return "", err
 	}
 	txid, u, err := n17.Transfer(a.Sender(), tgtAcc, big.NewInt(int64(amount)), nil)
 	if err != nil {
+		tmp := UXMessage{
+			Title:       "Transaction failed",
+			Type:        "error",
+			Description: err.Error(),
+		}
+		m.MakeToast(NewToastMessage(&tmp))
 		return "", err
 	}
 	var url string = testNetExplorerUrl

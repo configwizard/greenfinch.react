@@ -53,7 +53,7 @@ jobs:
         env:
           CI: false
         run: |
-          wails build -debug -ldflags "-X main.version=${{ steps.semver_version.outputs.prefixed }}"
+          wails build -ldflags "-X main.version=${{ steps.semver_version.outputs.prefixed }}"
       - name: MacOS download gon for code signing and app notarization
         if: matrix.platform == 'macos-latest'
         run: |
