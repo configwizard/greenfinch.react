@@ -1,0 +1,32 @@
+name: Wails build
+
+on:
+  workflow_dispatch:
+  # This Action only starts when you go to Actions and manually run the workflow.
+  push:
+#    branches:
+#      - master #don't run when master is pushed so doesn't mess up releases
+#    # Sequence of patterns matched against refs/tags
+#    tags:
+#      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+
+# see here for variables
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        build: [
+          {name: wailsTest, platform: linux/amd64, os: ubuntu-latest}
+        ]
+    runs-on: ${{ matrix.build.os }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - uses: dAppServer/wails-build-action@v2.1
+        env:
+          CI: false
+        with:
+          build-name: ${{ matrix.build.name }}
+          build-platform: ${{ matrix.build.platform }}
