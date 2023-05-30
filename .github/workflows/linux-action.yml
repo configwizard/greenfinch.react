@@ -1,40 +1,21 @@
-name: Create Release
-on:
-  workflow_dispatch:
-  # This Action only starts when you go to Actions and manually run the workflow.
-  push:
-#    branches:
-#      - master #don't run when master is pushed so doesn't mess up releases
-#    # Sequence of patterns matched against refs/tags
-#    tags:
-#      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+name: Wails build
 
-# see here for variables
+on: [push]
+
 jobs:
-  package:
-    runs-on: ubuntu-latest
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        build: [
+          {name: wailsTest, platform: linux/amd64, os: ubuntu-latest}
+        ]
+    runs-on: ${{ matrix.build.os }}
     steps:
-      - uses: actions/checkout@v3
-      - name: Install Go
-        uses: actions/setup-go@v2
-      - name: setup node
-        uses: actions/setup-node@v2
+      - uses: actions/checkout@v2
         with:
-          node-version: 14
-      - name: install frontend
-        run: |
-          cd frontend && npm install
-      - name: build frontend macOS
-        run: |
-          cd frontend && CI= npm run build
-      - name: Get Wails
-        run: go install github.com/wailsapp/wails/v2/cmd/wails@latest
-      # linux
-      - name: Build for linux
-        run: |
-          /home/runner/go/bin/wails build
-      - name: upload artifacts
-        uses: actions/upload-artifact@v2
+          submodules: recursive
+      - uses: dAppServer/wails-build-action@v2.1
         with:
-          name: linux-binaries
-          path: build/bin/*
+          build-name: ${{ matrix.build.name }}
+          build-platform: ${{ matrix.build.platform }}
