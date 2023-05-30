@@ -2,7 +2,7 @@ name: Create Release
 on:
   workflow_dispatch:
   # This Action only starts when you go to Actions and manually run the workflow.
-  push:
+#  push:
 #    branches:
 #      - master #don't run when master is pushed so doesn't mess up releases
 #    # Sequence of patterns matched against refs/tags

@@ -9,7 +9,7 @@ import './assets/greenfinch.scss';
 
 // Components
 import PageHome from './pages/Home';
-import PageShared from './pages/shared';
+import PageShared from './pages/Shared';
 import PageContainers from './pages/Containers';
 import PageWebsites from './pages/Websites';
 import PageContacts from './pages/Contacts';
