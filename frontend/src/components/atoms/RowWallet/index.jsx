@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {copyTextToClipboard, makeCopyToast} from "../../../manager/manager.js"
-import MiddleEllipsis from 'react-middle-ellipsis';
+// import MiddleEllipsis from 'react-middle-ellipsis';
 
 import './style.scss';
 
@@ -13,12 +13,14 @@ const RowWallet = ({ type, title, value, hasCopy }) => {
                 hasCopy ?
                     <>
                         <h6 className="atmWallet">{title}</h6>
-                        <MiddleEllipsis><span className="utCopyable" onClick={() => {copyTextToClipboard(value); makeCopyToast("Copied to clipboard")}}>{value}</span></MiddleEllipsis>
+                        {/*<MiddleEllipsis><span className="utCopyable" onClick={() => {copyTextToClipboard(value); makeCopyToast("Copied to clipboard")}}>{value}</span></MiddleEllipsis>*/}
+                        <span className="utCopyable" onClick={() => {copyTextToClipboard(value); makeCopyToast("Copied to clipboard")}}>{value}</span>
                     </>
                 :
                 <>
                     <h6 className="atmWallet">{title}</h6>
-                    <MiddleEllipsis><span>{value}</span></MiddleEllipsis>
+                    {/*<MiddleEllipsis><span>{value}</span></MiddleEllipsis>*/}
+                    <span>{value}</span>
                 </>
             )      
         }

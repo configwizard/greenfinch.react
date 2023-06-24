@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Moment from 'react-moment';
 import { fileSize } from 'humanize-plus';
-import MiddleEllipsis from 'react-middle-ellipsis';
+// import MiddleEllipsis from 'react-middle-ellipsis';
 
 // Components
 
@@ -22,9 +22,7 @@ const CardContentContainerRow = ({ onClick, containerName, containerSize, contai
                 </div>
                 <div className="d-flex align-items-center flex-grow-1">
                     <div className="atmContentNameWrapper me-auto">
-                        <MiddleEllipsis>
-                            <span className="atmContentName">{containerName}</span>
-                        </MiddleEllipsis>
+                        <span className="atmContentName">{containerName}</span>
                     </div>
                     <div className="atmContentDefault d-none d-xxl-flex"><Moment unix format="DD MMM YY">{containerOrigin}</Moment></div>
                     <div className="atmContentDefault d-none d-xl-flex">{fileSize(containerSize)}</div>

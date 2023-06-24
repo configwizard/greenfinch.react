@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import MiddleEllipsis from 'react-middle-ellipsis';
+// import MiddleEllipsis from 'react-middle-ellipsis';
 
 // Components
 import IconFile from '../../../atoms/IconFile';
@@ -25,9 +25,9 @@ const CardContentObjectGrid = ({ onClick, dataType, objectFile, objectName, pend
                         type={dataType}
                         size="medium"/>
                 }
-                <MiddleEllipsis>
+                {/*<MiddleEllipsis>*/}
                     <span className="atmContentName">{objectName}</span>
-                </MiddleEllipsis>
+                {/*</MiddleEllipsis>*/}
         </button>
     )
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import MiddleEllipsis from 'react-middle-ellipsis';
+// import MiddleEllipsis from 'react-middle-ellipsis';
 
 // Components
 import IconFolder from '../../../atoms/IconFolder';
@@ -18,9 +18,9 @@ const CardContentContainerGrid = ({ onClick, containerName, pendingDeleted }) =>
                 <IconFolder
                     size={"medium"} 
                     type={"native"} />
-                <MiddleEllipsis>
+                {/*<MiddleEllipsis>*/}
                     <span className="atmContentName">{containerName}</span>
-                </MiddleEllipsis>
+                {/*</MiddleEllipsis>*/}
         </button>
     )
 }

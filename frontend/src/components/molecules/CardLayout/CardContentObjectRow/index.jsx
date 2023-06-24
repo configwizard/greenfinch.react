@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Moment from 'react-moment';
 import { fileSize } from 'humanize-plus';
-import MiddleEllipsis from 'react-middle-ellipsis';
+// import MiddleEllipsis from 'react-middle-ellipsis';
 
 // Components
 import IconFile from '../../../atoms/IconFile';
@@ -33,9 +33,7 @@ const CardContentObjectRow = ({ onClick, dataType, objectFile, objectName, objec
                 }
                 <div className="d-flex align-items-center flex-grow-1">
                     <div className="atmContentNameWrapper me-auto">
-                        <MiddleEllipsis>
-                            <span className="atmContentName">{objectName}</span>
-                        </MiddleEllipsis>
+                        <span className="atmContentName">{objectName}</span>
                     </div>
                     <div className="atmContentDefault d-none d-xxl-flex"><Moment unix format="DD MMM YY">{uploadedAt}</Moment></div>
                     <div className="atmContentDefault d-none d-xl-flex">{fileSize(objectSize)}</div>

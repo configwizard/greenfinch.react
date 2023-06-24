@@ -1,5 +1,5 @@
 import React from 'react';
-import MiddleEllipsis from 'react-middle-ellipsis';
+// import MiddleEllipsis from 'react-middle-ellipsis';
 import {Form} from 'react-bootstrap';
 import {copyTextToClipboard, transferGasToContact, makeCopyToast} from '../../../manager/manager.js';
 
@@ -25,8 +25,8 @@ const RowAddress = ({first, contact, deleteContact}) => {
                     size={"small"}
                     isUppercase={false}
                     text={contact.firstName + " " + contact.lastName} />
-                <span className="rowElement utCopyable" onClick={() => {copyTextToClipboard(contact.walletAddress); makeCopyToast("Copied to clipboard")}}><MiddleEllipsis><span>{contact.walletAddress}</span></MiddleEllipsis></span>
-                <span className="rowElement utCopyable" onClick={() => {copyTextToClipboard(contact.publicKey); makeCopyToast("Copied to clipboard")}}><MiddleEllipsis><span>{contact.publicKey}</span></MiddleEllipsis></span>
+                <span className="rowElement utCopyable" onClick={() => {copyTextToClipboard(contact.walletAddress); makeCopyToast("Copied to clipboard")}}><span>{contact.walletAddress}</span>{/*<MiddleEllipsis><span>{contact.walletAddress}</span></MiddleEllipsis>*/}</span>
+                <span className="rowElement utCopyable" onClick={() => {copyTextToClipboard(contact.publicKey); makeCopyToast("Copied to clipboard")}}><span>{contact.publicKey}</span>{/*<MiddleEllipsis><span>{contact.publicKey}</span></MiddleEllipsis>*/}</span>
             </div>
             <div className="ms-auto">
                 <ButtonText
