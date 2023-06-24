@@ -33,6 +33,7 @@ jobs:
         env:
           CI: false
         run: |
+          sudo apt update && sudo apt install -y libgtk-3-dev libwebkit2gtk-4.0-dev
           /home/runner/go/bin/wails build
       - name: upload artifacts
         uses: actions/upload-artifact@v2
