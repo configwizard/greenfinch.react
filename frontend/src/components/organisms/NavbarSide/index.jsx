@@ -59,6 +59,12 @@ const NavbarSide = (props) => {
                             faClass={"fa-sharp fa-regular fa-hexagon-vertical-nft-slanted"}
                             label={"NFT Management"} />
                     </Tooltip>
+                    <Tooltip content="Wallet Connect" direction="right">
+                        <NavlinkSide
+                            to={"/wconnect"}
+                            faClass={"fal fa-tick"}
+                            label={"Wallet Connect"} />
+                    </Tooltip>
                     {/*
                     <Tooltip content="Test Page" direction="right">
                         <NavlinkSide

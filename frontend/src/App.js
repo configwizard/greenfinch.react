@@ -11,6 +11,7 @@ import './assets/greenfinch.scss';
 import PageHome from './pages/Home';
 import PageShared from './pages/Shared';
 import PageContainers from './pages/Containers';
+import PageWalletConnect from './pages/WalletConnect'
 import PageWebsites from './pages/Websites';
 import PageContacts from './pages/Contacts';
 import PageNFTs from './pages/NFTs';
@@ -148,6 +149,7 @@ class App extends React.Component {
                                     <Route path="/websites" exact element={<PageWebsites/>} />
                                     <Route path="/nfts" exact element={<PageNFTs/>} />
                                     <Route path="/notifications" exact element={<PageNotifications/>} />
+                                    <Route path="/wconnect" exact element={<PageWalletConnect/>} />
                                     {/*<Route path="/test" exact element={<PageTest/>} />*/}
                                     <Route path="/test" exact element={<PageTest/>} />
                                 </Routes>
