@@ -7,10 +7,11 @@ import (
 	"errors"
 	"fmt"
 	"github.com/amlwwalker/greenfinch.react/pkg/cache"
+	//"github.com/amlwwalker/greenfinch.react/pkg/config"
 	gspool "github.com/amlwwalker/greenfinch.react/pkg/pool"
 	"github.com/amlwwalker/greenfinch.react/pkg/tokens"
 	"github.com/machinebox/progress"
-	"github.com/nspcc-dev/neo-go/pkg/crypto/keys"
+	//"github.com/nspcc-dev/neo-go/pkg/crypto/keys"
 	"github.com/nspcc-dev/neofs-sdk-go/client"
 	apistatus "github.com/nspcc-dev/neofs-sdk-go/client/status"
 	cid "github.com/nspcc-dev/neofs-sdk-go/container/id"
@@ -93,14 +94,13 @@ func (m *Manager) CancelObjectContext() {
 }
 func (m *Manager) UploadObject(containerID, fp string, filtered map[string]string) ([]Element, error) {
 
-	tmpWallet, err := m.retrieveWallet()
+	walletAddress, err := m.retrieveWallet()
 	if err != nil {
 		return nil, err
 	}
-	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
 
 	userID := user.ID{}
-	user.IDFromKey(&userID, tmpKey.PublicKey)
+	user.IDFromKey(&userID, m.TemporaryUserPublicKeySolution())
 	cnrID := cid.ID{}
 
 	if err := cnrID.DecodeString(containerID); err != nil {
@@ -151,7 +151,7 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 		timestamp.SetValue(strconv.FormatInt(time.Now().Unix(), 10))
 		attributes = append(attributes, *timestamp)
 	}
-	pKey := &keys.PrivateKey{PrivateKey: tmpKey}
+	//pKey := &keys.PrivateKey{PrivateKey: tmpKey}
 	obj := object.New()
 	obj.SetContainerID(cnrID)
 	obj.SetOwnerID(&userID)
@@ -169,8 +169,7 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 	}
 
 	reader := progress.NewReader(f)
-	wg := sync.WaitGroup{}
-	wg.Add(1)
+
 	fmt.Println("file size ", fileStats.Size())
 
 	obj.SetPayloadSize(uint64(fileStats.Size()))
@@ -191,7 +190,8 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 	nodeSelection := NewNetworkSelector(nodes)
 	//addr := m.selectedNetwork.StorageNodes["0"].Address //cfg.Peers["0"].Address //we need to find the top priority addr really here
 	prmCli := client.PrmInit{}
-	prmCli.SetDefaultPrivateKey(tmpKey)
+	prmCli.SetDefaultPrivateKey(m.gateAccount.PrivateKey().PrivateKey)
+	prmCli.ResolveNeoFSFailures()
 	var prmDial client.PrmDial
 
 	prmDial.SetTimeout(30 * time.Second)
@@ -217,18 +217,25 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 	}
 
 	prmSession := client.PrmSessionCreate{}
-	prmSession.UseKey(tmpKey)
 	prmSession.SetExp(exp)
 	resSession, err := cli.SessionCreate(m.ctx, prmSession)
 	if err != nil {
+		fmt.Println("creating res session err", err)
 		return nil, err
 	}
-	sc, err := tokens.BuildObjectSessionToken(pKey, iAt, iAt, exp, session.VerbObjectPut, cnrID, resSession)
+	fmt.Println("just created resSession ", resSession.Status())
+	sc, err := tokens.BuildUnsignedObjectSessionToken(iAt, iAt, exp, session.VerbObjectPut, cnrID, resSession)
 	if err != nil {
-		log.Fatal("error creating session token to create a container")
+		fmt.Println("creting token err", err)
+		return nil, err
+	}
+	if err := m.TemporarySignObjectTokenWithPrivateKey(sc); err != nil {
+		fmt.Println("signing token err", err)
+		return nil, err
 	}
 	putInit := client.PrmObjectPutInit{}
 	putInit.WithinSession(*sc)
+
 	objWriter, err := cli.ObjectPutInit(m.ctx, putInit)
 	if err != nil {
 		log.Println("could not putInit upload ", err)
@@ -237,6 +244,8 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 		log.Println("error writing object header ", err)
 		return nil, err
 	}
+	wg := sync.WaitGroup{}
+	wg.Add(1)
 	//var cancelUpload chan error
 	go func(ctx context.Context) {
 		defer wg.Done()
@@ -338,6 +347,7 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 	}
 	res, err := objWriter.Close()
 	if err != nil {
+		fmt.Println("error closing object writer ", err)
 		ctxWithMsg, cancel := context.WithCancel(m.cancelUploadCtx)
 		defer cancel()
 		ctxWithMsg = context.WithValue(ctxWithMsg, "error", errors.New("user cancelled download"))
@@ -363,7 +373,7 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 	if data, err := json.Marshal(el); err != nil {
 		return []Element{}, err
 	} else {
-		if err := cache.StoreObject(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID, objectID.String(), data); err != nil {
+		if err := cache.StoreObject(walletAddress, m.selectedNetwork.ID, objectID.String(), data); err != nil {
 			m.MakeNotification(NotificationMessage{
 				Title:       "Upload failed",
 				Type:        "error",
@@ -403,41 +413,34 @@ func (m *Manager) GetObjectMetaData(objectID, containerID string) (object.Object
 	var prmHead pool.PrmObjectHead
 	prmHead.SetAddress(addr)
 
-	tmpWallet, err := m.retrieveWallet()
+	pl, err := m.Pool(false)
 	if err != nil {
 		return object.Object{}, err
 	}
-	//fixme - crashed on shared container. Does this fix it?
-	if tmpWallet.Accounts[0].PrivateKey() == nil {
-		return object.Object{}, err
-	}
-	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
-
-	pKey := &keys.PrivateKey{PrivateKey: tmpKey}
-
-	pl, err := m.Pool(false)
-
 	target := eacl.Target{}
 	target.SetRole(eacl.RoleUser)
-	target.SetBinaryKeys([][]byte{pKey.Bytes()})
+	target.SetBinaryKeys([][]byte{m.gateAccount.PublicKey().Bytes()}) //todo - is this correct??
 	table, err := tokens.AllowGetPut(cnrID, target)
 	if err != nil {
 		log.Fatal("error retrieving table ", err)
 	}
 	iAt, exp, err := gspool.TokenExpiryValue(m.ctx, pl, 100)
-	bt, err := tokens.BuildBearerToken(pKey, &table, iAt, iAt, exp, pKey.PublicKey())
+
+	bt, err := tokens.BuildUnsignedBearerToken(&table, iAt, iAt, exp, m.gateAccount.PublicKey())
 	if err != nil {
-		log.Fatal("error creating bearer token to upload object")
+		return object.Object{}, err
 	}
-	if bt != nil {
-		prmHead.UseBearer(*bt)
-	} else {
-		prmHead.UseKey(&tmpKey)
+	//now sign it with wallet connect
+	if err := m.TemporarySignBearerTokenWithPrivateKey(bt); err != nil {
+		if err != nil {
+			return object.Object{}, err
+		}
 	}
+	prmHead.UseBearer(*bt)
 	hdr, err := pl.HeadObject(m.ctx, prmHead)
 	if err != nil {
 		if reason, ok := isErrAccessDenied(err); ok {
-			fmt.Printf("%w: %s\r\n", err, reason)
+			fmt.Printf("error here: %w: %s\r\n", err, reason)
 			return object.Object{}, err
 		}
 		fmt.Errorf("read object header via connection pool: %w", err)
@@ -460,14 +463,6 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 		return nil, err
 	}
 
-	tmpWallet, err := m.retrieveWallet()
-	if err != nil {
-		return nil, err
-	}
-	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
-
-	pKey := &keys.PrivateKey{PrivateKey: tmpKey}
-
 	pl, err := m.Pool(false)
 	if err != nil {
 		return nil, err
@@ -485,7 +480,7 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 	nodeSelection := NewNetworkSelector(nodes)
 	//addr := m.selectedNetwork.StorageNodes["0"].Address //cfg.Peers["0"].Address //we need to find the top priority addr really here
 	prmCli := client.PrmInit{}
-	prmCli.SetDefaultPrivateKey(tmpKey)
+	prmCli.SetDefaultPrivateKey(m.gateAccount.PrivateKey().PrivateKey)
 	var prmDial client.PrmDial
 
 	prmDial.SetTimeout(30 * time.Second)
@@ -510,17 +505,20 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 	}
 
 	prmSession := client.PrmSessionCreate{}
-	prmSession.UseKey(tmpKey)
+	prmSession.UseKey(m.gateAccount.PrivateKey().PrivateKey)
 	prmSession.SetExp(exp)
 	resSession, err := cli.SessionCreate(m.ctx, prmSession)
 	if err != nil {
 		return nil, err
 	}
 
-	log.Println("creating session token for download")
-	sc, err := tokens.BuildObjectSessionToken(pKey, iAt, iAt, exp, session.VerbObjectGet, cnrID, resSession)
+	sc, err := tokens.BuildUnsignedObjectSessionToken(iAt, iAt, exp, session.VerbObjectGet, cnrID, resSession)
 	if err != nil {
-		log.Println("error creating session token to create a container", err)
+		log.Println("error creating session token to create a object", err)
+		return nil, err
+	}
+	if err := m.TemporarySignObjectTokenWithPrivateKey(sc); err != nil {
+		log.Println("error signing session token to create a object", err)
 		return nil, err
 	}
 	getInit := client.PrmObjectGet{}
@@ -676,6 +674,12 @@ type TmpObjectMeta struct {
 
 //listObjectsAsync update object in database with metadata
 func (m *Manager) listObjectsAsync(containerID string) ([]Element, error) {
+
+	walletAddress, err := m.retrieveWallet()
+	if err != nil {
+		return nil, err
+	}
+
 	cnrID := cid.ID{}
 
 	if err := cnrID.DecodeString(containerID); err != nil {
@@ -683,36 +687,30 @@ func (m *Manager) listObjectsAsync(containerID string) ([]Element, error) {
 		return nil, err
 	}
 
-	tmpWallet, err := m.retrieveWallet()
-	if err != nil {
-		return nil, err
-	}
-	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
-
 	pl, err := m.Pool(false)
 	if err != nil {
 		return []Element{}, err
 	}
 
-	pKey := &keys.PrivateKey{PrivateKey: tmpKey}
 	target := eacl.Target{}
 	target.SetRole(eacl.RoleUser)
-	target.SetBinaryKeys([][]byte{pKey.Bytes()})
+	target.SetBinaryKeys([][]byte{m.gateAccount.PublicKey().Bytes()})
 	table, err := tokens.AllowGetPut(cnrID, target)
 	if err != nil {
-		log.Fatal("error retrieving table ", err)
+		return nil, err
 	}
 	iAt, exp, err := gspool.TokenExpiryValue(m.ctx, pl, 100)
-	bt, err := tokens.BuildBearerToken(pKey, &table, iAt, iAt, exp, pKey.PublicKey())
+	bt, err := tokens.BuildUnsignedBearerToken(&table, iAt, iAt, exp, m.gateAccount.PublicKey())
 	if err != nil {
-		log.Fatal("error creating bearer token to upload object")
+		return nil, err
 	}
 
+	if err := m.TemporarySignBearerTokenWithPrivateKey(bt); err != nil {
+		return nil, err
+	}
 	prms := pool.PrmObjectSearch{}
 	if bt != nil {
 		prms.UseBearer(*bt)
-	} else {
-		prms.UseKey(&tmpKey)
 	}
 
 	prms.SetContainerID(cnrID)
@@ -776,7 +774,7 @@ func (m *Manager) listObjectsAsync(containerID string) ([]Element, error) {
 			str, err := json.MarshalIndent(tmp, "", "  ")
 
 			//store in database
-			if err = cache.StoreObject(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID, vID.String(), str); err != nil {
+			if err = cache.StoreObject(walletAddress, m.selectedNetwork.ID, vID.String(), str); err != nil {
 				fmt.Println("MASSIVE ERROR could not store container in database", err)
 			}
 		}(v)
@@ -795,7 +793,7 @@ func (m *Manager) listObjectsAsync(containerID string) ([]Element, error) {
 
 //ListContainerObjects ets from cache
 func (m *Manager) ListContainerObjects(containerID string, synchronised, deleted bool) ([]Element, error) {
-	tmpWallet, err := m.retrieveWallet()
+	walletAddress, err := m.retrieveWallet()
 	if err != nil {
 		return []Element{}, err
 	}
@@ -803,7 +801,7 @@ func (m *Manager) ListContainerObjects(containerID string, synchronised, deleted
 		//what do we do here then for retrieving the objects from the network?
 		return m.listObjectsAsync(containerID)
 	}
-	tmpObjects, err := cache.RetrieveObjects(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID)
+	tmpObjects, err := cache.RetrieveObjects(walletAddress, m.selectedNetwork.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -815,7 +813,7 @@ func (m *Manager) ListContainerObjects(containerID string, synchronised, deleted
 	fmt.Println("len unsorted", len(tmpObjects))
 	//filter for this container
 	var unsortedObjects []Element //make(map[string]Element)
-	fmt.Println("processing objects for", containerID)
+	//fmt.Println("processinb ojects for", containerID)
 	for k, v := range tmpObjects {
 		tmp := Element{}
 		err := json.Unmarshal(v, &tmp)
@@ -880,6 +878,11 @@ func (m *Manager) ListContainerObjects(containerID string, synchronised, deleted
 	return unsortedObjects, nil
 }
 func (m *Manager) DeleteObject(objectID, containerID string) ([]Element, error) {
+	walletAddress, err := m.retrieveWallet()
+	if err != nil {
+		return nil, err
+	}
+
 	objID := oid.ID{}
 	if err := objID.DecodeString(objectID); err != nil {
 		fmt.Println("wrong object id", err)
@@ -892,18 +895,9 @@ func (m *Manager) DeleteObject(objectID, containerID string) ([]Element, error) 
 		return nil, err
 	}
 
-	tmpWallet, err := m.retrieveWallet()
-	if err != nil {
-		return []Element{}, err
-	}
-	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
-
-	//this doesn't feel correct??
-	pKey := &keys.PrivateKey{PrivateKey: tmpKey}
-
 	target := eacl.Target{}
 	target.SetRole(eacl.RoleUser)
-	target.SetBinaryKeys([][]byte{pKey.Bytes()})
+	target.SetBinaryKeys([][]byte{m.gateAccount.PublicKey().Bytes()})
 	table, err := tokens.AllowDelete(cnrID, target)
 	if err != nil {
 		log.Println("error retrieving table ", err)
@@ -924,16 +918,17 @@ func (m *Manager) DeleteObject(objectID, containerID string) ([]Element, error) 
 	}
 
 	iAt, exp, err := gspool.TokenExpiryValue(m.ctx, pl, 100)
+	bt, err := tokens.BuildUnsignedBearerToken(&table, iAt, iAt, exp, m.gateAccount.PublicKey())
 	if err != nil {
-		return []Element{}, err
+		log.Println("error creating bearer token to upload object")
+		return nil, err
 	}
-	bt, err := tokens.BuildBearerToken(pKey, &table, iAt, iAt, exp, pKey.PublicKey())
-	if err != nil {
-		return []Element{}, err
+	if err := m.TemporarySignBearerTokenWithPrivateKey(bt); err != nil {
+		return nil, err
 	}
 	prmDelete.UseBearer(*bt)
 	//now mark deleted
-	cacheObject, err := cache.RetrieveObject(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID, objectID)
+	cacheObject, err := cache.RetrieveObject(walletAddress, m.selectedNetwork.ID, objectID)
 	if err != nil {
 		fmt.Println("error retrieving container??", err)
 		return []Element{}, err
@@ -951,7 +946,7 @@ func (m *Manager) DeleteObject(objectID, containerID string) ([]Element, error) 
 	if err := json.Unmarshal(cacheObject, &tmp); err != nil {
 		return []Element{}, err
 	}
-	if err := cache.PendObjectDeleted(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID, objectID, del); err != nil {
+	if err := cache.PendObjectDeleted(walletAddress, m.selectedNetwork.ID, objectID, del); err != nil {
 		return []Element{}, err
 	}
 
@@ -969,7 +964,7 @@ func (m *Manager) DeleteObject(objectID, containerID string) ([]Element, error) 
 				Type:        "error",
 				Description: "Object " + tmp.ID + " could not be deleted: " + err.Error(),
 			})
-			cacheObject, err := cache.RetrieveObject(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID, objectID)
+			cacheObject, err := cache.RetrieveObject(walletAddress, m.selectedNetwork.ID, objectID)
 			if err != nil {
 				fmt.Println("error retrieving container??", err)
 				return
@@ -987,11 +982,11 @@ func (m *Manager) DeleteObject(objectID, containerID string) ([]Element, error) 
 			if err := json.Unmarshal(cacheObject, &tmp); err != nil {
 				return
 			}
-			if err := cache.PendObjectDeleted(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID, objectID, del); err != nil {
+			if err := cache.PendObjectDeleted(walletAddress, m.selectedNetwork.ID, objectID, del); err != nil {
 				return
 			}
 		} else {
-			if err := cache.DeleteObject(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID, objectID); err != nil {
+			if err := cache.DeleteObject(walletAddress, m.selectedNetwork.ID, objectID); err != nil {
 				m.MakeNotification(NotificationMessage{
 					Title:       "Object cache deletion",
 					Type:        "error",

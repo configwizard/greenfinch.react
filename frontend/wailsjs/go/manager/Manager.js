@@ -202,6 +202,22 @@ export function SetupServer(arg1) {
   return window['go']['manager']['Manager']['SetupServer'](arg1);
 }
 
+export function TemporarySignBearerTokenWithPrivateKey(arg1) {
+  return window['go']['manager']['Manager']['TemporarySignBearerTokenWithPrivateKey'](arg1);
+}
+
+export function TemporarySignContainerTokenWithPrivateKey(arg1) {
+  return window['go']['manager']['Manager']['TemporarySignContainerTokenWithPrivateKey'](arg1);
+}
+
+export function TemporarySignObjectTokenWithPrivateKey(arg1) {
+  return window['go']['manager']['Manager']['TemporarySignObjectTokenWithPrivateKey'](arg1);
+}
+
+export function TemporaryUserPublicKeySolution() {
+  return window['go']['manager']['Manager']['TemporaryUserPublicKeySolution']();
+}
+
 export function TopUpNeoWallet(arg1) {
   return window['go']['manager']['Manager']['TopUpNeoWallet'](arg1);
 }

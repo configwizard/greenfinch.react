@@ -2,6 +2,9 @@ package manager
 
 import (
 	"context"
+	"crypto/ecdsa"
+	"crypto/elliptic"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -12,7 +15,9 @@ import (
 	"github.com/blang/semver/v4"
 	"github.com/google/uuid"
 	"github.com/nspcc-dev/neo-go/pkg/crypto/keys"
+	"github.com/nspcc-dev/neofs-sdk-go/bearer"
 	"github.com/nspcc-dev/neofs-sdk-go/pool"
+	"github.com/nspcc-dev/neofs-sdk-go/session"
 	"github.com/nspcc-dev/neofs-sdk-go/user"
 	"io/ioutil"
 	"log"
@@ -122,6 +127,9 @@ func (m *Manager) RetrieveWIF() (string, error) {
 func (m *Manager) Startup(ctx context.Context) {
 	// Perform your setup here
 	m.ctx = ctx
+	//if _, err := m.Pool(false); err != nil {
+	//	log.Fatal("can't create pool", err)
+	//}
 	//go m.RetrieveFileSystem()
 }
 
@@ -308,6 +316,22 @@ func (m *Manager) Shutdown(ctx context.Context) {
 	// Perform your teardown here
 }
 
+func (m Manager) TemporaryUserPublicKeySolution() ecdsa.PublicKey {
+	return ecdsa.PublicKey{
+		Curve: m.wallet.Accounts[0].PublicKey().Curve,
+		X:     m.wallet.Accounts[0].PublicKey().X,
+		Y:     m.wallet.Accounts[0].PublicKey().Y,
+	}
+}
+func (m Manager) TemporarySignContainerTokenWithPrivateKey(sc *session.Container) error {
+	return sc.Sign(m.wallet.Accounts[0].PrivateKey().PrivateKey)
+}
+func (m Manager) TemporarySignObjectTokenWithPrivateKey(sc *session.Object) error {
+	return sc.Sign(m.wallet.Accounts[0].PrivateKey().PrivateKey)
+}
+func (m Manager) TemporarySignBearerTokenWithPrivateKey(bt *bearer.Token) error {
+	return bt.Sign(m.wallet.Accounts[0].PrivateKey().PrivateKey) //is this the owner who is giving access priveliges???
+}
 func NewFileSystemManager(version string, dbLocation string, DEBUG bool) (*Manager, error) {
 
 	//move config location to database for development if not set?
@@ -382,7 +406,8 @@ func (m *Manager) Pool(forceRenew bool) (*pool.Pool, error) {
 		//	return nil, err
 		//}
 		//todo: this should be wallet connect pool
-		pl, err := gspool.GetPool(m.ctx, m.wallet.Accounts[0].PrivateKey().PrivateKey, m.selectedNetwork.StorageNodes)
+
+		pl, err := gspool.GetPool(m.ctx, m.gateAccount.PrivateKey().PrivateKey, m.selectedNetwork.StorageNodes)
 		if err != nil {
 			fmt.Println("error getting pool with key ", err)
 			return nil, err
@@ -417,20 +442,12 @@ func (m *Manager) EnableLocalServer(enable bool) {
 		m.cancelServerContext()
 	}
 }
-func (m *Manager) retrieveWallet() (*wal.Wallet, error) {
+func (m *Manager) retrieveWallet() (string, error) {
 	if m.wallet == nil {
-		//tmp := NewToastMessage(&UXMessage{
-		//	Title:       "Lets get started",
-		//	Type:        "info",
-		//	Description: "Please select a wallet",
-		//})
-		//m.MakeToast(tmp)
-
-		return nil, NotFound
+		return "", NotFound
 	}
-	return m.wallet, nil
+	return m.wallet.Accounts[0].Address, nil
 }
-
 func (m *Manager) GetAccountInformation() (Account, error) {
 	fmt.Println(GetCurrentFunctionName(), " caller is ", GetCallerFunctionName())
 	if m.wallet == nil {
@@ -445,14 +462,19 @@ func (m *Manager) GetAccountInformation() (Account, error) {
 	}
 	w, err := m.retrieveWallet()
 	if err != nil {
+		//if !errors.Is(err, NotFound) {
+		//	return Account{m.retrieveWallet()}, err
+		//}
 		runtime.EventsEmit(m.ctx, "select_wallet", true)
 		return Account{}, nil
 	}
-	balances, err := wallet.GetNep17Balances(w.Accounts[0].Address, wallet.RPC_NETWORK(m.selectedNetwork.RpcNodes[0]))
+	balances, err := wallet.GetNep17Balances(w, wallet.RPC_NETWORK(m.selectedNetwork.RpcNodes[0]))
 	if err != nil {
 		return Account{}, err
 	}
-	//todo - if we don't get a connection we get no balances, so this takes and age. Fine with spinner but we should be able to detect if we couldn't retrieve balances
+	fmt.Printf("retrieved balances %+v\r\n", balances)
+
+	fmt.Println("getting account information ", m.pool)
 	pl, err := m.Pool(true)
 	if err != nil {
 		fmt.Println("error retrieving pool. ", err)
@@ -460,7 +482,7 @@ func (m *Manager) GetAccountInformation() (Account, error) {
 	}
 	fmt.Println("getting account information ", m.pool)
 	userID := user.ID{}
-	user.IDFromKey(&userID, m.wallet.Accounts[0].PrivateKey().PrivateKey.PublicKey)
+	user.IDFromKey(&userID, m.TemporaryUserPublicKeySolution())
 	blGet := pool.PrmBalanceGet{}
 	blGet.SetAccount(userID)
 
@@ -483,14 +505,10 @@ func (m *Manager) GetAccountInformation() (Account, error) {
 		return Account{}, err
 	}
 
-	//result, err := pl.BalanceGet(m.ctx, get)
-	//if err != nil {
-	//	return Account{}, err
-	//}
-	//now create an account object
+	k := m.TemporaryUserPublicKeySolution()
 	var b = Account{
-		Address:   w.Accounts[0].Address,
-		PublicKey: wallet.ByteArrayToString(m.wallet.Accounts[0].PrivateKey().PublicKey().Bytes()),
+		Address:   w,
+		PublicKey: hex.EncodeToString(elliptic.MarshalCompressed(elliptic.P256(), k.X, k.Y)),
 		NeoFS: struct {
 			Balance   int64  `json:"balance"`
 			Precision uint32 `json:"precision"`
@@ -514,3 +532,4 @@ func (m *Manager) GetAccountInformation() (Account, error) {
 	}
 	return b, nil
 }
+

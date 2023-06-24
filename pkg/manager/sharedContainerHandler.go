@@ -7,7 +7,6 @@ import (
 	"github.com/amlwwalker/greenfinch.react/pkg/cache"
 	gspool "github.com/amlwwalker/greenfinch.react/pkg/pool"
 	"github.com/amlwwalker/greenfinch.react/pkg/tokens"
-	"github.com/nspcc-dev/neo-go/pkg/crypto/keys"
 	"github.com/nspcc-dev/neofs-sdk-go/client"
 	cid "github.com/nspcc-dev/neofs-sdk-go/container/id"
 	"github.com/nspcc-dev/neofs-sdk-go/eacl"
@@ -32,12 +31,12 @@ func getHelperTokenExpiry(ctx context.Context, cli *client.Client) uint64 {
 }
 
 func (m *Manager) ListSharedContainers() ([]Element, error) {
-	tmpWallet, err := m.retrieveWallet()
+	walletAddress, err := m.retrieveWallet()
 	if err != nil {
 		return []Element{}, err
 	}
-	fmt.Println("finding shared for ", tmpWallet.Accounts[0].Address)
-	tmpContainers, err := cache.RetrieveSharedContainers(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID)
+	fmt.Println("finding shared for ", walletAddress)
+	tmpContainers, err := cache.RetrieveSharedContainers(walletAddress, m.selectedNetwork.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -74,35 +73,36 @@ func (m *Manager) listSharedContainerObjectsAsync(containerID string) ([]Element
 	}
 	pl, err := m.Pool(false)
 	if err != nil {
-		return []Element{}, err
+		return nil, err
 	}
 
-	tmpWallet, err := m.retrieveWallet()
-	if err != nil {
-		return []Element{}, err
-	}
-	tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
+	walletAddress, err := m.retrieveWallet()
+	//if err != nil {
+	//	return []Element{}, err
+	//}
+	//tmpKey := tmpWallet.Accounts[0].PrivateKey().PrivateKey
 
 	//this doesn't feel correct??
-	pKey := &keys.PrivateKey{PrivateKey: tmpKey}
+	//pKey := &keys.PrivateKey{PrivateKey: tmpKey}
 	target := eacl.Target{}
 	target.SetRole(eacl.RoleUser)
-	target.SetBinaryKeys([][]byte{pKey.Bytes()})
+	target.SetBinaryKeys([][]byte{m.gateAccount.PublicKey().Bytes()})
 	table, err := tokens.AllowGetPut(cnrID, target)
 	if err != nil {
 		log.Fatal("error retrieving table ", err)
 	}
 	iAt, exp, err := gspool.TokenExpiryValue(m.ctx, pl, 100)
-	bt, err := tokens.BuildBearerToken(pKey, &table, iAt, iAt, exp, pKey.PublicKey())
+	bt, err := tokens.BuildUnsignedBearerToken(&table, iAt, iAt, exp, m.gateAccount.PublicKey())
 	if err != nil {
-		log.Fatal("error creating bearer token to upload object")
+		return nil, err
 	}
 
+	if err := m.TemporarySignBearerTokenWithPrivateKey(bt); err != nil {
+		return nil, err
+	}
 	prms := pool.PrmObjectSearch{}
 	if bt != nil{
 		prms.UseBearer(*bt)
-	} else {
-		prms.UseKey(&tmpKey)
 	}
 
 	prms.SetContainerID(cnrID)
@@ -207,7 +207,7 @@ func (m *Manager) listSharedContainerObjectsAsync(containerID string) ([]Element
 				fmt.Println(err)
 			}
 			//store in database
-			if err = cache.StoreSharedObject(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID, vID.String(), str); err != nil {
+			if err = cache.StoreSharedObject(walletAddress, m.selectedNetwork.ID, vID.String(), str); err != nil {
 				fmt.Println("MASSIVE ERROR could not store container in database", err)
 			}
 		}(v)
@@ -226,7 +226,7 @@ func (m *Manager) listSharedContainerObjectsAsync(containerID string) ([]Element
 
 //ListSharedContainerObjects ets from cache
 func (m *Manager) ListSharedContainerObjects(containerID string, synchronised bool) ([]Element, error) {
-	tmpWallet, err := m.retrieveWallet()
+	walletAddress, err := m.retrieveWallet()
 	if err != nil {
 		return []Element{}, err
 	}
@@ -234,7 +234,7 @@ func (m *Manager) ListSharedContainerObjects(containerID string, synchronised bo
 		//what do we do here then for retrieving the objects from the network?
 		return m.listSharedContainerObjectsAsync(containerID)
 	}
-	tmpObjects, err := cache.RetrieveSharedObjects(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID)
+	tmpObjects, err := cache.RetrieveSharedObjects(walletAddress, m.selectedNetwork.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -311,12 +311,12 @@ func (m *Manager) ListSharedContainerObjects(containerID string, synchronised bo
 
 func (m *Manager) RemoveSharedContainer(containerId string) ([]Element, error) {
 	fmt.Println("adding ocntainer with id", containerId)
-	tmpWallet, err := m.retrieveWallet()
+	walletAddress, err := m.retrieveWallet()
 	if err != nil {
 		fmt.Println("error retrieving wallet")
 		return nil, err
 	}
-	if err := cache.DeleteSharedContainer(tmpWallet.Accounts[0].Address, containerId); err != nil {
+	if err := cache.DeleteSharedContainer(walletAddress, containerId); err != nil {
 		m.MakeNotification(NotificationMessage{
 			Title:       "Shared Container Failed",
 			Type:        "error",
@@ -336,7 +336,7 @@ func (m *Manager) AddSharedContainer(containerID string) error {
 	//check if you can access this container
 	fmt.Println("adding shared container with id", containerID)
 
-	tmpWallet, err := m.retrieveWallet()
+	walletAddress, err := m.retrieveWallet()
 	if err != nil {
 		fmt.Println("error retrieving wallet ", err)
 		return err
@@ -369,7 +369,7 @@ func (m *Manager) AddSharedContainer(containerID string) error {
 		fmt.Println("error marshalling container", err)
 		return err
 	}
-	if err := cache.StoreSharedContainer(tmpWallet.Accounts[0].Address, m.selectedNetwork.ID, containerID, marshal); err != nil {
+	if err := cache.StoreSharedContainer(walletAddress, m.selectedNetwork.ID, containerID, marshal); err != nil {
 		fmt.Println("error saving shared container ", err)
 		return err
 	}
