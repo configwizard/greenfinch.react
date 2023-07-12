@@ -74,6 +74,10 @@ export function GetVersion() {
   return window['go']['manager']['Manager']['GetVersion']();
 }
 
+export function InitialiseUploadProcedure(arg1, arg2, arg3) {
+  return window['go']['manager']['Manager']['InitialiseUploadProcedure'](arg1, arg2, arg3);
+}
+
 export function ListContainerIDs() {
   return window['go']['manager']['Manager']['ListContainerIDs']();
 }
@@ -202,6 +206,10 @@ export function SetupServer(arg1) {
   return window['go']['manager']['Manager']['SetupServer'](arg1);
 }
 
+export function TemporaryRetrieveUserID() {
+  return window['go']['manager']['Manager']['TemporaryRetrieveUserID']();
+}
+
 export function TemporarySignBearerTokenWithPrivateKey(arg1) {
   return window['go']['manager']['Manager']['TemporarySignBearerTokenWithPrivateKey'](arg1);
 }
@@ -212,6 +220,10 @@ export function TemporarySignContainerTokenWithPrivateKey(arg1) {
 
 export function TemporarySignObjectTokenWithPrivateKey(arg1) {
   return window['go']['manager']['Manager']['TemporarySignObjectTokenWithPrivateKey'](arg1);
+}
+
+export function TemporaryUserPublicKey() {
+  return window['go']['manager']['Manager']['TemporaryUserPublicKey']();
 }
 
 export function TemporaryUserPublicKeySolution() {

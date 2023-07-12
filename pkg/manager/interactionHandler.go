@@ -42,29 +42,34 @@ func (m *Manager) Upload(containerID string, attributes map[string]string) ([]El
 		return m.ListContainerObjects(containerID, false, false)
 	}
 
-	objects, err := m.UploadObject(containerID, filepath, attributes)
+	oidID, err := m.InitialiseUploadProcedure(containerID, filepath, attributes)
 	if err != nil {
-		end := NewProgressMessage(&ProgressMessage{
-			Title: "Uploading object",
-			Show:  false,
-		})
-		m.MakeNotification(NotificationMessage{
-			Title:       "Error uploading object",
-			Type:        "error",
-			Description: "Uploading failed due to " + err.Error(),
-			MarkRead:    false,
-		})
-		//auto close the progress bar
-		m.SetProgressPercentage(end)
-		tmp := NewToastMessage(&UXMessage{
-			Title:       "Error uploading",
-			Type:        "error",
-			Description: "Uploading " + path.Base(filepath) + " failed: " + err.Error(),
-		})
-		m.MakeToast(tmp)
-		return m.ListContainerObjects(containerID, false, false)
+		fmt.Println("error init procedure ", err)
 	}
-	return objects, nil
+	fmt.Println("created object ", oidID, " in container ", containerID)
+	//objects, err := m.UploadObject(containerID, filepath, attributes)
+	//if err != nil {
+	//	end := NewProgressMessage(&ProgressMessage{
+	//		Title: "Uploading object",
+	//		Show:  false,
+	//	})
+	//	m.MakeNotification(NotificationMessage{
+	//		Title:       "Error uploading object",
+	//		Type:        "error",
+	//		Description: "Uploading failed due to " + err.Error(),
+	//		MarkRead:    false,
+	//	})
+	//	//auto close the progress bar
+	//	m.SetProgressPercentage(end)
+	//	tmp := NewToastMessage(&UXMessage{
+	//		Title:       "Error uploading",
+	//		Type:        "error",
+	//		Description: "Uploading " + path.Base(filepath) + " failed: " + err.Error(),
+	//	})
+	//	m.MakeToast(tmp)
+	//	return m.ListContainerObjects(containerID, false, false)
+	//}
+	return m.ListContainerObjects(containerID, false, false)
 }
 
 //Upload will put an object in NeoFS. You can access publically available files at

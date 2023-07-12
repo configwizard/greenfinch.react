@@ -5,6 +5,7 @@ import (
 	"crypto/ecdsa"
 	"fmt"
 	"github.com/amlwwalker/greenfinch.react/pkg/config"
+	neofsecdsa "github.com/nspcc-dev/neofs-sdk-go/crypto/ecdsa"
 	"github.com/nspcc-dev/neofs-sdk-go/pool"
 	"time"
 )
@@ -34,7 +35,8 @@ func GetPool(ctx context.Context, key ecdsa.PrivateKey, peers map[string]config.
 	prm.SetHealthcheckTimeout(30 * time.Second)
 	prm.SetClientRebalanceInterval(30 * time.Second)
 	prm.SetErrorThreshold(2)
-	prm.SetKey(&key)
+	//prm.SetKey(&key)
+	prm.SetSigner(neofsecdsa.SignerRFC6979(key))
 	//todo does this need setting or does this have a default?
 	//prm.SetSessionExpirationDuration(10)
 	p, err := pool.NewPool(prm)

@@ -36,17 +36,18 @@ type Container struct {
 
 func (m *Manager) listContainerIDs() ([]cid.ID, error) {
 	userID := user.ID{}
-	user.IDFromKey(&userID, m.TemporaryUserPublicKeySolution())
+	user.IDFromKey(&userID, m.TemporaryUserPublicKey().Bytes())
 
 	// UserContainers implements neofs.NeoFS interface method.
-	var prm pool.PrmContainerList
-	prm.SetOwnerID(userID)
+
+	//var prm pool.PrmContainerList
+	//prm.SetOwnerID(userID)
 
 	pl, err := m.Pool(false)
 	if err != nil {
 		return nil, err
 	}
-	r, err := pl.ListContainers(m.ctx, prm)
+	r, err := pl.ListContainers(m.ctx, userID)
 	if err != nil {
 		fmt.Errorf("list user containers via connection pool: %w", err)
 	}
@@ -137,10 +138,11 @@ func populateContainerList(ctx context.Context, pl *pool.Pool, containerID cid.I
 		ID: containerID.String(),
 		Attributes: make(map[string]string),
 	}
-	var prmGet pool.PrmContainerGet
-	prmGet.SetContainerID(containerID)
 
-	cnr, err := pl.GetContainer(ctx, prmGet)
+	//var prmGet pool.PrmContainerGet
+	//prmGet.SetContainerID(containerID)
+
+	cnr, err := pl.GetContainer(ctx, containerID)
 	if err != nil {
 		cont.Errors = append(cont.Errors, err)
 		return cont
@@ -423,10 +425,9 @@ func (m *Manager) DeleteContainer(id string) ([]Element, error) {
 		Description: "Container " + tmp.ID + " pending deletion",
 	})
 	var prm pool.PrmContainerDelete
-	prm.SetContainerID(cnrID)
 	prm.SetSessionToken(*sc)
 	go func() {
-		if err := pl.DeleteContainer(m.ctx, prm); err != nil {
+		if err := pl.DeleteContainer(m.ctx, cnrID, prm); err != nil {
 			fmt.Println("error deleting container", err)
 			m.MakeToast(NewToastMessage(&UXMessage{
 				Title:       "Container Error",
@@ -544,13 +545,12 @@ func (m *Manager) RestrictContainer(id string, l string) error {
 	if err != nil {
 		log.Fatal("couldn't create eacl table", err)
 	}
-	prm.SetTable(table)
 	if sc != nil {
 		prm.WithinSession(*sc) //todo = what if the sc is nil? Why continue?
 	}
 
 	go func() {
-		if err := pl.SetEACL(m.ctx, prm); err != nil {
+		if err := pl.SetEACL(m.ctx, table, prm); err != nil {
 			fmt.Errorf("save eACL via connection pool: %w", err)
 			m.MakeNotification(NotificationMessage{
 				Title:       "Sharing container Failed",
@@ -596,7 +596,7 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 	}
 	log.Println("creating container with name", name)
 	userID := user.ID{}
-	user.IDFromKey(&userID, m.TemporaryUserPublicKeySolution())
+	user.IDFromKey(&userID, m.TemporaryUserPublicKey().Bytes())
 
 	placementPolicy := `REP 2 IN X 
 	CBF 2
@@ -650,7 +650,6 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 		return err
 	}
 	var prmPut pool.PrmContainerPut
-	prmPut.SetContainer(cnr)
 
 	iAt, exp, err := gspool.TokenExpiryValue(m.ctx, pl, 100)
 	sc  := tokens.BuildUnsignedContainerSessionToken(iAt, iAt, exp, cid.ID{}, session.VerbContainerPut, *m.gateAccount.PublicKey())
@@ -668,7 +667,7 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 	// send request to save the container
 	go func() {
 		//todo - do this on a routine so that we don't hang
-		idCnr, err := pl.PutContainer(m.ctx, prmPut) //see SetWaitParams to change wait times
+		idCnr, err := pl.PutContainer(m.ctx, cnr, prmPut) //see SetWaitParams to change wait times
 		if err != nil {
 			fmt.Printf("save container via connection pool: %w\r\n", err)
 			tmp := UXMessage{

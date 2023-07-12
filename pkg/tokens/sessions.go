@@ -1,7 +1,6 @@
 package tokens
 
 import (
-	"context"
 	"github.com/google/uuid"
 	"github.com/nspcc-dev/neo-go/pkg/crypto/keys"
 	"github.com/nspcc-dev/neofs-sdk-go/client"
@@ -12,16 +11,16 @@ import (
 
 // CalculateEpochsForTime takes the number of seconds into the future you want the epoch for
 // and estimates it based on the current average time per epoch
-func CalculateEpochsForTime(ctx context.Context, cli *client.Client, durationInSeconds int64) uint64 {
-	ni, err := cli.NetworkInfo(ctx, client.PrmNetworkInfo{})
-	if err != nil {
-		return 0
-	}
-
-	ms := ni.Info().MsPerBlock()
-	durationInEpochs := durationInSeconds / (ms / 1000) //in seconds
-	return uint64(durationInEpochs)                     // (estimate)
-}
+//func CalculateEpochsForTime(ctx context.Context, cli *client.Client, durationInSeconds int64) uint64 {
+//	ni, err := cli.NetworkInfo(ctx, client.PrmNetworkInfo{})
+//	if err != nil {
+//		return 0
+//	}
+//
+//	ms := ni.Info().MsPerBlock()
+//	durationInEpochs := durationInSeconds / (ms / 1000) //in seconds
+//	return uint64(durationInEpochs)                     // (estimate)
+//}
 
 func BuildObjectSessionToken(key *keys.PrivateKey, lIat, lNbf, lExp uint64, verb session.ObjectVerb, cnrID cid.ID, gateSession *client.ResSessionCreate) (*session.Object, error) {
 
@@ -43,7 +42,10 @@ func BuildObjectSessionToken(key *keys.PrivateKey, lIat, lNbf, lExp uint64, verb
 	tok.SetNbf(lNbf)
 	tok.SetExp(lExp)
 	tok.BindContainer(cnrID)
-	return tok, tok.Sign(key.PrivateKey)
+
+	var e neofsecdsa.Signer
+	e = (neofsecdsa.Signer)(key.PrivateKey)
+	return tok, tok.Sign(e)
 }
 func BuildUnsignedObjectSessionToken(lIat, lNbf, lExp uint64, verb session.ObjectVerb, cnrID cid.ID, gateSession *client.ResSessionCreate) (*session.Object, error) {
 
@@ -88,5 +90,7 @@ func BuildContainerSessionToken(key *keys.PrivateKey, lIat, lNbf, lExp uint64, c
 	tok.SetIat(lIat)
 	tok.SetNbf(lNbf)
 	tok.SetExp(lExp)
-	return tok, tok.Sign(key.PrivateKey)
+	var e neofsecdsa.Signer
+	e = (neofsecdsa.Signer)(key.PrivateKey)
+	return tok, tok.Sign(e)
 }

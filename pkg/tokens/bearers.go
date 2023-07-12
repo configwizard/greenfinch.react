@@ -1,10 +1,10 @@
 package tokens
 
 import (
-	"crypto/ecdsa"
 	"fmt"
 	"github.com/nspcc-dev/neo-go/pkg/crypto/keys"
 	"github.com/nspcc-dev/neofs-sdk-go/bearer"
+	neofsecdsa "github.com/nspcc-dev/neofs-sdk-go/crypto/ecdsa"
 	"github.com/nspcc-dev/neofs-sdk-go/eacl"
 	"github.com/nspcc-dev/neofs-sdk-go/user"
 )
@@ -13,7 +13,7 @@ import (
 
 func BuildUnsignedBearerToken(table *eacl.Table, lIat, lNbf, lExp uint64, gateKey *keys.PublicKey) (*bearer.Token, error) {
 	var userID user.ID
-	user.IDFromKey(&userID, (ecdsa.PublicKey)(*gateKey)) //my understanding is the gateKey is who you want to be able to use this key to access containers?
+	user.IDFromKey(&userID, gateKey.Bytes()) //my understanding is the gateKey is who you want to be able to use this key to access containers?
 
 	var bearerToken bearer.Token
 
@@ -27,7 +27,7 @@ func BuildUnsignedBearerToken(table *eacl.Table, lIat, lNbf, lExp uint64, gateKe
 
 func BuildBearerToken(key *keys.PrivateKey, table *eacl.Table, lIat, lNbf, lExp uint64, gateKey *keys.PublicKey) (*bearer.Token, error) {
 	var userID user.ID
-	user.IDFromKey(&userID, (ecdsa.PublicKey)(*gateKey)) //my understanding is the gateKey is who you want to be able to use this key to access containers?
+	user.IDFromKey(&userID, gateKey.Bytes()) //my understanding is the gateKey is who you want to be able to use this key to access containers?
 
 	var bearerToken bearer.Token
 	//i understand this will restrict everything to the 'other' accounts
@@ -40,7 +40,9 @@ func BuildBearerToken(key *keys.PrivateKey, table *eacl.Table, lIat, lNbf, lExp 
 	bearerToken.SetExp(lExp)
 	bearerToken.SetIat(lIat)
 	bearerToken.SetNbf(lNbf)
-	err := bearerToken.Sign(key.PrivateKey) //is this the owner who is giving access priveliges???
+	var e neofsecdsa.Signer
+	e = (neofsecdsa.Signer)(key.PrivateKey)
+	err := bearerToken.Sign(e) //is this the owner who is giving access priveliges???
 	if err != nil {
 		return nil, fmt.Errorf("sign bearer token: %w", err)
 	}

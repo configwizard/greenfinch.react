@@ -7,6 +7,11 @@ import (
 	"errors"
 	"fmt"
 	"github.com/amlwwalker/greenfinch.react/pkg/cache"
+	"github.com/google/uuid"
+	neofscrypto "github.com/nspcc-dev/neofs-sdk-go/crypto"
+	neofsecdsa "github.com/nspcc-dev/neofs-sdk-go/crypto/ecdsa"
+	"github.com/nspcc-dev/neofs-sdk-go/object/slicer"
+
 	//"github.com/amlwwalker/greenfinch.react/pkg/config"
 	gspool "github.com/amlwwalker/greenfinch.react/pkg/pool"
 	"github.com/amlwwalker/greenfinch.react/pkg/tokens"
@@ -92,6 +97,199 @@ func (m *Manager) CancelObjectContext() {
 		ctxWithMsg = context.WithValue(ctxWithMsg, "error", errors.New("user cancelled download"))
 	}
 }
+
+// copy-pasted from https://github.com/nspcc-dev/neofs-sdk-go/blob/master/client/object_put.go
+// in future this is most likely to be provided by SDK
+type objectWriter struct {
+	context context.Context
+	client  *client.Client
+}
+
+func (x *objectWriter) InitDataStream(header object.Object) (io.Writer, error) {
+	var prm client.PrmObjectPutInit
+
+	stream, err := x.client.ObjectPutInit(x.context, prm)
+	if err != nil {
+		return nil, fmt.Errorf("init object stream: %w", err)
+	}
+	stream.WriteHeader(header)
+	return &payloadWriter{
+		stream: stream,
+	}, nil
+}
+
+type payloadWriter struct {
+	stream *client.ObjectWriter
+}
+
+func (x *payloadWriter) Write(p []byte) (int, error) {
+	if !x.stream.WritePayloadChunk(p) {
+		return 0, x.Close()
+	}
+
+	return len(p), nil
+}
+
+func (x *payloadWriter) Close() error {
+	_, err := x.stream.Close()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Manager) InitialiseUploadProcedure(containerID, fp string, filtered map[string]string) (oid.ID, error){
+	cancelCtx, cnclF := context.WithCancel(context.Background())
+	m.cancelUploadCtx = cancelCtx
+	m.uploadCancelFunc = cnclF
+
+	nodes := maps.Values(m.selectedNetwork.StorageNodes)
+	nodeSelection := NewNetworkSelector(nodes)
+
+	cnrID := cid.ID{}
+	if err := cnrID.DecodeString(containerID); err != nil {
+		return oid.ID{}, err
+	}
+
+	gateSigner := (neofsecdsa.SignerRFC6979)(m.gateAccount.PrivateKey().PrivateKey)
+	var prmDial client.PrmDial
+
+	prmDial.SetTimeout(30 * time.Second)
+	prmDial.SetStreamTimeout(30 * time.Second)
+	prmDial.SetContext(cancelCtx)
+
+	prmCli := client.PrmInit{}
+	prmCli.SetDefaultSigner(gateSigner)
+	cli, err := client.New(prmCli)
+	if err != nil {
+		return oid.ID{}, err
+	}
+	for {
+		node, err := nodeSelection.getNext()
+		if err != nil {
+			fmt.Println("selecting node threw an error ", err)
+			continue
+		}
+		prmDial.SetServerURI(node.Address)
+		if err := cli.Dial(prmDial); err != nil {
+			fmt.Printf("Error connecting to node %s: %s\n", node.Address, err)
+			m.MakeToast(UXMessage{Type: "warning", Title: "issues conneting", Description: "please wait, attempting to fix"})
+			m.MakeNotification(NotificationMessage{Type: "warning", Title: "warning", Description: "failed to connect to " + node.Address + " attempting another"})
+			continue
+		} else {
+			break
+		}
+	}
+
+	f, err := os.Open(fp)
+	defer f.Close()
+	if err != nil {
+		return oid.ID{}, err
+	}
+	fileStats, err := f.Stat()
+	if err != nil {
+		return oid.ID{}, err
+	}
+
+	//reader := progress.NewReader(f)
+
+	fmt.Println("file size ", fileStats.Size())
+
+	//obj.SetPayloadSize(uint64(fileStats.Size()))
+	fmt.Println("client ", cli)
+	id, err := m.putObject(context.Background(), cli, cnrID, gateSigner, f, fileStats)
+	if err != nil {
+		return oid.ID{}, err
+	}
+	return id, nil
+}
+func (m *Manager) putObject(ctx context.Context, cli *client.Client, cnr cid.ID, gateSigner neofscrypto.Signer, payload io.Reader, fileStats os.FileInfo, attributes ...string) (oid.ID, error) {
+	// partially copy-pasted from https://pkg.go.dev/github.com/nspcc-dev/neofs-sdk-go@v1.0.0-rc.9/client#NewDataSlicer
+	fmt.Println("cli ", cli)
+	netInfo, err := cli.NetworkInfo(ctx, client.PrmNetworkInfo{})
+	if err != nil {
+		return oid.ID{}, fmt.Errorf("read current network info: %w", err)
+	}
+
+	var opts slicer.Options
+	opts.SetObjectPayloadLimit(netInfo.MaxObjectSize())
+	opts.SetCurrentNeoFSEpoch(netInfo.CurrentEpoch())
+	if !netInfo.HomomorphicHashingDisabled() {
+		opts.CalculateHomomorphicChecksum()
+	}
+
+	userPublicKey := m.TemporaryUserPublicKey()
+	k := (neofsecdsa.PublicKey)(*userPublicKey)
+	var sessionToken = &session.Object{}
+	sessionToken.SetAuthKey(&k) //gateSigner.Public()
+	sessionToken.SetID(uuid.New())
+	sessionToken.SetIat(netInfo.CurrentEpoch())
+	sessionToken.SetNbf(netInfo.CurrentEpoch())
+	sessionToken.SetExp(netInfo.CurrentEpoch() + 100) // or particular exp value
+	sessionToken.BindContainer(cnr)
+	sessionToken.ForVerb(session.VerbObjectPut)
+
+	if err := m.TemporarySignObjectTokenWithPrivateKey(sessionToken); err != nil {
+		fmt.Println("signing token err", err)
+		return oid.ID{}, err
+	}
+
+	usr, err := m.TemporaryRetrieveUserID()
+	if err != nil {
+		return oid.ID{}, err
+	}
+	attribute := object.Attribute{}
+	attribute.SetKey("")
+	attribute.SetValue("")
+	var attrs []object.Attribute
+	attrs = append(attrs, attribute)
+
+	hd := object.Object{}
+	hd.SetAttributes(attrs...)
+	hd.SetPayloadSize(uint64(fileStats.Size()))
+	hd.SetContainerID(cnr)
+	hd.SetOwnerID(&usr)
+
+	objWriter := &objectWriter{
+		context: ctx,
+		client:  cli,
+	}
+
+	if _, err := objWriter.InitDataStream(hd); err != nil {
+		return oid.ID{}, err
+	}
+
+	_slicer := slicer.NewSession(gateSigner, cnr, *sessionToken, objWriter, opts)
+
+	w, err := _slicer.InitPayloadStream(attributes...)
+	if err != nil {
+		return oid.ID{}, fmt.Errorf("slice data into objects: %w", err)
+	}
+
+	buf := make([]byte, 1024) // 1 MiB
+	for {
+
+		n, err := payload.Read(buf)
+		if err != nil {
+			break
+		}
+		if _, err := w.Write(buf[:n]); err != nil {
+			break
+		}
+		if errors.Is(err, io.EOF) {
+			break
+		}
+	}
+
+	// after all parts are written
+	err = w.Close()
+	if err != nil {
+		return oid.ID{}, fmt.Errorf("finish object stream: %w", err)
+	}
+
+	return w.ID(), nil
+}
 func (m *Manager) UploadObject(containerID, fp string, filtered map[string]string) ([]Element, error) {
 
 	walletAddress, err := m.retrieveWallet()
@@ -100,7 +298,7 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 	}
 
 	userID := user.ID{}
-	user.IDFromKey(&userID, m.TemporaryUserPublicKeySolution())
+	user.IDFromKey(&userID, m.TemporaryUserPublicKey().Bytes())
 	cnrID := cid.ID{}
 
 	if err := cnrID.DecodeString(containerID); err != nil {
@@ -188,10 +386,9 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 	m.uploadCancelFunc = cnclF
 	nodes := maps.Values(m.selectedNetwork.StorageNodes)
 	nodeSelection := NewNetworkSelector(nodes)
-	//addr := m.selectedNetwork.StorageNodes["0"].Address //cfg.Peers["0"].Address //we need to find the top priority addr really here
+
 	prmCli := client.PrmInit{}
-	prmCli.SetDefaultPrivateKey(m.gateAccount.PrivateKey().PrivateKey)
-	prmCli.ResolveNeoFSFailures()
+	prmCli.SetDefaultSigner((neofsecdsa.SignerRFC6979)(m.gateAccount.PrivateKey().PrivateKey))
 	var prmDial client.PrmDial
 
 	prmDial.SetTimeout(30 * time.Second)
@@ -205,7 +402,6 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 			continue
 		}
 		prmDial.SetServerURI(node.Address)
-		cli.Init(prmCli)
 		if err := cli.Dial(prmDial); err != nil {
 			fmt.Printf("Error connecting to node %s: %s\n", node.Address, err)
 			m.MakeToast(UXMessage{Type: "warning", Title: "issues conneting", Description: "please wait, attempting to fix"})
@@ -218,12 +414,13 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 
 	prmSession := client.PrmSessionCreate{}
 	prmSession.SetExp(exp)
+	prmSession.UseSigner((neofsecdsa.SignerRFC6979)(m.gateAccount.PrivateKey().PrivateKey))
 	resSession, err := cli.SessionCreate(m.ctx, prmSession)
 	if err != nil {
 		fmt.Println("creating res session err", err)
 		return nil, err
 	}
-	fmt.Println("just created resSession ", resSession.Status())
+	fmt.Println("just created resSession")
 	sc, err := tokens.BuildUnsignedObjectSessionToken(iAt, iAt, exp, session.VerbObjectPut, cnrID, resSession)
 	if err != nil {
 		fmt.Println("creting token err", err)
@@ -235,10 +432,11 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 	}
 	putInit := client.PrmObjectPutInit{}
 	putInit.WithinSession(*sc)
-
+	putInit.UseSigner((neofsecdsa.SignerRFC6979)(m.gateAccount.PrivateKey().PrivateKey))
 	objWriter, err := cli.ObjectPutInit(m.ctx, putInit)
 	if err != nil {
 		log.Println("could not putInit upload ", err)
+		return nil, err
 	}
 	if !objWriter.WriteHeader(*obj) || err != nil {
 		log.Println("error writing object header ", err)
@@ -411,7 +609,6 @@ func (m *Manager) GetObjectMetaData(objectID, containerID string) (object.Object
 	addr.SetObject(objID)
 
 	var prmHead pool.PrmObjectHead
-	prmHead.SetAddress(addr)
 
 	pl, err := m.Pool(false)
 	if err != nil {
@@ -437,7 +634,7 @@ func (m *Manager) GetObjectMetaData(objectID, containerID string) (object.Object
 		}
 	}
 	prmHead.UseBearer(*bt)
-	hdr, err := pl.HeadObject(m.ctx, prmHead)
+	hdr, err := pl.HeadObject(m.ctx, cnrID, objID, prmHead)
 	if err != nil {
 		if reason, ok := isErrAccessDenied(err); ok {
 			fmt.Printf("error here: %w: %s\r\n", err, reason)
@@ -480,7 +677,9 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 	nodeSelection := NewNetworkSelector(nodes)
 	//addr := m.selectedNetwork.StorageNodes["0"].Address //cfg.Peers["0"].Address //we need to find the top priority addr really here
 	prmCli := client.PrmInit{}
-	prmCli.SetDefaultPrivateKey(m.gateAccount.PrivateKey().PrivateKey)
+	var e neofsecdsa.Signer
+	e = (neofsecdsa.Signer)(m.gateAccount.PrivateKey().PrivateKey)
+	prmCli.SetDefaultSigner(e)
 	var prmDial client.PrmDial
 
 	prmDial.SetTimeout(30 * time.Second)
@@ -493,7 +692,7 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 			return nil, err
 		}
 		prmDial.SetServerURI(node.Address)
-		cli.Init(prmCli)
+		//cli.Init(prmCli)
 		if err := cli.Dial(prmDial); err != nil {
 			fmt.Printf("Error connecting to node %s: %s\n", node.Address, err)
 			m.MakeToast(UXMessage{Type: "warning", Title: "issues conneting", Description: "please wait, attempting to fix"})
@@ -505,7 +704,7 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 	}
 
 	prmSession := client.PrmSessionCreate{}
-	prmSession.UseKey(m.gateAccount.PrivateKey().PrivateKey)
+	prmSession.UseSigner(e)
 	prmSession.SetExp(exp)
 	resSession, err := cli.SessionCreate(m.ctx, prmSession)
 	if err != nil {
@@ -523,22 +722,19 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 	}
 	getInit := client.PrmObjectGet{}
 	getInit.WithinSession(*sc)
-	getInit.FromContainer(cnrID)
-	getInit.ByID(objID)
 	dstObject := &object.Object{}
-	objReader, err := cli.ObjectGetInit(m.ctx, getInit)
+	objReader, err := cli.ObjectGetInit(m.ctx, cnrID, objID, getInit)
 	if err != nil {
 		log.Println("error creating object reader ", err)
 		return nil, err
 	}
 	if !objReader.ReadHeader(dstObject) {
-		res, err := objReader.Close()
+		err := objReader.Close()
 		if err != nil {
 			log.Println("could not close object reader ", err)
 			return nil, err
 		}
-		log.Println("res for failure to read header ", res.Status())
-		return nil, errors.New(fmt.Sprintf("error with reading header %s\r\n", res.Status()))
+		return nil, errors.New("error with reading header")
 	}
 	c := progress.NewWriter(writer)
 	wg := sync.WaitGroup{}
@@ -653,8 +849,8 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 		Show:  false,
 	})
 	m.SetProgressPercentage(end)
-	res, err := objReader.Close()
-	if err != nil {
+
+	if err := objReader.Close(); err != nil {
 		// If an error occurs, cancel the context with a message
 		ctxWithMsg, cancel := context.WithCancel(m.cancelDownloadCtx)
 		ctxWithMsg = context.WithValue(ctxWithMsg, "error", err.Error())
@@ -662,7 +858,6 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 		m.downloadCancelFunc()
 		return nil, err
 	}
-	fmt.Println("res error", res.Status())
 	wg.Wait()
 	return []byte{}, nil
 }
@@ -713,12 +908,12 @@ func (m *Manager) listObjectsAsync(containerID string) ([]Element, error) {
 		prms.UseBearer(*bt)
 	}
 
-	prms.SetContainerID(cnrID)
+	//prms.SetContainerID(cnrID)
 
 	filter := object.SearchFilters{}
 	filter.AddRootFilter()
 	prms.SetFilters(filter)
-	objects, err := pl.SearchObjects(m.ctx, prms)
+	objects, err := pl.SearchObjects(m.ctx, cnrID, prms)
 	if err != nil {
 		return nil, err
 	}
@@ -909,8 +1104,10 @@ func (m *Manager) DeleteObject(objectID, containerID string) ([]Element, error) 
 	addr.SetObject(objID)
 
 	var prmDelete pool.PrmObjectDelete
-	prmDelete.SetAddress(addr)
-
+	//prmDelete.SetAddress(addr)
+	var e neofsecdsa.Signer
+	e = (neofsecdsa.Signer)(m.gateAccount.PrivateKey().PrivateKey)
+	prmDelete.UseSigner(e)
 	pl, err := m.Pool(false)
 	if err != nil {
 		log.Println("error retrieving pool ", err)
@@ -952,7 +1149,7 @@ func (m *Manager) DeleteObject(objectID, containerID string) ([]Element, error) 
 
 	go func() {
 		//do we need to 'dial' the pool
-		if err := pl.DeleteObject(m.ctx, prmDelete); err != nil {
+		if err := pl.DeleteObject(m.ctx, cnrID, objID, prmDelete); err != nil {
 			//reason, ok := isErrAccessDenied(err)
 			m.MakeToast(NewToastMessage(&UXMessage{
 				Title:       "Object Error",

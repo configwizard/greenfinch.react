@@ -26,7 +26,8 @@ func getHelperTokenExpiry(ctx context.Context, cli *client.Client) uint64 {
 		return 0
 	}
 
-	expire := ni.Info().CurrentEpoch() + 10 // valid for 10 epochs (~ 10 hours)
+
+	expire := ni.CurrentEpoch() + 10 // valid for 10 epochs (~ 10 hours)
 	return expire
 }
 
@@ -105,12 +106,12 @@ func (m *Manager) listSharedContainerObjectsAsync(containerID string) ([]Element
 		prms.UseBearer(*bt)
 	}
 
-	prms.SetContainerID(cnrID)
+	//prms.SetContainerID(cnrID)
 
 	filter := object.SearchFilters{}
 	filter.AddRootFilter()
 	prms.SetFilters(filter)
-	objects, err := pl.SearchObjects(m.ctx, prms)
+	objects, err := pl.SearchObjects(m.ctx, cnrID, prms)
 	if err != nil {
 		m.MakeNotification(NotificationMessage{
 			Title:       "Shared Container Failed",
@@ -151,8 +152,8 @@ func (m *Manager) listSharedContainerObjectsAsync(containerID string) ([]Element
 				ParentID:   containerID,
 			}
 			addr.SetObject(vID)
-			prmHead.SetAddress(addr)
-			hdr, err := pl.HeadObject(m.ctx, prmHead)
+			//prmHead.SetAddress(addr)
+			hdr, err := pl.HeadObject(m.ctx, cnrID, vID, prmHead)
 			if err != nil {
 				if reason, ok := isErrAccessDenied(err); ok {
 					fmt.Printf("%w: %s\r\n", err, reason)

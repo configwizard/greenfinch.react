@@ -16,6 +16,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/nspcc-dev/neo-go/pkg/crypto/keys"
 	"github.com/nspcc-dev/neofs-sdk-go/bearer"
+	neofsecdsa "github.com/nspcc-dev/neofs-sdk-go/crypto/ecdsa"
 	"github.com/nspcc-dev/neofs-sdk-go/pool"
 	"github.com/nspcc-dev/neofs-sdk-go/session"
 	"github.com/nspcc-dev/neofs-sdk-go/user"
@@ -127,9 +128,9 @@ func (m *Manager) RetrieveWIF() (string, error) {
 func (m *Manager) Startup(ctx context.Context) {
 	// Perform your setup here
 	m.ctx = ctx
-	//if _, err := m.Pool(false); err != nil {
-	//	log.Fatal("can't create pool", err)
-	//}
+	if _, err := m.Pool(true); err != nil {
+		log.Fatal("can't create pool", err)
+	}
 	//go m.RetrieveFileSystem()
 }
 
@@ -316,6 +317,9 @@ func (m *Manager) Shutdown(ctx context.Context) {
 	// Perform your teardown here
 }
 
+func (m Manager) TemporaryUserPublicKey() *keys.PublicKey {
+	return m.wallet.Accounts[0].PublicKey()
+}
 func (m Manager) TemporaryUserPublicKeySolution() ecdsa.PublicKey {
 	return ecdsa.PublicKey{
 		Curve: m.wallet.Accounts[0].PublicKey().Curve,
@@ -323,14 +327,34 @@ func (m Manager) TemporaryUserPublicKeySolution() ecdsa.PublicKey {
 		Y:     m.wallet.Accounts[0].PublicKey().Y,
 	}
 }
+
+func (m Manager) TemporaryRetrieveUserID() (user.ID, error){
+	var k = m.wallet.Accounts[0].PrivateKey()
+	var e neofsecdsa.Signer
+	e = (neofsecdsa.Signer)(k.PrivateKey)
+	var usr user.ID
+	if err := user.IDFromSigner(&usr, e); err != nil {
+		return usr, err
+	}
+	return usr, nil
+}
 func (m Manager) TemporarySignContainerTokenWithPrivateKey(sc *session.Container) error {
-	return sc.Sign(m.wallet.Accounts[0].PrivateKey().PrivateKey)
+	var k = m.wallet.Accounts[0].PrivateKey()
+	var e neofsecdsa.Signer
+	e = (neofsecdsa.Signer)(k.PrivateKey)
+	return sc.Sign(e)
 }
 func (m Manager) TemporarySignObjectTokenWithPrivateKey(sc *session.Object) error {
-	return sc.Sign(m.wallet.Accounts[0].PrivateKey().PrivateKey)
+	var k = m.wallet.Accounts[0].PrivateKey()
+	var e neofsecdsa.Signer
+	e = (neofsecdsa.Signer)(k.PrivateKey)
+	return sc.Sign(e)
 }
 func (m Manager) TemporarySignBearerTokenWithPrivateKey(bt *bearer.Token) error {
-	return bt.Sign(m.wallet.Accounts[0].PrivateKey().PrivateKey) //is this the owner who is giving access priveliges???
+	var k = m.wallet.Accounts[0].PrivateKey()
+	var e neofsecdsa.Signer
+	e = (neofsecdsa.Signer)(k.PrivateKey)
+	return bt.Sign(e) //is this the owner who is giving access priveliges???
 }
 func NewFileSystemManager(version string, dbLocation string, DEBUG bool) (*Manager, error) {
 
@@ -396,9 +420,9 @@ func (m *Manager) SetWalletDebugging(walletPath, password string) error {
 // todo remove the need to pass the private key to the api (usually for getOwnerID - however this should be passed into the backend
 func (m *Manager) Pool(forceRenew bool) (*pool.Pool, error) {
 	//force renew is required between wallet changes otherwise the wallet is connected to a pool from a different wallet
-	if m.wallet == nil { //i wonder if the pool can be the ephemeral wallet so we can make these requests quickly
-		return nil, errors.New("no wallet selected yet")
-	}
+	//if m.wallet == nil { //i wonder if the pool can be the ephemeral wallet so we can make these requests quickly
+	//	return nil, errors.New("no wallet selected yet")
+	//}
 	if forceRenew || m.pool == nil {
 		//config, err := config.ReadConfig("cfg", m.configLocation)
 		//if err != nil {
@@ -478,11 +502,17 @@ func (m *Manager) GetAccountInformation() (Account, error) {
 	pl, err := m.Pool(true)
 	if err != nil {
 		fmt.Println("error retrieving pool. ", err)
+		m.MakeNotification(NotificationMessage{
+			Title:       "Error retrieving pool",
+			Type:        "error",
+			Description: err.Error(),
+			MarkRead:    false,
+		})
 		return Account{}, errors.New("error connecting to node " + err.Error())
 	}
 	fmt.Println("getting account information ", m.pool)
 	userID := user.ID{}
-	user.IDFromKey(&userID, m.TemporaryUserPublicKeySolution())
+	user.IDFromKey(&userID, m.TemporaryUserPublicKey().Bytes())
 	blGet := pool.PrmBalanceGet{}
 	blGet.SetAccount(userID)
 
