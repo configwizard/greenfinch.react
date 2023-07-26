@@ -111,22 +111,22 @@ var networks = map[Network]NetworkData{
 		},
 		StorageNodes: map[string]config.Peer{
 			"0": {
-				Address:  "grpcs://st1.t5.fs.neo.org:8082",
+				Address:  "grpcs://st4.t5.fs.neo.org:8080",
 				Priority: 1,
 				Weight:   1,
 			},
 			"1": {
-				Address:  "grpcs://st2.t5.fs.neo.org:8082",
+				Address:  "grpcs://st4.t5.fs.neo.org:8080",
 				Priority: 2,
 				Weight:   1,
 			},
 			"2": {
-				Address:  "grpcs://st3.t5.fs.neo.org:8082",
+				Address:  "grpcs://st4.t5.fs.neo.org:8080",
 				Priority: 3,
 				Weight:   1,
 			},
 			"3": {
-				Address:  "grpcs://st4.t5.fs.neo.org:8082",
+				Address:  "grpcs://st4.t5.fs.neo.org:8080",
 				Priority: 4,
 				Weight:   1,
 			},

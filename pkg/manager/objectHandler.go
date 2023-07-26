@@ -103,16 +103,21 @@ func (m *Manager) CancelObjectContext() {
 type objectWriter struct {
 	context context.Context
 	client  *client.Client
+	session *session.Object // add this
 }
 
 func (x *objectWriter) InitDataStream(header object.Object) (io.Writer, error) {
 	var prm client.PrmObjectPutInit
+	prm.WithinSession(*x.session) // and this
 
 	stream, err := x.client.ObjectPutInit(x.context, prm)
 	if err != nil {
 		return nil, fmt.Errorf("init object stream: %w", err)
 	}
-	stream.WriteHeader(header)
+	if !stream.WriteHeader(header) {
+		_, err := stream.Close()
+		return nil, err
+	}
 	return &payloadWriter{
 		stream: stream,
 	}, nil
@@ -139,7 +144,7 @@ func (x *payloadWriter) Close() error {
 	return nil
 }
 
-func (m *Manager) InitialiseUploadProcedure(containerID, fp string, filtered map[string]string) (oid.ID, error){
+func (m *Manager) InitialiseUploadProcedure(containerID, fp string, customAttributeMap map[string]string) (oid.ID, error){
 	cancelCtx, cnclF := context.WithCancel(context.Background())
 	m.cancelUploadCtx = cancelCtx
 	m.uploadCancelFunc = cnclF
@@ -155,8 +160,8 @@ func (m *Manager) InitialiseUploadProcedure(containerID, fp string, filtered map
 	gateSigner := (neofsecdsa.SignerRFC6979)(m.gateAccount.PrivateKey().PrivateKey)
 	var prmDial client.PrmDial
 
-	prmDial.SetTimeout(30 * time.Second)
-	prmDial.SetStreamTimeout(30 * time.Second)
+	prmDial.SetTimeout(60 * time.Second)
+	prmDial.SetStreamTimeout(60 * time.Second)
 	prmDial.SetContext(cancelCtx)
 
 	prmCli := client.PrmInit{}
@@ -191,12 +196,7 @@ func (m *Manager) InitialiseUploadProcedure(containerID, fp string, filtered map
 	if err != nil {
 		return oid.ID{}, err
 	}
-
-	//reader := progress.NewReader(f)
-
 	fmt.Println("file size ", fileStats.Size())
-
-	//obj.SetPayloadSize(uint64(fileStats.Size()))
 	fmt.Println("client ", cli)
 	id, err := m.putObject(context.Background(), cli, cnrID, gateSigner, f, fileStats)
 	if err != nil {
@@ -219,10 +219,8 @@ func (m *Manager) putObject(ctx context.Context, cli *client.Client, cnr cid.ID,
 		opts.CalculateHomomorphicChecksum()
 	}
 
-	userPublicKey := m.TemporaryUserPublicKey()
-	k := (neofsecdsa.PublicKey)(*userPublicKey)
 	var sessionToken = &session.Object{}
-	sessionToken.SetAuthKey(&k) //gateSigner.Public()
+	sessionToken.SetAuthKey(gateSigner.Public()) //gateSigner.Public()
 	sessionToken.SetID(uuid.New())
 	sessionToken.SetIat(netInfo.CurrentEpoch())
 	sessionToken.SetNbf(netInfo.CurrentEpoch())
@@ -230,65 +228,46 @@ func (m *Manager) putObject(ctx context.Context, cli *client.Client, cnr cid.ID,
 	sessionToken.BindContainer(cnr)
 	sessionToken.ForVerb(session.VerbObjectPut)
 
+	//function to sign session token with user's private key
 	if err := m.TemporarySignObjectTokenWithPrivateKey(sessionToken); err != nil {
 		fmt.Println("signing token err", err)
 		return oid.ID{}, err
 	}
 
-	usr, err := m.TemporaryRetrieveUserID()
-	if err != nil {
-		return oid.ID{}, err
-	}
+	//usr, err := m.TemporaryRetrieveUserID()
+	//if err != nil {
+	//	return oid.ID{}, err
+	//}
 	attribute := object.Attribute{}
-	attribute.SetKey("")
-	attribute.SetValue("")
+	attribute.SetKey("some-key")
+	attribute.SetValue("some-value")
 	var attrs []object.Attribute
 	attrs = append(attrs, attribute)
 
-	hd := object.Object{}
-	hd.SetAttributes(attrs...)
-	hd.SetPayloadSize(uint64(fileStats.Size()))
-	hd.SetContainerID(cnr)
-	hd.SetOwnerID(&usr)
+	//hd := object.Object{}
+	//hd.SetAttributes(attrs...)
+	//hd.SetPayloadSize(uint64(fileStats.Size()))
+	//hd.SetContainerID(cnr)
+	//hd.SetOwnerID(&usr)
 
 	objWriter := &objectWriter{
 		context: ctx,
 		client:  cli,
+		session: sessionToken,
 	}
-
-	if _, err := objWriter.InitDataStream(hd); err != nil {
-		return oid.ID{}, err
-	}
+	//
+	//if _, err := objWriter.InitDataStream(hd); err != nil {
+	//	return oid.ID{}, err
+	//}
 
 	_slicer := slicer.NewSession(gateSigner, cnr, *sessionToken, objWriter, opts)
 
-	w, err := _slicer.InitPayloadStream(attributes...)
-	if err != nil {
-		return oid.ID{}, fmt.Errorf("slice data into objects: %w", err)
+	var attrSlice []string
+	for _, v := range attrs {
+		attrSlice = append(attrSlice, v.Key(), v.Value())
 	}
-
-	buf := make([]byte, 1024) // 1 MiB
-	for {
-
-		n, err := payload.Read(buf)
-		if err != nil {
-			break
-		}
-		if _, err := w.Write(buf[:n]); err != nil {
-			break
-		}
-		if errors.Is(err, io.EOF) {
-			break
-		}
-	}
-
-	// after all parts are written
-	err = w.Close()
-	if err != nil {
-		return oid.ID{}, fmt.Errorf("finish object stream: %w", err)
-	}
-
-	return w.ID(), nil
+	attrSlice = append(attrSlice, object.AttributeFileName, "alex-testing-something")
+	return _slicer.Slice(payload, attrSlice...) //how do i use this with a progress bar?
 }
 func (m *Manager) UploadObject(containerID, fp string, filtered map[string]string) ([]Element, error) {
 
@@ -637,7 +616,7 @@ func (m *Manager) GetObjectMetaData(objectID, containerID string) (object.Object
 	hdr, err := pl.HeadObject(m.ctx, cnrID, objID, prmHead)
 	if err != nil {
 		if reason, ok := isErrAccessDenied(err); ok {
-			fmt.Printf("error here: %w: %s\r\n", err, reason)
+			fmt.Printf("error here: %s: %s\r\n", err, reason)
 			return object.Object{}, err
 		}
 		fmt.Errorf("read object header via connection pool: %w", err)
@@ -922,7 +901,7 @@ func (m *Manager) listObjectsAsync(containerID string) ([]Element, error) {
 		list = append(list, id)
 		return false
 	}); err != nil {
-		log.Println("error listing objects %s\r\n", err)
+		log.Printf("error listing objects %s\r\n", err)
 		return nil, err
 	}
 	if len(list) == 0 { //there are none so stop here

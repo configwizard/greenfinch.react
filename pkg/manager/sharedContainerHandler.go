@@ -131,7 +131,7 @@ func (m *Manager) listSharedContainerObjectsAsync(containerID string) ([]Element
 		list = append(list, id)
 		return false
 	}); err != nil {
-		log.Println("error listing objects %s\r\n", err)
+		log.Printf("error listing objects %s\r\n", err)
 	}
 	fmt.Printf("list objects %+v\r\n", list)
 	wg := sync.WaitGroup{}
@@ -156,7 +156,7 @@ func (m *Manager) listSharedContainerObjectsAsync(containerID string) ([]Element
 			hdr, err := pl.HeadObject(m.ctx, cnrID, vID, prmHead)
 			if err != nil {
 				if reason, ok := isErrAccessDenied(err); ok {
-					fmt.Printf("%w: %s\r\n", err, reason)
+					fmt.Printf("%s: %s\r\n", err, reason)
 					return
 				}
 				fmt.Errorf("read object header via connection pool: %w", err)

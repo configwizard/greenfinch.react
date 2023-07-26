@@ -5,7 +5,7 @@
 peers:
   0:
     # Endpoint.
-    address: grpcs://st1.t5.fs.neo.org:8082
+    address: grpcs://st4.t5.fs.neo.org:8080
 
     # Until nodes with the same priority level are healthy
     # nodes with other priority are not used.

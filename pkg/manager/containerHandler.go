@@ -637,7 +637,7 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 		cnr.SetAttribute(k, v)
 	}
 
-	fmt.Println("time check ", creationTime, string(creationTime.Unix()), strconv.FormatInt(time.Now().Unix(), 10))
+	fmt.Println("time check ", creationTime, fmt.Sprint(creationTime.Unix()), strconv.FormatInt(time.Now().Unix(), 10))
 	containerAttributes[attributeTimestamp] = strconv.FormatInt(time.Now().Unix(), 10)
 	// todo: what is the difference between domain name and container name??
 	//var d container.Domain
@@ -669,7 +669,7 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 		//todo - do this on a routine so that we don't hang
 		idCnr, err := pl.PutContainer(m.ctx, cnr, prmPut) //see SetWaitParams to change wait times
 		if err != nil {
-			fmt.Printf("save container via connection pool: %w\r\n", err)
+			fmt.Printf("save container via connection pool: %s\r\n", err)
 			tmp := UXMessage{
 				Title:       "Container Error",
 				Type:        "error",
