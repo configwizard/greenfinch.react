@@ -152,11 +152,11 @@ func main() {
 		StartHidden:       false,
 		HideWindowOnClose: false,
 		//RGBA:              &options.RGBA{255, 255, 255, 255},
-		Assets:            assets,
-		LogLevel:          logger.DEBUG,
-		OnStartup:         manager.Startup, //todo update these to the manager scripts
-		OnDomReady:        manager.DomReady,
-		OnShutdown:        manager.Shutdown,
+		Assets:     assets,
+		LogLevel:   logger.DEBUG,
+		OnStartup:  manager.Startup, //todo update these to the manager scripts
+		OnDomReady: manager.DomReady,
+		OnShutdown: manager.Shutdown,
 		Bind: []interface{}{
 			manager,
 			//&mocker,

@@ -8,9 +8,11 @@ import (
 	"fmt"
 	"github.com/amlwwalker/greenfinch.react/pkg/cache"
 	"github.com/google/uuid"
-	neofscrypto "github.com/nspcc-dev/neofs-sdk-go/crypto"
-	neofsecdsa "github.com/nspcc-dev/neofs-sdk-go/crypto/ecdsa"
 	"github.com/nspcc-dev/neofs-sdk-go/object/slicer"
+	"github.com/nspcc-dev/neofs-sdk-go/user"
+	"image"
+	"os"
+	"strconv"
 
 	//"github.com/amlwwalker/greenfinch.react/pkg/config"
 	gspool "github.com/amlwwalker/greenfinch.react/pkg/pool"
@@ -23,18 +25,13 @@ import (
 	"github.com/nspcc-dev/neofs-sdk-go/eacl"
 	"github.com/nspcc-dev/neofs-sdk-go/object"
 	oid "github.com/nspcc-dev/neofs-sdk-go/object/id"
-	"github.com/nspcc-dev/neofs-sdk-go/pool"
 	"github.com/nspcc-dev/neofs-sdk-go/session"
-	"github.com/nspcc-dev/neofs-sdk-go/user"
 	"golang.org/x/exp/maps"
-	"image"
 	"io"
 	"log"
-	"os"
 	"path"
 	"path/filepath"
 	"sort"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -106,45 +103,46 @@ type objectWriter struct {
 	session *session.Object // add this
 }
 
-func (x *objectWriter) InitDataStream(header object.Object) (io.Writer, error) {
-	var prm client.PrmObjectPutInit
-	prm.WithinSession(*x.session) // and this
+//todo - this should probably be replaced with the test now
+//func (x *objectWriter) InitDataStream(header object.Object) (io.Writer, error) {
+//	var prm client.PrmObjectPutInit
+//	prm.WithinSession(*x.session) // and this
+//
+//	stream, err := x.client.ObjectPutInit(x.context, prm)
+//	if err != nil {
+//		return nil, fmt.Errorf("init object stream: %w", err)
+//	}
+//	if !stream.WriteHeader(header) {
+//		_, err := stream.Close()
+//		return nil, err
+//	}
+//	return &payloadWriter{
+//		stream: stream,
+//	}, nil
+//}
+//
+//type payloadWriter struct {
+//	stream *client.ObjectWriter
+//}
+//
+//func (x *payloadWriter) Write(p []byte) (int, error) {
+//	if !x.stream.WritePayloadChunk(p) {
+//		return 0, x.Close()
+//	}
+//
+//	return len(p), nil
+//}
+//
+//func (x *payloadWriter) Close() error {
+//	_, err := x.stream.Close()
+//	if err != nil {
+//		return err
+//	}
+//
+//	return nil
+//}
 
-	stream, err := x.client.ObjectPutInit(x.context, prm)
-	if err != nil {
-		return nil, fmt.Errorf("init object stream: %w", err)
-	}
-	if !stream.WriteHeader(header) {
-		_, err := stream.Close()
-		return nil, err
-	}
-	return &payloadWriter{
-		stream: stream,
-	}, nil
-}
-
-type payloadWriter struct {
-	stream *client.ObjectWriter
-}
-
-func (x *payloadWriter) Write(p []byte) (int, error) {
-	if !x.stream.WritePayloadChunk(p) {
-		return 0, x.Close()
-	}
-
-	return len(p), nil
-}
-
-func (x *payloadWriter) Close() error {
-	_, err := x.stream.Close()
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (m *Manager) InitialiseUploadProcedure(containerID, fp string, customAttributeMap map[string]string) (oid.ID, error){
+func (m *Manager) InitialiseUploadProcedure(containerID, fp string, customAttributeMap map[string]string) (oid.ID, error) {
 	cancelCtx, cnclF := context.WithCancel(context.Background())
 	m.cancelUploadCtx = cancelCtx
 	m.uploadCancelFunc = cnclF
@@ -157,7 +155,7 @@ func (m *Manager) InitialiseUploadProcedure(containerID, fp string, customAttrib
 		return oid.ID{}, err
 	}
 
-	gateSigner := (neofsecdsa.SignerRFC6979)(m.gateAccount.PrivateKey().PrivateKey)
+	gateSigner := user.NewAutoIDSignerRFC6979(m.gateAccount.PrivateKey().PrivateKey)
 	var prmDial client.PrmDial
 
 	prmDial.SetTimeout(60 * time.Second)
@@ -165,7 +163,6 @@ func (m *Manager) InitialiseUploadProcedure(containerID, fp string, customAttrib
 	prmDial.SetContext(cancelCtx)
 
 	prmCli := client.PrmInit{}
-	prmCli.SetDefaultSigner(gateSigner)
 	cli, err := client.New(prmCli)
 	if err != nil {
 		return oid.ID{}, err
@@ -196,15 +193,74 @@ func (m *Manager) InitialiseUploadProcedure(containerID, fp string, customAttrib
 	if err != nil {
 		return oid.ID{}, err
 	}
+	fmt.Println("naming the file ", fileStats.Name())
 	fmt.Println("file size ", fileStats.Size())
 	fmt.Println("client ", cli)
-	id, err := m.putObject(context.Background(), cli, cnrID, gateSigner, f, fileStats)
+
+	//thumbnail
+	{
+		f, err := os.Open(fp)
+		if err != nil {
+			return oid.ID{}, err
+		}
+		thumbnailData, err := thumbnail(f)
+		fmt.Println("thumbnail err is ", err, err == invalidImageError)
+		if err != nil {
+			if err != image.ErrFormat {
+				fmt.Println("1. error retrieved from thumbnail was ", err)
+				return oid.ID{}, err
+			}
+			//todo - get any file thumbnail
+			fmt.Println("2. error retrieved from thumbnail was ", err)
+		} else {
+			customAttributeMap["Thumbnail"] = base64.StdEncoding.EncodeToString(thumbnailData)
+		}
+		f.Close() //can only read the file once
+	}
+	id, err := m.putObject(context.Background(), cli, cnrID, gateSigner, f, fileStats, customAttributeMap)
 	if err != nil {
 		return oid.ID{}, err
 	}
-	return id, nil
+	obj, err := m.GetObjectMetaData(id.String(), cnrID.String())
+	if err != nil {
+		return oid.ID{}, err
+	}
+	el := Element{
+		ID:         id.String(),
+		Type:       "object",
+		Size:       obj.PayloadSize(),
+		ParentID:   containerID,
+		Attributes: make(map[string]string),
+	}
+	for _, a := range obj.Attributes() {
+		el.Attributes[a.Key()] = a.Value()
+	}
+	checksum, _ := obj.PayloadChecksum()
+	el.Attributes[payloadChecksumHeader] = checksum.String()
+	if data, err := json.Marshal(el); err != nil {
+		return oid.ID{}, err
+	} else {
+		userWalletAddress, _ := m.TemporaryRetrieveUserWalletAddress()
+		if err := cache.StoreObject(userWalletAddress, m.selectedNetwork.ID, id.String(), data); err != nil {
+			m.MakeNotification(NotificationMessage{
+				Title:       "Upload failed",
+				Type:        "error",
+				Description: fmt.Sprintf("Failed to store object due to: %s", err.Error()),
+				MarkRead:    false,
+			})
+			return oid.ID{}, err
+		}
+	}
+	t := UXMessage{
+		Title:       "Object Created",
+		Type:        "success",
+		Description: "Object successfully created",
+	}
+	m.MakeToast(NewToastMessage(&t))
+	_, err = m.ListContainerObjects(containerID, false, false)
+	return id, err
 }
-func (m *Manager) putObject(ctx context.Context, cli *client.Client, cnr cid.ID, gateSigner neofscrypto.Signer, payload io.Reader, fileStats os.FileInfo, attributes ...string) (oid.ID, error) {
+func (m *Manager) putObject(ctx context.Context, cli *client.Client, cnr cid.ID, gateSigner user.Signer, payload io.Reader, fileStats os.FileInfo, customAttributeMap map[string]string) (oid.ID, error) {
 	// partially copy-pasted from https://pkg.go.dev/github.com/nspcc-dev/neofs-sdk-go@v1.0.0-rc.9/client#NewDataSlicer
 	fmt.Println("cli ", cli)
 	netInfo, err := cli.NetworkInfo(ctx, client.PrmNetworkInfo{})
@@ -219,7 +275,7 @@ func (m *Manager) putObject(ctx context.Context, cli *client.Client, cnr cid.ID,
 		opts.CalculateHomomorphicChecksum()
 	}
 
-	var sessionToken = &session.Object{}
+	var sessionToken session.Object
 	sessionToken.SetAuthKey(gateSigner.Public()) //gateSigner.Public()
 	sessionToken.SetID(uuid.New())
 	sessionToken.SetIat(netInfo.CurrentEpoch())
@@ -229,225 +285,69 @@ func (m *Manager) putObject(ctx context.Context, cli *client.Client, cnr cid.ID,
 	sessionToken.ForVerb(session.VerbObjectPut)
 
 	//function to sign session token with user's private key
-	if err := m.TemporarySignObjectTokenWithPrivateKey(sessionToken); err != nil {
+	if err := m.TemporarySignObjectTokenWithPrivateKey(&sessionToken); err != nil {
 		fmt.Println("signing token err", err)
 		return oid.ID{}, err
 	}
-
-	//usr, err := m.TemporaryRetrieveUserID()
-	//if err != nil {
-	//	return oid.ID{}, err
-	//}
-	attribute := object.Attribute{}
-	attribute.SetKey("some-key")
-	attribute.SetValue("some-value")
+	userId, err := m.TemporaryRetrieveUserID()
+	if err != nil {
+		return oid.ID{}, err
+	}
+	setMimeType(fileStats.Name(), &customAttributeMap)
 	var attrs []object.Attribute
-	attrs = append(attrs, attribute)
-
-	//hd := object.Object{}
-	//hd.SetAttributes(attrs...)
-	//hd.SetPayloadSize(uint64(fileStats.Size()))
-	//hd.SetContainerID(cnr)
-	//hd.SetOwnerID(&usr)
-
-	objWriter := &objectWriter{
-		context: ctx,
-		client:  cli,
-		session: sessionToken,
-	}
-	//
-	//if _, err := objWriter.InitDataStream(hd); err != nil {
-	//	return oid.ID{}, err
-	//}
-
-	_slicer := slicer.NewSession(gateSigner, cnr, *sessionToken, objWriter, opts)
-
-	var attrSlice []string
-	for _, v := range attrs {
-		attrSlice = append(attrSlice, v.Key(), v.Value())
-	}
-	attrSlice = append(attrSlice, object.AttributeFileName, "alex-testing-something")
-	return _slicer.Slice(payload, attrSlice...) //how do i use this with a progress bar?
-}
-func (m *Manager) UploadObject(containerID, fp string, filtered map[string]string) ([]Element, error) {
-
-	walletAddress, err := m.retrieveWallet()
-	if err != nil {
-		return nil, err
+	for k, v := range customAttributeMap {
+		var attribute object.Attribute
+		attribute.SetKey(k)
+		attribute.SetValue(v)
+		attrs = append(attrs, attribute)
 	}
 
-	userID := user.ID{}
-	user.IDFromKey(&userID, m.TemporaryUserPublicKey().Bytes())
-	cnrID := cid.ID{}
+	_slicer, err := slicer.New(ctx, cli, gateSigner, cnr, userId, &sessionToken)
 
-	if err := cnrID.DecodeString(containerID); err != nil {
-		return nil, err
-	}
-	attributes := make([]object.Attribute, 0, len(filtered))
+	var fileNameAttr object.Attribute
+	fileNameAttr.SetKey(object.AttributeFileName)
+	fileNameAttr.SetValue(fileStats.Name())
+	attrs = append(attrs, fileNameAttr)
 
-	_, filename := filepath.Split(fp)
+	var timestampAttr object.Attribute
+	timestampAttr.SetKey(object.AttributeTimestamp)
+	timestampAttr.SetValue(strconv.FormatInt(time.Now().Unix(), 10))
+	attrs = append(attrs, timestampAttr)
 
-	//auto set the content type
-	setMimeType(filename, &filtered)
+	plWriter, err := _slicer.InitPut(ctx, attrs)
 
-	{
-		f, err := os.Open(fp)
-		if err != nil {
-			return nil, err
-		}
-		thumbnailData, err := thumbnail(f)
-		fmt.Println("thumbnail err is ", err, err == invalidImageError)
-		if err != nil {
-			if err != image.ErrFormat {
-				fmt.Println("1. error retrieved from thumbnail was ", err)
-				return nil, err
-			}
-			//todo - get any file thumbnail
-			fmt.Println("2. error retrieved from thumbnail was ", err)
-		} else {
-			filtered["Thumbnail"] = base64.StdEncoding.EncodeToString(thumbnailData)
-		}
-		f.Close() //can only read the file once
-	}
-	// prepares attributes from filtered headers
-	for key, val := range filtered {
-		attribute := object.NewAttribute()
-		attribute.SetKey(key)
-		attribute.SetValue(val)
-		attributes = append(attributes, *attribute)
-	}
-	if _, ok := filtered[object.AttributeFileName]; !ok {
-		fileNameAttr := object.NewAttribute()
-		fileNameAttr.SetKey(object.AttributeFileName)
-		fileNameAttr.SetValue(filename) //todo change this to the shortend filename
-		attributes = append(attributes, *fileNameAttr)
-	}
-	if _, ok := filtered[object.AttributeTimestamp]; !ok {
-		timestamp := object.NewAttribute()
-		timestamp.SetKey(object.AttributeTimestamp)
-		timestamp.SetValue(strconv.FormatInt(time.Now().Unix(), 10))
-		attributes = append(attributes, *timestamp)
-	}
-	//pKey := &keys.PrivateKey{PrivateKey: tmpKey}
-	obj := object.New()
-	obj.SetContainerID(cnrID)
-	obj.SetOwnerID(&userID)
-	obj.SetAttributes(attributes...)
+	wg := sync.WaitGroup{}
 
-	f, err := os.Open(fp)
-	defer f.Close()
-	if err != nil {
-		return nil, err
-	}
-
-	fileStats, err := f.Stat()
-	if err != nil {
-		return nil, errors.New("could not retrieve stats" + err.Error())
-	}
-
-	reader := progress.NewReader(f)
-
-	fmt.Println("file size ", fileStats.Size())
-
-	obj.SetPayloadSize(uint64(fileStats.Size()))
-
-	pl, err := m.Pool(false)
-	if err != nil {
-		return []Element{}, err
-	}
-
-	iAt, exp, err := gspool.TokenExpiryValue(m.ctx, pl, 100)
-	if err != nil {
-		return nil, err
-	}
+	//var cancelUpload chan error
+	reader := progress.NewReader(payload)
 	cancelCtx, cnclF := context.WithCancel(context.Background())
 	m.cancelUploadCtx = cancelCtx
 	m.uploadCancelFunc = cnclF
-	nodes := maps.Values(m.selectedNetwork.StorageNodes)
-	nodeSelection := NewNetworkSelector(nodes)
-
-	prmCli := client.PrmInit{}
-	prmCli.SetDefaultSigner((neofsecdsa.SignerRFC6979)(m.gateAccount.PrivateKey().PrivateKey))
-	var prmDial client.PrmDial
-
-	prmDial.SetTimeout(30 * time.Second)
-	prmDial.SetStreamTimeout(30 * time.Second)
-	prmDial.SetContext(cancelCtx)
-	var cli client.Client
-	for {
-		node, err := nodeSelection.getNext()
-		if err != nil {
-			fmt.Println("selecting node threw an error ", err)
-			continue
-		}
-		prmDial.SetServerURI(node.Address)
-		if err := cli.Dial(prmDial); err != nil {
-			fmt.Printf("Error connecting to node %s: %s\n", node.Address, err)
-			m.MakeToast(UXMessage{Type: "warning", Title: "issues conneting", Description: "please wait, attempting to fix"})
-			m.MakeNotification(NotificationMessage{Type: "warning", Title: "warning", Description: "failed to connect to " + node.Address + " attempting another"})
-			continue
-		} else {
-			break
-		}
-	}
-
-	prmSession := client.PrmSessionCreate{}
-	prmSession.SetExp(exp)
-	prmSession.UseSigner((neofsecdsa.SignerRFC6979)(m.gateAccount.PrivateKey().PrivateKey))
-	resSession, err := cli.SessionCreate(m.ctx, prmSession)
-	if err != nil {
-		fmt.Println("creating res session err", err)
-		return nil, err
-	}
-	fmt.Println("just created resSession")
-	sc, err := tokens.BuildUnsignedObjectSessionToken(iAt, iAt, exp, session.VerbObjectPut, cnrID, resSession)
-	if err != nil {
-		fmt.Println("creting token err", err)
-		return nil, err
-	}
-	if err := m.TemporarySignObjectTokenWithPrivateKey(sc); err != nil {
-		fmt.Println("signing token err", err)
-		return nil, err
-	}
-	putInit := client.PrmObjectPutInit{}
-	putInit.WithinSession(*sc)
-	putInit.UseSigner((neofsecdsa.SignerRFC6979)(m.gateAccount.PrivateKey().PrivateKey))
-	objWriter, err := cli.ObjectPutInit(m.ctx, putInit)
-	if err != nil {
-		log.Println("could not putInit upload ", err)
-		return nil, err
-	}
-	if !objWriter.WriteHeader(*obj) || err != nil {
-		log.Println("error writing object header ", err)
-		return nil, err
-	}
-	wg := sync.WaitGroup{}
 	wg.Add(1)
-	//var cancelUpload chan error
 	go func(ctx context.Context) {
 		defer wg.Done()
 		progressChan := progress.NewTicker(m.ctx, reader, fileStats.Size(), 250*time.Millisecond)
 		for p := range progressChan {
 			select {
-				case <-ctx.Done():
-					errMsg, ok := ctx.Value("error").(string)
-					if !ok {
-						errMsg = "user action"
-					}
-					fmt.Println("upload was cancelled ", errMsg)
-					tmp := NewProgressMessage(&ProgressMessage{
-						Title:    "Uploading object",
-						Show:     false,
-					})
-					m.SetProgressPercentage(tmp)
-					m.MakeNotification(NotificationMessage{
-						Title:       "Upload cancelled",
-						Type:        "error",
-						Description: "Upload " + filename + " cancelled due to - " + errMsg,
-						MarkRead:    false,
-					})
-					m.SendSignal("freshUpload", nil)
-					return
+			case <-ctx.Done():
+				errMsg, ok := ctx.Value("error").(string)
+				if !ok {
+					errMsg = "user action"
+				}
+				fmt.Println("upload was cancelled ", errMsg)
+				tmp := NewProgressMessage(&ProgressMessage{
+					Title: "Uploading object",
+					Show:  false,
+				})
+				m.SetProgressPercentage(tmp)
+				m.MakeNotification(NotificationMessage{
+					Title:       "Upload cancelled",
+					Type:        "error",
+					Description: "Upload " + fileStats.Name() + " cancelled due to - " + errMsg,
+					MarkRead:    false,
+				})
+				m.SendSignal("freshUpload", nil)
+				return
 			default:
 				fmt.Printf("\r%v remaining...", p.Remaining().Round(250*time.Millisecond))
 				tmp := NewProgressMessage(&ProgressMessage{
@@ -467,106 +367,57 @@ func (m *Manager) UploadObject(containerID, fp string, filtered map[string]strin
 		tmp := NewToastMessage(&UXMessage{
 			Title:       "Uploading complete",
 			Type:        "success",
-			Description: "Uploading " + filename + " complete",
+			Description: "Uploading " + fileStats.Name() + " complete",
 		})
 		var o interface{}
 		m.SendSignal("freshUpload", o)
 		m.MakeToast(tmp)
 		fmt.Println("\rupload is completed")
 	}(m.cancelUploadCtx)
-	buf := make([]byte, 1024) // 1 MiB
-	failCount := 0
 	var endOfFile bool
+	buf := make([]byte, 1024) // 1 MiB
 	for {
 		select {
 		case <-m.cancelUploadCtx.Done():
-			return nil, errors.New("cancelled by user")
+			return oid.ID{}, errors.New("cancelled by user")
 		default:
 			// update progress bar
-			n, err := (*reader).Read(buf)
-			if !objWriter.WritePayloadChunk(buf[:n]) {
-				//ctxWithMsg, cancel := context.WithCancel(m.cancelUploadCtx)
-				//defer cancel()
-				//// Store the error message in the context
-				//ctxWithMsg = context.WithValue(ctxWithMsg, "error", "no payload data")
-				//cancel()
-				//m.uploadCancelFunc()
-				//endOfFile = true
-				break
-			}
+			n, err := reader.Read(buf)
 			if errors.Is(err, io.EOF) {
+				fmt.Println("error is ", err)
 				endOfFile = true
 				break
 			}
-			if n == 0 { //todo - check if % complete is not moving
-				failCount++
-				if failCount >= 100 {
-					fmt.Println("failed to write ", n, " bytes 100 times")
-					tmp := NewToastMessage(&UXMessage{
-						Title:       "Upload error",
-						Type:        "error",
-						Description: "Upload failed to start. Cancelling automatically.",
-					})
-					m.MakeToast(tmp)
-					ctxWithMsg, cancel := context.WithCancel(m.cancelUploadCtx)
-					defer cancel()
-					ctxWithMsg = context.WithValue(ctxWithMsg, "error", errors.New("user cancelled download"))
-					cancel()
-					m.uploadCancelFunc()
-					endOfFile = true
-					break
-				}
+			fmt.Println("writing chunk of ", n, " bytes")
+			if _, err := plWriter.Write(buf[:n]); err != nil {
+				ctxWithMsg, cancel := context.WithCancel(m.cancelUploadCtx)
+				defer cancel()
+				// Store the error message in the context
+				ctxWithMsg = context.WithValue(ctxWithMsg, "error", "no payload data")
+				cancel()
+				m.uploadCancelFunc()
+				endOfFile = true
+				break
 			}
 		}
 		if endOfFile {
 			break
 		}
 	}
-	res, err := objWriter.Close()
-	if err != nil {
-		fmt.Println("error closing object writer ", err)
-		ctxWithMsg, cancel := context.WithCancel(m.cancelUploadCtx)
-		defer cancel()
-		ctxWithMsg = context.WithValue(ctxWithMsg, "error", errors.New("user cancelled download"))
-		cancel()
-		m.downloadCancelFunc()
-		return nil, err
-	}
-	objectID := res.StoredObjectID()
 	wg.Wait()
-	fmt.Println("uploaded object with id ", objectID.String())
-	el := Element{
-		ID:         objectID.String(),
-		Type:       "object",
-		Size:       obj.PayloadSize(),
-		ParentID:   containerID,
-		Attributes: make(map[string]string),
+	fmt.Println("id prior to close", plWriter.ID())
+	if err := plWriter.Close(); err != nil {
+		fmt.Println("error closing object writer ", err)
+		//ctxWithMsg, cancel := context.WithCancel(m.cancelUploadCtx)
+		//defer cancel()
+		//ctxWithMsg = context.WithValue(ctxWithMsg, "error", errors.New("user cancelled download"))
+		//cancel()
+		//m.downloadCancelFunc()
+		return oid.ID{}, err
 	}
-	for _, a := range obj.Attributes() {
-		el.Attributes[a.Key()] = a.Value()
-	}
-	checksum, _ := obj.PayloadChecksum()
-	el.Attributes[payloadHeader] = checksum.String()
-	if data, err := json.Marshal(el); err != nil {
-		return []Element{}, err
-	} else {
-		if err := cache.StoreObject(walletAddress, m.selectedNetwork.ID, objectID.String(), data); err != nil {
-			m.MakeNotification(NotificationMessage{
-				Title:       "Upload failed",
-				Type:        "error",
-				Description: fmt.Sprintf("Failed to store object due to: %s", err.Error()),
-				MarkRead:    false,
-			})
-			return []Element{}, err
-		}
-	}
-	t := UXMessage{
-		Title:       "Object Created",
-		Type:        "success",
-		Description: "Object successfully created",
-	}
-	m.MakeToast(NewToastMessage(&t))
-	return m.ListContainerObjects(containerID, false, false)
+	id := plWriter.ID()
+	fmt.Println("id after close", id)
+	return id, err
 }
 
 // GetObjectMetaData is live not cached
@@ -587,7 +438,7 @@ func (m *Manager) GetObjectMetaData(objectID, containerID string) (object.Object
 	addr.SetContainer(cnrID)
 	addr.SetObject(objID)
 
-	var prmHead pool.PrmObjectHead
+	var prmHead client.PrmObjectHead
 
 	pl, err := m.Pool(false)
 	if err != nil {
@@ -612,8 +463,9 @@ func (m *Manager) GetObjectMetaData(objectID, containerID string) (object.Object
 			return object.Object{}, err
 		}
 	}
-	prmHead.UseBearer(*bt)
-	hdr, err := pl.HeadObject(m.ctx, cnrID, objID, prmHead)
+	prmHead.WithBearerToken(*bt)
+	gateSigner := user.NewAutoIDSigner(m.gateAccount.PrivateKey().PrivateKey) //fix me is this correct signer?
+	hdr, err := pl.ObjectHead(m.ctx, cnrID, objID, gateSigner, prmHead)
 	if err != nil {
 		if reason, ok := isErrAccessDenied(err); ok {
 			fmt.Printf("error here: %s: %s\r\n", err, reason)
@@ -623,7 +475,7 @@ func (m *Manager) GetObjectMetaData(objectID, containerID string) (object.Object
 		return object.Object{}, err
 	}
 
-	return hdr, nil
+	return *hdr, nil
 }
 
 func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byte, error) {
@@ -655,16 +507,17 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 	nodes := maps.Values(m.selectedNetwork.StorageNodes)
 	nodeSelection := NewNetworkSelector(nodes)
 	//addr := m.selectedNetwork.StorageNodes["0"].Address //cfg.Peers["0"].Address //we need to find the top priority addr really here
-	prmCli := client.PrmInit{}
-	var e neofsecdsa.Signer
-	e = (neofsecdsa.Signer)(m.gateAccount.PrivateKey().PrivateKey)
-	prmCli.SetDefaultSigner(e)
+	//var e neofsecdsa.Signer
+	//e = (neofsecdsa.Signer)(m.gateAccount.PrivateKey().PrivateKey)
 	var prmDial client.PrmDial
 
 	prmDial.SetTimeout(30 * time.Second)
 	prmDial.SetStreamTimeout(30 * time.Second)
 	prmDial.SetContext(cancelCtx)
-	var cli client.Client
+	sdkCli, err := pl.RawClient()
+	if err != nil {
+		panic("Alex error here " + err.Error())
+	}
 	for {
 		node, err := nodeSelection.getNext()
 		if err != nil {
@@ -672,7 +525,7 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 		}
 		prmDial.SetServerURI(node.Address)
 		//cli.Init(prmCli)
-		if err := cli.Dial(prmDial); err != nil {
+		if err := sdkCli.Dial(prmDial); err != nil {
 			fmt.Printf("Error connecting to node %s: %s\n", node.Address, err)
 			m.MakeToast(UXMessage{Type: "warning", Title: "issues conneting", Description: "please wait, attempting to fix"})
 			m.MakeNotification(NotificationMessage{Type: "warning", Title: "warning", Description: "failed to connect to " + node.Address + " attempting another"})
@@ -682,14 +535,13 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 		}
 	}
 
+	gateSigner := user.NewAutoIDSigner(m.gateAccount.PrivateKey().PrivateKey) //fix me is this correct signer?
 	prmSession := client.PrmSessionCreate{}
-	prmSession.UseSigner(e)
 	prmSession.SetExp(exp)
-	resSession, err := cli.SessionCreate(m.ctx, prmSession)
+	resSession, err := sdkCli.SessionCreate(m.ctx, gateSigner, prmSession)
 	if err != nil {
 		return nil, err
 	}
-
 	sc, err := tokens.BuildUnsignedObjectSessionToken(iAt, iAt, exp, session.VerbObjectGet, cnrID, resSession)
 	if err != nil {
 		log.Println("error creating session token to create a object", err)
@@ -701,20 +553,20 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 	}
 	getInit := client.PrmObjectGet{}
 	getInit.WithinSession(*sc)
-	dstObject := &object.Object{}
-	objReader, err := cli.ObjectGetInit(m.ctx, cnrID, objID, getInit)
+	dstObject := object.Object{}
+	dstObject, objReader, err := pl.ObjectGetInit(m.ctx, cnrID, objID, gateSigner, getInit)
 	if err != nil {
 		log.Println("error creating object reader ", err)
 		return nil, err
 	}
-	if !objReader.ReadHeader(dstObject) {
-		err := objReader.Close()
-		if err != nil {
-			log.Println("could not close object reader ", err)
-			return nil, err
-		}
-		return nil, errors.New("error with reading header")
-	}
+	//if !objReader.ReadHeader(dstObject) {
+	//	err := objReader.Close()
+	//	if err != nil {
+	//		log.Println("could not close object reader ", err)
+	//		return nil, err
+	//	}
+	//	return nil, errors.New("error with reading header")
+	//}
 	c := progress.NewWriter(writer)
 	wg := sync.WaitGroup{}
 	wg.Add(1)
@@ -726,31 +578,31 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 		for p := range progressChan {
 			select {
 			case <-ctx.Done():
-					errMsg, ok := ctx.Value("error").(string)
-					if !ok {
-						errMsg = "user action"
-					}
-					fmt.Println("download was cancelled ", errMsg)
-					tmp := NewProgressMessage(&ProgressMessage{
-						Title: "Downloading object",
-						Show:  false,
-					})
-					m.SetProgressPercentage(tmp)
-					m.MakeNotification(NotificationMessage{
-						Title:       "Download cancelled",
-						Type:        "error",
-						Description: "Download cancelled " + errMsg,
-						MarkRead:    false,
-					})
-					return
-				default:
-					fmt.Printf("\r%v remaining...", p.Remaining().Round(250*time.Millisecond))
-					tmp := NewProgressMessage(&ProgressMessage{
-						Title:    "Downloading object",
-						Progress: int(p.Percent()),
-						Show:     true,
-					})
-					m.SetProgressPercentage(tmp)
+				errMsg, ok := ctx.Value("error").(string)
+				if !ok {
+					errMsg = "user action"
+				}
+				fmt.Println("download was cancelled ", errMsg)
+				tmp := NewProgressMessage(&ProgressMessage{
+					Title: "Downloading object",
+					Show:  false,
+				})
+				m.SetProgressPercentage(tmp)
+				m.MakeNotification(NotificationMessage{
+					Title:       "Download cancelled",
+					Type:        "error",
+					Description: "Download cancelled " + errMsg,
+					MarkRead:    false,
+				})
+				return
+			default:
+				fmt.Printf("\r%v remaining...", p.Remaining().Round(250*time.Millisecond))
+				tmp := NewProgressMessage(&ProgressMessage{
+					Title:    "Downloading object",
+					Progress: int(p.Percent()),
+					Show:     true,
+				})
+				m.SetProgressPercentage(tmp)
 			}
 		}
 		tmp := NewToastMessage(&UXMessage{
@@ -846,7 +698,7 @@ type TmpObjectMeta struct {
 	Objects []Element
 }
 
-//listObjectsAsync update object in database with metadata
+// listObjectsAsync update object in database with metadata
 func (m *Manager) listObjectsAsync(containerID string) ([]Element, error) {
 
 	walletAddress, err := m.retrieveWallet()
@@ -882,22 +734,31 @@ func (m *Manager) listObjectsAsync(containerID string) ([]Element, error) {
 	if err := m.TemporarySignBearerTokenWithPrivateKey(bt); err != nil {
 		return nil, err
 	}
-	prms := pool.PrmObjectSearch{}
+	prms := client.PrmObjectSearch{}
 	if bt != nil {
-		prms.UseBearer(*bt)
+		prms.WithBearerToken(*bt)
 	}
 
 	//prms.SetContainerID(cnrID)
-
+	gateSigner := user.NewAutoIDSigner(m.gateAccount.PrivateKey().PrivateKey) //fix me is this correct signer?
 	filter := object.SearchFilters{}
 	filter.AddRootFilter()
 	prms.SetFilters(filter)
-	objects, err := pl.SearchObjects(m.ctx, cnrID, prms)
+	init, err := pl.ObjectSearchInit(m.ctx, cnrID, gateSigner, prms)
 	if err != nil {
 		return nil, err
 	}
+	//objects, err := pl.SearchObjects(m.ctx, cnrID, prms)
+
+	//prmSearch := client.PrmObjectSearch{}
+	//pl.
+	//reader.
+	//objects, err := pl.Ob(m.ctx, cnrID, prms)
+	//if err != nil {
+	//	return nil, err
+	//}
 	var list []oid.ID
-	if err = objects.Iterate(func(id oid.ID) bool {
+	if err = init.Iterate(func(id oid.ID) bool {
 		list = append(list, id)
 		return false
 	}); err != nil {
@@ -937,7 +798,7 @@ func (m *Manager) listObjectsAsync(containerID string) ([]Element, error) {
 				tmp.Attributes["X_EXT"] = ""
 			}
 			checksum, _ := head.PayloadChecksum()
-			tmp.Attributes[payloadHeader] = checksum.String()
+			tmp.Attributes[payloadChecksumHeader] = checksum.String()
 			tmp.Size = head.PayloadSize()
 			if err != nil {
 				fmt.Println(err)
@@ -965,7 +826,7 @@ func (m *Manager) listObjectsAsync(containerID string) ([]Element, error) {
 	return objectList, err
 }
 
-//ListContainerObjects ets from cache
+// ListContainerObjects ets from cache
 func (m *Manager) ListContainerObjects(containerID string, synchronised, deleted bool) ([]Element, error) {
 	walletAddress, err := m.retrieveWallet()
 	if err != nil {
@@ -997,7 +858,7 @@ func (m *Manager) ListContainerObjects(containerID string, synchronised, deleted
 		}
 		//fmt.Println("object ", tmp.ID, tmp.PendingDeleted, tmp.ParentID)
 		if filename, ok := tmp.Attributes[object.AttributeFileName]; ok {
-			tmp.Attributes["X_EXT"] = strings.TrimPrefix(filepath.Ext(filename), ".")//[1:]
+			tmp.Attributes["X_EXT"] = strings.TrimPrefix(filepath.Ext(filename), ".") //[1:]
 		} else {
 			tmp.Attributes["X_EXT"] = ""
 		}
@@ -1082,11 +943,11 @@ func (m *Manager) DeleteObject(objectID, containerID string) ([]Element, error) 
 	addr.SetContainer(cnrID)
 	addr.SetObject(objID)
 
-	var prmDelete pool.PrmObjectDelete
+	var prmDelete client.PrmObjectDelete
 	//prmDelete.SetAddress(addr)
-	var e neofsecdsa.Signer
-	e = (neofsecdsa.Signer)(m.gateAccount.PrivateKey().PrivateKey)
-	prmDelete.UseSigner(e)
+	//var e neofsecdsa.Signer
+	//e = (neofsecdsa.Signer)(m.gateAccount.PrivateKey().PrivateKey)
+	//prmDelete.WithinSession(*sc)
 	pl, err := m.Pool(false)
 	if err != nil {
 		log.Println("error retrieving pool ", err)
@@ -1102,7 +963,7 @@ func (m *Manager) DeleteObject(objectID, containerID string) ([]Element, error) 
 	if err := m.TemporarySignBearerTokenWithPrivateKey(bt); err != nil {
 		return nil, err
 	}
-	prmDelete.UseBearer(*bt)
+	prmDelete.WithBearerToken(*bt)
 	//now mark deleted
 	cacheObject, err := cache.RetrieveObject(walletAddress, m.selectedNetwork.ID, objectID)
 	if err != nil {
@@ -1125,10 +986,10 @@ func (m *Manager) DeleteObject(objectID, containerID string) ([]Element, error) 
 	if err := cache.PendObjectDeleted(walletAddress, m.selectedNetwork.ID, objectID, del); err != nil {
 		return []Element{}, err
 	}
-
+	gateSigner := user.NewAutoIDSigner(m.gateAccount.PrivateKey().PrivateKey) //fix me is this correct signer?
 	go func() {
 		//do we need to 'dial' the pool
-		if err := pl.DeleteObject(m.ctx, cnrID, objID, prmDelete); err != nil {
+		if _, err := pl.ObjectDelete(m.ctx, cnrID, objID, gateSigner, prmDelete); err != nil {
 			//reason, ok := isErrAccessDenied(err)
 			m.MakeToast(NewToastMessage(&UXMessage{
 				Title:       "Object Error",
@@ -1185,7 +1046,7 @@ func (m *Manager) DeleteObject(objectID, containerID string) ([]Element, error) 
 				Type:        "success",
 				Description: "Object successfully deleted",
 			}))
-			m.ContainersChanged()// should force a general update. Good for now.
+			m.ContainersChanged() // should force a general update. Good for now.
 		}
 	}()
 	return m.ListContainerObjects(containerID, false, true)

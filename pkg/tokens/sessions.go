@@ -7,6 +7,7 @@ import (
 	cid "github.com/nspcc-dev/neofs-sdk-go/container/id"
 	neofsecdsa "github.com/nspcc-dev/neofs-sdk-go/crypto/ecdsa"
 	"github.com/nspcc-dev/neofs-sdk-go/session"
+	"github.com/nspcc-dev/neofs-sdk-go/user"
 )
 
 // CalculateEpochsForTime takes the number of seconds into the future you want the epoch for
@@ -43,9 +44,8 @@ func BuildObjectSessionToken(key *keys.PrivateKey, lIat, lNbf, lExp uint64, verb
 	tok.SetExp(lExp)
 	tok.BindContainer(cnrID)
 
-	var e neofsecdsa.Signer
-	e = (neofsecdsa.Signer)(key.PrivateKey)
-	return tok, tok.Sign(e)
+	usrSigner := user.NewAutoIDSigner(key.PrivateKey)
+	return tok, tok.Sign(usrSigner)
 }
 func BuildUnsignedObjectSessionToken(lIat, lNbf, lExp uint64, verb session.ObjectVerb, cnrID cid.ID, gateSession *client.ResSessionCreate) (*session.Object, error) {
 
@@ -90,7 +90,7 @@ func BuildContainerSessionToken(key *keys.PrivateKey, lIat, lNbf, lExp uint64, c
 	tok.SetIat(lIat)
 	tok.SetNbf(lNbf)
 	tok.SetExp(lExp)
-	var e neofsecdsa.Signer
-	e = (neofsecdsa.Signer)(key.PrivateKey)
-	return tok, tok.Sign(e)
+
+	usrSigner := user.NewAutoIDSigner(key.PrivateKey)
+	return tok, tok.Sign(usrSigner)
 }

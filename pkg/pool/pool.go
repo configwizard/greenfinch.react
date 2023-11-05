@@ -5,8 +5,9 @@ import (
 	"crypto/ecdsa"
 	"fmt"
 	"github.com/amlwwalker/greenfinch.react/pkg/config"
-	neofsecdsa "github.com/nspcc-dev/neofs-sdk-go/crypto/ecdsa"
+	"github.com/nspcc-dev/neofs-sdk-go/client"
 	"github.com/nspcc-dev/neofs-sdk-go/pool"
+	"github.com/nspcc-dev/neofs-sdk-go/user"
 	"time"
 )
 
@@ -21,9 +22,9 @@ questions:
 1. do i need to provide the URLs for connections in the pool
 2. Whats the difference between a pool and a client and which should I use?
 3. Can a pool be created without knowing the private key (wallet connect)?
-	- if not, do I think use a client? I cant work out how to make the requests (put/get/delte) on a client
+  - if not, do I think use a client? I cant work out how to make the requests (put/get/delte) on a client
 */
-func GetPool(ctx context.Context, key ecdsa.PrivateKey, peers map[string]config.Peer) (*pool.Pool, error) {
+func GetPool(ctx context.Context, gateKey ecdsa.PrivateKey, peers map[string]config.Peer) (*pool.Pool, error) {
 	var prm pool.InitParameters
 
 	for _, peer := range peers {
@@ -36,9 +37,10 @@ func GetPool(ctx context.Context, key ecdsa.PrivateKey, peers map[string]config.
 	prm.SetClientRebalanceInterval(30 * time.Second)
 	prm.SetErrorThreshold(2)
 	//prm.SetKey(&key)
-	prm.SetSigner(neofsecdsa.SignerRFC6979(key))
+	usrSigner := user.NewAutoIDSignerRFC6979(gateKey)
+	prm.SetSigner(usrSigner)
 	//todo does this need setting or does this have a default?
-	//prm.SetSessionExpirationDuration(10)
+	prm.SetSessionExpirationDuration(10)
 	p, err := pool.NewPool(prm)
 	if err != nil {
 		fmt.Println("could not create pool", err)
@@ -54,7 +56,8 @@ func GetPool(ctx context.Context, key ecdsa.PrivateKey, peers map[string]config.
 }
 
 func TokenExpiryValue(ctx context.Context, pl *pool.Pool, roughEpochs uint64) (uint64, uint64, error) {
-	info, err := pl.NetworkInfo(ctx)
+	var networkInfo = client.PrmNetworkInfo{}
+	info, err := pl.NetworkInfo(ctx, networkInfo)
 	if err != nil {
 		return 0, 0, err
 	}

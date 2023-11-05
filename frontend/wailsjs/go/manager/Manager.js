@@ -210,6 +210,10 @@ export function TemporaryRetrieveUserID() {
   return window['go']['manager']['Manager']['TemporaryRetrieveUserID']();
 }
 
+export function TemporaryRetrieveUserWalletAddress() {
+  return window['go']['manager']['Manager']['TemporaryRetrieveUserWalletAddress']();
+}
+
 export function TemporarySignBearerTokenWithPrivateKey(arg1) {
   return window['go']['manager']['Manager']['TemporarySignBearerTokenWithPrivateKey'](arg1);
 }
@@ -244,8 +248,4 @@ export function UnlockWallet() {
 
 export function Upload(arg1, arg2) {
   return window['go']['manager']['Manager']['Upload'](arg1, arg2);
-}
-
-export function UploadObject(arg1, arg2, arg3) {
-  return window['go']['manager']['Manager']['UploadObject'](arg1, arg2, arg3);
 }

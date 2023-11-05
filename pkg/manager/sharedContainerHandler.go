@@ -12,7 +12,7 @@ import (
 	"github.com/nspcc-dev/neofs-sdk-go/eacl"
 	"github.com/nspcc-dev/neofs-sdk-go/object"
 	oid "github.com/nspcc-dev/neofs-sdk-go/object/id"
-	"github.com/nspcc-dev/neofs-sdk-go/pool"
+	"github.com/nspcc-dev/neofs-sdk-go/user"
 	"log"
 	"path/filepath"
 	"sort"
@@ -25,7 +25,6 @@ func getHelperTokenExpiry(ctx context.Context, cli *client.Client) uint64 {
 	if err != nil {
 		return 0
 	}
-
 
 	expire := ni.CurrentEpoch() + 10 // valid for 10 epochs (~ 10 hours)
 	return expire
@@ -64,8 +63,8 @@ func (m *Manager) ListSharedContainers() ([]Element, error) {
 	return unsortedContainers, nil
 }
 
-//ListSharedContainerObjectsAsync
-//ListSharedContainerObjectsAsync update object in database with metadata
+// ListSharedContainerObjectsAsync
+// ListSharedContainerObjectsAsync update object in database with metadata
 func (m *Manager) listSharedContainerObjectsAsync(containerID string) ([]Element, error) {
 	cnrID := cid.ID{}
 
@@ -97,21 +96,22 @@ func (m *Manager) listSharedContainerObjectsAsync(containerID string) ([]Element
 	if err != nil {
 		return nil, err
 	}
+	gateSigner := user.NewAutoIDSigner(m.gateAccount.PrivateKey().PrivateKey) //fix me is this correct signer?
 
 	if err := m.TemporarySignBearerTokenWithPrivateKey(bt); err != nil {
 		return nil, err
 	}
-	prms := pool.PrmObjectSearch{}
-	if bt != nil{
-		prms.UseBearer(*bt)
-	}
+	//prms := pool.PrmObjectSearch{}
+	//if bt != nil{
+	//	prms.UseBearer(*bt)
+	//}
 
 	//prms.SetContainerID(cnrID)
 
 	filter := object.SearchFilters{}
 	filter.AddRootFilter()
-	prms.SetFilters(filter)
-	objects, err := pl.SearchObjects(m.ctx, cnrID, prms)
+	//prms.SetFilters(filter)
+	//objects, err := pl.SearchObjects(m.ctx, cnrID, prms)
 	if err != nil {
 		m.MakeNotification(NotificationMessage{
 			Title:       "Shared Container Failed",
@@ -127,16 +127,16 @@ func (m *Manager) listSharedContainerObjectsAsync(containerID string) ([]Element
 		return nil, err
 	}
 	var list []oid.ID
-	if err = objects.Iterate(func(id oid.ID) bool {
-		list = append(list, id)
-		return false
-	}); err != nil {
-		log.Printf("error listing objects %s\r\n", err)
-	}
+	//if err = objects.Iterate(func(id oid.ID) bool {
+	//	list = append(list, id)
+	//	return false
+	//}); err != nil {
+	//	log.Printf("error listing objects %s\r\n", err)
+	//}
 	fmt.Printf("list objects %+v\r\n", list)
 	wg := sync.WaitGroup{}
 	var listObjects []Element
-	var prmHead pool.PrmObjectHead
+	var prmHead client.PrmObjectHead
 	var addr oid.Address
 	addr.SetContainer(cnrID)
 	for _, v := range list {
@@ -153,7 +153,7 @@ func (m *Manager) listSharedContainerObjectsAsync(containerID string) ([]Element
 			}
 			addr.SetObject(vID)
 			//prmHead.SetAddress(addr)
-			hdr, err := pl.HeadObject(m.ctx, cnrID, vID, prmHead)
+			hdr, err := pl.ObjectHead(m.ctx, cnrID, vID, gateSigner, prmHead)
 			if err != nil {
 				if reason, ok := isErrAccessDenied(err); ok {
 					fmt.Printf("%s: %s\r\n", err, reason)
@@ -225,7 +225,7 @@ func (m *Manager) listSharedContainerObjectsAsync(containerID string) ([]Element
 	return objectList, err
 }
 
-//ListSharedContainerObjects ets from cache
+// ListSharedContainerObjects ets from cache
 func (m *Manager) ListSharedContainerObjects(containerID string, synchronised bool) ([]Element, error) {
 	walletAddress, err := m.retrieveWallet()
 	if err != nil {

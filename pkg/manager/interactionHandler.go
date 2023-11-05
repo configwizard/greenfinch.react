@@ -9,8 +9,8 @@ import (
 	"os"
 )
 
-//Upload will put an object in NeoFS. You can access publically available files at
-//https://http.testnet.fs.neo.org/<containerID>/<objectID>
+// Upload will put an object in NeoFS. You can access publically available files at
+// https://http.testnet.fs.neo.org/<containerID>/<objectID>
 func (m *Manager) Upload(containerID string, attributes map[string]string) ([]Element, error) {
 	homeDir, err := os.UserHomeDir()
 	filepath, err := runtime.OpenFileDialog(m.ctx, runtime.OpenDialogOptions{
@@ -42,11 +42,13 @@ func (m *Manager) Upload(containerID string, attributes map[string]string) ([]El
 		return m.ListContainerObjects(containerID, false, false)
 	}
 
+	// todo: FIX ME HERE THIS IS WHERE THE UPLOAD SHOULD HAPPEN
 	oidID, err := m.InitialiseUploadProcedure(containerID, filepath, attributes)
 	if err != nil {
 		fmt.Println("error init procedure ", err)
 	}
 	fmt.Println("created object ", oidID, " in container ", containerID)
+
 	//objects, err := m.UploadObject(containerID, filepath, attributes)
 	//if err != nil {
 	//	end := NewProgressMessage(&ProgressMessage{
@@ -72,8 +74,8 @@ func (m *Manager) Upload(containerID string, attributes map[string]string) ([]El
 	return m.ListContainerObjects(containerID, false, false)
 }
 
-//Upload will put an object in NeoFS. You can access publically available files at
-//https://http.testnet.fs.neo.org/<containerID>/<objectID>
+// Upload will put an object in NeoFS. You can access publically available files at
+// https://http.testnet.fs.neo.org/<containerID>/<objectID>
 func (m *Manager) Download(filename, objectID, containerID string) error {
 	homeDir, err := os.UserHomeDir()
 	fmt.Println("downloading to ", filename)

@@ -2,6 +2,11 @@ package manager
 
 import (
 	"context"
+	"crypto/ecdsa"
+	"github.com/nspcc-dev/neofs-sdk-go/client"
+	neofscrypto "github.com/nspcc-dev/neofs-sdk-go/crypto"
+	neofsecdsa "github.com/nspcc-dev/neofs-sdk-go/crypto/ecdsa"
+
 	//"crypto/ecdsa"
 	"encoding/json"
 	"errors"
@@ -35,19 +40,17 @@ type Container struct {
 }
 
 func (m *Manager) listContainerIDs() ([]cid.ID, error) {
-	userID := user.ID{}
-	user.IDFromKey(&userID, m.TemporaryUserPublicKey().Bytes())
+	userID := user.ResolveFromECDSAPublicKey(*(*ecdsa.PublicKey)(m.TemporaryUserPublicKey())) //dereference
 
 	// UserContainers implements neofs.NeoFS interface method.
-
-	//var prm pool.PrmContainerList
-	//prm.SetOwnerID(userID)
 
 	pl, err := m.Pool(false)
 	if err != nil {
 		return nil, err
 	}
-	r, err := pl.ListContainers(m.ctx, userID)
+	lst := client.PrmContainerList{}
+	lst.WithXHeaders() //fixme - discover what this is for
+	r, err := pl.ContainerList(m.ctx, userID, lst)
 	if err != nil {
 		fmt.Errorf("list user containers via connection pool: %w", err)
 	}
@@ -80,7 +83,7 @@ func (m *Manager) NewListReadOnlyContainerContents(since int64) ([]Element, erro
 	var validContainers []Element
 	//now for each container, we want to check the basic ACL
 	wg := sync.WaitGroup{}
-	var mu       sync.Mutex
+	var mu sync.Mutex
 	for _, cnt := range containers {
 		wg.Add(1)
 		go func(v Element) {
@@ -107,13 +110,13 @@ func (m *Manager) NewListReadOnlyContainerContents(since int64) ([]Element, erro
 			for _, el := range objects {
 				size += el.Size
 				//filteredElements = append(filteredElements, el)
-				unixString, ok := el.Attributes[obj.AttributeTimestamp];
-				unixTime, err := strconv.ParseInt(unixString, 10, 64);
+				unixString, ok := el.Attributes[obj.AttributeTimestamp]
+				unixTime, err := strconv.ParseInt(unixString, 10, 64)
 				fmt.Println(" processing ", el.ID, unixTime, since, unixTime > since)
 				if ok && err == nil && unixTime > since {
 					//its a good object
 					//remove the unecessary attribute
-					delete(el.Attributes, "Thumbnail");
+					delete(el.Attributes, "Thumbnail")
 					pendingContainer.Children = append(pendingContainer.Children, el)
 				}
 			}
@@ -131,18 +134,18 @@ func (m *Manager) NewListReadOnlyContainerContents(since int64) ([]Element, erro
 	return validContainers, nil
 }
 
-//// PopulateContainerList returns a container with its attributes as an Element (used by GenerateFileSystemFromContainer)
+// // PopulateContainerList returns a container with its attributes as an Element (used by GenerateFileSystemFromContainer)
 func populateContainerList(ctx context.Context, pl *pool.Pool, containerID cid.ID) Element {
 	cont := Element{
-		Type: "container",
-		ID: containerID.String(),
+		Type:       "container",
+		ID:         containerID.String(),
 		Attributes: make(map[string]string),
 	}
 
-	//var prmGet pool.PrmContainerGet
-	//prmGet.SetContainerID(containerID)
+	var prmGet client.PrmContainerGet
+	prmGet.WithXHeaders()
 
-	cnr, err := pl.GetContainer(ctx, containerID)
+	cnr, err := pl.ContainerGet(ctx, containerID, prmGet)
 	if err != nil {
 		cont.Errors = append(cont.Errors, err)
 		return cont
@@ -155,8 +158,9 @@ func populateContainerList(ctx context.Context, pl *pool.Pool, containerID cid.I
 	})
 	return cont
 }
-//generateObjectStruct returns an array of elements containing all the objects owned by the contianer ID
-func (m *Manager) generateObjectStruct(objs []Element, containerID cid.ID) (uint64, []Element){
+
+// generateObjectStruct returns an array of elements containing all the objects owned by the contianer ID
+func (m *Manager) generateObjectStruct(objs []Element, containerID cid.ID) (uint64, []Element) {
 	var newObjs []Element
 	size := uint64(0)
 	for _, o := range objs {
@@ -168,7 +172,7 @@ func (m *Manager) generateObjectStruct(objs []Element, containerID cid.ID) (uint
 			o.Attributes[a.Key()] = a.Value()
 		}
 		checksum, _ := head.PayloadChecksum()
-		o.Attributes[payloadHeader] = checksum.String()
+		o.Attributes[payloadChecksumHeader] = checksum.String()
 		if filename, ok := o.Attributes[obj.AttributeFileName]; ok {
 			o.Attributes["X_EXT"] = strings.TrimPrefix(filepath.Ext(filename), ".")
 		} else {
@@ -195,8 +199,8 @@ func (m *Manager) ForceSync() {
 	m.ContainersChanged()
 }
 
-//listContainersAsync should be purely used to refresh the database cache
-//todo: this needs to clean out the database as its a refresh of everything
+// listContainersAsync should be purely used to refresh the database cache
+// todo: this needs to clean out the database as its a refresh of everything
 func (m *Manager) listContainersAsync(synchronised bool) ([]Element, error) {
 	//var containers []Element
 	runtime.EventsEmit(m.ctx, "clearContainer", nil)
@@ -288,7 +292,7 @@ func (m *Manager) prepareAndAppendContainer(vID cid.ID, synchronised bool) (Elem
 	//var filters = obj.SearchFilters{}
 	//filters.AddRootFilter()
 	fmt.Printf("tmpContainer 1 %+v\r\n", tmpContainer)
-	list, err := m.ListContainerObjects(vID.String(), synchronised, false)//object.QueryObjects(m.ctx, c, vID, filters, nil, sessionToken)
+	list, err := m.ListContainerObjects(vID.String(), synchronised, false) //object.QueryObjects(m.ctx, c, vID, filters, nil, sessionToken)
 	if err != nil {
 		fmt.Println("error querying objects of container", err)
 		tmpContainer.Errors = append(tmpContainer.Errors, err)
@@ -302,7 +306,7 @@ func (m *Manager) prepareAndAppendContainer(vID cid.ID, synchronised bool) (Elem
 	return tmpContainer, nil
 }
 
-//this is going to be a bit of a hack whilst working out the best way to do size
+// this is going to be a bit of a hack whilst working out the best way to do size
 func (m Manager) getContainerSize(containerID string, synchronised bool) (uint64, error) {
 	objects, err := m.ListContainerObjects(containerID, synchronised, false) //in sync so just grab from file system
 	if err != nil {
@@ -314,6 +318,7 @@ func (m Manager) getContainerSize(containerID string, synchronised bool) (uint64
 	}
 	return size, nil
 }
+
 // ListContainers populates from cache
 func (m *Manager) ListContainers(synchronised bool, deleted bool) ([]Element, error) {
 	walletAddress, err := m.retrieveWallet()
@@ -396,6 +401,7 @@ func (m *Manager) DeleteContainer(id string) ([]Element, error) {
 		fmt.Errorf("%w", err)
 		return nil, err
 	}
+	var gateSigner neofscrypto.Signer = neofsecdsa.SignerRFC6979(m.gateAccount.PrivateKey().PrivateKey)
 	////now mark deleted
 	cacheContainer, err := cache.RetrieveContainer(walletAddress, m.selectedNetwork.ID, id)
 	if err != nil {
@@ -424,10 +430,10 @@ func (m *Manager) DeleteContainer(id string) ([]Element, error) {
 		Type:        "info",
 		Description: "Container " + tmp.ID + " pending deletion",
 	})
-	var prm pool.PrmContainerDelete
-	prm.SetSessionToken(*sc)
+	var prm client.PrmContainerDelete
+	prm.WithinSession(*sc)
 	go func() {
-		if err := pl.DeleteContainer(m.ctx, cnrID, prm); err != nil {
+		if err := pl.ContainerDelete(m.ctx, cnrID, gateSigner, prm); err != nil {
 			fmt.Println("error deleting container", err)
 			m.MakeToast(NewToastMessage(&UXMessage{
 				Title:       "Container Error",
@@ -538,9 +544,9 @@ func (m *Manager) RestrictContainer(id string, l string) error {
 	}
 	//for the time being, this is the same key
 	specifiedTargetRole := eacl.NewTarget()
-	//eacl.SetTargetECDSAKeys(specifiedTargetRole, &tmpKey.PublicKey) //todo - comment back in
 
-	var prm pool.PrmContainerSetEACL
+	var prm client.PrmContainerSetEACL
+	prm.WithinSession(*sc)
 	table, err := tokens.AllowGetPut(cnrID, *specifiedTargetRole)
 	if err != nil {
 		log.Fatal("couldn't create eacl table", err)
@@ -548,9 +554,9 @@ func (m *Manager) RestrictContainer(id string, l string) error {
 	if sc != nil {
 		prm.WithinSession(*sc) //todo = what if the sc is nil? Why continue?
 	}
-
+	gateSigner := user.NewAutoIDSigner(m.gateAccount.PrivateKey().PrivateKey) //fix me is this correct signer?
 	go func() {
-		if err := pl.SetEACL(m.ctx, table, prm); err != nil {
+		if err := pl.ContainerSetEACL(m.ctx, table, gateSigner, prm); err != nil {
 			fmt.Errorf("save eACL via connection pool: %w", err)
 			m.MakeNotification(NotificationMessage{
 				Title:       "Sharing container Failed",
@@ -565,24 +571,26 @@ func (m *Manager) RestrictContainer(id string, l string) error {
 			m.MakeToast(NewToastMessage(&tmp))
 			return
 		}
-			m.MakeNotification(NotificationMessage{
-				Title:       "Sharing successful",
-				Type:        "success",
-				Description: "Successfully shared container " + id,
-			})
-			tmp := UXMessage{
-				Title:       "Sharing successful",
-				Type:        "success",
-				Description: "successfully shared container",
-			}
-			m.MakeToast(NewToastMessage(&tmp))
+		m.MakeNotification(NotificationMessage{
+			Title:       "Sharing successful",
+			Type:        "success",
+			Description: "Successfully shared container " + id,
+		})
+		tmp := UXMessage{
+			Title:       "Sharing successful",
+			Type:        "success",
+			Description: "successfully shared container",
+		}
+		m.MakeToast(NewToastMessage(&tmp))
 	}()
 	return nil
 }
+
 const (
 	attributeName      = "Name"
 	attributeTimestamp = "Timestamp"
 )
+
 func (m *Manager) CreateContainer(name string, permission string, block bool) error {
 	var containerAttributes = make(map[string]string) //todo shift this up to the javascript side
 	walletAddress, err := m.retrieveWallet()
@@ -595,9 +603,7 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 		return err
 	}
 	log.Println("creating container with name", name)
-	userID := user.ID{}
-	user.IDFromKey(&userID, m.TemporaryUserPublicKey().Bytes())
-
+	userID := user.ResolveFromECDSAPublicKey(*(*ecdsa.PublicKey)(m.TemporaryUserPublicKey())) //dereference
 	placementPolicy := `REP 2 IN X 
 	CBF 2
 	SELECT 2 FROM * AS X
@@ -630,7 +636,7 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 
 	creationTime := time.Now()
 	cnr.SetBasicACL(customAcl) //acl.PublicRWExtended)
-	container.SetCreationTime(&cnr, creationTime)
+	cnr.SetCreationTime(creationTime)
 
 	//this should set user specific attributes and not default attributes. I.e block attributes that are 'reserved
 	for k, v := range containerAttributes {
@@ -643,16 +649,15 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 	//var d container.Domain
 	//d.SetName("domain-name")
 	//container.WriteDomain(&cnr, d)
-	container.SetName(&cnr, name)
+	cnr.SetName(name)
 	containerAttributes[attributeName] = name
-	if err := pool.SyncContainerWithNetwork(m.ctx, &cnr, pl); err != nil {
+	if err := client.SyncContainerWithNetwork(m.ctx, &cnr, pl); err != nil {
 		fmt.Errorf("sync container with the network state: %w", err)
 		return err
 	}
-	var prmPut pool.PrmContainerPut
-
+	var prmPut client.PrmContainerPut
 	iAt, exp, err := gspool.TokenExpiryValue(m.ctx, pl, 100)
-	sc  := tokens.BuildUnsignedContainerSessionToken(iAt, iAt, exp, cid.ID{}, session.VerbContainerPut, *m.gateAccount.PublicKey())
+	sc := tokens.BuildUnsignedContainerSessionToken(iAt, iAt, exp, cid.ID{}, session.VerbContainerPut, *m.gateAccount.PublicKey())
 	if err := m.TemporarySignContainerTokenWithPrivateKey(sc); err != nil {
 		fmt.Errorf("%w", err)
 		return err
@@ -664,10 +669,11 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 	}
 
 	fmt.Println("about to put container")
+	gateSigner := user.NewAutoIDSigner(m.gateAccount.PrivateKey().PrivateKey) //fix me is this correct signer?
 	// send request to save the container
 	go func() {
 		//todo - do this on a routine so that we don't hang
-		idCnr, err := pl.PutContainer(m.ctx, cnr, prmPut) //see SetWaitParams to change wait times
+		idCnr, err := pl.ContainerPut(m.ctx, cnr, gateSigner, prmPut) //see SetWaitParams to change wait times
 		if err != nil {
 			fmt.Printf("save container via connection pool: %s\r\n", err)
 			tmp := UXMessage{

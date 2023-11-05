@@ -16,6 +16,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/nspcc-dev/neo-go/pkg/crypto/keys"
 	"github.com/nspcc-dev/neofs-sdk-go/bearer"
+	"github.com/nspcc-dev/neofs-sdk-go/client"
 	neofsecdsa "github.com/nspcc-dev/neofs-sdk-go/crypto/ecdsa"
 	"github.com/nspcc-dev/neofs-sdk-go/pool"
 	"github.com/nspcc-dev/neofs-sdk-go/session"
@@ -37,23 +38,23 @@ import (
 const testNetExplorerUrl = "https://dora.coz.io/transaction/neo3/testnet"
 const mainnetExplorerUrl = "https://dora.coz.io/transaction/neo3/mainnet"
 
-const payloadHeader = "payload_checksum"
+const payloadChecksumHeader = "payload_checksum"
 
 type NotificationMessage struct {
 	Id          string
-	User		string //who is this message for so we can store it in the database
+	User        string //who is this message for so we can store it in the database
 	Title       string
 	Type        string
-	Action string
+	Action      string
 	Description string
-	Meta map[string]string
-	CreatedAt string
-	MarkRead     bool
+	Meta        map[string]string
+	CreatedAt   string
+	MarkRead    bool
 }
 
 func NewNotificationMessage(p *NotificationMessage) NotificationMessage {
 	uuid, _ := uuid.NewUUID()
-	p.Id = uuid.String()//rand.Intn(10001-1) + 1
+	p.Id = uuid.String() //rand.Intn(10001-1) + 1
 	p.CreatedAt = strconv.FormatInt(time.Now().Unix(), 10)
 	//store it in the database against the current user
 	return *p
@@ -88,21 +89,21 @@ func NewToastMessage(t *UXMessage) UXMessage {
 type Manager struct {
 	configLocation         string
 	walletPath, walletAddr string
-	gateAccount wal.Account
+	gateAccount            wal.Account
 	pool                   *pool.Pool
-	selectedNetwork NetworkData
+	selectedNetwork        NetworkData
 	//fsCli                  *neofscli.Client
 	//key                    *ecdsa.PrivateKey
 	version string
 	//c                      *cache.Cache
-	ctx                 context.Context
-	wallet              *wal.Wallet
-	password            string //warning this is not a good idea
-	DEBUG               bool
-	enableCaching       bool
-	cancelServerContext context.CancelFunc
-	uploadCancelFunc, downloadCancelFunc            context.CancelFunc
-	cancelUploadCtx, cancelDownloadCtx context.Context
+	ctx                                  context.Context
+	wallet                               *wal.Wallet
+	password                             string //warning this is not a good idea
+	DEBUG                                bool
+	enableCaching                        bool
+	cancelServerContext                  context.CancelFunc
+	uploadCancelFunc, downloadCancelFunc context.CancelFunc
+	cancelUploadCtx, cancelDownloadCtx   context.Context
 }
 
 const (
@@ -151,7 +152,7 @@ func (m *Manager) DomReady(ctx context.Context) {
 		log.Fatal("could not select network ", err)
 	}
 }
-func (m Manager) Notifications() ([]NotificationMessage, error){
+func (m Manager) Notifications() ([]NotificationMessage, error) {
 	if m.wallet == nil {
 		return nil, errors.New("no wallet selected")
 	}
@@ -213,7 +214,8 @@ func (m *Manager) MakeNotification(message NotificationMessage) {
 	fmt.Println("notification message ", message)
 	runtime.EventsEmit(m.ctx, "freshnotification", message)
 }
-//return the network addresses for the selected network
+
+// return the network addresses for the selected network
 func (m *Manager) SetSelectedNetwork(network string) (NetworkData, error) {
 	var ok bool
 	fmt.Println("received network ", network)
@@ -223,7 +225,7 @@ func (m *Manager) SetSelectedNetwork(network string) (NetworkData, error) {
 	}
 	fmt.Println("selected network is network ", m.selectedNetwork)
 	//here, everything should be reset, new pool etc, any clients referencing should now get from the managers networkData object.
-	m.NetworkChangeNotification()//update the front end of network change
+	m.NetworkChangeNotification() //update the front end of network change
 	if m.wallet != nil {
 		m.pool = nil //reload the pool for the new network
 		if _, err := m.Pool(false); err != nil {
@@ -280,7 +282,6 @@ func (m *Manager) checkForVersion() {
 				return
 			}
 
-
 			log.Printf("version %+v comparing to %s - %d \r\n", v, remoteVersion, v.Compare(remoteVersion))
 			if v.Compare(remoteVersion) < 0 {
 				tmp := NewToastMessage(&UXMessage{
@@ -327,28 +328,21 @@ func (m Manager) TemporaryUserPublicKeySolution() ecdsa.PublicKey {
 		Y:     m.wallet.Accounts[0].PublicKey().Y,
 	}
 }
-
-func (m Manager) TemporaryRetrieveUserID() (user.ID, error){
+func (m Manager) TemporaryRetrieveUserWalletAddress() (string, error) {
+	return m.wallet.Accounts[0].Address, nil
+}
+func (m Manager) TemporaryRetrieveUserID() (user.ID, error) {
 	var k = m.wallet.Accounts[0].PrivateKey()
-	var e neofsecdsa.Signer
-	e = (neofsecdsa.Signer)(k.PrivateKey)
-	var usr user.ID
-	if err := user.IDFromSigner(&usr, e); err != nil {
-		return usr, err
-	}
-	return usr, nil
+	usr := user.NewAutoIDSigner(k.PrivateKey)
+	return usr.UserID(), nil
 }
 func (m Manager) TemporarySignContainerTokenWithPrivateKey(sc *session.Container) error {
 	var k = m.wallet.Accounts[0].PrivateKey()
-	var e neofsecdsa.Signer
-	e = (neofsecdsa.Signer)(k.PrivateKey)
-	return sc.Sign(e)
+	return sc.Sign(user.NewAutoIDSigner(k.PrivateKey))
 }
 func (m Manager) TemporarySignObjectTokenWithPrivateKey(sc *session.Object) error {
 	var k = m.wallet.Accounts[0].PrivateKey()
-	var e neofsecdsa.Signer
-	e = (neofsecdsa.Signer)(k.PrivateKey)
-	return sc.Sign(e)
+	return sc.Sign(user.NewAutoIDSigner(k.PrivateKey))
 }
 func (m Manager) TemporarySignBearerTokenWithPrivateKey(bt *bearer.Token) error {
 	var k = m.wallet.Accounts[0].PrivateKey()
@@ -365,7 +359,7 @@ func NewFileSystemManager(version string, dbLocation string, DEBUG bool) (*Manag
 	}
 	cache.DB(dbLocation)
 	//we need an ephemeral key for the application to use for tokens that is not the user's key. The user's key should 'never' be used directly to make an action
-	ephemeralAccount, err := wallet.GenerateEphemeralAccount()
+	ephemeralAccount, err := wal.NewAccount()
 	if err != nil {
 		return nil, err
 	}
@@ -375,14 +369,14 @@ func NewFileSystemManager(version string, dbLocation string, DEBUG bool) (*Manag
 		log.Fatal(err)
 	}
 	m := &Manager{
-		configLocation: wd,
-		gateAccount: *ephemeralAccount, //used to make requests to RPC endpoints and works on behalf of the user so never to expose their key anywhere
+		configLocation:  wd,
+		gateAccount:     *ephemeralAccount,            //used to make requests to RPC endpoints and works on behalf of the user so never to expose their key anywhere
 		selectedNetwork: networks[Network("mainnet")], //this should be set/stored in the database when the user selects it and once they have logged in update it.
-		version: version,
-		enableCaching: true,
-		pool:    nil,
-		ctx:   nil,
-		DEBUG: DEBUG,
+		version:         version,
+		enableCaching:   true,
+		pool:            nil,
+		ctx:             nil,
+		DEBUG:           DEBUG,
 	}
 
 	return m, nil
@@ -453,7 +447,6 @@ type Account struct {
 
 var NotFound = errors.New("wallet not found")
 
-
 func (m *Manager) EnableLocalServer(enable bool) {
 	if m.wallet == nil {
 		return
@@ -511,13 +504,12 @@ func (m *Manager) GetAccountInformation() (Account, error) {
 		return Account{}, errors.New("error connecting to node " + err.Error())
 	}
 	fmt.Println("getting account information ", m.pool)
-	userID := user.ID{}
-	user.IDFromKey(&userID, m.TemporaryUserPublicKey().Bytes())
-	blGet := pool.PrmBalanceGet{}
+	userID := user.ResolveFromECDSAPublicKey(*(*ecdsa.PublicKey)(m.TemporaryUserPublicKey()))
+	blGet := client.PrmBalanceGet{}
 	blGet.SetAccount(userID)
 
 	fmt.Println("waiting to retrieve result")
-	res, err := pl.Balance(context.Background(), blGet)
+	res, err := pl.BalanceGet(context.Background(), blGet)
 	if err != nil {
 		fmt.Errorf("error retrieving balance %w", err)
 		m.MakeNotification(NotificationMessage{
@@ -562,4 +554,3 @@ func (m *Manager) GetAccountInformation() (Account, error) {
 	}
 	return b, nil
 }
-

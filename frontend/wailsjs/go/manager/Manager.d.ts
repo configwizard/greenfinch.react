@@ -116,6 +116,8 @@ export function SetupServer(arg1:context.Context):Promise<void>;
 
 export function TemporaryRetrieveUserID():Promise<user.ID>;
 
+export function TemporaryRetrieveUserWalletAddress():Promise<string>;
+
 export function TemporarySignBearerTokenWithPrivateKey(arg1:bearer.Token):Promise<void>;
 
 export function TemporarySignContainerTokenWithPrivateKey(arg1:session.Container):Promise<void>;
@@ -133,5 +135,3 @@ export function TransferToken(arg1:string,arg2:number):Promise<string>;
 export function UnlockWallet():Promise<void>;
 
 export function Upload(arg1:string,arg2:{[key: string]: string}):Promise<Array<manager.Element>>;
-
-export function UploadObject(arg1:string,arg2:string,arg3:{[key: string]: string}):Promise<Array<manager.Element>>;
