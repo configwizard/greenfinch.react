@@ -207,6 +207,14 @@ const makeCopyToast = async(message) => {
     }
 }
 
+const setVariable = async(message, salt) => {
+    try {
+        await window.go.manager.Manager.SetVariable(message, salt)
+    } catch(e) {
+        console.log("could not make copy toast", e)
+    }
+}
+
 export {
     setNetwork,
     enableCache,
@@ -232,5 +240,6 @@ export {
     cancelObjectContext,
     getVersion,
     makeRunningToast,
-    makeCopyToast
+    makeCopyToast,
+    setVariable
 }

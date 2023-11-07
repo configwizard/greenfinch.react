@@ -6,9 +6,9 @@ import {object} from '../models';
 import {oid} from '../models';
 import {pool} from '../models';
 import {context} from '../models';
+import {session} from '../models';
 import {user} from '../models';
 import {bearer} from '../models';
-import {session} from '../models';
 import {keys} from '../models';
 import {ecdsa} from '../models';
 
@@ -110,9 +110,15 @@ export function SetProgressPercentage(arg1:manager.ProgressMessage):Promise<void
 
 export function SetSelectedNetwork(arg1:string):Promise<manager.NetworkData>;
 
+export function SetVariable(arg1:string,arg2:string):Promise<void>;
+
 export function SetWalletDebugging(arg1:string,arg2:string):Promise<void>;
 
 export function SetupServer(arg1:context.Context):Promise<void>;
+
+export function SignWithGoVerifyWithWC(arg1:session.Object):Promise<Array<number>>;
+
+export function SignWithWC(arg1:session.Object):Promise<Array<number>>;
 
 export function TemporaryRetrieveUserID():Promise<user.ID>;
 

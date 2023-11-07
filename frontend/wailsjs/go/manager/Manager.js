@@ -198,12 +198,24 @@ export function SetSelectedNetwork(arg1) {
   return window['go']['manager']['Manager']['SetSelectedNetwork'](arg1);
 }
 
+export function SetVariable(arg1, arg2) {
+  return window['go']['manager']['Manager']['SetVariable'](arg1, arg2);
+}
+
 export function SetWalletDebugging(arg1, arg2) {
   return window['go']['manager']['Manager']['SetWalletDebugging'](arg1, arg2);
 }
 
 export function SetupServer(arg1) {
   return window['go']['manager']['Manager']['SetupServer'](arg1);
+}
+
+export function SignWithGoVerifyWithWC(arg1) {
+  return window['go']['manager']['Manager']['SignWithGoVerifyWithWC'](arg1);
+}
+
+export function SignWithWC(arg1) {
+  return window['go']['manager']['Manager']['SignWithWC'](arg1);
 }
 
 export function TemporaryRetrieveUserID() {

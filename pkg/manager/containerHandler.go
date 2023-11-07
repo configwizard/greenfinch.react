@@ -6,6 +6,7 @@ import (
 	"github.com/nspcc-dev/neofs-sdk-go/client"
 	neofscrypto "github.com/nspcc-dev/neofs-sdk-go/crypto"
 	neofsecdsa "github.com/nspcc-dev/neofs-sdk-go/crypto/ecdsa"
+	"github.com/nspcc-dev/neofs-sdk-go/waiter"
 
 	//"crypto/ecdsa"
 	"encoding/json"
@@ -143,8 +144,6 @@ func populateContainerList(ctx context.Context, pl *pool.Pool, containerID cid.I
 	}
 
 	var prmGet client.PrmContainerGet
-	prmGet.WithXHeaders()
-
 	cnr, err := pl.ContainerGet(ctx, containerID, prmGet)
 	if err != nil {
 		cont.Errors = append(cont.Errors, err)
@@ -655,6 +654,7 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 		fmt.Errorf("sync container with the network state: %w", err)
 		return err
 	}
+
 	var prmPut client.PrmContainerPut
 	iAt, exp, err := gspool.TokenExpiryValue(m.ctx, pl, 100)
 	sc := tokens.BuildUnsignedContainerSessionToken(iAt, iAt, exp, cid.ID{}, session.VerbContainerPut, *m.gateAccount.PublicKey())
@@ -668,12 +668,26 @@ func (m *Manager) CreateContainer(name string, permission string, block bool) er
 		//todo: what about just providing a key or a bearer token?
 	}
 
+	sdkCli, err := pl.RawClient()
+	if err != nil {
+		return err
+	}
 	fmt.Println("about to put container")
-	gateSigner := user.NewAutoIDSigner(m.gateAccount.PrivateKey().PrivateKey) //fix me is this correct signer?
+	//wait := waiter.NewWaiter(sdkCli, 1*time.Second)
+	//todo - do this on a routine so that we don't hang
+	//usrSigner := user.NewAutoIDSignerRFC6979(m.wallet.Accounts[0].PrivateKey().PrivateKey) //just for the container creation )
+	//idCnr, err := wait.ContainerPut(m.ctx, cnr, usrSigner, prmPut)
+
+	//wrong but we need to test this
+	//gateSigner := user.NewAutoIDSignerRFC6979(m.wallet.Accounts[0].PrivateKey().PrivateKey) //fix me is this correct signer?
 	// send request to save the container
 	go func() {
+		wait := waiter.NewWaiter(sdkCli, 1*time.Second)
 		//todo - do this on a routine so that we don't hang
-		idCnr, err := pl.ContainerPut(m.ctx, cnr, gateSigner, prmPut) //see SetWaitParams to change wait times
+		usrSigner := user.NewAutoIDSignerRFC6979(m.wallet.Accounts[0].PrivateKey().PrivateKey) //just for the container creation )
+		idCnr, err := wait.ContainerPut(m.ctx, cnr, usrSigner, prmPut)
+
+		//idCnr, err := pl.ContainerPut(m.ctx, cnr, gateSigner, prmPut) //see SetWaitParams to change wait times
 		if err != nil {
 			fmt.Printf("save container via connection pool: %s\r\n", err)
 			tmp := UXMessage{

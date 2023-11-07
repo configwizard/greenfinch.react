@@ -26,6 +26,7 @@ import (
 	"github.com/nspcc-dev/neofs-sdk-go/object"
 	oid "github.com/nspcc-dev/neofs-sdk-go/object/id"
 	"github.com/nspcc-dev/neofs-sdk-go/session"
+
 	"golang.org/x/exp/maps"
 	"io"
 	"log"
@@ -257,7 +258,6 @@ func (m *Manager) InitialiseUploadProcedure(containerID, fp string, customAttrib
 		Description: "Object successfully created",
 	}
 	m.MakeToast(NewToastMessage(&t))
-	_, err = m.ListContainerObjects(containerID, false, false)
 	return id, err
 }
 func (m *Manager) putObject(ctx context.Context, cli *client.Client, cnr cid.ID, gateSigner user.Signer, payload io.Reader, fileStats os.FileInfo, customAttributeMap map[string]string) (oid.ID, error) {
@@ -420,64 +420,6 @@ func (m *Manager) putObject(ctx context.Context, cli *client.Client, cnr cid.ID,
 	return id, err
 }
 
-// GetObjectMetaData is live not cached
-func (m *Manager) GetObjectMetaData(objectID, containerID string) (object.Object, error) {
-	objID := oid.ID{}
-	if err := objID.DecodeString(objectID); err != nil {
-		fmt.Println("wrong object id", err)
-		return object.Object{}, err
-	}
-	cnrID := cid.ID{}
-
-	if err := cnrID.DecodeString(containerID); err != nil {
-		fmt.Println("wrong object id", err)
-		return object.Object{}, err
-	}
-
-	var addr oid.Address
-	addr.SetContainer(cnrID)
-	addr.SetObject(objID)
-
-	var prmHead client.PrmObjectHead
-
-	pl, err := m.Pool(false)
-	if err != nil {
-		return object.Object{}, err
-	}
-	target := eacl.Target{}
-	target.SetRole(eacl.RoleUser)
-	target.SetBinaryKeys([][]byte{m.gateAccount.PublicKey().Bytes()}) //todo - is this correct??
-	table, err := tokens.AllowGetPut(cnrID, target)
-	if err != nil {
-		log.Fatal("error retrieving table ", err)
-	}
-	iAt, exp, err := gspool.TokenExpiryValue(m.ctx, pl, 100)
-
-	bt, err := tokens.BuildUnsignedBearerToken(&table, iAt, iAt, exp, m.gateAccount.PublicKey())
-	if err != nil {
-		return object.Object{}, err
-	}
-	//now sign it with wallet connect
-	if err := m.TemporarySignBearerTokenWithPrivateKey(bt); err != nil {
-		if err != nil {
-			return object.Object{}, err
-		}
-	}
-	prmHead.WithBearerToken(*bt)
-	gateSigner := user.NewAutoIDSigner(m.gateAccount.PrivateKey().PrivateKey) //fix me is this correct signer?
-	hdr, err := pl.ObjectHead(m.ctx, cnrID, objID, gateSigner, prmHead)
-	if err != nil {
-		if reason, ok := isErrAccessDenied(err); ok {
-			fmt.Printf("error here: %s: %s\r\n", err, reason)
-			return object.Object{}, err
-		}
-		fmt.Errorf("read object header via connection pool: %w", err)
-		return object.Object{}, err
-	}
-
-	return *hdr, nil
-}
-
 func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byte, error) {
 	objID := oid.ID{}
 	if err := objID.DecodeString(objectID); err != nil {
@@ -506,9 +448,7 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 	m.downloadCancelFunc = cnclF
 	nodes := maps.Values(m.selectedNetwork.StorageNodes)
 	nodeSelection := NewNetworkSelector(nodes)
-	//addr := m.selectedNetwork.StorageNodes["0"].Address //cfg.Peers["0"].Address //we need to find the top priority addr really here
-	//var e neofsecdsa.Signer
-	//e = (neofsecdsa.Signer)(m.gateAccount.PrivateKey().PrivateKey)
+
 	var prmDial client.PrmDial
 
 	prmDial.SetTimeout(30 * time.Second)
@@ -516,7 +456,7 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 	prmDial.SetContext(cancelCtx)
 	sdkCli, err := pl.RawClient()
 	if err != nil {
-		panic("Alex error here " + err.Error())
+		panic("error here " + err.Error())
 	}
 	for {
 		node, err := nodeSelection.getNext()
@@ -524,7 +464,6 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 			return nil, err
 		}
 		prmDial.SetServerURI(node.Address)
-		//cli.Init(prmCli)
 		if err := sdkCli.Dial(prmDial); err != nil {
 			fmt.Printf("Error connecting to node %s: %s\n", node.Address, err)
 			m.MakeToast(UXMessage{Type: "warning", Title: "issues conneting", Description: "please wait, attempting to fix"})
@@ -693,6 +632,64 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 	return []byte{}, nil
 }
 
+// GetObjectMetaData is live not cached
+func (m *Manager) GetObjectMetaData(objectID, containerID string) (object.Object, error) {
+	objID := oid.ID{}
+	if err := objID.DecodeString(objectID); err != nil {
+		fmt.Println("wrong object id", err)
+		return object.Object{}, err
+	}
+	cnrID := cid.ID{}
+
+	if err := cnrID.DecodeString(containerID); err != nil {
+		fmt.Println("wrong object id", err)
+		return object.Object{}, err
+	}
+
+	var addr oid.Address
+	addr.SetContainer(cnrID)
+	addr.SetObject(objID)
+
+	var prmHead client.PrmObjectHead
+
+	pl, err := m.Pool(false)
+	if err != nil {
+		return object.Object{}, err
+	}
+	target := eacl.Target{}
+	target.SetRole(eacl.RoleUser)
+	target.SetBinaryKeys([][]byte{m.gateAccount.PublicKey().Bytes()}) //todo - is this correct??
+	table, err := tokens.AllowGetPut(cnrID, target)
+	if err != nil {
+		log.Fatal("error retrieving table ", err)
+	}
+	iAt, exp, err := gspool.TokenExpiryValue(m.ctx, pl, 100)
+
+	bt, err := tokens.BuildUnsignedBearerToken(&table, iAt, iAt, exp, m.gateAccount.PublicKey())
+	if err != nil {
+		return object.Object{}, err
+	}
+	//now sign it with wallet connect
+	if err := m.TemporarySignBearerTokenWithPrivateKey(bt); err != nil {
+		if err != nil {
+			return object.Object{}, err
+		}
+	}
+	prmHead.WithBearerToken(*bt)
+	gateSigner := user.NewAutoIDSigner(m.gateAccount.PrivateKey().PrivateKey) //fix me is this correct signer?
+	hdr, err := pl.ObjectHead(m.ctx, cnrID, objID, gateSigner, prmHead)
+	if err != nil {
+		if reason, ok := isErrAccessDenied(err); ok {
+			fmt.Printf("error here: %s: %s\r\n", err, reason)
+			return object.Object{}, err
+		}
+		fmt.Errorf("read object header via connection pool: %w", err)
+		return object.Object{}, err
+	}
+
+	return *hdr, nil
+}
+
 type TmpObjectMeta struct {
 	Size    uint64
 	Objects []Element
@@ -718,29 +715,50 @@ func (m *Manager) listObjectsAsync(containerID string) ([]Element, error) {
 		return []Element{}, err
 	}
 
-	target := eacl.Target{}
-	target.SetRole(eacl.RoleUser)
-	target.SetBinaryKeys([][]byte{m.gateAccount.PublicKey().Bytes()})
-	table, err := tokens.AllowGetPut(cnrID, target)
+	//target := eacl.Target{}
+	//target.SetRole(eacl.RoleUser)
+	//target.SetBinaryKeys([][]byte{m.gateAccount.PublicKey().Bytes()})
+	//table, err := tokens.AllowGetPut(cnrID, target)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//iAt, exp, err := gspool.TokenExpiryValue(m.ctx, pl, 100)
+	//bt, err := tokens.BuildUnsignedBearerToken(&table, iAt, iAt, exp, m.gateAccount.PublicKey())
+	//if err != nil {
+	//	return nil, err
+	//}
+	cliSdk, err := pl.RawClient()
 	if err != nil {
 		return nil, err
 	}
-	iAt, exp, err := gspool.TokenExpiryValue(m.ctx, pl, 100)
-	bt, err := tokens.BuildUnsignedBearerToken(&table, iAt, iAt, exp, m.gateAccount.PublicKey())
+	gateSigner := user.NewAutoIDSignerRFC6979(m.gateAccount.PrivateKey().PrivateKey)
+	netInfo, err := cliSdk.NetworkInfo(context.Background(), client.PrmNetworkInfo{})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("read current network info: %w", err)
 	}
+	var sessionToken session.Object
+	sessionToken.SetAuthKey(gateSigner.Public()) //gateSigner.Public()
+	sessionToken.SetID(uuid.New())
+	sessionToken.SetIat(netInfo.CurrentEpoch())
+	sessionToken.SetNbf(netInfo.CurrentEpoch())
+	sessionToken.SetExp(netInfo.CurrentEpoch() + 100) // or particular exp value
+	sessionToken.BindContainer(cnrID)
+	sessionToken.ForVerb(session.VerbObjectSearch)
 
-	if err := m.TemporarySignBearerTokenWithPrivateKey(bt); err != nil {
+	if err := m.TemporarySignObjectTokenWithPrivateKey(&sessionToken); err != nil {
 		return nil, err
 	}
+	//fmt.Println("signing")
+	//if err = m.SignWithWC(&sessionToken); err != nil {
+	//	fmt.Println("error signing ", err)
+	//	return nil, err
+	//}
+	//return nil, nil
 	prms := client.PrmObjectSearch{}
-	if bt != nil {
-		prms.WithBearerToken(*bt)
-	}
+	prms.WithinSession(sessionToken)
 
 	//prms.SetContainerID(cnrID)
-	gateSigner := user.NewAutoIDSigner(m.gateAccount.PrivateKey().PrivateKey) //fix me is this correct signer?
+	//gateSigner := user.NewAutoIDSigner(m.gateAccount.PrivateKey().PrivateKey) //fix me is this correct signer?
 	filter := object.SearchFilters{}
 	filter.AddRootFilter()
 	prms.SetFilters(filter)
@@ -759,6 +777,7 @@ func (m *Manager) listObjectsAsync(containerID string) ([]Element, error) {
 	//}
 	var list []oid.ID
 	if err = init.Iterate(func(id oid.ID) bool {
+		fmt.Println("searching resulted in id ", id.String())
 		list = append(list, id)
 		return false
 	}); err != nil {
@@ -930,41 +949,41 @@ func (m *Manager) DeleteObject(objectID, containerID string) ([]Element, error) 
 		return nil, err
 	}
 
-	target := eacl.Target{}
-	target.SetRole(eacl.RoleUser)
-	target.SetBinaryKeys([][]byte{m.gateAccount.PublicKey().Bytes()})
-	table, err := tokens.AllowDelete(cnrID, target)
-	if err != nil {
-		log.Println("error retrieving table ", err)
-		return nil, err
-	}
-
-	var addr oid.Address
-	addr.SetContainer(cnrID)
-	addr.SetObject(objID)
-
-	var prmDelete client.PrmObjectDelete
-	//prmDelete.SetAddress(addr)
-	//var e neofsecdsa.Signer
-	//e = (neofsecdsa.Signer)(m.gateAccount.PrivateKey().PrivateKey)
-	//prmDelete.WithinSession(*sc)
 	pl, err := m.Pool(false)
 	if err != nil {
 		log.Println("error retrieving pool ", err)
 		return nil, err
 	}
-
-	iAt, exp, err := gspool.TokenExpiryValue(m.ctx, pl, 100)
-	bt, err := tokens.BuildUnsignedBearerToken(&table, iAt, iAt, exp, m.gateAccount.PublicKey())
+	cliSdk, err := pl.RawClient()
 	if err != nil {
-		log.Println("error creating bearer token to upload object")
+		log.Println("delete could not get client")
 		return nil, err
 	}
-	if err := m.TemporarySignBearerTokenWithPrivateKey(bt); err != nil {
-		return nil, err
+	gateSigner := user.NewAutoIDSignerRFC6979(m.gateAccount.PrivateKey().PrivateKey)
+	netInfo, err := cliSdk.NetworkInfo(context.Background(), client.PrmNetworkInfo{})
+	if err != nil {
+		return nil, fmt.Errorf("read current network info: %w", err)
 	}
-	prmDelete.WithBearerToken(*bt)
-	//now mark deleted
+
+	var sessionToken session.Object
+	sessionToken.SetAuthKey(gateSigner.Public()) //gateSigner.Public()
+	sessionToken.SetID(uuid.New())
+	sessionToken.SetIat(netInfo.CurrentEpoch())
+	sessionToken.SetNbf(netInfo.CurrentEpoch())
+	sessionToken.SetExp(netInfo.CurrentEpoch() + 100) // or particular exp value
+	sessionToken.BindContainer(cnrID)
+	sessionToken.ForVerb(session.VerbObjectDelete)
+
+	m.SignWithWC(&sessionToken)
+	////fmt.Println("signedSessionToken ", signedSessionToken)
+	//if err := m.SignWithWC(sessionToken); err != nil {
+	//	log.Println("error signing session token to create a object", err)
+	//	return nil, err
+	//}
+	//return []Element{}, nil
+	var prmDelete client.PrmObjectDelete
+	prmDelete.WithinSession(sessionToken)
+
 	cacheObject, err := cache.RetrieveObject(walletAddress, m.selectedNetwork.ID, objectID)
 	if err != nil {
 		fmt.Println("error retrieving container??", err)
@@ -986,7 +1005,7 @@ func (m *Manager) DeleteObject(objectID, containerID string) ([]Element, error) 
 	if err := cache.PendObjectDeleted(walletAddress, m.selectedNetwork.ID, objectID, del); err != nil {
 		return []Element{}, err
 	}
-	gateSigner := user.NewAutoIDSigner(m.gateAccount.PrivateKey().PrivateKey) //fix me is this correct signer?
+	//gateSigner := user.NewAutoIDSigner(m.gateAccount.PrivateKey().PrivateKey) //fix me is this correct signer?
 	go func() {
 		//do we need to 'dial' the pool
 		if _, err := pl.ObjectDelete(m.ctx, cnrID, objID, gateSigner, prmDelete); err != nil {

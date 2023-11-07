@@ -48,29 +48,6 @@ func (m *Manager) Upload(containerID string, attributes map[string]string) ([]El
 		fmt.Println("error init procedure ", err)
 	}
 	fmt.Println("created object ", oidID, " in container ", containerID)
-
-	//objects, err := m.UploadObject(containerID, filepath, attributes)
-	//if err != nil {
-	//	end := NewProgressMessage(&ProgressMessage{
-	//		Title: "Uploading object",
-	//		Show:  false,
-	//	})
-	//	m.MakeNotification(NotificationMessage{
-	//		Title:       "Error uploading object",
-	//		Type:        "error",
-	//		Description: "Uploading failed due to " + err.Error(),
-	//		MarkRead:    false,
-	//	})
-	//	//auto close the progress bar
-	//	m.SetProgressPercentage(end)
-	//	tmp := NewToastMessage(&UXMessage{
-	//		Title:       "Error uploading",
-	//		Type:        "error",
-	//		Description: "Uploading " + path.Base(filepath) + " failed: " + err.Error(),
-	//	})
-	//	m.MakeToast(tmp)
-	//	return m.ListContainerObjects(containerID, false, false)
-	//}
 	return m.ListContainerObjects(containerID, false, false)
 }
 
@@ -106,11 +83,6 @@ func (m *Manager) Download(filename, objectID, containerID string) error {
 		})
 		return errors.New("no filepath detected")
 	}
-	//metaData, err := m.GetObjectMetaData(objectID, containerID)
-	//if err != nil {
-	//	return err
-	//}
-	//fmt.Println("meta data - ", metaData.Attributes())
 	f, err := os.Create(filepath)
 	defer f.Close()
 	if err != nil {

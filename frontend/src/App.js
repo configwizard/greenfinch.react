@@ -70,6 +70,7 @@ class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            messageToSign: undefined,
             account: {
                 address: "",
                 neoFSBalance: 0,
@@ -104,6 +105,14 @@ class App extends React.Component {
             await this.setState({...this.state, selectedNetwork: message})
             await this.setStatusAccount()
         })
+        window.runtime.EventsOn("verify_signature", async (signature) => {
+            //hack
+            await this.setState({...this.state, messageToSign: signature})
+        })
+        window.runtime.EventsOn("new_signature", async (messageToSign) => {
+           console.log("request to sign ", messageToSign)
+            await this.setState({...this.state, messageToSign})
+        })
         const recentWallets = await retrieveRecentWallets()
         const version = await getVersion()
         this.setState({...this.state, version, recentWallets})
@@ -126,6 +135,9 @@ class App extends React.Component {
         const recentWallets = await retrieveRecentWallets()
         this.setState({...this.state, recentWallets})
     }
+    signAMessage = async(messageToSign) => {
+        await this.setState({...this.state, messageToSign})
+    }
     // waitForWallet();
     render() {
     // const location = useLocation();
@@ -143,13 +155,13 @@ class App extends React.Component {
                             <div className="w-100">
                                 <Routes>
                                     <Route path="/" exact element={<PageHome setLock={this.setLock} lockUI={this.state.lockUI} refreshRecentWallets={this.refreshRecentWallets} recentWallets={this.state.recentWallets} account={this.state.account} selectedNetwork={this.state.selectedNetwork}/>} />
-                                    <Route path="/containers" exact element={<PageContainers setLock={this.setLock} lockUI={this.state.lockUI} setStatusAccount={this.setStatusAccount} account={this.state.account}/>} />
+                                    <Route path="/containers" exact element={<PageContainers signAMessage={this.signAMessage} setLock={this.setLock} lockUI={this.state.lockUI} setStatusAccount={this.setStatusAccount} account={this.state.account}/>} />
                                     <Route path="/contacts" exact element={<PageContacts account={this.state.account}/>} />
                                     <Route path="/shared" exact element={<PageShared account={this.state.account}/>} />
                                     <Route path="/websites" exact element={<PageWebsites/>} />
                                     <Route path="/nfts" exact element={<PageNFTs/>} />
                                     <Route path="/notifications" exact element={<PageNotifications/>} />
-                                    <Route path="/wconnect" exact element={<PageWalletConnect/>} />
+                                    <Route path="/wconnect" exact element={<PageWalletConnect tmpTest={"hello world"} messageToSign={this.state.messageToSign}/>} />
                                     {/*<Route path="/test" exact element={<PageTest/>} />*/}
                                     <Route path="/test" exact element={<PageTest/>} />
                                 </Routes>

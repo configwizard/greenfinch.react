@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/ecdsa"
 	"crypto/elliptic"
+	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
@@ -15,6 +16,8 @@ import (
 	"github.com/blang/semver/v4"
 	"github.com/google/uuid"
 	"github.com/nspcc-dev/neo-go/pkg/crypto/keys"
+	"github.com/nspcc-dev/neofs-api-go/v2/refs"
+	v2session "github.com/nspcc-dev/neofs-api-go/v2/session"
 	"github.com/nspcc-dev/neofs-sdk-go/bearer"
 	"github.com/nspcc-dev/neofs-sdk-go/client"
 	neofsecdsa "github.com/nspcc-dev/neofs-sdk-go/crypto/ecdsa"
@@ -104,6 +107,10 @@ type Manager struct {
 	cancelServerContext                  context.CancelFunc
 	uploadCancelFunc, downloadCancelFunc context.CancelFunc
 	cancelUploadCtx, cancelDownloadCtx   context.Context
+
+	//testing
+	HexString, SaltString string
+	variableListener      chan struct{}
 }
 
 const (
@@ -132,6 +139,7 @@ func (m *Manager) Startup(ctx context.Context) {
 	if _, err := m.Pool(true); err != nil {
 		log.Fatal("can't create pool", err)
 	}
+	m.variableListener = make(chan struct{})
 	//go m.RetrieveFileSystem()
 }
 
@@ -305,6 +313,7 @@ func (m *Manager) ContainersChanged() {
 func (m *Manager) NetworkChangeNotification() {
 	runtime.EventsEmit(m.ctx, "networkchanged", m.selectedNetwork)
 }
+
 func (m *Manager) SetProgressPercentage(progressMessage ProgressMessage) {
 	runtime.EventsEmit(m.ctx, "percentageProgress", progressMessage)
 }
@@ -349,6 +358,83 @@ func (m Manager) TemporarySignBearerTokenWithPrivateKey(bt *bearer.Token) error 
 	var e neofsecdsa.Signer
 	e = (neofsecdsa.Signer)(k.PrivateKey)
 	return bt.Sign(e) //is this the owner who is giving access priveliges???
+}
+
+func (m *Manager) SetVariable(hex, salt string) {
+	m.HexString = hex
+	m.SaltString = salt
+	fmt.Println("setting to ", m.HexString, m.SaltString)
+
+	close(m.variableListener)
+}
+
+func (m *Manager) SignWithGoVerifyWithWC(sessionToken *session.Object) []byte {
+	b, _ := m.SignWithWC(sessionToken)
+	return b
+}
+func (m *Manager) SignWithWC(sessionToken *session.Object) ([]byte, error) {
+
+	fmt.Println("sending token for signing")
+	var k = m.wallet.Accounts[0].PrivateKey()
+	var e neofsecdsa.SignerWalletConnect
+	e = (neofsecdsa.SignerWalletConnect)(k.PrivateKey)
+	userID := user.ResolveFromECDSAPublicKey(*(*ecdsa.PublicKey)(k.PublicKey())) //dereference
+	sessionToken.SetIssuer(userID)
+	var s v2session.Token
+	sessionToken.WriteToV2(&s)
+	binaryData := s.GetBody().StableMarshal(nil)
+	b64 := make([]byte, base64.StdEncoding.EncodedLen(len(binaryData)))
+	base64.StdEncoding.Encode(b64, binaryData)
+	//runtime.EventsEmit(m.ctx, "new_signature", binaryData) //sending to front end for WC signing
+	goSign, err := e.Sign(binaryData)
+	if err != nil {
+		fmt.Println("error signing ", err)
+		return nil, err
+	}
+	var Tmp = struct {
+		Signature []byte
+		Data      []byte
+	}{
+		Signature: goSign,
+		Data:      b64,
+	}
+	fmt.Println("sending ", Tmp)
+	runtime.EventsEmit(m.ctx, "verify_signature", Tmp) //sending to front end for WC signing
+
+	return goSign, nil
+	//b64 := make([]byte, base64.StdEncoding.EncodedLen(len(binaryData)))
+	//base64.StdEncoding.Encode(b64, binaryData)
+	fmt.Println("signing base64 stuff ", string(b64))
+	fmt.Printf("gosign %+v\r\n", goSign)
+
+	<-m.variableListener
+	fmt.Println("undecoded ", m.HexString)
+	decodedHex, err := hex.DecodeString(m.HexString)
+	if err != nil {
+		fmt.Println("error decoding hex signature", err)
+		return nil, err
+	}
+	decodedSalt, err := hex.DecodeString(m.SaltString)
+	if err != nil {
+		fmt.Println("error decoding hex signature", err)
+		return nil, err
+	}
+	receivedSignature := append(decodedHex[:], decodedSalt[:]...)
+	fmt.Printf("sign %+v\r\n", receivedSignature)
+	fmt.Println("length ", len(decodedHex), len(decodedSalt))
+	fmt.Println("verification ", e.Public().Verify(binaryData, append(decodedHex, decodedSalt...)))
+	//just for comparison....
+	signature := refs.Signature{}
+	signature.SetSign(receivedSignature)
+	signature.SetScheme(refs.ECDSA_RFC6979_SHA256_WALLET_CONNECT)
+	signature.SetKey(k.PublicKey().Bytes())
+	s.SetSignature(&signature)
+	if err := sessionToken.ReadFromV2(s); err != nil {
+		fmt.Println("tried reading ", err)
+		return nil, err
+	}
+	fmt.Println("verify sig ", sessionToken.VerifySignature())
+	return nil, nil
 }
 func NewFileSystemManager(version string, dbLocation string, DEBUG bool) (*Manager, error) {
 
