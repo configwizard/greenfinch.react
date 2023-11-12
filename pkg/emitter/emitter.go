@@ -1,12 +1,21 @@
-package controller
+package emitter
 
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/amlwwalker/greenfinch.react/pkg/payload"
 	"github.com/amlwwalker/greenfinch.react/pkg/utils"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
-	"log"
+)
+
+type EventMessage string
+
+const (
+	RequestSign         EventMessage = "request_sign_payload"
+	ContainerListUpdate              = "container_list_update"
+	ObjectListUpdate                 = "objectUpdate"
+	NotificationMessage              = "notification_message"
 )
 
 type Emitter interface {
@@ -21,12 +30,13 @@ func (e Event) Emit(c context.Context, message string, payload any) error {
 	return nil
 }
 
-type MockEvent struct {
-	controller *Controller
+type MockSigningEvent struct {
+	Name         string
+	SignResponse func(signedPayload payload.Payload) error //this is a hack while we mock. In reality the frontend calls this function
 }
 
-func (m MockEvent) Emit(c context.Context, message string, p any) error {
-	log.Println("emitting ", message, p)
+func (m MockSigningEvent) Emit(c context.Context, message string, p any) error {
+	fmt.Printf("%s emitting %s - %+v\r\n", m.Name, message, p)
 	actualPayload, ok := p.(payload.Payload)
 	if !ok {
 		return errors.New(utils.ErrorNotPayload)
@@ -38,5 +48,5 @@ func (m MockEvent) Emit(c context.Context, message string, p any) error {
 		HexPublicKey: "0382fcb005ae7652401fbe1d6345f77110f98db7122927df0f3faf3b62d1094071", //todo - should this come from the real wallet?
 	}
 
-	return m.controller.SignResponse(actualPayload) //force an immediate signing of the payload
+	return m.SignResponse(actualPayload) //force an immediate signing of the payload
 }

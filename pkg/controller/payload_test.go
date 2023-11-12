@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"context"
+	"github.com/amlwwalker/greenfinch.react/pkg/emitter"
 	"github.com/amlwwalker/greenfinch.react/pkg/notification"
 	obj "github.com/amlwwalker/greenfinch.react/pkg/object"
 	"github.com/amlwwalker/greenfinch.react/pkg/payload"
@@ -19,41 +21,47 @@ type MockActionType struct {
 	//the location its to be read from/saved to if necessary
 }
 
-func (o *MockActionType) Head(p payload.Parameters, token tokens.Token) (notification.Notification, error) {
-	return notification.NewNotificationMessage(&notification.Notification{
+func (o *MockActionType) Head(p payload.Parameters, token tokens.Token) (notification.NewNotification, error) {
+	return notification.NewNotification{
 		Title:       "mock head notification",
-		Type:        "warning",
+		Type:        notification.Success,
+		Action:      notification.ActionToast,
 		Description: "mocking the head notification for requests that require signatures",
-	}), nil
+	}, nil
 }
-func (o *MockActionType) Read(p payload.Parameters, token tokens.Token) (notification.Notification, error) {
-	return notification.Notification{}, nil
+func (o *MockActionType) Read(p payload.Parameters, token tokens.Token) (notification.NewNotification, error) {
+	return notification.NewNotification{}, nil
 }
-func (o *MockActionType) Write(p payload.Parameters, token tokens.Token) (notification.Notification, error) {
-	return notification.Notification{}, nil
+func (o *MockActionType) Write(p payload.Parameters, token tokens.Token) (notification.NewNotification, error) {
+	return notification.NewNotification{}, nil
 }
-func (o *MockActionType) Delete(p payload.Parameters, token tokens.Token) (notification.Notification, error) {
-	return notification.Notification{}, nil
+func (o *MockActionType) Delete(p payload.Parameters, token tokens.Token) (notification.NewNotification, error) {
+	return notification.NewNotification{}, nil
 }
-func (o *MockActionType) List() (notification.Notification, error) {
-	return notification.Notification{}, nil
+func (o *MockActionType) List() (notification.NewNotification, error) {
+	return notification.NewNotification{}, nil
 }
 
 func TestPayloadSigning(t *testing.T) {
-	controller := New(nil)
-	m := MockEvent{&controller}
-	controller.Emitter = m //tied closely during tests...
+	wg := &sync.WaitGroup{}
+	ctx, cancelFunc := context.WithCancel(context.Background())
+	notifyEmitter := notification.MockNotificationEvent{Name: "notification events:"}
+	n := notification.NewMockNotifier(wg, notifyEmitter, ctx, cancelFunc)
+	controller := New(nil, ctx, n) //emitter set later to tie them together
+	mockSigner := emitter.MockSigningEvent{Name: "signing events:"}
+	mockSigner.SignResponse = controller.SignResponse //set the callback hereso that we can close the loop during tests
+	controller.Emitter = mockSigner                   //tied closely during tests...
 	controller.LoadSession("", "")
 	ephemeralAccount, err := wal.NewAccount()
 	if err != nil {
 		t.Fatal("could not create account ", err)
 	}
 	controller.tokenManager = tokens.MockTokenManager{W: *ephemeralAccount}
-	//obj := object.Object{ID: "123"}
 
 	mockAction := MockActionType{ID: "123"}
 
-	wg := sync.WaitGroup{}
+	wg.Add(1)
+	go controller.Notifier.ListenAndEmit()
 	// Request to perform a read action
 	//p := payload.NewPayload([]byte("example data"))
 	/*
@@ -73,7 +81,8 @@ func TestPayloadSigning(t *testing.T) {
 	o.ActionOperation = eacl.OperationHead
 	o.ReadWriter = file
 	o.ExpiryEpoch = 100
-	if err := controller.PerformAction(&wg, &o, mockAction.Head, nil); err != nil {
+	if err := controller.PerformAction(wg, &o, mockAction.Head, nil); err != nil {
 		t.Fatal(err)
 	}
+	wg.Wait()
 }

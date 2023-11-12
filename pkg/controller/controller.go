@@ -3,6 +3,8 @@ package controller
 import (
 	"context"
 	"errors"
+	"fmt"
+	emitter "github.com/amlwwalker/greenfinch.react/pkg/emitter"
 	"github.com/amlwwalker/greenfinch.react/pkg/notification"
 	"github.com/amlwwalker/greenfinch.react/pkg/payload"
 	"github.com/amlwwalker/greenfinch.react/pkg/tokens"
@@ -17,26 +19,18 @@ import (
 	"time"
 )
 
-type EventMessage string
-
-const (
-	RequestSign         EventMessage = "request_sign_payload"
-	ContainerListUpdate              = "container_list_update"
-	ObjectListUpdate                 = "objectUpdate"
-)
-
 // type ActionType func(p payload.Parameters, signedPayload payload.Payload, token Token) (notification.Notification, error)
-type ActionType func(p payload.Parameters, token tokens.Token) (notification.Notification, error)
+type ActionType func(p payload.Parameters, token tokens.Token) (notification.NewNotification, error)
 
 // Action defines the interface for actions that can be performed on objects
 type Action interface {
 
 	//todo - payload currently holds the signed token, but the naming here could be better
-	Head(p payload.Parameters, token tokens.Token) (notification.Notification, error)
-	Read(p payload.Parameters, token tokens.Token) (notification.Notification, error)
-	Write(p payload.Parameters, token tokens.Token) (notification.Notification, error)
-	Delete(p payload.Parameters, token tokens.Token) (notification.Notification, error)
-	List(p payload.Parameters, token tokens.Token) (notification.Notification, error)
+	Head(p payload.Parameters, token tokens.Token) (notification.NewNotification, error)
+	Read(p payload.Parameters, token tokens.Token) (notification.NewNotification, error)
+	Write(p payload.Parameters, token tokens.Token) (notification.NewNotification, error)
+	Delete(p payload.Parameters, token tokens.Token) (notification.NewNotification, error)
+	List(p payload.Parameters, token tokens.Token) (notification.NewNotification, error)
 }
 
 type RawWallet struct {
@@ -63,14 +57,15 @@ func (w RawWallet) PublicKeyHexString() string {
 type WCWallet struct {
 	WalletAddress string
 	PublicKey     string
-	emitter       Emitter
+	emitter       emitter.Emitter
 }
 
 func (w WCWallet) Address() string {
 	return w.WalletAddress
 }
 func (w WCWallet) Sign(p payload.Payload) error {
-	return w.emitter.Emit(context.Background(), (string)(RequestSign), p)
+	fmt.Println("signing payload ", p)
+	return w.emitter.Emit(context.Background(), (string)(emitter.RequestSign), p)
 }
 
 func (w WCWallet) PublicKeyHexString() string {
@@ -92,24 +87,30 @@ type TokenManager interface {
 // Controller manages the frontend and backend/SDK interconnectivity
 type Controller struct {
 	ctx           context.Context
+	cancelCtx     context.CancelFunc
 	pendingEvents map[uuid.UUID]payload.Payload //holds any asynchronous information sent to frontend
 	actionMap     map[uuid.UUID]ActionType      // Maps payload UID to corresponding action
-	Emitter       Emitter
+	Emitter       emitter.Emitter
 	wallet        Wallet
 	tokenManager  TokenManager
+	Notifier      notification.Notifier
 }
 
-func New(emitter Emitter) Controller {
+func New(emitter emitter.Emitter, ctx context.Context, notifier notification.Notifier) Controller {
+	ctxWithCancel, cancel := context.WithCancel(ctx)
 	return Controller{
 		pendingEvents: make(map[uuid.UUID]payload.Payload),
 		actionMap:     make(map[uuid.UUID]ActionType),
 		Emitter:       emitter,
 		tokenManager:  tokens.TokenManager{},
+		Notifier:      notifier,
+		cancelCtx:     cancel,
+		ctx:           ctxWithCancel,
 	}
 }
 
 func (m *Controller) Startup(ctx context.Context) {
-	m.ctx = ctx
+	m.ctx = ctx //todo = this usually comes from Wails. However we need the cancel context available
 }
 
 // domReady is called after the front-end dom has been loaded
@@ -166,7 +167,7 @@ func (c *Controller) SignResponse(signedPayload payload.Payload) error {
 
 // PerformAction is partnered with any 'event' that requires and action from the user and could take a while.
 // It runs the action that is stored, related to the payload that has been sent to the frontend.
-func (c *Controller) PerformAction(wg *sync.WaitGroup, p payload.Parameters, action ActionType, token tokens.Token) error {
+func (c *Controller) PerformAction(wg *sync.WaitGroup, p payload.Parameters, action ActionType) error {
 	if c.wallet == nil {
 		return errors.New(utils.ErrorNoSession)
 	}
@@ -225,14 +226,20 @@ func (c *Controller) PerformAction(wg *sync.WaitGroup, p payload.Parameters, act
 				if err := bearerToken.Sign(c.wallet.Address(), neoFSPayload); err != nil {
 					return
 				}
-				_, err := act(p, bearerToken)
+				_, err := act(p, bearerToken) //CRUD
 				if err != nil {
 					//handle the error with the UI (n)
+					fmt.Println("error here ", err)
 					return
 				}
+				c.Notifier.QueueNotification(c.Notifier.Notification(
+					"signed and successfully called action",
+					"the action was called successfully",
+					"success",
+					notification.ActionToast))
 				delete(c.actionMap, neoFSPayload.Uid) // Clean up
 			}
-		case <-time.After(60 * time.Second):
+		case <-time.After(20 * time.Second):
 			// Handle timeout
 			delete(c.actionMap, neoFSPayload.Uid) // Clean up
 			delete(c.pendingEvents, neoFSPayload.Uid)
