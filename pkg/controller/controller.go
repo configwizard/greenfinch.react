@@ -33,6 +33,35 @@ type Action interface {
 	List(p payload.Parameters, token tokens.Token) (notification.NewNotification, error)
 }
 
+type MockWallet struct {
+	OriginalAmessage string
+	Address          string
+	HexPubKey        string
+	HexSignature     string
+	HexSalt          string
+	HexSignedMessage string
+}
+
+func NewMockWallet() MockWallet {
+	return MockWallet{
+		OriginalAmessage: "Hello, world!",
+		Address:          "",
+		HexPubKey:        "0382fcb005ae7652401fbe1d6345f77110f98db7122927df0f3faf3b62d1094071",
+		HexSignature:     "6eb490f17f30c3e85f032ff47247499efe5cb0ce94dab5e31647612e361053574c96d584d3c185fb8474207e8f649d856b4d60b573a195d5e67e621a2b4c7f87",
+		HexSalt:          "3da1f339213180ed4c46a12b6bd57eb6",
+		HexSignedMessage: "" +
+			"010001f0" + // fixed scheme prefix
+			"34" + // length of salted message in bytes: 2x16 bytes for hex salt + 20 bytes for base64-encoded hello world = 52 (0x34)
+			"3364613166333339323133313830656434633436613132623662643537656236" + // hex-encoded salt
+			"534756736247387349486476636d786b49513d3d" + // message to sign (base64-encoded hello world)
+			"0000", // fixed scheme suffix,
+	}
+}
+func (w MockWallet) Sign() error {
+	//currently the signed data is stored in the mock
+	return nil
+}
+
 type RawWallet struct {
 	*wal.Wallet
 	Address string
