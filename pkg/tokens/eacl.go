@@ -11,7 +11,7 @@ func InitTable(cid cid.ID) eacl.Table {
 	return table
 }
 
-//recomend adding all allow records then all deny records
+// recomend adding all allow records then all deny records
 func AddRecords(table eacl.Table, toWhom []eacl.Target, operations map[eacl.Operation]eacl.Action) eacl.Table {
 	for k, v := range operations {
 		record := eacl.NewRecord()
@@ -23,7 +23,7 @@ func AddRecords(table eacl.Table, toWhom []eacl.Target, operations map[eacl.Oper
 	return table
 }
 
-//AllowOthersReadOnly from https://github.com/nspcc-dev/neofs-s3-gw/blob/fdc07b8dc15272e2aabcbd7bb8c19e435c94e392/authmate/authmate.go#L358
+// AllowOthersReadOnly from https://github.com/nspcc-dev/neofs-s3-gw/blob/fdc07b8dc15272e2aabcbd7bb8c19e435c94e392/authmate/authmate.go#L358
 func AllowDelete(cid cid.ID, toWhom eacl.Target) (eacl.Table, error) {
 	table := eacl.Table{}
 	//targetOthers := eacl.NewTarget()
@@ -42,7 +42,7 @@ func AllowDelete(cid cid.ID, toWhom eacl.Target) (eacl.Table, error) {
 	return table, nil
 }
 
-//AllowOthersReadOnly from https://github.com/nspcc-dev/neofs-s3-gw/blob/fdc07b8dc15272e2aabcbd7bb8c19e435c94e392/authmate/authmate.go#L358
+// AllowOthersReadOnly from https://github.com/nspcc-dev/neofs-s3-gw/blob/fdc07b8dc15272e2aabcbd7bb8c19e435c94e392/authmate/authmate.go#L358
 func AllowGetPut(cid cid.ID, toWhom eacl.Target) (eacl.Table, error) {
 	table := eacl.Table{}
 
@@ -71,10 +71,16 @@ func AllowGetPut(cid cid.ID, toWhom eacl.Target) (eacl.Table, error) {
 	putAllowRecord.SetAction(eacl.ActionAllow)
 	putAllowRecord.SetTargets(toWhom)
 
+	deleteAllowRecord := eacl.NewRecord()
+	deleteAllowRecord.SetOperation(eacl.OperationDelete)
+	deleteAllowRecord.SetAction(eacl.ActionAllow)
+	deleteAllowRecord.SetTargets(toWhom)
+
 	table.SetCID(cid)
 	table.AddRecord(getAllowRecord)
 	table.AddRecord(headAllowRecord)
 	table.AddRecord(putAllowRecord)
+	table.AddRecord(deleteAllowRecord)
 	//for _, v := range restrictedRecordsForOthers() {
 	//	table.AddRecord(v)
 	//}

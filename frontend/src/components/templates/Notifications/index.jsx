@@ -34,7 +34,7 @@ export default class TemplateNotifications extends React.Component {
             await deleteNotification(id)
             await this.retrieveList()
         } catch(e) {
-            console.log("error deleting notifications ", e)
+            console.log("error deleting notification ", e)
         }
     }
     async onClearNotifications() {
@@ -42,7 +42,7 @@ export default class TemplateNotifications extends React.Component {
             const blank = await deleteNotifications()
             await this.setState({list: blank})
         } catch(e) {
-            console.log("error deleting notifications ", e)
+            console.log("error deleting notification ", e)
         }
     }
     async retrieveList () {
@@ -58,14 +58,14 @@ export default class TemplateNotifications extends React.Component {
         }
     }
     async componentDidMount () {
-        console.log("mounting notifications")
+        console.log("mounting notification")
         try {
             await this.retrieveList()
         } catch(e) {
-            console.log("could not receive current notifications ", e)
+            console.log("could not receive current notification ", e)
         }
 
-        //here we need to read in all notifications from the database
+        //here we need to read in all notification from the database
         window.runtime.EventsOn(notificationsEventName, async (message) => {
             console.log("message", message)
             const notificationList = [message,...this.state.list]
@@ -88,7 +88,7 @@ export default class TemplateNotifications extends React.Component {
                             // hasButtonIcon={true}
                             // isButtonDisabled={this.state.list.length === 0 ? true : false}
                             // faClass={"fa-sharp fa-solid fa-broom-wide"}
-                            // buttonText={"Clear notifications"}
+                            // buttonText={"Clear notification"}
                             // buttonAction={this.onClearNotifications} 
                         /> 
                         <div className="row justify-content-center">
@@ -162,7 +162,7 @@ export default class TemplateNotifications extends React.Component {
                                                         </div>
                                                     )
                                             }) : <NoContent 
-                                                    text={"You currently have no notifications to view."}
+                                                    text={"You currently have no notification to view."}
                                                     addAction={false} />
                                         }
                                     </div>

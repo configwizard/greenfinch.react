@@ -5,8 +5,7 @@ import (
 	"github.com/boltdb/bolt"
 )
 
-const notificationBucket = "notifications"
-
+const notificationBucket = "notification"
 
 // UpsertNotification used to create a new, or update an existing notification (mark read etc)
 func UpsertNotification(wallet, network, id string, notification []byte) error {

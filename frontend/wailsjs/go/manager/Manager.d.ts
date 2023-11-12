@@ -110,7 +110,7 @@ export function SetProgressPercentage(arg1:manager.ProgressMessage):Promise<void
 
 export function SetSelectedNetwork(arg1:string):Promise<manager.NetworkData>;
 
-export function SetVariable(arg1:string,arg2:string):Promise<void>;
+export function SetVariable(arg1:string,arg2:string,arg3:string):Promise<void>;
 
 export function SetWalletDebugging(arg1:string,arg2:string):Promise<void>;
 

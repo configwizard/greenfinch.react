@@ -96,53 +96,6 @@ func (m *Manager) CancelObjectContext() {
 	}
 }
 
-// copy-pasted from https://github.com/nspcc-dev/neofs-sdk-go/blob/master/client/object_put.go
-// in future this is most likely to be provided by SDK
-type objectWriter struct {
-	context context.Context
-	client  *client.Client
-	session *session.Object // add this
-}
-
-//todo - this should probably be replaced with the test now
-//func (x *objectWriter) InitDataStream(header object.Object) (io.Writer, error) {
-//	var prm client.PrmObjectPutInit
-//	prm.WithinSession(*x.session) // and this
-//
-//	stream, err := x.client.ObjectPutInit(x.context, prm)
-//	if err != nil {
-//		return nil, fmt.Errorf("init object stream: %w", err)
-//	}
-//	if !stream.WriteHeader(header) {
-//		_, err := stream.Close()
-//		return nil, err
-//	}
-//	return &payloadWriter{
-//		stream: stream,
-//	}, nil
-//}
-//
-//type payloadWriter struct {
-//	stream *client.ObjectWriter
-//}
-//
-//func (x *payloadWriter) Write(p []byte) (int, error) {
-//	if !x.stream.WritePayloadChunk(p) {
-//		return 0, x.Close()
-//	}
-//
-//	return len(p), nil
-//}
-//
-//func (x *payloadWriter) Close() error {
-//	_, err := x.stream.Close()
-//	if err != nil {
-//		return err
-//	}
-//
-//	return nil
-//}
-
 func (m *Manager) InitialiseUploadProcedure(containerID, fp string, customAttributeMap map[string]string) (oid.ID, error) {
 	cancelCtx, cnclF := context.WithCancel(context.Background())
 	m.cancelUploadCtx = cancelCtx
@@ -176,7 +129,6 @@ func (m *Manager) InitialiseUploadProcedure(containerID, fp string, customAttrib
 		}
 		prmDial.SetServerURI(node.Address)
 		if err := cli.Dial(prmDial); err != nil {
-			fmt.Printf("Error connecting to node %s: %s\n", node.Address, err)
 			m.MakeToast(UXMessage{Type: "warning", Title: "issues conneting", Description: "please wait, attempting to fix"})
 			m.MakeNotification(NotificationMessage{Type: "warning", Title: "warning", Description: "failed to connect to " + node.Address + " attempting another"})
 			continue
@@ -194,10 +146,6 @@ func (m *Manager) InitialiseUploadProcedure(containerID, fp string, customAttrib
 	if err != nil {
 		return oid.ID{}, err
 	}
-	fmt.Println("naming the file ", fileStats.Name())
-	fmt.Println("file size ", fileStats.Size())
-	fmt.Println("client ", cli)
-
 	//thumbnail
 	{
 		f, err := os.Open(fp)
@@ -284,11 +232,10 @@ func (m *Manager) putObject(ctx context.Context, cli *client.Client, cnr cid.ID,
 	sessionToken.BindContainer(cnr)
 	sessionToken.ForVerb(session.VerbObjectPut)
 
-	//function to sign session token with user's private key
-	if err := m.TemporarySignObjectTokenWithPrivateKey(&sessionToken); err != nil {
-		fmt.Println("signing token err", err)
-		return oid.ID{}, err
-	}
+	fmt.Println("waiting on signature")
+	m.SignWithWC(&sessionToken) //we need to have a better mechanism of interacting with the wallet etc in terms of sending messages to the front end
+	//note on failure we need to stop this - check signature valid etc
+	fmt.Println("received signed payload ", sessionToken.VerifySignature())
 	userId, err := m.TemporaryRetrieveUserID()
 	if err != nil {
 		return oid.ID{}, err
@@ -388,7 +335,6 @@ func (m *Manager) putObject(ctx context.Context, cli *client.Client, cnr cid.ID,
 				endOfFile = true
 				break
 			}
-			fmt.Println("writing chunk of ", n, " bytes")
 			if _, err := plWriter.Write(buf[:n]); err != nil {
 				ctxWithMsg, cancel := context.WithCancel(m.cancelUploadCtx)
 				defer cancel()
@@ -486,10 +432,8 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 		log.Println("error creating session token to create a object", err)
 		return nil, err
 	}
-	if err := m.TemporarySignObjectTokenWithPrivateKey(sc); err != nil {
-		log.Println("error signing session token to create a object", err)
-		return nil, err
-	}
+	m.SignWithWC(sc)
+
 	getInit := client.PrmObjectGet{}
 	getInit.WithinSession(*sc)
 	dstObject := object.Object{}
@@ -498,14 +442,7 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 		log.Println("error creating object reader ", err)
 		return nil, err
 	}
-	//if !objReader.ReadHeader(dstObject) {
-	//	err := objReader.Close()
-	//	if err != nil {
-	//		log.Println("could not close object reader ", err)
-	//		return nil, err
-	//	}
-	//	return nil, errors.New("error with reading header")
-	//}
+
 	c := progress.NewWriter(writer)
 	wg := sync.WaitGroup{}
 	wg.Add(1)
@@ -579,7 +516,7 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 				tmp := NewToastMessage(&UXMessage{
 					Title:       "Download error",
 					Type:        "error",
-					Description: "Downloading error - see notifications",
+					Description: "Downloading error - see notification",
 				})
 				m.MakeToast(tmp)
 				endOfFile = true
@@ -659,24 +596,29 @@ func (m *Manager) GetObjectMetaData(objectID, containerID string) (object.Object
 	target := eacl.Target{}
 	target.SetRole(eacl.RoleUser)
 	target.SetBinaryKeys([][]byte{m.gateAccount.PublicKey().Bytes()}) //todo - is this correct??
-	table, err := tokens.AllowGetPut(cnrID, target)
-	if err != nil {
-		log.Fatal("error retrieving table ", err)
-	}
-	iAt, exp, err := gspool.TokenExpiryValue(m.ctx, pl, 100)
+	gateSigner := user.NewAutoIDSignerRFC6979(m.gateAccount.PrivateKey().PrivateKey)
 
-	bt, err := tokens.BuildUnsignedBearerToken(&table, iAt, iAt, exp, m.gateAccount.PublicKey())
+	cliSdk, err := pl.RawClient()
 	if err != nil {
 		return object.Object{}, err
 	}
-	//now sign it with wallet connect
-	if err := m.TemporarySignBearerTokenWithPrivateKey(bt); err != nil {
-		if err != nil {
-			return object.Object{}, err
-		}
+	netInfo, err := cliSdk.NetworkInfo(context.Background(), client.PrmNetworkInfo{})
+	if err != nil {
+		return object.Object{}, fmt.Errorf("read current network info: %w", err)
 	}
-	prmHead.WithBearerToken(*bt)
-	gateSigner := user.NewAutoIDSigner(m.gateAccount.PrivateKey().PrivateKey) //fix me is this correct signer?
+	var sessionToken session.Object
+	sessionToken.SetAuthKey(gateSigner.Public()) //gateSigner.Public()
+	sessionToken.SetID(uuid.New())
+	sessionToken.SetIat(netInfo.CurrentEpoch())
+	sessionToken.SetNbf(netInfo.CurrentEpoch())
+	sessionToken.SetExp(netInfo.CurrentEpoch() + 100) // or particular exp value
+	sessionToken.BindContainer(cnrID)
+	sessionToken.ForVerb(session.VerbObjectHead)
+
+	fmt.Println("attempting to get object metadata ") //fails as chan
+	m.SignWithWC(&sessionToken)
+
+	prmHead.WithinSession(sessionToken)
 	hdr, err := pl.ObjectHead(m.ctx, cnrID, objID, gateSigner, prmHead)
 	if err != nil {
 		if reason, ok := isErrAccessDenied(err); ok {
@@ -715,18 +657,6 @@ func (m *Manager) listObjectsAsync(containerID string) ([]Element, error) {
 		return []Element{}, err
 	}
 
-	//target := eacl.Target{}
-	//target.SetRole(eacl.RoleUser)
-	//target.SetBinaryKeys([][]byte{m.gateAccount.PublicKey().Bytes()})
-	//table, err := tokens.AllowGetPut(cnrID, target)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//iAt, exp, err := gspool.TokenExpiryValue(m.ctx, pl, 100)
-	//bt, err := tokens.BuildUnsignedBearerToken(&table, iAt, iAt, exp, m.gateAccount.PublicKey())
-	//if err != nil {
-	//	return nil, err
-	//}
 	cliSdk, err := pl.RawClient()
 	if err != nil {
 		return nil, err
@@ -748,17 +678,11 @@ func (m *Manager) listObjectsAsync(containerID string) ([]Element, error) {
 	if err := m.TemporarySignObjectTokenWithPrivateKey(&sessionToken); err != nil {
 		return nil, err
 	}
-	//fmt.Println("signing")
-	//if err = m.SignWithWC(&sessionToken); err != nil {
-	//	fmt.Println("error signing ", err)
-	//	return nil, err
-	//}
-	//return nil, nil
+	fmt.Println("sending token to Frontend for list allow")
+	//m.SignWithWC(&sessionToken)
 	prms := client.PrmObjectSearch{}
 	prms.WithinSession(sessionToken)
 
-	//prms.SetContainerID(cnrID)
-	//gateSigner := user.NewAutoIDSigner(m.gateAccount.PrivateKey().PrivateKey) //fix me is this correct signer?
 	filter := object.SearchFilters{}
 	filter.AddRootFilter()
 	prms.SetFilters(filter)
@@ -766,15 +690,6 @@ func (m *Manager) listObjectsAsync(containerID string) ([]Element, error) {
 	if err != nil {
 		return nil, err
 	}
-	//objects, err := pl.SearchObjects(m.ctx, cnrID, prms)
-
-	//prmSearch := client.PrmObjectSearch{}
-	//pl.
-	//reader.
-	//objects, err := pl.Ob(m.ctx, cnrID, prms)
-	//if err != nil {
-	//	return nil, err
-	//}
 	var list []oid.ID
 	if err = init.Iterate(func(id oid.ID) bool {
 		fmt.Println("searching resulted in id ", id.String())
@@ -975,12 +890,6 @@ func (m *Manager) DeleteObject(objectID, containerID string) ([]Element, error) 
 	sessionToken.ForVerb(session.VerbObjectDelete)
 
 	m.SignWithWC(&sessionToken)
-	////fmt.Println("signedSessionToken ", signedSessionToken)
-	//if err := m.SignWithWC(sessionToken); err != nil {
-	//	log.Println("error signing session token to create a object", err)
-	//	return nil, err
-	//}
-	//return []Element{}, nil
 	var prmDelete client.PrmObjectDelete
 	prmDelete.WithinSession(sessionToken)
 

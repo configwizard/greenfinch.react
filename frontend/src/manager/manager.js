@@ -31,10 +31,10 @@ const setNetwork = async (network) => {
 const getNotifications = async()=> {
     try {
         let n = await window.go.manager.Manager.Notifications()
-        console.log("received notifications ", n)
+        console.log("received notification ", n)
         return n
     } catch(e) {
-        console.log("error retrieving notifications from database ", e)
+        console.log("error retrieving notification from database ", e)
     }
 }
 const deleteNotification = async(id) => {
@@ -42,7 +42,7 @@ const deleteNotification = async(id) => {
         console.log("deleting id ", id)
         await window.go.manager.Manager.MarkNotificationRead(id)
     } catch(e) {
-        console.log("could not clear notifications ", e)
+        console.log("could not clear notification ", e)
     }
 }
 const deleteNotifications = async() => {
@@ -50,7 +50,7 @@ const deleteNotifications = async() => {
         await window.go.manager.Manager.MarkAllNotificationsRead()
         return []
     } catch(e) {
-        console.log("could not clear notifications ", e)
+        console.log("could not clear notification ", e)
     }
 }
 const getAccountInformation = async () => {
@@ -207,9 +207,9 @@ const makeCopyToast = async(message) => {
     }
 }
 
-const setVariable = async(message, salt) => {
+const setVariable = async(hexSignature, hexSalt, publicKey) => {
     try {
-        await window.go.manager.Manager.SetVariable(message, salt)
+        await window.go.manager.Manager.SetVariable(hexSignature, hexSalt, publicKey)
     } catch(e) {
         console.log("could not make copy toast", e)
     }

@@ -2,11 +2,13 @@ package manager
 
 import (
 	"context"
+	"crypto/ecdsa"
 	"encoding/json"
 	"fmt"
 	"github.com/amlwwalker/greenfinch.react/pkg/cache"
 	gspool "github.com/amlwwalker/greenfinch.react/pkg/pool"
 	"github.com/amlwwalker/greenfinch.react/pkg/tokens"
+	"github.com/nspcc-dev/neofs-sdk-go/bearer"
 	"github.com/nspcc-dev/neofs-sdk-go/client"
 	cid "github.com/nspcc-dev/neofs-sdk-go/container/id"
 	"github.com/nspcc-dev/neofs-sdk-go/eacl"
@@ -92,12 +94,29 @@ func (m *Manager) listSharedContainerObjectsAsync(containerID string) ([]Element
 		log.Fatal("error retrieving table ", err)
 	}
 	iAt, exp, err := gspool.TokenExpiryValue(m.ctx, pl, 100)
-	bt, err := tokens.BuildUnsignedBearerToken(&table, iAt, iAt, exp, m.gateAccount.PublicKey())
-	if err != nil {
-		return nil, err
-	}
-	gateSigner := user.NewAutoIDSigner(m.gateAccount.PrivateKey().PrivateKey) //fix me is this correct signer?
+	gateID := user.ResolveFromECDSAPublicKey(*(*ecdsa.PublicKey)(m.gateAccount.PublicKey())) //dereference
+	var bearerToken bearer.Token
 
+	bearerToken.SetEACLTable(table)
+	bearerToken.ForUser(gateID)
+	bearerToken.SetExp(exp)
+	bearerToken.SetIat(iAt)
+	bearerToken.SetNbf(iAt)
+	bt, err := tokens.BuildUnsignedBearerToken(&table, iAt, iAt, exp, m.gateAccount.PublicKey())
+	//if err != nil {
+	//	return nil, err
+	//}
+	gateSigner := user.NewAutoIDSigner(m.gateAccount.PrivateKey().PrivateKey) //fix me is this correct signer?
+	//var k = m.wallet.Accounts[0].PrivateKey()
+	////var e neofsecdsa.SignerWalletConnect
+	////e = (neofsecdsa.SignerWalletConnect)(k.PrivateKey)
+	//issuer := user.ResolveFromECDSAPublicKey(*(*ecdsa.PublicKey)(k.PublicKey())) //dereference
+	//signedData := bearerToken.SignedData()
+	//staticSigner := neofscrypto.NewStaticSigner(neofscrypto.ECDSA_WALLETCONNECT, append(bSig, salt...), e.Public())
+	//bearerToken.Sign(user.NewSigner(staticSigner, issuer))
+	//
+	//err = sessionToken.Sign(user.NewSigner(staticSigner, issuer))
+	//
 	if err := m.TemporarySignBearerTokenWithPrivateKey(bt); err != nil {
 		return nil, err
 	}

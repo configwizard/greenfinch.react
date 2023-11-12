@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/ecdsa"
 	"crypto/elliptic"
-	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
@@ -16,10 +15,9 @@ import (
 	"github.com/blang/semver/v4"
 	"github.com/google/uuid"
 	"github.com/nspcc-dev/neo-go/pkg/crypto/keys"
-	"github.com/nspcc-dev/neofs-api-go/v2/refs"
-	v2session "github.com/nspcc-dev/neofs-api-go/v2/session"
 	"github.com/nspcc-dev/neofs-sdk-go/bearer"
 	"github.com/nspcc-dev/neofs-sdk-go/client"
+	neofscrypto "github.com/nspcc-dev/neofs-sdk-go/crypto"
 	neofsecdsa "github.com/nspcc-dev/neofs-sdk-go/crypto/ecdsa"
 	"github.com/nspcc-dev/neofs-sdk-go/pool"
 	"github.com/nspcc-dev/neofs-sdk-go/session"
@@ -109,8 +107,8 @@ type Manager struct {
 	cancelUploadCtx, cancelDownloadCtx   context.Context
 
 	//testing
-	HexString, SaltString string
-	variableListener      chan struct{}
+	HexSignature, HexSalt, HexPublicKey string
+	variableListener                    chan struct{}
 }
 
 const (
@@ -207,7 +205,7 @@ func (m *Manager) MakeNotification(message NotificationMessage) {
 	}
 	if m.wallet == nil {
 		fmt.Println("no wallet found")
-		return //no wallet yet to connect notifications with
+		return //no wallet yet to connect notification with
 	}
 	message.User = m.wallet.Accounts[0].Address
 	message = NewNotificationMessage(&message)
@@ -360,10 +358,11 @@ func (m Manager) TemporarySignBearerTokenWithPrivateKey(bt *bearer.Token) error 
 	return bt.Sign(e) //is this the owner who is giving access priveliges???
 }
 
-func (m *Manager) SetVariable(hex, salt string) {
-	m.HexString = hex
-	m.SaltString = salt
-	fmt.Println("setting to ", m.HexString, m.SaltString)
+func (m *Manager) SetVariable(hexSignature, hexSalt, publicKey string) {
+	m.HexSignature = hexSignature
+	m.HexSalt = hexSalt
+	m.HexPublicKey = publicKey
+	fmt.Println("setting to ", m.HexSignature, m.HexSalt, m.HexPublicKey)
 
 	close(m.variableListener)
 }
@@ -374,66 +373,46 @@ func (m *Manager) SignWithGoVerifyWithWC(sessionToken *session.Object) []byte {
 }
 func (m *Manager) SignWithWC(sessionToken *session.Object) ([]byte, error) {
 
-	fmt.Println("sending token for signing")
-	var k = m.wallet.Accounts[0].PrivateKey()
-	var e neofsecdsa.SignerWalletConnect
-	e = (neofsecdsa.SignerWalletConnect)(k.PrivateKey)
-	userID := user.ResolveFromECDSAPublicKey(*(*ecdsa.PublicKey)(k.PublicKey())) //dereference
-	sessionToken.SetIssuer(userID)
-	var s v2session.Token
-	sessionToken.WriteToV2(&s)
-	binaryData := s.GetBody().StableMarshal(nil)
-	b64 := make([]byte, base64.StdEncoding.EncodedLen(len(binaryData)))
-	base64.StdEncoding.Encode(b64, binaryData)
-	//runtime.EventsEmit(m.ctx, "new_signature", binaryData) //sending to front end for WC signing
-	goSign, err := e.Sign(binaryData)
+	var issuer user.ID
+	err := issuer.DecodeString(m.wallet.Accounts[0].Address)
 	if err != nil {
-		fmt.Println("error signing ", err)
 		return nil, err
 	}
-	var Tmp = struct {
-		Signature []byte
-		Data      []byte
-	}{
-		Signature: goSign,
-		Data:      b64,
-	}
-	fmt.Println("sending ", Tmp)
-	runtime.EventsEmit(m.ctx, "verify_signature", Tmp) //sending to front end for WC signing
 
-	return goSign, nil
-	//b64 := make([]byte, base64.StdEncoding.EncodedLen(len(binaryData)))
-	//base64.StdEncoding.Encode(b64, binaryData)
-	fmt.Println("signing base64 stuff ", string(b64))
-	fmt.Printf("gosign %+v\r\n", goSign)
+	//issuer := user.ResolveFromECDSAPublicKey(*(*ecdsa.PublicKey)(k.PublicKey())) //dereference
+	sessionToken.SetIssuer(issuer)
+	signedData := sessionToken.SignedData()
+	runtime.EventsEmit(m.ctx, "new_signature", signedData) //sending to front end for WC signing
 
-	<-m.variableListener
-	fmt.Println("undecoded ", m.HexString)
-	decodedHex, err := hex.DecodeString(m.HexString)
+	<-m.variableListener //this is a very terrible hack really, but works for now
+	fmt.Println("variable listening completed")
+	bSig, err := hex.DecodeString(m.HexSignature)
 	if err != nil {
 		fmt.Println("error decoding hex signature", err)
 		return nil, err
 	}
-	decodedSalt, err := hex.DecodeString(m.SaltString)
+	salt, err := hex.DecodeString(m.HexSalt)
 	if err != nil {
 		fmt.Println("error decoding hex signature", err)
 		return nil, err
 	}
-	receivedSignature := append(decodedHex[:], decodedSalt[:]...)
-	fmt.Printf("sign %+v\r\n", receivedSignature)
-	fmt.Println("length ", len(decodedHex), len(decodedSalt))
-	fmt.Println("verification ", e.Public().Verify(binaryData, append(decodedHex, decodedSalt...)))
-	//just for comparison....
-	signature := refs.Signature{}
-	signature.SetSign(receivedSignature)
-	signature.SetScheme(refs.ECDSA_RFC6979_SHA256_WALLET_CONNECT)
-	signature.SetKey(k.PublicKey().Bytes())
-	s.SetSignature(&signature)
-	if err := sessionToken.ReadFromV2(s); err != nil {
-		fmt.Println("tried reading ", err)
+
+	bPubKey, err := hex.DecodeString(m.HexPublicKey)
+	if err != nil {
 		return nil, err
 	}
-	fmt.Println("verify sig ", sessionToken.VerifySignature())
+	var pubKey neofsecdsa.PublicKeyWalletConnect
+
+	err = pubKey.Decode(bPubKey)
+	if err != nil {
+		return nil, err
+	}
+	staticSigner := neofscrypto.NewStaticSigner(neofscrypto.ECDSA_WALLETCONNECT, append(bSig, salt...), &pubKey)
+	err = sessionToken.Sign(user.NewSigner(staticSigner, issuer))
+	if err != nil {
+		return nil, fmt.Errorf("write precalculated signature into session token: %w", err)
+	}
+	fmt.Println("verify sig ", sessionToken.VerifySignature(), sessionToken.AssertVerb(session.VerbObjectSearch))
 	return nil, nil
 }
 func NewFileSystemManager(version string, dbLocation string, DEBUG bool) (*Manager, error) {
@@ -607,7 +586,7 @@ func (m *Manager) GetAccountInformation() (Account, error) {
 		tmp := UXMessage{
 			Title:       "Connecting to NeoFS error",
 			Type:        "error",
-			Description: "See notifications for more information",
+			Description: "See notification for more information",
 		}
 		m.MakeToast(NewToastMessage(&tmp))
 		return Account{}, err

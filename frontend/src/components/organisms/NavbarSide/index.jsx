@@ -79,7 +79,7 @@ const NavbarSide = (props) => {
                 <ul className="d-flex flex-column justify-content-center">
                     <Tooltip content="Notifications" direction="right">
                         <NavlinkSide
-                            to={"/notifications"}
+                            to={"/notification"}
                             faClass={"fa-sharp fa-regular fa-bell"}
                             label={"Notifications"} />
                     </Tooltip>
