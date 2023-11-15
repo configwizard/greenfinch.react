@@ -5,13 +5,14 @@ import (
 	"github.com/nspcc-dev/neofs-sdk-go/eacl"
 	"github.com/nspcc-dev/neofs-sdk-go/object"
 	"io"
+	"sync"
 )
 
 // this could be a struct. Nothing here needs to be directly tested.
 type Parameters interface {
 	ParentID() string               //container ID holder?
 	ID() string                     //object or container ID holder...
-	Chan() chan Payload             //channel to send any information on that is outside of the read/writer. Like a list or something.
+	WaitGroup() *sync.WaitGroup     //channel to send any information on that is outside of the read/writer. Like a list or something.
 	Attributes() []object.Attribute //need to be able to pass around anything that can be set on the object
 	Operation() eacl.Operation
 	Epoch() uint64

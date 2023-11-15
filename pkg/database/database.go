@@ -8,20 +8,24 @@ import (
 )
 
 const (
+	MAINNET = "mainnet"
+	TESTNET = "testnet"
+)
+const (
 	ErrorNotFound string = "not found"
 )
 
 type Store interface {
-	CreateWalletBucket(bucket, wallet, walletLocation string) error
-	RecentWallets(bucket string) (map[string]string, error)
-	DeleteRecentWallet(bucket, walletId string) error
-	Create(network, walletId, bucket, identifier string, payload []byte) error
-	Read(network, walletId, bucket, identifier string) ([]byte, error)
-	ReadAll(network, walletId, bucket string) (map[string][]byte, error)
-	Update(network, walletId, bucket, identifier string, payload []byte) error
-	Pend(network, walletId, bucket, identifier string, payload []byte) error //a pend is a special case of an update
-	Delete(network, walletId, bucket, identifier string) error
-	DeleteAll(network, walletId, bucket string) error
+	CreateWalletBucket() error
+	RecentWallets() (map[string]string, error)
+	DeleteRecentWallet() error
+	Create(bucket, identifier string, payload []byte) error
+	Read(bucket, identifier string) ([]byte, error)
+	ReadAll(bucket string) (map[string][]byte, error)
+	Update(bucket, identifier string, payload []byte) error
+	Pend(bucket, identifier string, payload []byte) error //a pend is a special case of an update
+	Delete(bucket, identifier string) error
+	DeleteAll(bucket string) error
 }
 
 func (b Bolt) DeleteAll(bucket, network, walletId string) error {
@@ -47,7 +51,7 @@ const (
 	sharedObjectBucket    = "shared_object_bucket"
 	objectBucket          = "objects"
 	addressBookBucket     = "address_book"
-	notificationBucket    = "notification"
+	NotificationBucket    = "notification"
 )
 
 func New(dbPath string) *Bolt {
@@ -113,7 +117,7 @@ func createChildBucketsForNetwork(wallet string, network *bolt.Bucket) error {
 	if err != nil {
 		return fmt.Errorf("creating bucket failed: %s", err)
 	}
-	_, err = userBucket.CreateBucketIfNotExists([]byte(notificationBucket))
+	_, err = userBucket.CreateBucketIfNotExists([]byte(NotificationBucket))
 	if err != nil {
 		return fmt.Errorf("creating bucket failed: %s", err)
 	}

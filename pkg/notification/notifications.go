@@ -2,8 +2,10 @@ package notification
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/amlwwalker/greenfinch.react/pkg/database"
 	"github.com/amlwwalker/greenfinch.react/pkg/emitter"
 	"github.com/amlwwalker/greenfinch.react/pkg/utils"
 	"github.com/google/uuid"
@@ -18,16 +20,35 @@ for mocker we need an emitter
 */
 
 type MockNotificationEvent struct {
-	Name string
+	Name                      string
+	DB                        database.Store
+	network, walletId, bucket string
 }
 
-func (m MockNotificationEvent) Emit(c context.Context, message string, p any) error {
-	log.Println("emitting ", message, p)
+func NewMockNotificationEvent(name string, db database.Store) MockNotificationEvent {
+	return MockNotificationEvent{
+		Name: name,
+		DB:   db,
+	}
+}
+func (m MockNotificationEvent) Emit(c context.Context, _ string, p any) error {
+	log.Println("emitting ", p)
 	actualPayload, ok := p.(NewNotification)
 	if !ok {
 		return errors.New(utils.ErrorNotPayload)
 	}
-	fmt.Printf("%s firing notification %+v\r\n", m.Name, actualPayload)
+	log.Printf("%s firing notification %+v\r\n", m.Name, actualPayload)
+	if m.DB == nil {
+		return errors.New(utils.ErrorNoDatabase)
+	}
+	byt, err := json.Marshal(actualPayload)
+	if err != nil {
+		return err
+	}
+	if err := m.DB.Create(database.NotificationBucket, actualPayload.Id, byt); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -47,6 +68,7 @@ const (
 
 type Notifier interface {
 	Notification(title, description, typz string, action NotificationType) NewNotification //creates a new notifier
+	GenerateIdentifier() string                                                            //generates an identifier fro the notification
 	QueueNotification(notification NewNotification)                                        //pushes a notification onto a sending queue
 	ListenAndEmit()                                                                        //listens for notifications and sends them out
 }
@@ -68,6 +90,7 @@ type EmitNotifier struct { //used to emit messages over a provided emitter
 
 type MockNotifier struct {
 	emitter.Emitter
+	DB             database.Store
 	notificationCh chan NewNotification
 	ctx            context.Context //to cancel the routine
 	cancelFunc     context.CancelFunc
@@ -83,11 +106,18 @@ func NewMockNotifier(wg *sync.WaitGroup, emit emitter.Emitter, ctx context.Conte
 		wg:             wg,
 	}
 }
+
+func (m MockNotifier) GenerateIdentifier() string {
+	//newUUID, _ := uuid.NewUUID()
+	return "mock-notifier-94d9a4c7-9999-4055-a549-f51383edfe57"
+}
 func (m MockNotifier) End() {
 	m.cancelFunc()
 }
 func (m MockNotifier) Notification(title, description, typez string, action NotificationType) NewNotification {
+	identifier := m.GenerateIdentifier()
 	return NewNotification{
+		Id:          identifier,
 		Title:       title,
 		Description: description,
 		Type:        typez,
@@ -108,7 +138,6 @@ func (m MockNotifier) ListenAndEmit() {
 			log.Println("closed mock notifier")
 			return
 		case not := <-m.notificationCh:
-			//log.Printf("notification received %+v\r\n", not)
 			if err := m.Emit(m.ctx, emitter.NotificationMessage, not); err != nil {
 				return
 			}

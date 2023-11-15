@@ -7,13 +7,14 @@ import (
 	"github.com/nspcc-dev/neofs-sdk-go/eacl"
 	"github.com/nspcc-dev/neofs-sdk-go/object"
 	"io"
+	"sync"
 )
 
 type ObjectParameter struct {
 	ContainerID string
 	Id          string
 	io.ReadWriter
-	PayloadChannel  chan payload.Payload
+	WG              *sync.WaitGroup
 	Attrs           []object.Attribute
 	ActionOperation eacl.Operation
 	ExpiryEpoch     uint64
@@ -33,8 +34,8 @@ func (o *ObjectParameter) ID() string {
 	return o.Id
 }
 
-func (o *ObjectParameter) Chan() chan payload.Payload {
-	return o.PayloadChannel
+func (o *ObjectParameter) WaitGroup() *sync.WaitGroup {
+	return o.WG
 }
 
 func (o *ObjectParameter) Attributes() []object.Attribute {
@@ -56,7 +57,7 @@ type Object struct {
 // however maybe that isn;t the jjob of this and its the hob of the controller, who interfces with the UI. so this needs a chanenl to send messages on actually
 func (o *Object) Head(p payload.Parameters, signedToken payload.Payload, token tokens.Token) (notification.Notification, error) {
 	// e.g
-	p.Chan() <- signedToken //example - not real!
+	//p.Chan() <- signedToken //example - not real!
 	return notification.Notification{}, nil
 }
 func (o *Object) Read(p payload.Parameters, signedToken payload.Payload, token tokens.Token) (notification.Notification, error) {

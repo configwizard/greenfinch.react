@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/amlwwalker/greenfinch.react/pkg/database"
 	emitter "github.com/amlwwalker/greenfinch.react/pkg/emitter"
 	"github.com/amlwwalker/greenfinch.react/pkg/notification"
 	"github.com/amlwwalker/greenfinch.react/pkg/payload"
@@ -20,17 +21,17 @@ import (
 )
 
 // type ActionType func(p payload.Parameters, signedPayload payload.Payload, token Token) (notification.Notification, error)
-type ActionType func(p payload.Parameters, token tokens.Token) (notification.NewNotification, error)
+type ActionType func(wg *sync.WaitGroup, p payload.Parameters, token tokens.Token) (notification.NewNotification, error)
 
 // Action defines the interface for actions that can be performed on objects
 type Action interface {
 
 	//todo - payload currently holds the signed token, but the naming here could be better
-	Head(p payload.Parameters, token tokens.Token) (notification.NewNotification, error)
-	Read(p payload.Parameters, token tokens.Token) (notification.NewNotification, error)
-	Write(p payload.Parameters, token tokens.Token) (notification.NewNotification, error)
-	Delete(p payload.Parameters, token tokens.Token) (notification.NewNotification, error)
-	List(p payload.Parameters, token tokens.Token) (notification.NewNotification, error)
+	Head(wg *sync.WaitGroup, p payload.Parameters, token tokens.Token) (notification.NewNotification, error)
+	//Read(p payload.Parameters, token tokens.Token) (notification.NewNotification, error)
+	//Write(p payload.Parameters, token tokens.Token) (notification.NewNotification, error)
+	//Delete(p payload.Parameters, token tokens.Token) (notification.NewNotification, error)
+	//List(p payload.Parameters, token tokens.Token) (notification.NewNotification, error)
 }
 
 type MockWallet struct {
@@ -115,17 +116,19 @@ type TokenManager interface {
 
 // Controller manages the frontend and backend/SDK interconnectivity
 type Controller struct {
-	ctx           context.Context
-	cancelCtx     context.CancelFunc
-	pendingEvents map[uuid.UUID]payload.Payload //holds any asynchronous information sent to frontend
-	actionMap     map[uuid.UUID]ActionType      // Maps payload UID to corresponding action
-	Emitter       emitter.Emitter
-	wallet        Wallet
-	tokenManager  TokenManager
-	Notifier      notification.Notifier
+	ctx                context.Context
+	cancelCtx          context.CancelFunc
+	DB                 database.Store
+	wallet             Wallet
+	tokenManager       TokenManager
+	Emitter            emitter.Emitter
+	Notifier           notification.Notifier
+	progressBarManager *notification.ProgressBarManager
+	pendingEvents      map[uuid.UUID]payload.Payload //holds any asynchronous information sent to frontend
+	actionMap          map[uuid.UUID]ActionType      // Maps payload UID to corresponding action
 }
 
-func New(emitter emitter.Emitter, ctx context.Context, notifier notification.Notifier) Controller {
+func New(db database.Store, emitter emitter.Emitter, ctx context.Context, notifier notification.Notifier) Controller {
 	ctxWithCancel, cancel := context.WithCancel(ctx)
 	return Controller{
 		pendingEvents: make(map[uuid.UUID]payload.Payload),
@@ -135,6 +138,7 @@ func New(emitter emitter.Emitter, ctx context.Context, notifier notification.Not
 		Notifier:      notifier,
 		cancelCtx:     cancel,
 		ctx:           ctxWithCancel,
+		DB:            db,
 	}
 }
 
@@ -201,6 +205,7 @@ func (c *Controller) PerformAction(wg *sync.WaitGroup, p payload.Parameters, act
 		return errors.New(utils.ErrorNoSession)
 	}
 	var cnrId cid.ID
+
 	err := cnrId.DecodeString(p.ParentID())
 	if err != nil {
 		return err
@@ -212,7 +217,7 @@ func (c *Controller) PerformAction(wg *sync.WaitGroup, p payload.Parameters, act
 		//we believe we have a token that can perform
 		//the action should now be passed what it was going to be passed anyway, along with the token that it can use to make the request.
 		//these actions will be responsible for notifying UI themselves (i.e progress bars etc)
-		if notification, err := action(p, bearerToken); err != nil {
+		if notification, err := action(wg, p, bearerToken); err != nil {
 			//notification (interface) handler would handle any errors here. (c.notificationHandler interface type)
 			return err
 		} else {
@@ -241,8 +246,14 @@ func (c *Controller) PerformAction(wg *sync.WaitGroup, p payload.Parameters, act
 	wg.Add(1)
 	// Wait for the payload to be signed in a separate goroutine
 	go func() {
-		defer wg.Done()
+		defer func() {
+			wg.Done()
+			fmt.Println("perform action completed")
+		}()
 		select {
+		case <-c.ctx.Done():
+			log.Println("closed action handler")
+			return
 		case <-neoFSPayload.ResponseCh:
 			//we just received a signed token payload. Lets recreate the associated token
 			// Payload signed, perform the action
@@ -255,7 +266,7 @@ func (c *Controller) PerformAction(wg *sync.WaitGroup, p payload.Parameters, act
 				if err := bearerToken.Sign(c.wallet.Address(), neoFSPayload); err != nil {
 					return
 				}
-				_, err := act(p, bearerToken) //CRUD
+				_, err := act(wg, p, bearerToken) //CRUD
 				if err != nil {
 					//handle the error with the UI (n)
 					fmt.Println("error here ", err)
@@ -268,6 +279,8 @@ func (c *Controller) PerformAction(wg *sync.WaitGroup, p payload.Parameters, act
 					notification.ActionToast))
 				delete(c.actionMap, neoFSPayload.Uid) // Clean up
 			}
+			fmt.Println("action complete")
+			return
 		case <-time.After(20 * time.Second):
 			// Handle timeout
 			delete(c.actionMap, neoFSPayload.Uid) // Clean up
@@ -275,6 +288,7 @@ func (c *Controller) PerformAction(wg *sync.WaitGroup, p payload.Parameters, act
 			log.Fatal("timer ticked. Nothing found.")
 		}
 	}()
+
 	// Request signing
 	if err := c.SignRequest(neoFSPayload); err != nil {
 		return err

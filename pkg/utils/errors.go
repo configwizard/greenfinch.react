@@ -7,4 +7,5 @@ const (
 	ErrorNoSession    string = "no session available"
 	ErrorNoToken      string = "no token available"
 	ErrorNoSignature  string = "payload not signed correctly"
+	ErrorNoDatabase   string = "no database available"
 )

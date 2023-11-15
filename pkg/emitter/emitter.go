@@ -16,6 +16,7 @@ const (
 	ContainerListUpdate              = "container_list_update"
 	ObjectListUpdate                 = "objectUpdate"
 	NotificationMessage              = "notification_message"
+	ProgressMessage                  = "progress_message"
 )
 
 type Emitter interface {
@@ -30,9 +31,10 @@ func (e Event) Emit(c context.Context, message string, payload any) error {
 	return nil
 }
 
+type Signresponse func(signedPayload payload.Payload) error
 type MockSigningEvent struct {
 	Name         string
-	SignResponse func(signedPayload payload.Payload) error //this is a hack while we mock. In reality the frontend calls this function
+	SignResponse Signresponse //this is a hack while we mock. In reality the frontend calls this function
 }
 
 func (m MockSigningEvent) Emit(c context.Context, message string, p any) error {
@@ -47,6 +49,10 @@ func (m MockSigningEvent) Emit(c context.Context, message string, p any) error {
 		HexSalt:      "3da1f339213180ed4c46a12b6bd57eb6",
 		HexPublicKey: "0382fcb005ae7652401fbe1d6345f77110f98db7122927df0f3faf3b62d1094071", //todo - should this come from the real wallet?
 	}
-
 	return m.SignResponse(actualPayload) //force an immediate signing of the payload
+}
+
+func (m MockSigningEvent) GenerateIdentifier() string {
+	//newUUID, _ := uuid.NewUUID()
+	return "mock-signer-94d9a4c7-9999-4055-a549-f51383edfe57"
 }

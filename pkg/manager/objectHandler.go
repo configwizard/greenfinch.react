@@ -506,7 +506,7 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 		default:
 			n, err := objReader.Read(buf)
 			// get total size from object header and update progress bar based on n bytes received
-			if _, err := (c).Write(buf[:n]); err != nil {
+			if _, err := c.Write(buf[:n]); err != nil {
 				fmt.Println("error writing to buffer ", err)
 				ctxWithMsg, cancel := context.WithCancel(m.cancelDownloadCtx)
 				// Store the error message in the context
