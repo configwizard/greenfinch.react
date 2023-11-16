@@ -154,11 +154,6 @@ func TestPayloadSigning(t *testing.T) {
 		Writer: fileWriterProgressBar, //this is where we write the data to
 	}
 	o.ExpiryEpoch = 100
-	//wg.Add(1)
-	//go func() {
-	//	defer wg.Done()
-
-	//}()
 
 	//waits for actions to complete entirely
 	if err := controller.PerformAction(wg, &o, mockAction.Head); err != nil {

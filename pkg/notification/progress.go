@@ -36,9 +36,10 @@ type ProgressMessage struct {
 	Error        string
 }
 
-type ProgressBarFactory func(w io.Writer, name string) ProgressBar
+type ProgressBarFactory func(ctx context.Context, w io.Writer, name string) ProgressBar
 
 type ProgressBarManager struct {
+	ctx context.Context
 	emitter.Emitter
 	ProgressBars       []ProgressBar
 	progressBarFactory ProgressBarFactory
@@ -49,6 +50,7 @@ type ProgressBarManager struct {
 
 func NewProgressBarManager(factory ProgressBarFactory, emitter emitter.Emitter) *ProgressBarManager {
 	return &ProgressBarManager{
+		ctx:                context.Background(),
 		Emitter:            emitter,
 		ProgressBars:       make([]ProgressBar, 0),
 		progressBarFactory: factory,
@@ -57,7 +59,7 @@ func NewProgressBarManager(factory ProgressBarFactory, emitter emitter.Emitter) 
 }
 
 func (p *ProgressBarManager) AddProgressWriter(w io.Writer, name string) *WriterProgressBar {
-	progressBar, ok := p.progressBarFactory(w, name).(*WriterProgressBar) // Corrected type assertion
+	progressBar, ok := p.progressBarFactory(p.ctx, w, name).(*WriterProgressBar) // Corrected type assertion
 	if !ok {
 		panic("ProgressBarFactory did not return a *writerProgressBar")
 	}
@@ -71,6 +73,7 @@ func (p *ProgressBarManager) AddProgressWriter(w io.Writer, name string) *Writer
 	// Start listening to updates from this progress bar
 	go func() {
 		for update := range progressBar.statusCh {
+			fmt.Println(progressBar.name, " received ", update.Progress)
 			//update.
 			//you can either listen and emit directly from here
 			err := p.Emit(context.Background(), emitter.ProgressMessage, update)
@@ -97,12 +100,11 @@ func (p *ProgressBarManager) StartProgressBar(wg *sync.WaitGroup, name string, p
 	for _, bar := range p.ProgressBars {
 		if wBar, ok := bar.(*WriterProgressBar); ok && wBar.name == name {
 			wg.Add(1)
-			go func() {
+			go func(b *WriterProgressBar) {
 				defer wg.Done()
-				fmt.Println("starting progress bar ", name)
-				bar.Start(payloadSize, wg)
-				fmt.Println("hello bar")
-			}()
+				fmt.Println("starting progress bar ", b.name)
+				b.Start(payloadSize, wg)
+			}(wBar)
 		}
 	}
 }
@@ -121,17 +123,14 @@ type WriterProgressBar struct {
 	statusCh chan ProgressMessage
 }
 
-func WriterProgressBarFactory(w io.Writer, name string) ProgressBar {
+// this returns the interface
+func WriterProgressBarFactory(ctx context.Context, w io.Writer, name string) ProgressBar {
 	statusCh := make(chan ProgressMessage) // Each bar should have its own channel
-	return &WriterProgressBar{             // Return a pointer
-		ctx:      context.Background(),
-		Writer:   progress.NewWriter(w),
-		name:     name,
-		duration: 50 * time.Millisecond,
-		statusCh: statusCh,
-	}
+	writerProgressBar := NewWriterProgressBar(ctx, statusCh, w, name, 50*time.Millisecond)
+	return &writerProgressBar
 }
 
+// this returns an actual instance
 func NewWriterProgressBar(ctx context.Context, statusCh chan ProgressMessage, rw io.Writer, name string, update time.Duration) WriterProgressBar {
 	w := WriterProgressBar{}
 	w.ctx = ctx
@@ -148,6 +147,7 @@ func (w WriterProgressBar) Write(data []byte) (int, error) {
 
 // Start is run on a routine so it can continously  update the channel
 func (w WriterProgressBar) Start(payloadSize int64, wg *sync.WaitGroup) {
+	fmt.Println("starting... ", w.name)
 	// Implementation for Start
 	status := ProgressMessage{
 		Title: w.name,

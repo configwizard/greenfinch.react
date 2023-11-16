@@ -27,7 +27,7 @@ func (m *MockDB) CreateWalletBucket() error {
 	}
 	m.recentWallets[m.walletId] = []byte(m.walletLocation)
 
-	for _, network := range []string{mainnetBucket, testnetBucket} {
+	for _, network := range []string{MainnetBucket, TestnetBucket} {
 		if m.data[network] == nil {
 			m.data[network] = make(map[string]map[string]map[string][]byte)
 		}

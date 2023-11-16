@@ -75,7 +75,7 @@ func TestProgressBarWithManager(t *testing.T) {
 	mockProgressEmitter := MockProgressEvent{}
 	manager := NewProgressBarManager(WriterProgressBarFactory, mockProgressEmitter)
 	writers := make([]*bytes.Buffer, 2) // Assume two progress bars for the test
-	var wg sync.WaitGroup
+	var wg = &sync.WaitGroup{}
 
 	// Creating and starting multiple progress bars
 	for i := range writers {
@@ -87,7 +87,7 @@ func TestProgressBarWithManager(t *testing.T) {
 		wg.Add(1)
 		go func(b *WriterProgressBar, dr *bytes.Reader) {
 			defer wg.Done()
-			manager.StartProgressBar(b.name, int64(len(data)))
+			manager.StartProgressBar(wg, b.name, int64(len(data)))
 
 			buf := make([]byte, 1)
 			for {
@@ -101,15 +101,13 @@ func TestProgressBarWithManager(t *testing.T) {
 				if err != nil {
 					break
 				}
-				time.Sleep(100 * time.Millisecond)
+				time.Sleep(250 * time.Millisecond)
 			}
 			bar.Finish()
 		}(bar, dataReader)
 	}
-
 	// Wait for all progress bars to complete
 	wg.Wait()
-
 	// Test validation for each writer
 	for i, writer := range writers {
 		expectedData := []byte{0xFF, 0xD8, 0xFF, byte(i)}
@@ -125,54 +123,62 @@ func TestProgressManagerWithDualStream(t *testing.T) {
 	}
 	mockProgressEmitter := MockProgressEvent{}
 	manager := NewProgressBarManager(WriterProgressBarFactory, mockProgressEmitter)
+	writers := make([]*bytes.Buffer, 2) // Assume two progress bars for the test
+
 	var wg sync.WaitGroup
-	writer := new(bytes.Buffer)
-	//for i := 0; i < 2; i++ {
-	data := []byte{0xFF, 0xD8, 0xFF, 0xFF} // Sample data for each bar
-	dataReader := bytes.NewReader(data)
-
-	progressBarName := fmt.Sprintf("TestBar")
-	progressBar := manager.AddProgressWriter(writer, progressBarName)
-
-	dualStream := &readwriter.DualStream{
-		Reader: dataReader,
-		Writer: progressBar,
+	// Sample data for each bar - make sure they are different
+	sampleData := [][]byte{
+		{0xFF, 0xD8, 0xFF, 0x00}, // Data for first bar
+		{0xAA, 0xBB, 0xCC, 0xDD, 0xAA, 0xBB, 0xCC, 0xDD, 0xAA, 0xBB, 0xCC, 0xDD, 0xAA, 0xBB, 0xCC, 0xDD}, // Data for second bar
 	}
+	for i := range writers {
+		writers[i] = new(bytes.Buffer)
 
-	objParam := &MockObjectParameter{
-		ReadWriter: dualStream,
-	}
-	manager.StartProgressBar(&wg, progressBarName, int64(len(data)))
-	wg.Add(1)
-	go func(obj *MockObjectParameter, progressBarName string, dataSize int64) {
-		defer wg.Done()
+		dataReader := bytes.NewReader(sampleData[i]) // Use distinct data for each bar
 
-		buf := make([]byte, 1)
-		for {
-			n, err := obj.Read(buf)
-			if n > 0 {
-				if _, err := obj.Write(buf[:n]); err != nil {
-					t.Errorf("error writing to buffer: %s", err)
-					return
-				}
-			}
-			if err != nil {
-				if err != io.EOF {
-					t.Errorf("error reading from buffer: %s", err)
-				}
-				break
-			}
-			time.Sleep(100 * time.Millisecond)
+		progressBarName := fmt.Sprintf("TestBar%d", i)
+		progressBar := manager.AddProgressWriter(writers[i], progressBarName)
+
+		dualStream := readwriter.DualStream{
+			Reader: dataReader,
+			Writer: progressBar,
 		}
-	}(objParam, progressBarName, int64(len(data)))
-	//}
+
+		objParam := &MockObjectParameter{
+			ReadWriter: &dualStream,
+		}
+		wg.Add(1)
+		go func(obj *MockObjectParameter, progressBarName string, dataSize int64) {
+			defer wg.Done()
+			manager.StartProgressBar(&wg, progressBarName, dataSize)
+
+			buf := make([]byte, 1)
+			for {
+				n, err := obj.Read(buf)
+				if n > 0 {
+					if _, err := obj.Write(buf[:n]); err != nil {
+						t.Errorf("error writing to buffer: %s", err)
+						return
+					}
+				}
+				if err != nil {
+					if err != io.EOF {
+						t.Errorf("error reading from buffer: %s", err)
+					}
+					break
+				}
+				time.Sleep(250 * time.Millisecond)
+			}
+		}(objParam, progressBarName, int64(len(sampleData[i])))
+	}
 
 	// Wait for all progress bars to complete
 	wg.Wait()
 
 	// Test validation for each writer
-	expectedData := []byte{0xFF, 0xD8, 0xFF, 0xFF}
-	if len(writer.String()) == 0 || writer.String() != string(expectedData) {
-		t.Errorf("writer written data does not match expected data. Got: %s, Want: %s", writer.String(), string(expectedData))
+	for i, writer := range writers {
+		if writer.String() != string(sampleData[i]) {
+			t.Errorf("writer %d: written data does not match expected data. Got: %s, Want: %s", i, writer.String(), string(sampleData[i]))
+		}
 	}
 }

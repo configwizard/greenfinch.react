@@ -59,7 +59,7 @@ type MockObject struct {
 // and a message type with any new information?
 // however maybe that isn;t the jjob of this and its the hob of the controller, who interfces with the UI. so this needs a chanenl to send messages on actually
 func (o *MockObject) Head(wg *sync.WaitGroup, p payload.Parameters, token tokens.Token) (notification.NewNotification, error) {
-	buffer := make([]byte, 1024)
+	buffer := make([]byte, 10)
 	wg.Add(1)
 	go func() {
 		defer func() {
@@ -68,7 +68,6 @@ func (o *MockObject) Head(wg *sync.WaitGroup, p payload.Parameters, token tokens
 		}()
 		//pretend to go and get the head of an object using SDK
 		//this should use the provided signed Token as authentication token
-		time.Sleep(2 * time.Second)
 
 		fmt.Println("starting .....")
 		// Continuously read from DualStream and write to destination

@@ -272,16 +272,29 @@ func (c *Controller) PerformAction(wg *sync.WaitGroup, p payload.Parameters, act
 					fmt.Println("error here ", err)
 					return
 				}
+				//N.B - all errors should be emitted to the frontend as a notification
+				//we need to store the record (pending and completed) in the datatabase when an action occurs
+				//as each action will map to a database record.
+				//todo - the object we are going to store in the database that represents this action?
+
+				if err := c.DB.Create(database.NotificationBucket, p.ID(), []byte{}); err != nil {
+					c.Notifier.QueueNotification(c.Notifier.Notification(
+						"failed to store in database,",
+						"error storing object reference in db "+err.Error(),
+						notification.Error,
+						notification.ActionNotification))
+					return
+				}
 				c.Notifier.QueueNotification(c.Notifier.Notification(
 					"signed and successfully called action",
 					"the action was called successfully",
-					"success",
+					notification.Success,
 					notification.ActionToast))
 				delete(c.actionMap, neoFSPayload.Uid) // Clean up
 			}
 			fmt.Println("action complete")
 			return
-		case <-time.After(20 * time.Second):
+		case <-time.After(20 * time.Second): //this needs to call the cancel ctx and it doesn't so it won't block anything
 			// Handle timeout
 			delete(c.actionMap, neoFSPayload.Uid) // Clean up
 			delete(c.pendingEvents, neoFSPayload.Uid)
