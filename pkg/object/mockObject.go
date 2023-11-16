@@ -1,52 +1,55 @@
 package object
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/amlwwalker/greenfinch.react/pkg/database"
 	"github.com/amlwwalker/greenfinch.react/pkg/notification"
 	"github.com/amlwwalker/greenfinch.react/pkg/payload"
 	"github.com/amlwwalker/greenfinch.react/pkg/tokens"
-	"github.com/nspcc-dev/neofs-sdk-go/eacl"
-	"github.com/nspcc-dev/neofs-sdk-go/object"
 	"io"
 	"log"
 	"sync"
 	"time"
 )
 
-type MockObjectParameter struct {
-	ContainerID string
-	Id          string
-	io.ReadWriter
-	WG              *sync.WaitGroup
-	Attrs           []object.Attribute
-	ActionOperation eacl.Operation
-	ExpiryEpoch     uint64
-}
-
-func (o *MockObjectParameter) Operation() eacl.Operation {
-	return o.ActionOperation
-}
-func (o *MockObjectParameter) Epoch() uint64 {
-	return o.ExpiryEpoch
-}
-func (o *MockObjectParameter) ParentID() string {
-	return o.ContainerID
-}
-
-func (o *MockObjectParameter) ID() string {
-	return o.Id
-}
-
-func (o *MockObjectParameter) WaitGroup() *sync.WaitGroup {
-	return o.WG
-}
-
-func (o *MockObjectParameter) Attributes() []object.Attribute {
-	return o.Attrs
-}
+//
+//type MockObjectParameter struct {
+//	ContainerID string
+//	Id          string
+//	io.ReadWriter
+//	WG              *sync.WaitGroup
+//	Attrs           []object.Attribute
+//	ActionOperation eacl.Operation
+//	ExpiryEpoch     uint64
+//}
+//
+//func (o *MockObjectParameter) Operation() eacl.Operation {
+//	return o.ActionOperation
+//}
+//func (o *MockObjectParameter) Epoch() uint64 {
+//	return o.ExpiryEpoch
+//}
+//func (o *MockObjectParameter) ParentID() string {
+//	return o.ContainerID
+//}
+//
+//func (o *MockObjectParameter) ID() string {
+//	return o.Id
+//}
+//
+//func (o *MockObjectParameter) WaitGroup() *sync.WaitGroup {
+//	return o.WG
+//}
+//
+//func (o *MockObjectParameter) Attributes() []object.Attribute {
+//	return o.Attrs
+//}
 
 type MockObject struct {
 	Id, ContainerId string // Identifier for the object
+	CreatedAt       time.Time
+	UpdatedAt       time.Time
 	// the data payload
 	//the location its to be read from/saved to if necessary
 }
@@ -71,7 +74,24 @@ func (o *MockObject) Head(wg *sync.WaitGroup, p payload.Parameters, token tokens
 
 		fmt.Println("starting .....")
 		// Continuously read from DualStream and write to destination
+		byt, err := json.Marshal(o)
+		if err != nil {
+			p.QueueNotification(p.Notification(
+				"failed to marshal object",
+				"could not marshal object for database storage "+err.Error(),
+				notification.Error,
+				notification.ActionNotification))
+			return
+		}
 
+		if err := p.Create(database.ObjectBucket, o.Id, byt); err != nil {
+			p.QueueNotification(p.Notification(
+				"failed to store object",
+				"could not store [pending] object in database "+err.Error(),
+				notification.Error,
+				notification.ActionNotification))
+			return
+		}
 		for {
 			n, err := p.Read(buffer)
 			if n > 0 {
@@ -84,11 +104,30 @@ func (o *MockObject) Head(wg *sync.WaitGroup, p payload.Parameters, token tokens
 			if err != nil {
 				if err == io.EOF {
 					fmt.Println("reached end of file")
+					p.QueueNotification(p.Notification(
+						"download complete!",
+						"object "+o.Id+" completed",
+						notification.Error,
+						notification.ActionNotification))
 					break // End of stream, check if writing is done
 				}
-				log.Fatalf("Read failed: %v", err)
+				p.QueueNotification(p.Notification(
+					"failed to download!",
+					"object "+o.Id+" failed",
+					notification.Error,
+					notification.ActionNotification))
 			}
 			time.Sleep(150 * time.Millisecond)
+		}
+
+		//update the object now we have more information about it
+		if err := p.Update(database.ObjectBucket, o.Id, byt); err != nil {
+			p.QueueNotification(p.Notification(
+				"failed to store object",
+				"could not store [pending] object in database "+err.Error(),
+				notification.Error,
+				notification.ActionNotification))
+			return
 		}
 	}()
 	return notification.NewNotification{}, nil

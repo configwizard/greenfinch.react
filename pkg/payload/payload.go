@@ -1,22 +1,25 @@
 package payload
 
 import (
+	"github.com/amlwwalker/greenfinch.react/pkg/database"
+	"github.com/amlwwalker/greenfinch.react/pkg/notification"
 	"github.com/google/uuid"
 	"github.com/nspcc-dev/neofs-sdk-go/eacl"
 	"github.com/nspcc-dev/neofs-sdk-go/object"
 	"io"
-	"sync"
 )
 
 // this could be a struct. Nothing here needs to be directly tested.
 type Parameters interface {
-	ParentID() string               //container ID holder?
-	ID() string                     //object or container ID holder...
-	WaitGroup() *sync.WaitGroup     //channel to send any information on that is outside of the read/writer. Like a list or something.
+	ParentID() string //container ID holder?
+	ID() string       //object or container ID holder...
+	//WaitGroup() *sync.WaitGroup     //channel to send any information on that is outside of the read/writer. Like a list or something.
 	Attributes() []object.Attribute //need to be able to pass around anything that can be set on the object
 	Operation() eacl.Operation
 	Epoch() uint64
 	io.ReadWriter //for data transfer pass an interface for a reader and writer. The use then will have the correct type (e.g put or get)
+	notification.Notifier
+	database.Store
 }
 
 type Payload struct {

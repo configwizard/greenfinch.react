@@ -73,7 +73,6 @@ func (p *ProgressBarManager) AddProgressWriter(w io.Writer, name string) *Writer
 	// Start listening to updates from this progress bar
 	go func() {
 		for update := range progressBar.statusCh {
-			fmt.Println(progressBar.name, " received ", update.Progress)
 			//update.
 			//you can either listen and emit directly from here
 			err := p.Emit(context.Background(), emitter.ProgressMessage, update)

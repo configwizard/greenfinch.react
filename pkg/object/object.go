@@ -1,20 +1,22 @@
 package object
 
 import (
+	"github.com/amlwwalker/greenfinch.react/pkg/database"
 	"github.com/amlwwalker/greenfinch.react/pkg/notification"
 	"github.com/amlwwalker/greenfinch.react/pkg/payload"
 	"github.com/amlwwalker/greenfinch.react/pkg/tokens"
 	"github.com/nspcc-dev/neofs-sdk-go/eacl"
 	"github.com/nspcc-dev/neofs-sdk-go/object"
 	"io"
-	"sync"
 )
 
 type ObjectParameter struct {
 	ContainerID string
 	Id          string
 	io.ReadWriter
-	WG              *sync.WaitGroup
+	database.Store
+	notification.Notifier
+	//WG              *sync.WaitGroup
 	Attrs           []object.Attribute
 	ActionOperation eacl.Operation
 	ExpiryEpoch     uint64
@@ -34,9 +36,10 @@ func (o *ObjectParameter) ID() string {
 	return o.Id
 }
 
-func (o *ObjectParameter) WaitGroup() *sync.WaitGroup {
-	return o.WG
-}
+//
+//func (o *ObjectParameter) WaitGroup() *sync.WaitGroup {
+//	return o.WG
+//}
 
 func (o *ObjectParameter) Attributes() []object.Attribute {
 	return o.Attrs

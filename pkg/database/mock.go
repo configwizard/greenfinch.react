@@ -79,7 +79,7 @@ func (m *MockDB) Create(bucket, identifier string, payload []byte) error {
 	return nil
 }
 
-func (m *MockDB) Read(bucket, identifier string) ([]byte, error) {
+func (m *MockDB) Select(bucket, identifier string) ([]byte, error) {
 	if m.data[m.network] == nil || m.data[m.network][m.walletId] == nil || m.data[m.network][m.walletId][bucket] == nil {
 		//can't exist
 		return nil, errors.New(ErrorNotFound)
@@ -90,7 +90,7 @@ func (m *MockDB) Read(bucket, identifier string) ([]byte, error) {
 	}
 	return payload, nil
 }
-func (m *MockDB) ReadAll(bucket string) (map[string][]byte, error) {
+func (m *MockDB) SelectAll(bucket string) (map[string][]byte, error) {
 	if m.data[m.network] == nil || m.data[m.network][m.walletId] == nil || m.data[m.network][m.walletLocation][bucket] == nil {
 		//can't exist
 		return nil, errors.New(ErrorNotFound)

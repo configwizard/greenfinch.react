@@ -20,8 +20,8 @@ type Store interface {
 	RecentWallets() (map[string]string, error)
 	DeleteRecentWallet() error
 	Create(bucket, identifier string, payload []byte) error
-	Read(bucket, identifier string) ([]byte, error)
-	ReadAll(bucket string) (map[string][]byte, error)
+	Select(bucket, identifier string) ([]byte, error)
+	SelectAll(bucket string) (map[string][]byte, error)
 	Update(bucket, identifier string, payload []byte) error
 	Pend(bucket, identifier string, payload []byte) error //a pend is a special case of an update
 	Delete(bucket, identifier string) error

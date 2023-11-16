@@ -159,7 +159,7 @@ func TestPayloadSigning(t *testing.T) {
 	if err := controller.PerformAction(wg, &o, mockAction.Head); err != nil {
 		t.Fatal(err)
 	}
-	read, err := controller.DB.Read(database.NotificationBucket, n.GenerateIdentifier())
+	read, err := controller.DB.Select(database.NotificationBucket, n.GenerateIdentifier())
 	if err != nil {
 		fmt.Println("database error ", err)
 		return

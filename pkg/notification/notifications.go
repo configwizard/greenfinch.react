@@ -35,7 +35,7 @@ func (m MockNotificationEvent) Emit(c context.Context, _ string, p any) error {
 	log.Println("emitting ", p)
 	actualPayload, ok := p.(NewNotification)
 	if !ok {
-		return errors.New(utils.ErrorNotPayload)
+		return errors.New(utils.ErrorNoNotification)
 	}
 	log.Printf("%s firing notification %+v\r\n", m.Name, actualPayload)
 	if m.DB == nil {
