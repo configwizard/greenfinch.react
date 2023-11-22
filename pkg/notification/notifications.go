@@ -63,14 +63,15 @@ const (
 	Success string = "success"
 	Info           = "info"
 	Warning        = "warning"
-	Error          = "erro"
+	Error          = "error"
 )
 
 type Notifier interface {
 	Notification(title, description, typz string, action NotificationType) NewNotification //creates a new notifier
 	GenerateIdentifier() string                                                            //generates an identifier fro the notification
 	QueueNotification(notification NewNotification)                                        //pushes a notification onto a sending queue
-	ListenAndEmit()                                                                        //listens for notifications and sends them out
+	ListenAndEmit()
+	End() //listens for notifications and sends them out
 }
 type NewNotification struct {
 	Id          string
@@ -113,6 +114,7 @@ func (m MockNotifier) GenerateIdentifier() string {
 }
 func (m MockNotifier) End() {
 	m.cancelFunc()
+	defer close(m.notificationCh)
 }
 func (m MockNotifier) Notification(title, description, typez string, action NotificationType) NewNotification {
 	identifier := m.GenerateIdentifier()
@@ -130,18 +132,22 @@ func (m MockNotifier) QueueNotification(notification NewNotification) {
 }
 
 func (m MockNotifier) ListenAndEmit() {
+	fmt.Println("ListenAndEmit routine started")
 	defer m.wg.Done()
-	defer close(m.notificationCh)
 	for {
 		select {
 		case <-m.ctx.Done():
-			log.Println("closed mock notifier")
+			log.Println("ListenAndEmit routine stopped")
 			return
 		case not := <-m.notificationCh:
+
 			if err := m.Emit(m.ctx, emitter.NotificationMessage, not); err != nil {
 				return
 			}
-			m.End() //this is to close this routine for tests (stop hanging) - means test will only process one notification
+			if not.Type == Success {
+				fmt.Println("received success so exiting")
+				m.End()
+			}
 		}
 	}
 }

@@ -52,6 +52,8 @@ type MockObject struct {
 	UpdatedAt       time.Time
 	// the data payload
 	//the location its to be read from/saved to if necessary
+	notification.Notifier
+	database.Store
 }
 
 // todo - this will need to handle synchronous requests to the database and then asynchronous requests to the network
@@ -61,9 +63,10 @@ type MockObject struct {
 // we should return that with an 'synchronising' message. then the routine can update the UI for this request using an emitter
 // and a message type with any new information?
 // however maybe that isn;t the jjob of this and its the hob of the controller, who interfces with the UI. so this needs a chanenl to send messages on actually
-func (o *MockObject) Head(wg *sync.WaitGroup, p payload.Parameters, token tokens.Token) (notification.NewNotification, error) {
+func (o *MockObject) Head(wg *sync.WaitGroup, p payload.Parameters, actionChan chan notification.NewNotification, token tokens.Token) error {
 	buffer := make([]byte, 10)
 	wg.Add(1)
+	fmt.Println(o.Store)
 	go func() {
 		defer func() {
 			wg.Done()
@@ -76,63 +79,65 @@ func (o *MockObject) Head(wg *sync.WaitGroup, p payload.Parameters, token tokens
 		// Continuously read from DualStream and write to destination
 		byt, err := json.Marshal(o)
 		if err != nil {
-			p.QueueNotification(p.Notification(
+			actionChan <- o.Notification(
 				"failed to marshal object",
 				"could not marshal object for database storage "+err.Error(),
 				notification.Error,
-				notification.ActionNotification))
+				notification.ActionNotification)
 			return
 		}
-
-		if err := p.Create(database.ObjectBucket, o.Id, byt); err != nil {
-			p.QueueNotification(p.Notification(
+		if err := o.Create(database.ObjectBucket, o.Id, byt); err != nil {
+			actionChan <- o.Notification(
 				"failed to store object",
 				"could not store [pending] object in database "+err.Error(),
 				notification.Error,
-				notification.ActionNotification))
+				notification.ActionNotification)
 			return
 		}
 		for {
 			n, err := p.Read(buffer)
 			if n > 0 {
-				fmt.Println("reading ", n, " bytes")
 				if _, err := p.Write(buffer[:n]); err != nil {
-					fmt.Println("writing ", n, " bytes")
-					log.Fatalf("Write failed: %v", err)
+					actionChan <- o.Notification(
+						"failed to write to buffer",
+						"could not write object to buffer "+err.Error(),
+						notification.Error,
+						notification.ActionNotification)
+					return
 				}
 			}
 			if err != nil {
 				if err == io.EOF {
 					fmt.Println("reached end of file")
-					p.QueueNotification(p.Notification(
+					actionChan <- o.Notification(
 						"download complete!",
 						"object "+o.Id+" completed",
-						notification.Error,
-						notification.ActionNotification))
-					break // End of stream, check if writing is done
+						notification.Success,
+						notification.ActionNotification)
+					break
 				}
-				p.QueueNotification(p.Notification(
-					"failed to download!",
-					"object "+o.Id+" failed",
+				fmt.Println("actual error ", err)
+				actionChan <- o.Notification(
+					"download complete!",
+					"object "+o.Id+" completed",
 					notification.Error,
-					notification.ActionNotification))
+					notification.ActionNotification)
 			}
-			time.Sleep(150 * time.Millisecond)
+			time.Sleep(2 * time.Millisecond)
 		}
 
 		//update the object now we have more information about it
-		if err := p.Update(database.ObjectBucket, o.Id, byt); err != nil {
-			p.QueueNotification(p.Notification(
+		if err := o.Update(database.ObjectBucket, o.Id, byt); err != nil {
+			actionChan <- o.Notification(
 				"failed to store object",
 				"could not store [pending] object in database "+err.Error(),
 				notification.Error,
-				notification.ActionNotification))
-			return
+				notification.ActionNotification)
 		}
 	}()
-	return notification.NewNotification{}, nil
+	return nil
 }
-func (o *MockObject) Read(p payload.Parameters, token tokens.Token) (notification.Notification, error) {
+func (o *MockObject) Read(p payload.Parameters, actionChan chan notification.NewNotification, token tokens.Token) (notification.Notification, error) {
 	wg := sync.WaitGroup{}
 	wg.Add(1)
 	go func() {
@@ -152,12 +157,12 @@ func (o *MockObject) Read(p payload.Parameters, token tokens.Token) (notificatio
 	wg.Wait()
 	return notification.Notification{}, nil
 }
-func (o *MockObject) Write(p payload.Parameters, token tokens.Token) (notification.Notification, error) {
+func (o *MockObject) Write(p payload.Parameters, actionChan chan notification.NewNotification, token tokens.Token) (notification.Notification, error) {
 	return notification.Notification{}, nil
 }
-func (o *MockObject) Delete(p payload.Parameters, token tokens.Token) (notification.Notification, error) {
+func (o *MockObject) Delete(p payload.Parameters, actionChan chan notification.NewNotification, token tokens.Token) (notification.Notification, error) {
 	return notification.Notification{}, nil
 }
-func (o *MockObject) List(p payload.Parameters, token tokens.Token) (notification.Notification, error) {
+func (o *MockObject) List(p payload.Parameters, actionChan chan notification.NewNotification, token tokens.Token) (notification.Notification, error) {
 	return notification.Notification{}, nil
 }

@@ -21,13 +21,13 @@ import (
 )
 
 // type ActionType func(p payload.Parameters, signedPayload payload.Payload, token Token) (notification.Notification, error)
-type ActionType func(wg *sync.WaitGroup, p payload.Parameters, token tokens.Token) (notification.NewNotification, error)
+type ActionType func(wg *sync.WaitGroup, p payload.Parameters, actionChan chan notification.NewNotification, token tokens.Token) error
 
 // Action defines the interface for actions that can be performed on objects
 type Action interface {
 
 	//todo - payload currently holds the signed token, but the naming here could be better
-	Head(wg *sync.WaitGroup, p payload.Parameters, token tokens.Token) (notification.NewNotification, error)
+	Head(wg *sync.WaitGroup, p payload.Parameters, actionChan chan notification.NewNotification, token tokens.Token) (notification.NewNotification, error)
 	//Read(p payload.Parameters, token tokens.Token) (notification.NewNotification, error)
 	//Write(p payload.Parameters, token tokens.Token) (notification.NewNotification, error)
 	//Delete(p payload.Parameters, token tokens.Token) (notification.NewNotification, error)
@@ -128,8 +128,8 @@ type Controller struct {
 	actionMap          map[uuid.UUID]ActionType      // Maps payload UID to corresponding action
 }
 
-func New(db database.Store, emitter emitter.Emitter, ctx context.Context, notifier notification.Notifier) Controller {
-	ctxWithCancel, cancel := context.WithCancel(ctx)
+func New(db database.Store, emitter emitter.Emitter, ctx context.Context, cancel context.CancelFunc, notifier notification.Notifier) Controller {
+	//ctxWithCancel, cancel := context.WithCancel(ctx)
 	return Controller{
 		pendingEvents: make(map[uuid.UUID]payload.Payload),
 		actionMap:     make(map[uuid.UUID]ActionType),
@@ -137,7 +137,7 @@ func New(db database.Store, emitter emitter.Emitter, ctx context.Context, notifi
 		tokenManager:  tokens.TokenManager{},
 		Notifier:      notifier,
 		cancelCtx:     cancel,
-		ctx:           ctxWithCancel,
+		ctx:           ctx,
 		DB:            db,
 	}
 }
@@ -211,17 +211,41 @@ func (c *Controller) PerformAction(wg *sync.WaitGroup, p payload.Parameters, act
 		return err
 	}
 
+	wg.Add(1)
+	fmt.Println("perform action started")
+	var actionChan = make(chan notification.NewNotification)
+
+	wg.Add(1)
+	log.Println("starting action chan handler")
+	go func() {
+		defer wg.Done()
+		select {
+		case <-c.ctx.Done():
+			log.Println("closed action chan handler")
+			return
+		case not := <-actionChan:
+			if not.Type == notification.Success { //do this before sending the notification success
+				if err := c.DB.Create(database.NotificationBucket, p.ID(), []byte{}); err != nil {
+					c.Notifier.QueueNotification(c.Notifier.Notification(
+						"failed to store in database,",
+						"error storing object reference in db "+err.Error(),
+						notification.Error,
+						notification.ActionNotification))
+				}
+			}
+			c.Notifier.QueueNotification(not)
+		}
+	}()
+
 	//at this point we need to find out if we have a bearer token that can handle this action for us
 	//1. check if we have a token that will fulfil the operation for the request
 	if bearerToken, err := c.tokenManager.FindBearerToken(c.wallet.Address(), cnrId, p.Epoch(), p.Operation()); err == nil {
 		//we believe we have a token that can perform
 		//the action should now be passed what it was going to be passed anyway, along with the token that it can use to make the request.
 		//these actions will be responsible for notifying UI themselves (i.e progress bars etc)
-		if notification, err := action(wg, p, bearerToken); err != nil {
+		if err := action(wg, p, actionChan, bearerToken); err != nil {
 			//notification (interface) handler would handle any errors here. (c.notificationHandler interface type)
 			return err
-		} else {
-			log.Println("notification due to finding bearer token ", notification)
 		}
 		return nil // this task has been triggered. No need to continue
 	}
@@ -243,62 +267,47 @@ func (c *Controller) PerformAction(wg *sync.WaitGroup, p payload.Parameters, act
 	}
 	//update the payload to the data to sign
 	neoFSPayload.OutgoingData = bearerToken.SignedData()
-	wg.Add(1)
+
 	// Wait for the payload to be signed in a separate goroutine
 	go func() {
 		defer func() {
 			wg.Done()
-			fmt.Println("perform action completed")
+			fmt.Println("perform action stopped")
+			//c.cancelCtx()
+			//c.Notifier.End()
 		}()
-		select {
-		case <-c.ctx.Done():
-			log.Println("closed action handler")
-			return
-		case <-neoFSPayload.ResponseCh:
-			//we just received a signed token payload. Lets recreate the associated token
-			// Payload signed, perform the action
-			if pendingPayload, exists := c.pendingEvents[neoFSPayload.Uid]; exists {
-				neoFSPayload = pendingPayload
-			} else {
+		for {
+			select {
+			case <-c.ctx.Done():
+				log.Println("closed action handler")
 				return
-			}
-			if act, exists := c.actionMap[neoFSPayload.Uid]; exists {
-				if err := bearerToken.Sign(c.wallet.Address(), neoFSPayload); err != nil {
+			case <-neoFSPayload.ResponseCh:
+				//we just received a signed token payload. Lets recreate the associated token
+				// Payload signed, perform the action
+				if pendingPayload, exists := c.pendingEvents[neoFSPayload.Uid]; exists {
+					neoFSPayload = pendingPayload
+				} else {
 					return
 				}
-				_, err := act(wg, p, bearerToken) //CRUD
-				if err != nil {
-					//handle the error with the UI (n)
-					fmt.Println("error here ", err)
-					return
-				}
-				//N.B - all errors should be emitted to the frontend as a notification
-				//we need to store the record (pending and completed) in the datatabase when an action occurs
-				//as each action will map to a database record.
-				//todo - the object we are going to store in the database that represents this action?
+				if act, exists := c.actionMap[neoFSPayload.Uid]; exists {
+					if err := bearerToken.Sign(c.wallet.Address(), neoFSPayload); err != nil {
+						return
+					}
+					if err := act(wg, p, actionChan, bearerToken); err != nil {
+						//handle the error with the UI (n)
+						fmt.Println("error here ", err)
+						return
+					}
 
-				if err := c.DB.Create(database.NotificationBucket, p.ID(), []byte{}); err != nil {
-					c.Notifier.QueueNotification(c.Notifier.Notification(
-						"failed to store in database,",
-						"error storing object reference in db "+err.Error(),
-						notification.Error,
-						notification.ActionNotification))
-					return
+					delete(c.actionMap, neoFSPayload.Uid) // Clean up
 				}
-				c.Notifier.QueueNotification(c.Notifier.Notification(
-					"signed and successfully called action",
-					"the action was called successfully",
-					notification.Success,
-					notification.ActionToast))
+			case <-time.After(20 * time.Second): //this needs to call the cancel ctx and it doesn't so it won't block anything
+				// Handle timeout
 				delete(c.actionMap, neoFSPayload.Uid) // Clean up
+				delete(c.pendingEvents, neoFSPayload.Uid)
+				log.Println("timer ticked. Nothing found.")
+				c.cancelCtx()
 			}
-			fmt.Println("action complete")
-			return
-		case <-time.After(20 * time.Second): //this needs to call the cancel ctx and it doesn't so it won't block anything
-			// Handle timeout
-			delete(c.actionMap, neoFSPayload.Uid) // Clean up
-			delete(c.pendingEvents, neoFSPayload.Uid)
-			log.Fatal("timer ticked. Nothing found.")
 		}
 	}()
 

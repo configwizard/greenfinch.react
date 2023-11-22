@@ -71,7 +71,19 @@ func (p *ProgressBarManager) AddProgressWriter(w io.Writer, name string) *Writer
 	p.ProgressBars = append(p.ProgressBars, progressBar)
 
 	// Start listening to updates from this progress bar
+	fmt.Println("Add Progress Writer routine started")
 	go func() {
+		select {
+		case <-progressBar.ctx.Done(): //todo - no worker group here?
+			p.decrementActiveBars()
+			fmt.Println("Add Progress Writer routine stopped")
+			return
+		case update := <-progressBar.statusCh:
+			err := p.Emit(context.Background(), emitter.ProgressMessage, update)
+			if err != nil {
+				fmt.Println("emitting ", err)
+			}
+		}
 		for update := range progressBar.statusCh {
 			//update.
 			//you can either listen and emit directly from here
@@ -82,7 +94,7 @@ func (p *ProgressBarManager) AddProgressWriter(w io.Writer, name string) *Writer
 			//or you can push it to a channel reachable elsewhere.
 			//p.UpdatesCh <- update // Forward updates to the manager's channel
 		}
-		p.decrementActiveBars()
+
 	}()
 
 	return progressBar
@@ -98,12 +110,12 @@ func (p *ProgressBarManager) decrementActiveBars() {
 func (p *ProgressBarManager) StartProgressBar(wg *sync.WaitGroup, name string, payloadSize int64) {
 	for _, bar := range p.ProgressBars {
 		if wBar, ok := bar.(*WriterProgressBar); ok && wBar.name == name {
-			wg.Add(1)
-			go func(b *WriterProgressBar) {
-				defer wg.Done()
-				fmt.Println("starting progress bar ", b.name)
-				b.Start(payloadSize, wg)
-			}(wBar)
+			//wg.Add(1)
+			//go func(b *WriterProgressBar) {
+			//	defer wg.Done()
+			fmt.Println("starting progress bar ", wBar.name)
+			wBar.Start(payloadSize, wg)
+			//}(wBar)
 		}
 	}
 }
@@ -152,13 +164,18 @@ func (w WriterProgressBar) Start(payloadSize int64, wg *sync.WaitGroup) {
 		Title: w.name,
 		Show:  true,
 	}
+	fmt.Println("Progress bar started")
 	wg.Add(1)
 	go func() {
-		defer wg.Done()
+		defer func() {
+			wg.Done()
+			fmt.Println("Progress bar worker stopped")
+		}()
 		progressChan := progress.NewTicker(w.ctx, w.Writer, payloadSize, w.duration)
 		for p := range progressChan {
 			select {
 			case <-w.ctx.Done():
+				fmt.Println("ending progress bar ", w.name)
 				errMsg, ok := w.ctx.Value("error").(string)
 				status := status
 				if ok && errMsg != "" {

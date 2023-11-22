@@ -1,8 +1,7 @@
 package payload
 
 import (
-	"github.com/amlwwalker/greenfinch.react/pkg/database"
-	"github.com/amlwwalker/greenfinch.react/pkg/notification"
+	//"github.com/amlwwalker/greenfinch.react/pkg/notification"
 	"github.com/google/uuid"
 	"github.com/nspcc-dev/neofs-sdk-go/eacl"
 	"github.com/nspcc-dev/neofs-sdk-go/object"
@@ -18,8 +17,6 @@ type Parameters interface {
 	Operation() eacl.Operation
 	Epoch() uint64
 	io.ReadWriter //for data transfer pass an interface for a reader and writer. The use then will have the correct type (e.g put or get)
-	notification.Notifier
-	database.Store
 }
 
 type Payload struct {

@@ -1,7 +1,6 @@
 package object
 
 import (
-	"github.com/amlwwalker/greenfinch.react/pkg/database"
 	"github.com/amlwwalker/greenfinch.react/pkg/notification"
 	"github.com/amlwwalker/greenfinch.react/pkg/payload"
 	"github.com/amlwwalker/greenfinch.react/pkg/tokens"
@@ -14,8 +13,8 @@ type ObjectParameter struct {
 	ContainerID string
 	Id          string
 	io.ReadWriter
-	database.Store
-	notification.Notifier
+	//database.Store
+	//notification.Notifier
 	//WG              *sync.WaitGroup
 	Attrs           []object.Attribute
 	ActionOperation eacl.Operation

@@ -67,7 +67,7 @@ func TestPayloadSigning(t *testing.T) {
 	n := notification.NewMockNotifier(wg, notifyEmitter, ctx, cancelFunc)
 
 	//create a controller to hande comms between elements of business logic
-	controller := New(db, nil, ctx, n) //emitter set later to tie them together
+	controller := New(db, nil, ctx, cancelFunc, n) //emitter set later to tie them together
 
 	mockSigner := emitter.MockSigningEvent{Name: "signing events:"}
 	mockSigner.SignResponse = controller.SignResponse //set the callback hereso that we can close the loop during tests
@@ -80,8 +80,10 @@ func TestPayloadSigning(t *testing.T) {
 	}
 	controller.tokenManager = tokens.MockTokenManager{W: *ephemeralAccount}
 
+	//todo - should the db/notifier be on the object or on the object parameters
 	mockAction := obj.MockObject{Id: "object", ContainerId: "container"}
-
+	mockAction.Notifier = n
+	mockAction.Store = db
 	//the dualstream is designed to read from one location and write to the other
 	dir := os.TempDir()
 	file, err := os.Create(filepath.Join(dir, "stream.log")) // Use os.Create if you want to write to a new file
