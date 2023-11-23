@@ -20,6 +20,7 @@ import (
 	"path/filepath"
 	"sync"
 	"testing"
+	"time"
 )
 
 type MockActionType struct {
@@ -71,7 +72,7 @@ func TestPayloadSigning(t *testing.T) {
 
 	mockSigner := emitter.MockSigningEvent{Name: "signing events:"}
 	mockSigner.SignResponse = controller.SignResponse //set the callback hereso that we can close the loop during tests
-	controller.Emitter = mockSigner                   //tied closely during tests...
+	controller.Signer = mockSigner                    //tied closely during tests...
 	controller.LoadSession(walletId, publicKey)
 	controller.wallet.Address()
 	ephemeralAccount, err := wal.NewAccount()
@@ -156,11 +157,18 @@ func TestPayloadSigning(t *testing.T) {
 		Writer: fileWriterProgressBar, //this is where we write the data to
 	}
 	o.ExpiryEpoch = 100
-
+	wg.Add(1) //fixme: - total hack for the tests to end and database to be loaded.
+	go func() {
+		defer wg.Done()
+		time.Sleep(3 * time.Second)
+		cancelFunc() //kill everything
+	}()
 	//waits for actions to complete entirely
 	if err := controller.PerformAction(wg, &o, mockAction.Head); err != nil {
 		t.Fatal(err)
 	}
+	wg.Wait()
+
 	read, err := controller.DB.Select(database.NotificationBucket, n.GenerateIdentifier())
 	if err != nil {
 		fmt.Println("database error ", err)

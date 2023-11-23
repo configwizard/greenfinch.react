@@ -3,12 +3,14 @@ package database
 import (
 	"errors"
 	"fmt"
+	"sync"
 )
 
 type MockDB struct {
 	network, walletId, walletLocation string
 	recentWallets                     map[string][]byte
 	data                              map[string]map[string]map[string]map[string][]byte
+	mutex                             *sync.Mutex
 }
 
 func NewMockDB(network, walletId, walletLocation string) *MockDB {
@@ -17,6 +19,7 @@ func NewMockDB(network, walletId, walletLocation string) *MockDB {
 		walletId:       walletId,
 		walletLocation: walletLocation,
 		data:           make(map[string]map[string]map[string]map[string][]byte),
+		mutex:          &sync.Mutex{},
 	}
 }
 
@@ -59,6 +62,7 @@ func (m *MockDB) DeleteRecentWallet() error {
 // CRUD
 
 func (m *MockDB) Create(bucket, identifier string, payload []byte) error {
+	m.mutex.Lock()
 	// Ensure the network bucket exists
 	if m.data[m.network] == nil {
 		m.data[m.network] = make(map[string]map[string]map[string][]byte)
@@ -75,7 +79,9 @@ func (m *MockDB) Create(bucket, identifier string, payload []byte) error {
 	}
 
 	// Store the payload
+
 	m.data[m.network][m.walletId][bucket][identifier] = payload
+	m.mutex.Unlock()
 	return nil
 }
 

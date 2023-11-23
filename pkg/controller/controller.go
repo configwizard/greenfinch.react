@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/amlwwalker/greenfinch.react/pkg/database"
-	emitter "github.com/amlwwalker/greenfinch.react/pkg/emitter"
+	"github.com/amlwwalker/greenfinch.react/pkg/emitter"
 	"github.com/amlwwalker/greenfinch.react/pkg/notification"
 	"github.com/amlwwalker/greenfinch.react/pkg/payload"
 	"github.com/amlwwalker/greenfinch.react/pkg/tokens"
@@ -17,7 +17,6 @@ import (
 	"github.com/nspcc-dev/neofs-sdk-go/eacl"
 	"log"
 	"sync"
-	"time"
 )
 
 // type ActionType func(p payload.Parameters, signedPayload payload.Payload, token Token) (notification.Notification, error)
@@ -121,7 +120,7 @@ type Controller struct {
 	DB                 database.Store
 	wallet             Wallet
 	tokenManager       TokenManager
-	Emitter            emitter.Emitter
+	Signer             emitter.Emitter
 	Notifier           notification.Notifier
 	progressBarManager *notification.ProgressBarManager
 	pendingEvents      map[uuid.UUID]payload.Payload //holds any asynchronous information sent to frontend
@@ -133,7 +132,7 @@ func New(db database.Store, emitter emitter.Emitter, ctx context.Context, cancel
 	return Controller{
 		pendingEvents: make(map[uuid.UUID]payload.Payload),
 		actionMap:     make(map[uuid.UUID]ActionType),
-		Emitter:       emitter,
+		Signer:        emitter,
 		tokenManager:  tokens.TokenManager{},
 		Notifier:      notifier,
 		cancelCtx:     cancel,
@@ -156,7 +155,7 @@ func (c *Controller) LoadSession(address, publicKey string) { //todo - these fie
 	c.wallet = WCWallet{
 		WalletAddress: "",
 		PublicKey:     "",
-		emitter:       c.Emitter,
+		emitter:       c.Signer,
 	}
 }
 
@@ -225,9 +224,10 @@ func (c *Controller) PerformAction(wg *sync.WaitGroup, p payload.Parameters, act
 			return
 		case not := <-actionChan:
 			if not.Type == notification.Success { //do this before sending the notification success
+				fmt.Println("success type, creatnig notification for database")
 				if err := c.DB.Create(database.NotificationBucket, p.ID(), []byte{}); err != nil {
 					c.Notifier.QueueNotification(c.Notifier.Notification(
-						"failed to store in database,",
+						"failed to store in database",
 						"error storing object reference in db "+err.Error(),
 						notification.Error,
 						notification.ActionNotification))
@@ -273,8 +273,6 @@ func (c *Controller) PerformAction(wg *sync.WaitGroup, p payload.Parameters, act
 		defer func() {
 			wg.Done()
 			fmt.Println("perform action stopped")
-			//c.cancelCtx()
-			//c.Notifier.End()
 		}()
 		for {
 			select {
@@ -298,15 +296,8 @@ func (c *Controller) PerformAction(wg *sync.WaitGroup, p payload.Parameters, act
 						fmt.Println("error here ", err)
 						return
 					}
-
 					delete(c.actionMap, neoFSPayload.Uid) // Clean up
 				}
-			case <-time.After(20 * time.Second): //this needs to call the cancel ctx and it doesn't so it won't block anything
-				// Handle timeout
-				delete(c.actionMap, neoFSPayload.Uid) // Clean up
-				delete(c.pendingEvents, neoFSPayload.Uid)
-				log.Println("timer ticked. Nothing found.")
-				c.cancelCtx()
 			}
 		}
 	}()

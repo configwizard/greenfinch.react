@@ -140,14 +140,13 @@ func (m MockNotifier) ListenAndEmit() {
 			log.Println("ListenAndEmit routine stopped")
 			return
 		case not := <-m.notificationCh:
-
 			if err := m.Emit(m.ctx, emitter.NotificationMessage, not); err != nil {
 				return
 			}
-			if not.Type == Success {
-				fmt.Println("received success so exiting")
-				m.End()
-			}
+			//if not.Type == Success {
+			//	fmt.Println("received success so exiting")
+			//	m.End()
+			//}
 		}
 	}
 }

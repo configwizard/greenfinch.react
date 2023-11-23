@@ -118,12 +118,12 @@ func (o *MockObject) Head(wg *sync.WaitGroup, p payload.Parameters, actionChan c
 				}
 				fmt.Println("actual error ", err)
 				actionChan <- o.Notification(
-					"download complete!",
-					"object "+o.Id+" completed",
+					"error",
+					"no more data",
 					notification.Error,
 					notification.ActionNotification)
 			}
-			time.Sleep(2 * time.Millisecond)
+			//time.Sleep(2 * time.Millisecond)
 		}
 
 		//update the object now we have more information about it
