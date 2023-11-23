@@ -1,29 +1,51 @@
 package object
 
 import (
+	"context"
+	"errors"
 	"fmt"
+	"github.com/amlwwalker/greenfinch.react/pkg/emitter"
 	"github.com/amlwwalker/greenfinch.react/pkg/notification"
 	"github.com/amlwwalker/greenfinch.react/pkg/payload"
 	"github.com/amlwwalker/greenfinch.react/pkg/tokens"
-	"github.com/google/uuid"
+	"github.com/nspcc-dev/neo-go/pkg/wallet"
 	"github.com/nspcc-dev/neofs-sdk-go/client"
+	apistatus "github.com/nspcc-dev/neofs-sdk-go/client/status"
 	cid "github.com/nspcc-dev/neofs-sdk-go/container/id"
 	"github.com/nspcc-dev/neofs-sdk-go/eacl"
 	"github.com/nspcc-dev/neofs-sdk-go/object"
 	oid "github.com/nspcc-dev/neofs-sdk-go/object/id"
-	"github.com/nspcc-dev/neofs-sdk-go/session"
+	"github.com/nspcc-dev/neofs-sdk-go/pool"
 	"github.com/nspcc-dev/neofs-sdk-go/user"
 	"io"
 	"sync"
 )
 
+// isErrAccessDenied is a helpher function for errors from NeoFS
+func isErrAccessDenied(err error) (string, bool) {
+	unwrappedErr := errors.Unwrap(err)
+	for unwrappedErr != nil {
+		err = unwrappedErr
+		unwrappedErr = errors.Unwrap(err)
+	}
+	switch err := err.(type) {
+	default:
+		return "", false
+	case apistatus.ObjectAccessDenied:
+		return err.Reason(), true
+	case *apistatus.ObjectAccessDenied:
+		return err.Reason(), true
+	}
+}
+
 type ObjectParameter struct {
-	ContainerID string
-	Id          string
+	containerID string
+	id          string
+	gateAccount *wallet.Account
 	io.ReadWriter
-	//database.Store
-	//notification.Notifier
-	//WG              *sync.WaitGroup
+	pl              *pool.Pool
+	ctx             context.Context
+	objectEmitter   emitter.Emitter //used for sending an update of the state of the object's action, e.g send a message that an object has been downloaded.
 	Attrs           []object.Attribute
 	ActionOperation eacl.Operation
 	ExpiryEpoch     uint64
@@ -36,20 +58,23 @@ func (o *ObjectParameter) Epoch() uint64 {
 	return o.ExpiryEpoch
 }
 func (o *ObjectParameter) ParentID() string {
-	return o.ContainerID
+	return o.containerID
 }
 
 func (o *ObjectParameter) ID() string {
-	return o.Id
+	return o.id
 }
 
-//
-//func (o *ObjectParameter) WaitGroup() *sync.WaitGroup {
-//	return o.WG
-//}
+func (o *ObjectParameter) Pool() *pool.Pool {
+	return o.pl
+}
 
 func (o *ObjectParameter) Attributes() []object.Attribute {
 	return o.Attrs
+}
+
+func (o *ObjectParameter) GateAccount() (*wallet.Account, error) {
+	return nil, errors.New("no wallet")
 }
 
 type Object struct {
@@ -66,76 +91,123 @@ type Object struct {
 // and a message type with any new information?
 // however maybe that isn;t the jjob of this and its the hob of the controller, who interfces with the UI. so this needs a chanenl to send messages on actually
 func (o *Object) Head(wg *sync.WaitGroup, p payload.Parameters, actionChan chan notification.NewNotification, token tokens.Token) error {
-	objID := oid.ID{}
-	if err := objID.DecodeString(objectID); err != nil {
+	var objID oid.ID
+	if err := objID.DecodeString(p.ID()); err != nil {
 		fmt.Println("wrong object id", err)
-		return object.Object{}, err
+		return err
 	}
-	cnrID := cid.ID{}
-
-	if err := cnrID.DecodeString(containerID); err != nil {
-		fmt.Println("wrong object id", err)
-		return object.Object{}, err
+	var cnrID cid.ID
+	if err := cnrID.DecodeString(p.ParentID()); err != nil {
+		fmt.Println("wrong container id", err)
+		return err
 	}
-
-	var addr oid.Address
-	addr.SetContainer(cnrID)
-	addr.SetObject(objID)
-
+	gA, err := p.GateAccount()
+	if err != nil {
+		return err
+	}
 	var prmHead client.PrmObjectHead
-
-	pl, err := m.Pool(false)
-	if err != nil {
-		return object.Object{}, err
+	if tok, ok := token.(*tokens.BearerToken); ok {
+		//todo - this could be nil and cause an issue:
+		prmHead.WithBearerToken(*tok.BearerToken) //now we know its a bearer token we can extract it
+	} else {
+		return errors.New("no bearer token provided")
 	}
-	target := eacl.Target{}
-	target.SetRole(eacl.RoleUser)
-	target.SetBinaryKeys([][]byte{m.gateAccount.PublicKey().Bytes()}) //todo - is this correct??
-	gateSigner := user.NewAutoIDSignerRFC6979(m.gateAccount.PrivateKey().PrivateKey)
-
-	cliSdk, err := pl.RawClient()
-	if err != nil {
-		return object.Object{}, err
+	params, ok := p.(*ObjectParameter)
+	if !ok {
+		return errors.New("no object parameters")
 	}
-	netInfo, err := cliSdk.NetworkInfo(context.Background(), client.PrmNetworkInfo{})
-	if err != nil {
-		return object.Object{}, fmt.Errorf("read current network info: %w", err)
-	}
-	var sessionToken session.Object
-	sessionToken.SetAuthKey(gateSigner.Public()) //gateSigner.Public()
-	sessionToken.SetID(uuid.New())
-	sessionToken.SetIat(netInfo.CurrentEpoch())
-	sessionToken.SetNbf(netInfo.CurrentEpoch())
-	sessionToken.SetExp(netInfo.CurrentEpoch() + 100) // or particular exp value
-	sessionToken.BindContainer(cnrID)
-	sessionToken.ForVerb(session.VerbObjectHead)
-
-	fmt.Println("attempting to get object metadata ") //fails as chan
-	m.SignWithWC(&sessionToken)
-
-	prmHead.WithinSession(sessionToken)
-	hdr, err := pl.ObjectHead(m.ctx, cnrID, objID, gateSigner, prmHead)
+	//todo this should be on a routine and send updates to the actionChan. Synchronised currently. (slow)
+	gateSigner := user.NewAutoIDSignerRFC6979(gA.PrivateKey().PrivateKey)
+	hdr, err := p.Pool().ObjectHead(params.ctx, cnrID, objID, gateSigner, prmHead)
 	if err != nil {
 		if reason, ok := isErrAccessDenied(err); ok {
 			fmt.Printf("error here: %s: %s\r\n", err, reason)
-			return object.Object{}, err
+			return err
 		}
-		fmt.Errorf("read object header via connection pool: %w", err)
-		return object.Object{}, err
+		fmt.Printf("read object header via connection pool: %s", err)
+		return err
 	}
-
-	return *hdr, nil
-	return nil
+	//sends this wherever it needs to go. If this is needed somewhere else in the app, then a closure can allow this to be accessed elsewhere in a routine.
+	return params.objectEmitter.Emit(params.ctx, emitter.ObjectAddUpdate, hdr)
+}
+func (o *Object) Delete(wg *sync.WaitGroup, p payload.Parameters, actionChan chan notification.NewNotification, token tokens.Token) error {
+	var objID oid.ID
+	if err := objID.DecodeString(p.ID()); err != nil {
+		fmt.Println("wrong object id", err)
+		return err
+	}
+	var cnrID cid.ID
+	if err := cnrID.DecodeString(p.ParentID()); err != nil {
+		fmt.Println("wrong container id", err)
+		return err
+	}
+	gA, err := p.GateAccount()
+	if err != nil {
+		return err
+	}
+	params, ok := p.(*ObjectParameter)
+	if !ok {
+		return errors.New("no object parameters")
+	}
+	var prmDelete client.PrmObjectDelete
+	if tok, ok := token.(*tokens.BearerToken); ok {
+		//todo - this could be nil and cause an issue:
+		prmDelete.WithBearerToken(*tok.BearerToken) //now we know its a bearer token we can extract it
+	} else {
+		return errors.New("no bearer token provided")
+	}
+	gateSigner := user.NewAutoIDSignerRFC6979(gA.PrivateKey().PrivateKey)
+	if id, err := p.Pool().ObjectDelete(params.ctx, cnrID, objID, gateSigner, prmDelete); err != nil {
+		return err
+	} else {
+		return params.objectEmitter.Emit(params.ctx, emitter.ObjectRemoveUpdate, id)
+	}
+}
+func (o *Object) List(wg *sync.WaitGroup, p payload.Parameters, actionChan chan notification.NewNotification, token tokens.Token) error {
+	var cnrID cid.ID
+	if err := cnrID.DecodeString(p.ParentID()); err != nil {
+		fmt.Println("wrong container id", err)
+		return err
+	}
+	gA, err := p.GateAccount()
+	if err != nil {
+		return err
+	}
+	params, ok := p.(*ObjectParameter)
+	if !ok {
+		return errors.New("no object parameters")
+	}
+	prmList := client.PrmObjectSearch{}
+	if tok, ok := token.(*tokens.BearerToken); ok {
+		//todo - this could be nil and cause an issue:
+		prmList.WithBearerToken(*tok.BearerToken) //now we know its a bearer token we can extract it
+	} else {
+		return errors.New("no bearer token provided")
+	}
+	filter := object.SearchFilters{}
+	filter.AddRootFilter()
+	prmList.SetFilters(filter)
+	gateSigner := user.NewAutoIDSignerRFC6979(gA.PrivateKey().PrivateKey)
+	init, err := p.Pool().ObjectSearchInit(params.ctx, cnrID, gateSigner, prmList)
+	if err != nil {
+		return err
+	}
+	var iterationError error
+	if err = init.Iterate(func(id oid.ID) bool {
+		if metaError := o.Head(wg, p, actionChan, token); metaError != nil {
+			iterationError = metaError
+			return true
+		}
+		return false
+	}); err != nil {
+		return err
+	}
+	return iterationError
 }
 func (o *Object) Read(wg *sync.WaitGroup, p payload.Parameters, actionChan chan notification.NewNotification, token tokens.Token) error {
+
 	return nil
 }
 func (o *Object) Write(wg *sync.WaitGroup, p payload.Parameters, actionChan chan notification.NewNotification, token tokens.Token) error {
-	return nil
-}
-func (o *Object) Delete(wg *sync.WaitGroup, p payload.Parameters, actionChan chan notification.NewNotification, token tokens.Token) error {
-	return nil
-}
-func (o *Object) List(wg *sync.WaitGroup, p payload.Parameters, actionChan chan notification.NewNotification, token tokens.Token) error {
 	return nil
 }

@@ -22,7 +22,6 @@ import (
 	"github.com/nspcc-dev/neofs-sdk-go/client"
 	apistatus "github.com/nspcc-dev/neofs-sdk-go/client/status"
 	cid "github.com/nspcc-dev/neofs-sdk-go/container/id"
-	"github.com/nspcc-dev/neofs-sdk-go/eacl"
 	"github.com/nspcc-dev/neofs-sdk-go/object"
 	oid "github.com/nspcc-dev/neofs-sdk-go/object/id"
 	"github.com/nspcc-dev/neofs-sdk-go/session"
@@ -593,9 +592,9 @@ func (m *Manager) GetObjectMetaData(objectID, containerID string) (object.Object
 	if err != nil {
 		return object.Object{}, err
 	}
-	target := eacl.Target{}
-	target.SetRole(eacl.RoleUser)
-	target.SetBinaryKeys([][]byte{m.gateAccount.PublicKey().Bytes()}) //todo - is this correct??
+	//target := eacl.Target{}
+	//target.SetRole(eacl.RoleUser)
+	//target.SetBinaryKeys([][]byte{m.gateAccount.PublicKey().Bytes()}) //todo - is this correct??
 	gateSigner := user.NewAutoIDSignerRFC6979(m.gateAccount.PrivateKey().PrivateKey)
 
 	cliSdk, err := pl.RawClient()

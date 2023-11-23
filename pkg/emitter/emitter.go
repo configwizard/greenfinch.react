@@ -14,7 +14,8 @@ type EventMessage string
 const (
 	RequestSign         EventMessage = "request_sign_payload"
 	ContainerListUpdate              = "container_list_update"
-	ObjectListUpdate                 = "objectUpdate"
+	ObjectAddUpdate                  = "objectAddUpdate"
+	ObjectRemoveUpdate               = "objectRemoveUpdate"
 	NotificationMessage              = "notification_message"
 	ProgressMessage                  = "progress_message"
 )
