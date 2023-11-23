@@ -14,6 +14,7 @@ import (
 	neofscrypto "github.com/nspcc-dev/neofs-sdk-go/crypto"
 	neofsecdsa "github.com/nspcc-dev/neofs-sdk-go/crypto/ecdsa"
 	"github.com/nspcc-dev/neofs-sdk-go/eacl"
+	"github.com/nspcc-dev/neofs-sdk-go/session"
 	"github.com/nspcc-dev/neofs-sdk-go/user"
 )
 
@@ -40,6 +41,9 @@ func (m MockToken) SignedData() []byte {
 	return make([]byte, 0)
 }
 
+type ObjectSessionToken struct {
+	SessionToken *session.Object
+}
 type BearerToken struct {
 	BearerToken *bearer.Token
 }
