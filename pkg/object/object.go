@@ -9,7 +9,6 @@ import (
 	"github.com/amlwwalker/greenfinch.react/pkg/emitter"
 	"github.com/amlwwalker/greenfinch.react/pkg/notification"
 	"github.com/amlwwalker/greenfinch.react/pkg/payload"
-	gspool "github.com/amlwwalker/greenfinch.react/pkg/pool"
 	"github.com/amlwwalker/greenfinch.react/pkg/tokens"
 	"github.com/nspcc-dev/neo-go/pkg/wallet"
 	"github.com/nspcc-dev/neofs-sdk-go/bearer"
@@ -21,7 +20,6 @@ import (
 	oid "github.com/nspcc-dev/neofs-sdk-go/object/id"
 	"github.com/nspcc-dev/neofs-sdk-go/object/slicer"
 	"github.com/nspcc-dev/neofs-sdk-go/pool"
-	"github.com/nspcc-dev/neofs-sdk-go/session"
 	"github.com/nspcc-dev/neofs-sdk-go/user"
 	"io"
 	"log"
@@ -47,8 +45,9 @@ func isErrAccessDenied(err error) (string, bool) {
 }
 
 type ObjectParameter struct {
-	containerID string
-	id          string
+	ContainerID string
+	Id          string
+	PublicKey   ecdsa.PublicKey
 	gateAccount *wallet.Account
 	io.ReadWriter
 	pl  *pool.Pool
@@ -62,35 +61,36 @@ type ObjectParameter struct {
 	ExpiryEpoch     uint64
 }
 
-func (o *ObjectParameter) Operation() eacl.Operation {
+func (o ObjectParameter) Operation() eacl.Operation {
 	return o.ActionOperation
 }
-func (o *ObjectParameter) Epoch() uint64 {
+func (o ObjectParameter) Epoch() uint64 {
 	return o.ExpiryEpoch
 }
-func (o *ObjectParameter) ParentID() string {
-	return o.containerID
+func (o ObjectParameter) ParentID() string {
+	return o.ContainerID
 }
 
-func (o *ObjectParameter) ID() string {
-	return o.id
+func (o ObjectParameter) ID() string {
+	return o.Id
 }
 
-func (o *ObjectParameter) Pool() *pool.Pool {
+func (o ObjectParameter) Pool() *pool.Pool {
 	return o.pl
 }
 
-func (o *ObjectParameter) Attributes() []object.Attribute {
+func (o ObjectParameter) Attributes() []object.Attribute {
 	return o.Attrs
 }
 
-func (o *ObjectParameter) GateAccount() (*wallet.Account, error) {
+func (o ObjectParameter) GateAccount() (*wallet.Account, error) {
 	return nil, errors.New("no wallet")
 }
 
 type Object struct {
 	notification.Notifier
-	PublicKey ecdsa.PublicKey
+	//PublicKey     ecdsa.PublicKey
+	//PayloadWriter *slicer.PayloadWriter
 	// the data payload
 	//the location its to be read from/saved to if necessary
 }
@@ -105,12 +105,12 @@ type Object struct {
 func (o *Object) Head(wg *sync.WaitGroup, p payload.Parameters, actionChan chan notification.NewNotification, token tokens.Token) error {
 	var objID oid.ID
 	if err := objID.DecodeString(p.ID()); err != nil {
-		fmt.Println("wrong object id", err)
+		fmt.Println("wrong object Id", err)
 		return err
 	}
 	var cnrID cid.ID
 	if err := cnrID.DecodeString(p.ParentID()); err != nil {
-		fmt.Println("wrong container id", err)
+		fmt.Println("wrong container Id", err)
 		return err
 	}
 	gA, err := p.GateAccount()
@@ -145,12 +145,12 @@ func (o *Object) Head(wg *sync.WaitGroup, p payload.Parameters, actionChan chan 
 func (o *Object) Delete(wg *sync.WaitGroup, p payload.Parameters, actionChan chan notification.NewNotification, token tokens.Token) error {
 	var objID oid.ID
 	if err := objID.DecodeString(p.ID()); err != nil {
-		fmt.Println("wrong object id", err)
+		fmt.Println("wrong object Id", err)
 		return err
 	}
 	var cnrID cid.ID
 	if err := cnrID.DecodeString(p.ParentID()); err != nil {
-		fmt.Println("wrong container id", err)
+		fmt.Println("wrong container Id", err)
 		return err
 	}
 	gA, err := p.GateAccount()
@@ -178,7 +178,7 @@ func (o *Object) Delete(wg *sync.WaitGroup, p payload.Parameters, actionChan cha
 func (o *Object) List(wg *sync.WaitGroup, p payload.Parameters, actionChan chan notification.NewNotification, token tokens.Token) error {
 	var cnrID cid.ID
 	if err := cnrID.DecodeString(p.ParentID()); err != nil {
-		fmt.Println("wrong container id", err)
+		fmt.Println("wrong container Id", err)
 		return err
 	}
 	gA, err := p.GateAccount()
@@ -218,32 +218,9 @@ func (o *Object) List(wg *sync.WaitGroup, p payload.Parameters, actionChan chan 
 	return iterationError
 }
 
-// fixme - move me to a utils or node manager
-type NodeSelection struct {
-	Nodes   []config.Peer
-	current int
-}
-
-func (s *NodeSelection) getNext() (config.Peer, error) {
-	if s.current == len(s.Nodes)-1 {
-		return config.Peer{}, errors.New("Could not connect to any nodes, please try later")
-	}
-	node := s.Nodes[s.current]
-	s.current = s.current + 1 // % len(s.Nodes) unless we want truly round robin connections...
-	return node, nil
-}
-
-func NewNetworkSelector(nodes []config.Peer) NodeSelection {
-	nodeSelection := NodeSelection{
-		Nodes:   nodes,
-		current: 0,
-	}
-	return nodeSelection
-}
-
-// tmpCreateReadSession returns the thats required for reading objects.
-func tmpCreateReadSession(p ObjectParameter, nodes []config.Peer) (*bearer.Token, error) {
-	nodeSelection := NewNetworkSelector(nodes)
+// ObjectReadSignSession produces a token for reading objects. Slightly more complex than a standard token so part of this package.
+func ObjectReadSignSession(p ObjectParameter, nodes []config.Peer) (*bearer.Token, error) {
+	nodeSelection := config.NewNetworkSelector(nodes)
 	var prmDial client.PrmDial
 	prmDial.SetTimeout(30 * time.Second)
 	prmDial.SetStreamTimeout(30 * time.Second)
@@ -253,7 +230,7 @@ func tmpCreateReadSession(p ObjectParameter, nodes []config.Peer) (*bearer.Token
 		return nil, err
 	}
 	for {
-		node, err := nodeSelection.getNext()
+		node, err := nodeSelection.GetNext()
 		if err != nil {
 			return nil, err
 		}
@@ -266,34 +243,49 @@ func tmpCreateReadSession(p ObjectParameter, nodes []config.Peer) (*bearer.Token
 			break
 		}
 	}
-	iAt, exp, err := gspool.TokenExpiryValue(p.ctx, p.Pool(), 100)
-	if err != nil {
-		fmt.Println("error getting expiry ", err)
-		return nil, err
-	}
-	gateSigner := user.NewAutoIDSigner(p.gateAccount.PrivateKey().PrivateKey) //fix me is this correct signer?
-	prmSession := client.PrmSessionCreate{}
-	prmSession.SetExp(exp)
-	resSession, err := sdkCli.SessionCreate(p.ctx, gateSigner, prmSession)
-	if err != nil {
-		return nil, err
-	}
+	//_, exp, err := gspool.TokenExpiryValue(p.ctx, p.Pool(), 100)
+	//if err != nil {
+	//	fmt.Println("error getting expiry ", err)
+	//	return nil, err
+	//}
+	//gateSigner := user.NewAutoIDSigner(p.gateAccount.PrivateKey().PrivateKey) //fix me is this correct signer?
+	//prmSession := client.PrmSessionCreate{}
+	//prmSession.SetExp(exp)
+	//resSession, err := sdkCli.SessionCreate(p.ctx, gateSigner, prmSession)
+	//if err != nil {
+	//	return nil, err
+	//}
 	//fixme: change for bearer token
 	//fixme: need to find out how to attach the resSession to a bearer token (how were we doing it for gate tokens? I think its the same)
-	bt, err := tokens.BuildUnsignedBearerToken(iAt, iAt, exp, session.VerbObjectGet, cnrID, resSession)
-	return bt, err
+	//bt, err := tokens.BuildUnsignedBearerToken(iAt, iAt, exp, session.VerbObjectGet, cnrID, resSession)
+	//token, err := ObjectBearerToken(p) //we need to use the session
+	//if err != nil {
+	//	return nil, err
+	//}
+	//return &token, err
+	return nil, nil
+}
+
+// ObjectRead
+func ObjectRead() {
+	//create bearer token
+	//get token signed
+	//call initReader
+	//attach reader to the object
+	//call the read operation
+	//close the reader
 }
 
 // tmpPreRequisite should be run before trying to retrieve an object. It provides the size of the object and the reader that will do the retrieval.
-func tmpPreRequisite(params ObjectParameter, token tokens.Token) (object.Object, *client.PayloadReader, error) {
+func InitReader(params ObjectParameter, token tokens.Token) (object.Object, io.ReadCloser, error) {
 	var objID oid.ID
 	if err := objID.DecodeString(params.ID()); err != nil {
-		fmt.Println("wrong object id", err)
+		fmt.Println("wrong object Id", err)
 		return object.Object{}, nil, err
 	}
 	var cnrID cid.ID
 	if err := cnrID.DecodeString(params.ParentID()); err != nil {
-		fmt.Println("wrong container id", err)
+		fmt.Println("wrong container Id", err)
 		return object.Object{}, nil, err
 	}
 	gA, err := params.GateAccount()
@@ -321,11 +313,7 @@ func tmpPreRequisite(params ObjectParameter, token tokens.Token) (object.Object,
 	return dstObject, objReader, nil
 }
 
-func tmpPostRequisite(objReader *client.PayloadReader) error {
-	//fixme - this needs to occur for the object to finish.
-	return objReader.Close()
-}
-func (o *Object) Read(wg *sync.WaitGroup, p payload.Parameters, actionChan chan notification.NewNotification, token tokens.Token) error {
+func (o Object) Read(wg *sync.WaitGroup, p payload.Parameters, actionChan chan notification.NewNotification, token tokens.Token) error {
 	buf := make([]byte, 1024)
 	for {
 		n, err := p.Read(buf)
@@ -361,10 +349,65 @@ func (o *Object) Read(wg *sync.WaitGroup, p payload.Parameters, actionChan chan 
 	//no need to emit anything - the progress bar will update the UI for us.
 	return nil
 }
-func (o Object) writePrequisite(p ObjectParameter, token tokens.Token) (*slicer.PayloadWriter, error) {
+func CloseReader(objReader io.ReadCloser) error {
+	//fixme - this needs to occur for the object to finish.
+	return objReader.Close()
+}
+func ObjectWrite() {
+	//create a bearer token
+	//sign the bearer token
+	//call initWriter
+	//attach the payloadWriter to the object
+	//call Write
+	//close the writer
+	//retrieve the ID
+	//call Head() to get the object metadata
+}
+
+func ObjectBearerToken(p payload.Parameters) (bearer.Token, error) {
 	var cnrID cid.ID
 	if err := cnrID.DecodeString(p.ParentID()); err != nil {
-		fmt.Println("wrong container id", err)
+		return bearer.Token{}, err
+	}
+	gA, err := p.GateAccount()
+	if err != nil {
+		return bearer.Token{}, err
+	}
+	params, ok := p.(*ObjectParameter)
+	if !ok {
+		return bearer.Token{}, errors.New("no object parameters")
+	}
+	var gateSigner user.Signer = user.NewAutoIDSignerRFC6979(gA.PrivateKey().PrivateKey)
+	var prmInit client.PrmInit
+
+	c, err := client.New(prmInit)
+	netInfo, err := c.NetworkInfo(params.ctx, client.PrmNetworkInfo{})
+
+	var bearerToken bearer.Token
+	bearerToken.ForUser(gateSigner.UserID())
+	bearerToken.SetIat(netInfo.CurrentEpoch())
+	bearerToken.SetNbf(netInfo.CurrentEpoch())
+	bearerToken.SetExp(netInfo.CurrentEpoch() + 100) // or particular exp value
+	bearerToken.EACLTable()
+	r := eacl.Record{}
+	equal := eacl.MatchStringEqual
+	equal.DecodeString(cnrID.String())
+	r.AddObjectContainerIDFilter(equal, cnrID)
+	if p.Operation() == eacl.OperationUnknown {
+		return bearer.Token{}, errors.New("need bearer token operation")
+	}
+	r.SetOperation(p.Operation())
+	r.SetAction(eacl.ActionAllow)
+	tab := eacl.Table{}
+	tab.AddRecord(&r)
+	bearerToken.SetEACLTable(tab)
+
+	return bearerToken, nil
+}
+func InitWriter(p ObjectParameter, token tokens.Token) (io.WriteCloser, error) {
+	var cnrID cid.ID
+	if err := cnrID.DecodeString(p.ParentID()); err != nil {
+		fmt.Println("wrong container Id", err)
 		return nil, err
 	}
 	gA, err := p.GateAccount()
@@ -378,49 +421,36 @@ func (o Object) writePrequisite(p ObjectParameter, token tokens.Token) (*slicer.
 	if err != nil {
 		return nil, err
 	}
-	userID := user.ResolveFromECDSAPublicKey(o.PublicKey)
+	userID := user.ResolveFromECDSAPublicKey(p.PublicKey)
 	var gateSigner user.Signer = user.NewAutoIDSignerRFC6979(gA.PrivateKey().PrivateKey)
-	tok, ok := token.(*tokens.ObjectSessionToken)
-	if !ok {
-		//todo - this could be nil and cause an issue:
-		return nil, errors.New("no session token provided")
-	}
-	//fixme - this need to be set earlier somewhere when we have the information.
-	//var fileNameAttr object.Attribute
-	//fileNameAttr.SetKey(object.AttributeFileName)
-	//fileNameAttr.SetValue(fileStats.Name())
-	//attrs = append(attrs, fileNameAttr)
-	//
-	//var timestampAttr object.Attribute
-	//timestampAttr.SetKey(object.AttributeTimestamp)
-	//timestampAttr.SetValue(strconv.FormatInt(time.Now().Unix(), 10))
-	//attrs = append(attrs, timestampAttr)
-	_slicer, err := slicer.New(p.ctx, c, gateSigner, cnrID, userID, tok.SessionToken)
+
+	ni, err := c.NetworkInfo(p.ctx, client.PrmNetworkInfo{})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("network info: %w", err)
 	}
+	var opts slicer.Options
+	opts.SetObjectPayloadLimit(ni.MaxObjectSize())
+	opts.SetCurrentNeoFSEpoch(ni.CurrentEpoch())
+	if tok, ok := token.(*tokens.BearerToken); ok {
+		//todo - this could be nil and cause an issue:
+		opts.SetBearerToken(*tok.BearerToken) //now we know its a bearer token we can extract it
+	} else {
+		return nil, errors.New("no bearer token provided")
+	}
+	if !ni.HomomorphicHashingDisabled() {
+		opts.CalculateHomomorphicChecksum()
+	}
+	var hdr object.Object
+	hdr.SetContainerID(cnrID)
+	hdr.SetType(object.TypeRegular)
+	hdr.SetOwnerID(&userID)
+	hdr.SetCreationEpoch(ni.CurrentEpoch())
 	//todo: readers and writers should be attached to the object that owns the method
-	plWriter, err := _slicer.InitPut(p.ctx, p.Attributes())
+	plWriter, err := slicer.InitPut(p.ctx, c, hdr, gateSigner, opts)
 	return plWriter, err
 }
 
-// this might need to become an interface function unless we have an object manager that the controller calls.
-func (o Object) writePostRequisite(p ObjectParameter) error {
-	if err := o.Writer.Close(); err != nil {
-		fmt.Println("error closing object writer ", err)
-		//ctxWithMsg, cancel := context.WithCancel(m.cancelUploadCtx)
-		//defer cancel()
-		//ctxWithMsg = context.WithValue(ctxWithMsg, "error", errors.New("user cancelled download"))
-		//cancel()
-		//m.downloadCancelFunc()
-		return err
-	}
-	//todo: add this object to the database, once retrieved information
-	id := o.Writer.ID()
-	o.Head() //if calling this then this can handle the emitting etc
-	p.objectEmitter.Emit(p.ctx, emitter.ObjectAddUpdate, hdr)
-}
-func (o *Object) Write(wg *sync.WaitGroup, p payload.Parameters, actionChan chan notification.NewNotification, token tokens.Token) error {
+func (o Object) Write(wg *sync.WaitGroup, p payload.Parameters, actionChan chan notification.NewNotification, token tokens.Token) error {
 	buf := make([]byte, 1024)
 	for {
 		n, err := p.Read(buf)
@@ -450,3 +480,16 @@ func (o *Object) Write(wg *sync.WaitGroup, p payload.Parameters, actionChan chan
 	}
 	return nil
 }
+
+//
+//// this might need to become an interface function unless we have an object manager that the controller calls.
+//func (o Object) CloseWriter(wg *sync.WaitGroup, p ObjectParameter, actionChan chan notification.NewNotification, token tokens.Token) (oid.ID, error) {
+//	if err := o.PayloadWriter.Close(); err != nil {
+//		return oid.ID{}, err
+//	}
+//	//todo: add this object to the database, once retrieved information
+//	//Id := o.PayloadWriter.ID()
+//	//p.Id = Id.String() //decoded other end. Perhaps inefficient but need to set it now so that we can retrieve its metadata
+//	//return o.Head(wg, p, actionChan, token)
+//	return o.PayloadWriter.ID(), nil
+//}

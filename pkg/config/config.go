@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"fmt"
 	"github.com/spf13/viper"
 	"log"
@@ -14,6 +15,29 @@ type Peer struct {
 	Address  string `yaml:"address"`
 	Priority int    `yaml:"priority"`
 	Weight   int    `yaml:"weight"`
+}
+
+// fixme - move me to a utils or node manager
+type NodeSelection struct {
+	Nodes   []Peer
+	current int
+}
+
+func (s *NodeSelection) GetNext() (Peer, error) {
+	if s.current == len(s.Nodes)-1 {
+		return Peer{}, errors.New("Could not connect to any nodes, please try later")
+	}
+	node := s.Nodes[s.current]
+	s.current = s.current + 1 // % len(s.Nodes) unless we want truly round robin connections...
+	return node, nil
+}
+
+func NewNetworkSelector(nodes []Peer) NodeSelection {
+	nodeSelection := NodeSelection{
+		Nodes:   nodes,
+		current: 0,
+	}
+	return nodeSelection
 }
 
 func ReadConfig(name, path string) (Config, error) {

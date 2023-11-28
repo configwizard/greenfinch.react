@@ -33,6 +33,7 @@ func (e Event) Emit(c context.Context, message string, payload any) error {
 }
 
 type Signresponse func(signedPayload payload.Payload) error
+
 type MockSigningEvent struct {
 	Name         string
 	SignResponse Signresponse //this is a hack while we mock. In reality the frontend calls this function

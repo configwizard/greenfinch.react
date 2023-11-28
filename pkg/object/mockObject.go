@@ -137,8 +137,7 @@ func (o *MockObject) Head(wg *sync.WaitGroup, p payload.Parameters, actionChan c
 	}()
 	return nil
 }
-func (o *MockObject) Read(p payload.Parameters, actionChan chan notification.NewNotification, token tokens.Token) (notification.Notification, error) {
-	wg := sync.WaitGroup{}
+func (o *MockObject) Read(wg *sync.WaitGroup, p payload.Parameters, actionChan chan notification.NewNotification, token tokens.Token) error {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
@@ -155,7 +154,7 @@ func (o *MockObject) Read(p payload.Parameters, actionChan chan notification.New
 		}
 	}()
 	wg.Wait()
-	return notification.Notification{}, nil
+	return nil
 }
 func (o *MockObject) Write(p payload.Parameters, actionChan chan notification.NewNotification, token tokens.Token) (notification.Notification, error) {
 	return notification.Notification{}, nil

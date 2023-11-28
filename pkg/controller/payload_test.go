@@ -3,6 +3,8 @@ package controller
 import (
 	"bytes"
 	"context"
+	"crypto/ecdsa"
+	"encoding/hex"
 	"fmt"
 	"github.com/amlwwalker/greenfinch.react/pkg/database"
 	"github.com/amlwwalker/greenfinch.react/pkg/emitter"
@@ -12,6 +14,7 @@ import (
 	"github.com/amlwwalker/greenfinch.react/pkg/readwriter"
 	"github.com/amlwwalker/greenfinch.react/pkg/tokens"
 	wal "github.com/nspcc-dev/neo-go/pkg/wallet"
+	neofsecdsa "github.com/nspcc-dev/neofs-sdk-go/crypto/ecdsa"
 	"github.com/nspcc-dev/neofs-sdk-go/eacl"
 	"github.com/nspcc-dev/neofs-sdk-go/object"
 	"log"
@@ -54,7 +57,7 @@ func TestPayloadSigning(t *testing.T) {
 	wg := &sync.WaitGroup{}
 	ctx, cancelFunc := context.WithCancel(context.Background())
 	walletId := "address"
-	publicKey := "publicKey"
+	//publicKey := "publicKey"
 	walletLocation := "walletLocation"
 	db := database.NewMockDB(database.TESTNET, walletId, walletLocation)
 	err := db.CreateWalletBucket()
@@ -70,16 +73,22 @@ func TestPayloadSigning(t *testing.T) {
 	//create a controller to hande comms between elements of business logic
 	controller := New(db, nil, ctx, cancelFunc, n) //emitter set later to tie them together
 
+	wallet := NewMockWallet()
 	mockSigner := emitter.MockSigningEvent{Name: "signing events:"}
-	mockSigner.SignResponse = controller.SignResponse //set the callback hereso that we can close the loop during tests
-	controller.Signer = mockSigner                    //tied closely during tests...
-	controller.LoadSession(walletId, publicKey)
+	//for private key
+	mockSigner.SignResponse = controller.SignResponse
+	//for wallet connect
+	//mockSigner.SignResponse = controller.SignResponse //set the callback hereso that we can close the loop during tests
+	controller.Signer = mockSigner //tied closely during tests...
+	controller.LoadSession(wallet)
 	controller.wallet.Address()
 	ephemeralAccount, err := wal.NewAccount()
 	if err != nil {
 		t.Fatal("could not create account ", err)
 	}
-	controller.tokenManager = tokens.MockTokenManager{W: *ephemeralAccount}
+
+	//todo - must make sure this is set
+	controller.tokenManager = &tokens.WalletConnectTokenManager{W: *ephemeralAccount}
 
 	//todo - should the db/notifier be on the object or on the object parameters
 	mockAction := obj.MockObject{Id: "object", ContainerId: "container"}
@@ -149,15 +158,24 @@ func TestPayloadSigning(t *testing.T) {
 	var o obj.ObjectParameter
 	o.Id = "A6iuMASnCLGPVGgESWCiDfAWZZ8RiWQR5934JrJBDBoK"
 	o.ContainerID = "87JeshQhXKBw36nULzpLpyn34Mhv1kGCccYyHU2BqGpT"
-	//o.WaitGroup() = make(chan payload.Payload)
+	//fixme - the first public key for a user needs WalletConnect to provide it (stub signing)
+	//we may have the information in the database but first call is wallet.Connect
+	bPubKey, err := hex.DecodeString(controller.wallet.PublicKeyHexString())
+	if err != nil {
+		log.Fatal("could not decode public key - ", err)
+	}
+	var pubKey neofsecdsa.PublicKeyWalletConnect
+
+	err = pubKey.Decode(bPubKey)
+	o.PublicKey = ecdsa.PublicKey(pubKey)
 	o.Attrs = make([]object.Attribute, 0)
 	o.ActionOperation = eacl.OperationHead
 	o.ReadWriter = &readwriter.DualStream{
 		Reader: file,                  //here is where it knows the source of the data
 		Writer: fileWriterProgressBar, //this is where we write the data to
 	}
-	o.ExpiryEpoch = 100
-	wg.Add(1) //fixme: - total hack for the tests to end and database to be loaded.
+	o.ExpiryEpoch = 100 //fix me = remove this.
+	wg.Add(1)           //fixme: - total hack for the tests to end and database to be loaded.
 	go func() {
 		defer wg.Done()
 		time.Sleep(3 * time.Second)
@@ -182,4 +200,79 @@ func TestPayloadSigning(t *testing.T) {
 
 		}
 	}(file)
+
+	return                                // - remove this if you want to try and read and write
+	o.ActionOperation = eacl.OperationGet //set this to create a new token (remember will need signing)
+	//this could be done with a real or fake noeFS - but the issue is creating/mocking the readers etc
+	token, err := obj.ObjectBearerToken(o)
+	if err != nil {
+		return
+	}
+	token.SignedData() //this needs signing. Use the emitter.
+
+	bt := tokens.BearerToken{BearerToken: &token}
+	controller.tokenManager.AddBearerToken(controller.wallet.Address(), o.ParentID(), bt)
+	//staticSigner := neofscrypto.NewStaticSigner(neofscrypto.ECDSA_WALLETCONNECT, append(bSig, salt...), &pubKey)
+	//err = sessionToken.Sign(user.NewSigner(staticSigner, issuer))
+	//if err != nil {
+	//	return nil, fmt.Errorf("write precalculated signature into session token: %w", err)
+	//}
+	//fmt.Println("verify sig ", sessionToken.VerifySignature(), sessionToken.AssertVerb(session.VerbObjectSearch))
+	//ok to do a read or write...
+	//fixme - need to get the current epoch to know if the bearer token is still valid
+	//controller.tokenManager.FindBearerToken(controller.wallet.Address(), o.ParentID(), eacl.OperationGet)
+	destinationObject, objectReader, err := obj.InitReader(o, bt)
+	if err != nil {
+		return
+	}
+	o.ReadWriter = &readwriter.DualStream{
+		Reader: objectReader,          //here is where it knows the source of the data
+		Writer: fileWriterProgressBar, //this is where we write the data to
+	}
+	//thought: you could use the destinationObject to update the UI before its downloaded with an emitter
+	destinationObject.PayloadSize() //use this with the progress bar
+	//give the size from the dstObjct to the progress bar
+	//use the objectReader in the dualStream
+	oj := obj.Object{
+		Notifier: n,
+	}
+	//could still mock to here now, if we mae the InitReader an interface function.
+	if err := controller.PerformAction(wg, &o, oj.Read); err != nil {
+		t.Fatal(err)
+	}
+	//should this be done elsewhere?
+	if err := objectReader.Close(); err != nil {
+		t.Fatal(err)
+	}
+	{ //hackery for the purpose of the test
+		o.ActionOperation = eacl.OperationPut //set this to create a new token (remember will need signing)
+		token, err := obj.ObjectBearerToken(o)
+		if err != nil {
+			return
+		}
+		token.SignedData() //this needs signing. Use the emitter.
+		//sign the data!  -- we can use a wallet type where we have the private key to do this for tests.
+		bt = tokens.BearerToken{BearerToken: &token}
+	}
+	controller.tokenManager.AddBearerToken(controller.wallet.Address(), o.ParentID(), bt)
+
+	objectWriter, err := obj.InitWriter(o, bt)
+	if err != nil {
+		return
+	}
+	//pass objectWriter to the dualStream
+	if err != nil {
+		return
+	}
+	o.ReadWriter = &readwriter.DualStream{
+		Reader: file,         //here is where it knows the source of the data
+		Writer: objectWriter, //this is where we write the data to
+	}
+	fileStats.Size() // use this with the progress bar to degine the upload size
+	if err := controller.PerformAction(wg, &o, oj.Write); err != nil {
+		t.Fatal(err)
+	}
+	if err := objectWriter.Close(); err != nil {
+		t.Fatal(err)
+	}
 }

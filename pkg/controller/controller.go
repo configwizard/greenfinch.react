@@ -14,6 +14,7 @@ import (
 	"github.com/nspcc-dev/neo-go/pkg/crypto/keys"
 	wal "github.com/nspcc-dev/neo-go/pkg/wallet"
 	cid "github.com/nspcc-dev/neofs-sdk-go/container/id"
+	neofsecdsa "github.com/nspcc-dev/neofs-sdk-go/crypto/ecdsa"
 	"github.com/nspcc-dev/neofs-sdk-go/eacl"
 	"log"
 	"sync"
@@ -26,29 +27,34 @@ type ActionType func(wg *sync.WaitGroup, p payload.Parameters, actionChan chan n
 type Action interface {
 
 	//todo - payload currently holds the signed token, but the naming here could be better
-	Head(wg *sync.WaitGroup, p payload.Parameters, actionChan chan notification.NewNotification, token tokens.Token) (notification.NewNotification, error)
-	//Read(p payload.Parameters, token tokens.Token) (notification.NewNotification, error)
-	//Write(p payload.Parameters, token tokens.Token) (notification.NewNotification, error)
-	//Delete(p payload.Parameters, token tokens.Token) (notification.NewNotification, error)
-	//List(p payload.Parameters, token tokens.Token) (notification.NewNotification, error)
+	Head(wg *sync.WaitGroup, p payload.Parameters, actionChan chan notification.NewNotification, token tokens.Token) error
+	Read(wg *sync.WaitGroup, p payload.Parameters, actionChan chan notification.NewNotification, token tokens.Token) error
+	Write(wg *sync.WaitGroup, p payload.Parameters, actionChan chan notification.NewNotification, token tokens.Token) error
+	Delete(wg *sync.WaitGroup, p payload.Parameters, actionChan chan notification.NewNotification, token tokens.Token) error
+	List(wg *sync.WaitGroup, p payload.Parameters, actionChan chan notification.NewNotification, token tokens.Token) error
 }
 
 type MockWallet struct {
-	OriginalAmessage string
-	Address          string
+	wal.Account
+	OriginalMessage  string
+	WalletAddress    string
 	HexPubKey        string
 	HexSignature     string
 	HexSalt          string
 	HexSignedMessage string
 }
 
+func (w MockWallet) Address() string {
+	return w.WalletAddress
+}
+
 func NewMockWallet() MockWallet {
 	return MockWallet{
-		OriginalAmessage: "Hello, world!",
-		Address:          "",
-		HexPubKey:        "0382fcb005ae7652401fbe1d6345f77110f98db7122927df0f3faf3b62d1094071",
-		HexSignature:     "6eb490f17f30c3e85f032ff47247499efe5cb0ce94dab5e31647612e361053574c96d584d3c185fb8474207e8f649d856b4d60b573a195d5e67e621a2b4c7f87",
-		HexSalt:          "3da1f339213180ed4c46a12b6bd57eb6",
+		OriginalMessage: "Hello, world!",
+		WalletAddress:   "",
+		HexPubKey:       "0382fcb005ae7652401fbe1d6345f77110f98db7122927df0f3faf3b62d1094071",
+		HexSignature:    "6eb490f17f30c3e85f032ff47247499efe5cb0ce94dab5e31647612e361053574c96d584d3c185fb8474207e8f649d856b4d60b573a195d5e67e621a2b4c7f87",
+		HexSalt:         "3da1f339213180ed4c46a12b6bd57eb6",
 		HexSignedMessage: "" +
 			"010001f0" + // fixed scheme prefix
 			"34" + // length of salted message in bytes: 2x16 bytes for hex salt + 20 bytes for base64-encoded hello world = 52 (0x34)
@@ -57,30 +63,55 @@ func NewMockWallet() MockWallet {
 			"0000", // fixed scheme suffix,
 	}
 }
-func (w MockWallet) Sign() error {
+func (w MockWallet) Sign(p payload.Payload) error {
+	//in this case the payload is the `token.Signed()` data. Sign it with the key.
 	//currently the signed data is stored in the mock
+	//var k = w.PrivateKey()
+	//var e neofsecdsa.Signer
+	//e = (neofsecdsa.Signer)(k.PrivateKey)
+	//if tok, ok := token.(tokens.BearerToken); ok {
+	//	if err := tok.BearerToken.Sign(e); err != nil {
+	//		return err
+	//	}
+	//}
+
+	//fixme - is this actually signed? Due to value vs reference, i wonder....
 	return nil
+}
+
+func (w MockWallet) PublicKeyHexString() string {
+	// retrieve the public key from the wallet
+	return w.HexPubKey
 }
 
 type RawWallet struct {
 	*wal.Wallet
-	Address string
+	emitter emitter.Emitter
 }
 
 func NewRawWallet(filepath string) (RawWallet, error) {
 	return RawWallet{
-		Wallet:  nil,
-		Address: "",
+		Wallet: nil,
 	}, nil
 }
 func (w RawWallet) Sign(p payload.Payload) error {
-	//here you would sign it using a normal wallet private key etc
-	return nil
+	var e = (neofsecdsa.SignerRFC6979)(w.Wallet.Accounts[0].PrivateKey().PrivateKey)
+	signed, err := e.Sign(p.OutgoingData)
+	if err != nil {
+		fmt.Println("error signing ", err)
+		return err
+	}
+	p.OutgoingData = signed //fixme: total hack. This is not how this field should be used
+	return w.emitter.Emit(context.Background(), (string)(emitter.RequestSign), p)
 }
 
 func (w RawWallet) PublicKeyHexString() string {
 	// retrieve the public key from the wallet
-	return ""
+	return w.Wallet.Accounts[0].PublicKey().String()
+}
+
+func (w RawWallet) Address() string {
+	return w.Wallet.Accounts[0].Address
 }
 
 type WCWallet struct {
@@ -108,6 +139,7 @@ type Wallet interface {
 }
 
 type TokenManager interface {
+	AddBearerToken(address, cnrID string, b tokens.Token)
 	NewBearerToken(table eacl.Table, lIat, lNbf, lExp uint64, temporaryKey *keys.PublicKey) (tokens.Token, error)
 	FindBearerToken(address string, id cid.ID, epoch uint64, operation eacl.Operation) (tokens.Token, error)
 	GateKey() wal.Account
@@ -133,7 +165,6 @@ func New(db database.Store, emitter emitter.Emitter, ctx context.Context, cancel
 		pendingEvents: make(map[uuid.UUID]payload.Payload),
 		actionMap:     make(map[uuid.UUID]ActionType),
 		Signer:        emitter,
-		tokenManager:  tokens.TokenManager{},
 		Notifier:      notifier,
 		cancelCtx:     cancel,
 		ctx:           ctx,
@@ -150,13 +181,9 @@ func (m *Controller) DomReady(ctx context.Context) {
 }
 
 // LoadSession is responsible for taking input from the user and creating the wallet to manage the session.
-func (c *Controller) LoadSession(address, publicKey string) { //todo - these fields may not be available immediately
+func (c *Controller) LoadSession(wallet Wallet) { //todo - these fields may not be available immediately
 	//somehow the user informs us of the wallet they want to load. We should adjust the wallet here accordingly.
-	c.wallet = WCWallet{
-		WalletAddress: "",
-		PublicKey:     "",
-		emitter:       c.Signer,
-	}
+	c.wallet = wallet
 }
 
 // RequestSign asks the wallet to begin the signing process. This assumes signing is asynchronous
@@ -173,7 +200,25 @@ func (c *Controller) SignRequest(payload payload.Payload) error {
 	return c.wallet.Sign(payload)
 }
 
-// SignResponse will be called when a signed payload is returned
+// SignWithSignatureResponse just passes the signed payload onwrds. Use when have private key
+func (c *Controller) SignWithSignatureResponse(signedPayload payload.Payload) error {
+	if c.wallet == nil {
+		return errors.New(utils.ErrorNoSession)
+	}
+	if p, ok := c.pendingEvents[signedPayload.Uid]; ok {
+		updatedPayload := p // Dereference to get a copy of the payload
+		updatedPayload.Complete = true
+		updatedPayload.OutgoingData = signedPayload.OutgoingData
+		// Update the map with the new struct
+		c.pendingEvents[signedPayload.Uid] = updatedPayload
+		// Notify through the channel
+		updatedPayload.ResponseCh <- true
+		return nil
+	}
+	return errors.New(utils.ErrorNotFound)
+}
+
+// SignResponse will be called when a signed payload is returned (use with WC)
 func (c *Controller) SignResponse(signedPayload payload.Payload) error {
 	if c.wallet == nil {
 		return errors.New(utils.ErrorNoSession)
@@ -239,6 +284,7 @@ func (c *Controller) PerformAction(wg *sync.WaitGroup, p payload.Parameters, act
 
 	//at this point we need to find out if we have a bearer token that can handle this action for us
 	//1. check if we have a token that will fulfil the operation for the request
+	//to force this, just provide a token to the token manager that will be picked up here.
 	if bearerToken, err := c.tokenManager.FindBearerToken(c.wallet.Address(), cnrId, p.Epoch(), p.Operation()); err == nil {
 		//we believe we have a token that can perform
 		//the action should now be passed what it was going to be passed anyway, along with the token that it can use to make the request.
@@ -260,8 +306,8 @@ func (c *Controller) PerformAction(wg *sync.WaitGroup, p payload.Parameters, act
 	target.SetRole(eacl.RoleUser)
 	key := c.tokenManager.GateKey()
 	target.SetBinaryKeys([][]byte{key.PublicKey().Bytes()})
-	table := tokens.GeneratePermissionsTable(cnrId, target) //currently this allows all operations.
-	bearerToken, err := c.tokenManager.NewBearerToken(table, 0, 0, 0, key.PublicKey())
+	table := tokens.GeneratePermissionsTable(cnrId, target)                            //currently this allows all operations.
+	bearerToken, err := c.tokenManager.NewBearerToken(table, 0, 0, 0, key.PublicKey()) //mock this out for different wallet types
 	if err != nil {
 		return err
 	}
@@ -279,7 +325,7 @@ func (c *Controller) PerformAction(wg *sync.WaitGroup, p payload.Parameters, act
 			case <-c.ctx.Done():
 				log.Println("closed action handler")
 				return
-			case <-neoFSPayload.ResponseCh:
+			case <-neoFSPayload.ResponseCh: //waiting for a signing
 				//we just received a signed token payload. Lets recreate the associated token
 				// Payload signed, perform the action
 				if pendingPayload, exists := c.pendingEvents[neoFSPayload.Uid]; exists {

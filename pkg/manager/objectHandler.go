@@ -395,7 +395,6 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 	nodeSelection := NewNetworkSelector(nodes)
 
 	var prmDial client.PrmDial
-
 	prmDial.SetTimeout(30 * time.Second)
 	prmDial.SetStreamTimeout(30 * time.Second)
 	prmDial.SetContext(cancelCtx)
@@ -418,7 +417,6 @@ func (m *Manager) Get(objectID, containerID, fp string, writer io.Writer) ([]byt
 			break
 		}
 	}
-
 	gateSigner := user.NewAutoIDSigner(m.gateAccount.PrivateKey().PrivateKey) //fix me is this correct signer?
 	prmSession := client.PrmSessionCreate{}
 	prmSession.SetExp(exp)

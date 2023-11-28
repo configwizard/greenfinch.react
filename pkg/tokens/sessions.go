@@ -47,17 +47,18 @@ func BuildObjectSessionToken(key *keys.PrivateKey, lIat, lNbf, lExp uint64, verb
 	usrSigner := user.NewAutoIDSigner(key.PrivateKey)
 	return tok, tok.Sign(usrSigner)
 }
-func BuildUnsignedObjectSessionToken(lIat, lNbf, lExp uint64, verb session.ObjectVerb, cnrID cid.ID, gateSession *client.ResSessionCreate) (*session.Object, error) {
+
+func BuildUnsignedObjectSessionToken(lIat, lNbf, lExp uint64, verb session.ObjectVerb, cnrID cid.ID, resSession *client.ResSessionCreate) (*session.Object, error) {
 
 	tok := new(session.Object)
 	tok.ForVerb(verb)
 	var idSession uuid.UUID
-	if err := idSession.UnmarshalBinary(gateSession.ID()); err != nil {
+	if err := idSession.UnmarshalBinary(resSession.ID()); err != nil {
 		return nil, err
 	}
 	// decode session public key
 	var keySession neofsecdsa.PublicKey
-	if err := keySession.Decode(gateSession.PublicKey()); err != nil {
+	if err := keySession.Decode(resSession.PublicKey()); err != nil {
 		return nil, err
 	}
 	tok.SetAuthKey(&keySession)
