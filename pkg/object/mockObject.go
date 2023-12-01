@@ -123,7 +123,7 @@ func (o *MockObject) Head(wg *sync.WaitGroup, p payload.Parameters, actionChan c
 					notification.Error,
 					notification.ActionNotification)
 			}
-			//time.Sleep(2 * time.Millisecond)
+			time.Sleep(2 * time.Millisecond)
 		}
 
 		//update the object now we have more information about it
