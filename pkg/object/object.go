@@ -416,7 +416,6 @@ func InitWriter(p ObjectParameter, token tokens.Token) (io.WriteCloser, error) {
 	}
 
 	var prmInit client.PrmInit
-
 	c, err := client.New(prmInit)
 	if err != nil {
 		return nil, err

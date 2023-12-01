@@ -84,18 +84,23 @@ func (w MockWallet) PublicKeyHexString() string {
 	return w.HexPubKey
 }
 
-type RawWallet struct {
-	*wal.Wallet
+type RawAccount struct {
+	*wal.Account
 	emitter emitter.Emitter
 }
 
-func NewRawWallet(filepath string) (RawWallet, error) {
-	return RawWallet{
-		Wallet: nil,
+func NewRawWalletFromFile(filepath string) (RawAccount, error) {
+	return RawAccount{
+		Account: nil,
 	}, nil
 }
-func (w RawWallet) Sign(p payload.Payload) error {
-	var e = (neofsecdsa.SignerRFC6979)(w.Wallet.Accounts[0].PrivateKey().PrivateKey)
+func NewRawAccount(a *wal.Account) (RawAccount, error) {
+	return RawAccount{
+		Account: a,
+	}, nil
+}
+func (w RawAccount) Sign(p payload.Payload) error {
+	var e = (neofsecdsa.SignerRFC6979)(w.Account.PrivateKey().PrivateKey)
 	signed, err := e.Sign(p.OutgoingData)
 	if err != nil {
 		fmt.Println("error signing ", err)
@@ -105,13 +110,13 @@ func (w RawWallet) Sign(p payload.Payload) error {
 	return w.emitter.Emit(context.Background(), (string)(emitter.RequestSign), p)
 }
 
-func (w RawWallet) PublicKeyHexString() string {
+func (w RawAccount) PublicKeyHexString() string {
 	// retrieve the public key from the wallet
-	return w.Wallet.Accounts[0].PublicKey().String()
+	return w.Account.PublicKey().String()
 }
 
-func (w RawWallet) Address() string {
-	return w.Wallet.Accounts[0].Address
+func (w RawAccount) Address() string {
+	return w.Account.Address
 }
 
 type WCWallet struct {
@@ -132,7 +137,7 @@ func (w WCWallet) PublicKeyHexString() string {
 	return w.PublicKey
 }
 
-type Wallet interface {
+type Account interface {
 	Sign(p payload.Payload) error
 	PublicKeyHexString() string
 	Address() string
@@ -150,7 +155,7 @@ type Controller struct {
 	ctx                context.Context
 	cancelCtx          context.CancelFunc
 	DB                 database.Store
-	wallet             Wallet
+	wallet             Account
 	tokenManager       TokenManager
 	Signer             emitter.Emitter
 	Notifier           notification.Notifier
@@ -181,7 +186,7 @@ func (m *Controller) DomReady(ctx context.Context) {
 }
 
 // LoadSession is responsible for taking input from the user and creating the wallet to manage the session.
-func (c *Controller) LoadSession(wallet Wallet) { //todo - these fields may not be available immediately
+func (c *Controller) LoadSession(wallet Account) { //todo - these fields may not be available immediately
 	//somehow the user informs us of the wallet they want to load. We should adjust the wallet here accordingly.
 	c.wallet = wallet
 }

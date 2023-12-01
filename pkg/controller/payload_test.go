@@ -69,23 +69,27 @@ func TestPayloadSigning(t *testing.T) {
 	notifyEmitter := notification.MockNotificationEvent{Name: "notification events:", DB: db}
 	//create a notification manager
 	n := notification.NewMockNotifier(wg, notifyEmitter, ctx, cancelFunc)
-
-	//create a controller to hande comms between elements of business logic
-	controller := New(db, nil, ctx, cancelFunc, n) //emitter set later to tie them together
-
-	wallet := NewMockWallet()
-	mockSigner := emitter.MockSigningEvent{Name: "signing events:"}
-	//for private key
-	mockSigner.SignResponse = controller.SignResponse
-	//for wallet connect
-	//mockSigner.SignResponse = controller.SignResponse //set the callback hereso that we can close the loop during tests
-	controller.Signer = mockSigner //tied closely during tests...
-	controller.LoadSession(wallet)
-	controller.wallet.Address()
 	ephemeralAccount, err := wal.NewAccount()
 	if err != nil {
 		t.Fatal("could not create account ", err)
 	}
+	//create a controller to hande comms between elements of business logic
+	controller := New(db, nil, ctx, cancelFunc, n) //emitter set later to tie them together
+
+	acc, err := NewRawAccount(ephemeralAccount)
+	if err != nil {
+		t.Fatal("error creating raw account from ephemeral", err)
+	}
+
+	mockSigner := emitter.MockSigningEvent{Name: "signing events:"}
+	//for private key
+	mockSigner.SignResponse = controller.SignWithSignatureResponse
+	acc.emitter = mockSigner
+	//for wallet connect
+	//mockSigner.SignResponse = controller.SignResponse //set the callback hereso that we can close the loop during tests
+	controller.Signer = mockSigner //tied closely during tests...
+	controller.LoadSession(acc)
+	controller.wallet.Address()
 
 	//todo - must make sure this is set
 	controller.tokenManager = &tokens.WalletConnectTokenManager{W: *ephemeralAccount}
