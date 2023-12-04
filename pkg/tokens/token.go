@@ -18,6 +18,9 @@ import (
 	"github.com/nspcc-dev/neofs-sdk-go/eacl"
 	"github.com/nspcc-dev/neofs-sdk-go/session"
 	"github.com/nspcc-dev/neofs-sdk-go/user"
+	"log"
+	"strconv"
+	"strings"
 )
 
 type Token interface {
@@ -28,7 +31,7 @@ type Token interface {
 
 type PrivateKeyToken struct {
 	BearerToken *bearer.Token
-	Wallet      *wallet.Wallet
+	Wallet      *wallet.Account
 }
 
 func (m PrivateKeyToken) InvalidAt(epoch uint64) bool {
@@ -36,14 +39,22 @@ func (m PrivateKeyToken) InvalidAt(epoch uint64) bool {
 }
 func (m PrivateKeyToken) Sign(issuerAddress string, signedPayload payload.Payload) error {
 	//this is the same as below however we receive something that can become a signature directly
+	fmt.Println("the wallet created signature ", signedPayload.Signature.HexSignature)
+	fmt.Println("m.Wallet.PublicKey().Bytes()", m.Wallet.PublicKey().Bytes())
 	//fixme: types of signing should not be part of the controller
 	if m.Wallet == nil {
 		return errors.New(utils.ErrorNoSession)
 	}
+	decodedSignature, err := hex.DecodeString(signedPayload.Signature.HexSignature)
+	if err != nil {
+		fmt.Println("error signing ", err)
+		return err
+	}
+	fmt.Println("decodedSignature", decodedSignature)
 	signature := refs.Signature{}
-	signature.SetSign(signedPayload.OutgoingData)
+	signature.SetSign(decodedSignature)
 	signature.SetScheme(refs.ECDSA_RFC6979_SHA256)
-	signature.SetKey(m.Wallet.Accounts[0].PublicKey().Bytes())
+	signature.SetKey(m.Wallet.PublicKey().Bytes())
 
 	var b acl.BearerToken
 	m.BearerToken.WriteToV2(&b) //convert the token to a v2 type
@@ -53,11 +64,15 @@ func (m PrivateKeyToken) Sign(issuerAddress string, signedPayload payload.Payloa
 		fmt.Println("tried reading ", err)
 		return err
 	}
+	if !m.BearerToken.VerifySignature() {
+		fmt.Println("not signed")
+		return errors.New("token not signed")
+	}
 	return nil
 }
 
 func (m PrivateKeyToken) SignedData() []byte {
-	return make([]byte, 0)
+	return m.BearerToken.SignedData()
 }
 
 type PrivateKeyTokenManager struct {
@@ -78,7 +93,7 @@ func (t PrivateKeyTokenManager) NewBearerToken(table eacl.Table, lIat, lNbf, lEx
 	bearerToken.SetExp(lExp)
 	bearerToken.SetIat(lIat)
 	bearerToken.SetNbf(lNbf)
-	return PrivateKeyToken{BearerToken: &bearerToken}, nil
+	return PrivateKeyToken{Wallet: &t.W, BearerToken: &bearerToken}, nil
 }
 func (t PrivateKeyTokenManager) FindBearerToken(address string, id cid.ID, epoch uint64, operation eacl.Operation) (Token, error) {
 
@@ -205,18 +220,25 @@ func (b BearerToken) Sign(issuerAddress string, p payload.Payload) error {
 	staticSigner := neofscrypto.NewStaticSigner(neofscrypto.ECDSA_WALLETCONNECT, append(bSig, salt...), &pubKey)
 	err = b.BearerToken.Sign(user.NewSigner(staticSigner, issuer))
 	if err != nil {
+		fmt.Println("signing token failed ", err)
 		return err
 	}
-	if !b.BearerToken.VerifySignature() {
+	if !b.VerifySignature() {
 		return errors.New(utils.ErrorNoSignature)
 	}
 	return nil
+}
+
+func (b BearerToken) VerifySignature() bool {
+	return b.BearerToken.VerifySignature()
 }
 func (b BearerToken) InvalidAt(epoch uint64) bool {
 	return b.BearerToken.InvalidAt(epoch)
 }
 
 func (b BearerToken) SignedData() []byte {
+	j := b.BearerToken.Marshal()
+	fmt.Println("unmarshal ", j)
 	return b.BearerToken.SignedData()
 }
 
@@ -224,6 +246,7 @@ func (b BearerToken) SignedData() []byte {
 // for now just bearer tokens, for object actions, containers use sessions and will sign for each action
 // listing containers does not need a token
 type WalletConnectTokenManager struct {
+	Persisted    bool             //use a fake/mock token for the time being that matches the mock emitter's signatures (todo - clean this up)Z
 	BearerTokens map[string]Token //Will be loaded from database if we want to keep sessions across closures.
 	W            wallet.Account
 }
@@ -276,13 +299,20 @@ func (t *WalletConnectTokenManager) WrapToken(token bearer.Token) Token {
 
 // NewBearerToken - if we don't have a valid bearer token, we'll need to create a new one.
 func (t WalletConnectTokenManager) NewBearerToken(table eacl.Table, lIat, lNbf, lExp uint64, temporaryKey *keys.PublicKey) (Token, error) {
-	temporaryUser := user.ResolveFromECDSAPublicKey(*(*ecdsa.PublicKey)(temporaryKey))
 	var bearerToken bearer.Token
-	bearerToken.SetEACLTable(table)
-	bearerToken.ForUser(temporaryUser) //temporarily give this key rights to the actions in the table.
-	bearerToken.SetExp(lExp)
-	bearerToken.SetIat(lIat)
-	bearerToken.SetNbf(lNbf)
+	if t.Persisted { //hack so we don't need a completely different interaface
+		if err := bearerToken.UnmarshalJSON(testToken); err != nil {
+			log.Fatal("could not unmarshal bdata ", err)
+			return nil, err
+		}
+	} else {
+		temporaryUser := user.ResolveFromECDSAPublicKey(*(*ecdsa.PublicKey)(temporaryKey))
+		bearerToken.SetEACLTable(table)
+		bearerToken.ForUser(temporaryUser) //temporarily give this key rights to the actions in the table.
+		bearerToken.SetExp(lExp)
+		bearerToken.SetIat(lIat)
+		bearerToken.SetNbf(lNbf)
+	}
 	return BearerToken{&bearerToken}, nil
 }
 
@@ -339,3 +369,109 @@ func GeneratePermissionsTable(cid cid.ID, toWhom eacl.Target) eacl.Table {
 	}
 	return table
 }
+
+func stringToBytes(byt string) []byte {
+	var bData []byte
+	bDataParts := strings.Split(byt, ",")
+	// Convert each part to a byte and add it to the array
+	for _, part := range bDataParts {
+		num, err := strconv.Atoi(strings.TrimSpace(part))
+		if err != nil {
+			fmt.Errorf("Error converting string to int:", err)
+		}
+		bData = append(bData, byte(num))
+	}
+	return bData
+}
+
+var testToken = []byte(`{"body": {
+  "eaclTable": {
+   "version": {
+    "major": 2905618382,
+    "minor": 331648027
+   },
+   "containerID": {
+    "value": "boDh5L/39MqPFBNSjNJviXQ/o6+L3yEcukjxuO6KG+c="
+   },
+   "records": [
+    {
+     "operation": "GETRANGEHASH",
+     "action": "ALLOW",
+     "filters": [
+      {
+       "headerType": "OBJECT",
+       "matchType": "STRING_EQUAL",
+       "key": "$Object:containerID",
+       "value": "FApVZAiovHf7DfxGWyxAnphhZhJxAG4hibf7Z9tXtuo1"
+      },
+      {
+       "headerType": "OBJECT",
+       "matchType": "STRING_NOT_EQUAL",
+       "key": "$Object:ownerID",
+       "value": "NNHvoeHRR9tTtZsGv4ppNmmJJRiJPqNBk8"
+      }
+     ],
+     "targets": [
+      {
+       "role": "SYSTEM",
+       "keys": [
+        "AQID",
+        "BAUG"
+       ]
+      },
+      {
+       "role": "SYSTEM",
+       "keys": [
+        "AQID",
+        "BAUG"
+       ]
+      }
+     ]
+    },
+    {
+     "operation": "GETRANGEHASH",
+     "action": "ALLOW",
+     "filters": [
+      {
+       "headerType": "OBJECT",
+       "matchType": "STRING_EQUAL",
+       "key": "$Object:containerID",
+       "value": "Eagxo77cWAik1frN3CooaFGeM61F11Bo1wCMN79CYssg"
+      },
+      {
+       "headerType": "OBJECT",
+       "matchType": "STRING_NOT_EQUAL",
+       "key": "$Object:ownerID",
+       "value": "NdsxHpNt9pdHAhXNcDR53dXHojcoMbrfjP"
+      }
+     ],
+     "targets": [
+      {
+       "role": "SYSTEM",
+       "keys": [
+        "AQID",
+        "BAUG"
+       ]
+      },
+      {
+       "role": "SYSTEM",
+       "keys": [
+        "AQID",
+        "BAUG"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "ownerID": {
+   "value": "NcZMpW8UAHStGguJ88dUbI/1hhhWxGoacw=="
+  },
+  "lifetime": {
+   "exp": "3",
+   "nbf": "2",
+   "iat": "1"
+  }
+ },
+ "signature": null
+}`)

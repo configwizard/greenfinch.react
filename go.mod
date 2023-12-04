@@ -13,6 +13,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/machinebox/progress v0.2.0
 	github.com/nspcc-dev/neo-go v0.101.0
+	github.com/nspcc-dev/neofs-api-go/v2 v2.14.0
 	github.com/nspcc-dev/neofs-sdk-go v1.0.0-rc.11
 	github.com/spf13/viper v1.15.0
 	github.com/stretchr/testify v1.8.4
@@ -56,7 +57,6 @@ require (
 	github.com/mr-tron/base58 v1.2.0 // indirect
 	github.com/nspcc-dev/go-ordered-json v0.0.0-20220111165707-25110be27d22 // indirect
 	github.com/nspcc-dev/hrw v1.0.9 // indirect
-	github.com/nspcc-dev/neofs-api-go/v2 v2.14.0 // indirect
 	github.com/nspcc-dev/neofs-crypto v0.4.0 // indirect
 	github.com/nspcc-dev/rfc6979 v0.2.0 // indirect
 	github.com/nspcc-dev/tzhash v1.7.0 // indirect

@@ -16,6 +16,7 @@ const (
 	ContainerListUpdate              = "container_list_update"
 	ObjectAddUpdate                  = "objectAddUpdate"
 	ObjectRemoveUpdate               = "objectRemoveUpdate"
+	ObjectFailed                     = "objectFailed"
 	NotificationMessage              = "notification_message"
 	ProgressMessage                  = "progress_message"
 )
@@ -34,12 +35,12 @@ func (e Event) Emit(c context.Context, message string, payload any) error {
 
 type Signresponse func(signedPayload payload.Payload) error
 
-type MockSigningEvent struct {
+type MockWalletConnectEmitter struct {
 	Name         string
 	SignResponse Signresponse //this is a hack while we mock. In reality the frontend calls this function
 }
 
-func (m MockSigningEvent) Emit(c context.Context, message string, p any) error {
+func (m MockWalletConnectEmitter) Emit(c context.Context, message string, p any) error {
 	fmt.Printf("%s emitting %s - %+v\r\n", m.Name, message, p)
 	actualPayload, ok := p.(payload.Payload)
 	if !ok {
@@ -47,14 +48,35 @@ func (m MockSigningEvent) Emit(c context.Context, message string, p any) error {
 	}
 
 	actualPayload.Signature = &payload.Signature{
-		HexSignature: "6eb490f17f30c3e85f032ff47247499efe5cb0ce94dab5e31647612e361053574c96d584d3c185fb8474207e8f649d856b4d60b573a195d5e67e621a2b4c7f87",
-		HexSalt:      "3da1f339213180ed4c46a12b6bd57eb6",
-		HexPublicKey: "0382fcb005ae7652401fbe1d6345f77110f98db7122927df0f3faf3b62d1094071", //todo - should this come from the real wallet?
+		HexSignature: "8f523c87e447d49ca232b2724724a93204ed718ed884ad70a793eff191bab288c67cc52a558c486e838f4342346b9d44c72f09c1092d35eefa19157d03b6cd10",
+		HexSalt:      "2343dd3334218b2c5292c4823cd15731",
+		HexPublicKey: "031ad3c83a6b1cbab8e19df996405cb6e18151a14f7ecd76eb4f51901db1426f0b", //todo - should this come from the real wallet?
 	}
 	return m.SignResponse(actualPayload) //force an immediate signing of the payload
 }
 
-func (m MockSigningEvent) GenerateIdentifier() string {
+func (m MockWalletConnectEmitter) GenerateIdentifier() string {
+	//newUUID, _ := uuid.NewUUID()
+	return "mock-signer-94d9a4c7-9999-4055-a549-f51383edfe57"
+}
+
+type MockRawWalletEmitter struct {
+	Name         string
+	SignResponse Signresponse //this is a hack while we mock. In reality the frontend calls this function
+}
+
+func (m MockRawWalletEmitter) Emit(c context.Context, message string, p any) error {
+	fmt.Printf("%s emitting %s - %+v\r\n", m.Name, message, p)
+	actualPayload, ok := p.(payload.Payload)
+	if !ok {
+		return errors.New(utils.ErrorNotPayload)
+	}
+
+	//the mock raw wallet emitter assumes that the signature will come from the wallet signing
+	return m.SignResponse(actualPayload) //force an immediate signing of the payload
+}
+
+func (m MockRawWalletEmitter) GenerateIdentifier() string {
 	//newUUID, _ := uuid.NewUUID()
 	return "mock-signer-94d9a4c7-9999-4055-a549-f51383edfe57"
 }

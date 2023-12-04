@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"github.com/amlwwalker/greenfinch.react/pkg/database"
@@ -100,13 +101,20 @@ func NewRawAccount(a *wal.Account) (RawAccount, error) {
 	}, nil
 }
 func (w RawAccount) Sign(p payload.Payload) error {
+	fmt.Println("m.Wallet.PublicKey().Bytes()", w.PublicKey().Bytes())
 	var e = (neofsecdsa.SignerRFC6979)(w.Account.PrivateKey().PrivateKey)
 	signed, err := e.Sign(p.OutgoingData)
 	if err != nil {
 		fmt.Println("error signing ", err)
 		return err
 	}
-	p.OutgoingData = signed //fixme: total hack. This is not how this field should be used
+	if p.Signature == nil {
+		p.Signature = &payload.Signature{}
+	}
+	fmt.Println("(neofsecdsa.SignerRFC6979)(w.Account.PrivateKey().PrivateKey).Sign(p.OutgoingData) is ", signed)
+	p.Signature.HexSignature = hex.EncodeToString(signed)
+	fmt.Println("p.Signature.HexSignature = hex.EncodeToString(signed) is ", p.Signature.HexSignature)
+	//p.OutgoingData = signed //fixme: total hack. This is not how this field should be used
 	return w.emitter.Emit(context.Background(), (string)(emitter.RequestSign), p)
 }
 
@@ -202,21 +210,25 @@ func (c *Controller) SignRequest(payload payload.Payload) error {
 	}
 	//if we have a signed request
 	c.pendingEvents[payload.Uid] = payload
+	fmt.Println("have been requested to sign ", payload.OutgoingData)
 	return c.wallet.Sign(payload)
 }
 
 // SignWithSignatureResponse just passes the signed payload onwrds. Use when have private key
 func (c *Controller) SignWithSignatureResponse(signedPayload payload.Payload) error {
+	fmt.Println("SignWithSignatureResponse ", signedPayload.Signature.HexSignature)
 	if c.wallet == nil {
 		return errors.New(utils.ErrorNoSession)
 	}
 	if p, ok := c.pendingEvents[signedPayload.Uid]; ok {
 		updatedPayload := p // Dereference to get a copy of the payload
 		updatedPayload.Complete = true
-		updatedPayload.OutgoingData = signedPayload.OutgoingData
+		updatedPayload.Signature = &payload.Signature{}
+		updatedPayload.Signature.HexSignature = signedPayload.Signature.HexSignature
 		// Update the map with the new struct
 		c.pendingEvents[signedPayload.Uid] = updatedPayload
 		// Notify through the channel
+		fmt.Println("updatedPayloadSignature ", updatedPayload.Signature.HexSignature)
 		updatedPayload.ResponseCh <- true
 		return nil
 	}
@@ -319,6 +331,7 @@ func (c *Controller) PerformAction(wg *sync.WaitGroup, p payload.Parameters, act
 	//update the payload to the data to sign
 	neoFSPayload.OutgoingData = bearerToken.SignedData()
 
+	fmt.Println("bearer token data to sign (bearerToken.SignedData()) ", neoFSPayload.OutgoingData)
 	// Wait for the payload to be signed in a separate goroutine
 	go func() {
 		defer func() {
@@ -333,18 +346,20 @@ func (c *Controller) PerformAction(wg *sync.WaitGroup, p payload.Parameters, act
 			case <-neoFSPayload.ResponseCh: //waiting for a signing
 				//we just received a signed token payload. Lets recreate the associated token
 				// Payload signed, perform the action
+				var latestPayload payload.Payload
 				if pendingPayload, exists := c.pendingEvents[neoFSPayload.Uid]; exists {
-					neoFSPayload = pendingPayload
+					latestPayload = pendingPayload
 				} else {
 					return
 				}
-				if act, exists := c.actionMap[neoFSPayload.Uid]; exists {
-					if err := bearerToken.Sign(c.wallet.Address(), neoFSPayload); err != nil {
+				if act, exists := c.actionMap[latestPayload.Uid]; exists {
+					if err := bearerToken.Sign(c.wallet.Address(), latestPayload); err != nil {
+						fmt.Println("error signing token ", err)
 						return
 					}
 					if err := act(wg, p, actionChan, bearerToken); err != nil {
 						//handle the error with the UI (n)
-						fmt.Println("error here ", err)
+						fmt.Println("error executing action ", err)
 						return
 					}
 					delete(c.actionMap, neoFSPayload.Uid) // Clean up

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/amlwwalker/greenfinch.react/pkg/database"
+	"github.com/amlwwalker/greenfinch.react/pkg/emitter"
 	"github.com/amlwwalker/greenfinch.react/pkg/notification"
 	"github.com/amlwwalker/greenfinch.react/pkg/payload"
 	"github.com/amlwwalker/greenfinch.react/pkg/tokens"
@@ -15,7 +16,7 @@ import (
 
 //
 //type MockObjectParameter struct {
-//	ContainerID string
+//	ContainerId string
 //	Id          string
 //	io.ReadWriter
 //	WG              *sync.WaitGroup
@@ -31,7 +32,7 @@ import (
 //	return o.ExpiryEpoch
 //}
 //func (o *MockObjectParameter) ParentID() string {
-//	return o.ContainerID
+//	return o.ContainerId
 //}
 //
 //func (o *MockObjectParameter) ID() string {
@@ -52,6 +53,7 @@ type MockObject struct {
 	UpdatedAt       time.Time
 	// the data payload
 	//the location its to be read from/saved to if necessary
+	objectEmitter emitter.Emitter //todo - this needs to tell things its complete (async remember)
 	notification.Notifier
 	database.Store
 }
@@ -123,7 +125,7 @@ func (o *MockObject) Head(wg *sync.WaitGroup, p payload.Parameters, actionChan c
 					notification.Error,
 					notification.ActionNotification)
 			}
-			//time.Sleep(2 * time.Millisecond)
+			time.Sleep(2 * time.Millisecond)
 		}
 
 		//update the object now we have more information about it
@@ -134,7 +136,13 @@ func (o *MockObject) Head(wg *sync.WaitGroup, p payload.Parameters, actionChan c
 				notification.Error,
 				notification.ActionNotification)
 		}
+		params, ok := p.(*ObjectParameter)
+		if !ok {
+			params.objectEmitter.Emit(params.ctx, emitter.ObjectFailed, "no parameters")
+		}
+		//params.objectEmitter.Emit(params.ctx, emitter.ObjectAddUpdate, "mock head completed")
 	}()
+
 	return nil
 }
 func (o *MockObject) Read(wg *sync.WaitGroup, p payload.Parameters, actionChan chan notification.NewNotification, token tokens.Token) error {

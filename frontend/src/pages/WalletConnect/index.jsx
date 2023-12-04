@@ -40,10 +40,12 @@ function PageWalletConnect({messageToSign, tmpTest}) {
     const onSignMessage = async () => {
         console.log("please open your WC wallet and accept the signing")
         try {
+            console.log("message to sign is ", messageToSign)
             const resp = await wcSdk.signMessage({
                 message: messageToSign,
                 version: SignMessageVersion.CLASSIC,
             })
+            console.log("resp -- ", resp)
             await setVariable(resp.data, resp.salt, resp.publicKey)
             // const valid = await wcSdk.verifyMessage(resp)
         } catch(e) {

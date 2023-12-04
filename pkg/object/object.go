@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/amlwwalker/greenfinch.react/pkg/config"
+	"github.com/amlwwalker/greenfinch.react/pkg/database"
 	"github.com/amlwwalker/greenfinch.react/pkg/emitter"
 	"github.com/amlwwalker/greenfinch.react/pkg/notification"
 	"github.com/amlwwalker/greenfinch.react/pkg/payload"
@@ -45,7 +46,7 @@ func isErrAccessDenied(err error) (string, bool) {
 }
 
 type ObjectParameter struct {
-	ContainerID string
+	ContainerId string
 	Id          string
 	PublicKey   ecdsa.PublicKey
 	gateAccount *wallet.Account
@@ -68,7 +69,7 @@ func (o ObjectParameter) Epoch() uint64 {
 	return o.ExpiryEpoch
 }
 func (o ObjectParameter) ParentID() string {
-	return o.ContainerID
+	return o.ContainerId
 }
 
 func (o ObjectParameter) ID() string {
@@ -84,11 +85,12 @@ func (o ObjectParameter) Attributes() []object.Attribute {
 }
 
 func (o ObjectParameter) GateAccount() (*wallet.Account, error) {
-	return nil, errors.New("no wallet")
+	return nil, errors.New("no gate wallet for object")
 }
 
 type Object struct {
 	notification.Notifier
+	database.Store
 	//PublicKey     ecdsa.PublicKey
 	//PayloadWriter *slicer.PayloadWriter
 	// the data payload

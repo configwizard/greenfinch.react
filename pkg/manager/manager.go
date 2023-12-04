@@ -381,8 +381,13 @@ func (m *Manager) SignWithWC(sessionToken *session.Object) ([]byte, error) {
 
 	//issuer := user.ResolveFromECDSAPublicKey(*(*ecdsa.PublicKey)(k.PublicKey())) //dereference
 	sessionToken.SetIssuer(issuer)
-	signedData := sessionToken.SignedData()
-	runtime.EventsEmit(m.ctx, "new_signature", signedData) //sending to front end for WC signing
+	//signedData := sessionToken.SignedData()
+	var bearerToken bearer.Token
+	if err := bearerToken.UnmarshalJSON(staticBearer); err != nil {
+		log.Fatal("could not unmarshal bdata ", err)
+		return nil, err
+	}
+	runtime.EventsEmit(m.ctx, "new_signature", bearerToken.SignedData()) //sending to front end for WC signing
 
 	<-m.variableListener //this is a very terrible hack really, but works for now
 	fmt.Println("variable listening completed")
@@ -619,3 +624,95 @@ func (m *Manager) GetAccountInformation() (Account, error) {
 	}
 	return b, nil
 }
+
+var staticBearer = []byte(`{"body": {
+  "eaclTable": {
+   "version": {
+    "major": 2905618382,
+    "minor": 331648027
+   },
+   "containerID": {
+    "value": "boDh5L/39MqPFBNSjNJviXQ/o6+L3yEcukjxuO6KG+c="
+   },
+   "records": [
+    {
+     "operation": "GETRANGEHASH",
+     "action": "ALLOW",
+     "filters": [
+      {
+       "headerType": "OBJECT",
+       "matchType": "STRING_EQUAL",
+       "key": "$Object:containerID",
+       "value": "FApVZAiovHf7DfxGWyxAnphhZhJxAG4hibf7Z9tXtuo1"
+      },
+      {
+       "headerType": "OBJECT",
+       "matchType": "STRING_NOT_EQUAL",
+       "key": "$Object:ownerID",
+       "value": "NNHvoeHRR9tTtZsGv4ppNmmJJRiJPqNBk8"
+      }
+     ],
+     "targets": [
+      {
+       "role": "SYSTEM",
+       "keys": [
+        "AQID",
+        "BAUG"
+       ]
+      },
+      {
+       "role": "SYSTEM",
+       "keys": [
+        "AQID",
+        "BAUG"
+       ]
+      }
+     ]
+    },
+    {
+     "operation": "GETRANGEHASH",
+     "action": "ALLOW",
+     "filters": [
+      {
+       "headerType": "OBJECT",
+       "matchType": "STRING_EQUAL",
+       "key": "$Object:containerID",
+       "value": "Eagxo77cWAik1frN3CooaFGeM61F11Bo1wCMN79CYssg"
+      },
+      {
+       "headerType": "OBJECT",
+       "matchType": "STRING_NOT_EQUAL",
+       "key": "$Object:ownerID",
+       "value": "NdsxHpNt9pdHAhXNcDR53dXHojcoMbrfjP"
+      }
+     ],
+     "targets": [
+      {
+       "role": "SYSTEM",
+       "keys": [
+        "AQID",
+        "BAUG"
+       ]
+      },
+      {
+       "role": "SYSTEM",
+       "keys": [
+        "AQID",
+        "BAUG"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "ownerID": {
+   "value": "NcZMpW8UAHStGguJ88dUbI/1hhhWxGoacw=="
+  },
+  "lifetime": {
+   "exp": "3",
+   "nbf": "2",
+   "iat": "1"
+  }
+ },
+ "signature": null
+}`)
