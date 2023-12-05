@@ -22,10 +22,10 @@ func ObjectBearerToken(p payload.Parameters, nodes []config.Peer) (bearer.Token,
 	if err != nil {
 		return bearer.Token{}, err
 	}
-	params, ok := p.(*ObjectParameter)
-	if !ok {
-		return bearer.Token{}, errors.New("no object parameters")
-	}
+	//params, ok := p.(*ObjectParameter)
+	//if !ok {
+	//	return bearer.Token{}, errors.New("no object parameters")
+	//}
 	var gateSigner user.Signer = user.NewAutoIDSignerRFC6979(gA.PrivateKey().PrivateKey)
 
 	//nodeSelection := config.NewNetworkSelector(nodes)
@@ -59,7 +59,7 @@ func ObjectBearerToken(p payload.Parameters, nodes []config.Peer) (bearer.Token,
 	//
 	//prmCli := client.PrmInit{}
 	//cli, err := client.New(prmCli)
-	netInfo, err := sdkCli.NetworkInfo(params.ctx, client.PrmNetworkInfo{})
+	netInfo, err := sdkCli.NetworkInfo(context.Background(), client.PrmNetworkInfo{})
 	if err != nil {
 		return bearer.Token{}, err
 	}

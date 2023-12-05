@@ -42,6 +42,7 @@ func (m PrivateKeyToken) Sign(issuerAddress string, signedPayload payload.Payloa
 	fmt.Println("the wallet created signature ", signedPayload.Signature.HexSignature)
 	fmt.Println("m.Wallet.PublicKey().Bytes()", m.Wallet.PublicKey().Bytes())
 	//fixme: types of signing should not be part of the controller
+	fmt.Println("c.wallet Sign", m.Wallet)
 	if m.Wallet == nil {
 		return errors.New(utils.ErrorNoSession)
 	}
@@ -248,19 +249,15 @@ func (b BearerToken) SignedData() []byte {
 type WalletConnectTokenManager struct {
 	Persisted    bool             //use a fake/mock token for the time being that matches the mock emitter's signatures (todo - clean this up)Z
 	BearerTokens map[string]Token //Will be loaded from database if we want to keep sessions across closures.
-	W            wallet.Account
+	W            *wallet.Account
 }
 
-func (t *WalletConnectTokenManager) New() (WalletConnectTokenManager, error) {
-	ephemeralAccount, err := wallet.NewAccount()
-	if err != nil {
-		return WalletConnectTokenManager{}, err
-	}
-	return WalletConnectTokenManager{BearerTokens: make(map[string]Token), W: *ephemeralAccount}, nil
+func New(a *wallet.Account, persist bool) WalletConnectTokenManager {
+	return WalletConnectTokenManager{W: a, BearerTokens: make(map[string]Token), Persisted: persist}
 }
 
 func (t WalletConnectTokenManager) GateKey() wallet.Account {
-	return t.W
+	return *t.W
 }
 
 func (t WalletConnectTokenManager) AddBearerToken(address, cnrID string, b Token) {

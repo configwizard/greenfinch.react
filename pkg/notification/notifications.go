@@ -45,8 +45,10 @@ func (m MockNotificationEvent) Emit(c context.Context, _ string, p any) error {
 	if err != nil {
 		return err
 	}
-	if err := m.DB.Create(database.NotificationBucket, actualPayload.Id, byt); err != nil {
-		return err
+	if m.DB != nil {
+		if err := m.DB.Create(database.NotificationBucket, actualPayload.Id, byt); err != nil {
+			return err
+		}
 	}
 
 	return nil

@@ -134,6 +134,9 @@ type WCWallet struct {
 	emitter       emitter.Emitter
 }
 
+func (w *WCWallet) SetEmitter(em emitter.Emitter) {
+	w.emitter = em
+}
 func (w WCWallet) Address() string {
 	return w.WalletAddress
 }
@@ -161,6 +164,7 @@ type TokenManager interface {
 
 // Controller manages the frontend and backend/SDK interconnectivity
 type Controller struct {
+	wg                 *sync.WaitGroup
 	ctx                context.Context
 	cancelCtx          context.CancelFunc
 	DB                 database.Store
@@ -173,17 +177,85 @@ type Controller struct {
 	actionMap          map[uuid.UUID]ActionType      // Maps payload UID to corresponding action
 }
 
-func New(db database.Store, emitter emitter.Emitter, ctx context.Context, cancel context.CancelFunc, notifier notification.Notifier) Controller {
-	return Controller{
-		pendingEvents: make(map[uuid.UUID]payload.Payload),
-		actionMap:     make(map[uuid.UUID]ActionType),
-		Signer:        emitter,
-		Notifier:      notifier,
-		cancelCtx:     cancel,
-		ctx:           ctx,
-		DB:            db,
+func NewMockController() (Controller, error) {
+	wg := &sync.WaitGroup{}
+	ephemeralAccount, err := wal.NewAccount()
+	if err != nil {
+		return Controller{}, err
+	}
+	notifyEmitter := notification.MockNotificationEvent{Name: "notification events:", DB: nil}
+	//create a notification manager
+	ctx, cancelFunc := context.WithCancel(context.Background())
+	n := notification.NewMockNotifier(wg, notifyEmitter, ctx, cancelFunc)
+
+	c := Controller{
+		wg:                 wg,
+		ctx:                ctx,
+		cancelCtx:          cancelFunc,
+		DB:                 database.NewUnregisteredMockDB(),
+		tokenManager:       tokens.New(ephemeralAccount, true),
+		Notifier:           n,
+		progressBarManager: notification.NewProgressBarManager(notification.WriterProgressBarFactory, notification.MockProgressEvent{}),
+		pendingEvents:      make(map[uuid.UUID]payload.Payload),
+		actionMap:          make(map[uuid.UUID]ActionType),
+	}
+
+	progressBarEmitter := notification.MockProgressEvent{}
+	c.progressBarManager = notification.NewProgressBarManager(notification.WriterProgressBarFactory, progressBarEmitter)
+	return c, nil
+}
+func (c Controller) Add(i int) {
+	c.wg.Add(i)
+}
+func (c Controller) Done() {
+	c.wg.Done()
+}
+func (c Controller) Wait() {
+	c.wg.Wait()
+}
+func (c *Controller) RegisterAccount(a Account, walletLocation *string) {
+	c.wallet = a
+	mockSigner := emitter.MockWalletConnectEmitter{Name: "[mock signer]"}
+	mockSigner.SignResponse = c.UpdateFromWalletConnect
+	c.Signer = &mockSigner
+	if walletLocation == nil {
+		c.DB.Register(string(utils.TestNet), a.Address(), "WC")
+	} else {
+		c.DB.Register(string(utils.TestNet), a.Address(), *walletLocation)
 	}
 }
+func (c *Controller) SetEmitter(em emitter.Emitter) {
+	c.Signer = em
+	if wcWallet, ok := c.wallet.(*WCWallet); ok {
+		wcWallet.SetEmitter(em)
+	}
+}
+func NewDefaultController(a Account) (Controller, error) {
+	return Controller{
+		ctx:                nil,
+		cancelCtx:          nil,
+		DB:                 nil,
+		wallet:             a,
+		tokenManager:       nil,
+		Signer:             nil,
+		Notifier:           nil,
+		progressBarManager: nil,
+		pendingEvents:      make(map[uuid.UUID]payload.Payload),
+		actionMap:          make(map[uuid.UUID]ActionType),
+	}, nil
+}
+
+//func New(db database.Store, emitter *emitter.Emitter, ctx context.Context, cancel context.CancelFunc, notifier notification.Notifier) Controller {
+//	return Controller{
+//		pendingEvents: make(map[uuid.UUID]payload.Payload),
+//		actionMap:     make(map[uuid.UUID]ActionType),
+//		Signer:        emitter,
+//		Notifier:      notifier,
+//		cancelCtx:     cancel,
+//		ctx:           ctx,
+//		DB:            db,
+//	}
+//}
 
 func (m *Controller) Startup(ctx context.Context) {
 	m.ctx = ctx //todo = this usually comes from Wails. However we need the cancel context available
@@ -201,6 +273,7 @@ func (c *Controller) LoadSession(wallet Account) { //todo - these fields may not
 
 // RequestSign asks the wallet to begin the signing process. This assumes signing is asynchronous
 func (c *Controller) SignRequest(payload payload.Payload) error {
+	fmt.Println("c.wallet SignRequest", c.wallet)
 	if c.wallet == nil {
 		return errors.New(utils.ErrorNoSession)
 	}
@@ -216,7 +289,7 @@ func (c *Controller) SignRequest(payload payload.Payload) error {
 
 // UpdateFromPrivateKey just passes the signed payload onwrds. Use when have private key
 func (c *Controller) UpdateFromPrivateKey(signedPayload payload.Payload) error {
-	fmt.Println("UpdateFromPrivateKey ", signedPayload.Signature.HexSignature)
+	fmt.Println("c.wallet UpdateFromPrivateKey", c.wallet)
 	if c.wallet == nil {
 		return errors.New(utils.ErrorNoSession)
 	}
@@ -237,6 +310,7 @@ func (c *Controller) UpdateFromPrivateKey(signedPayload payload.Payload) error {
 
 // UpdateFromWalletConnect will be called when a signed payload is returned (use with WC)
 func (c *Controller) UpdateFromWalletConnect(signedPayload payload.Payload) error {
+	fmt.Println("c.wallet UpdateFromWalletConnect", c.wallet)
 	if c.wallet == nil {
 		return errors.New(utils.ErrorNoSession)
 	}
@@ -262,6 +336,7 @@ func (c *Controller) UpdateFromWalletConnect(signedPayload payload.Payload) erro
 // PerformAction is partnered with any 'event' that requires and action from the user and could take a while.
 // It runs the action that is stored, related to the payload that has been sent to the frontend.
 func (c *Controller) PerformAction(wg *sync.WaitGroup, p payload.Parameters, action ActionType) error {
+	fmt.Println("c.wallet PerformAction", c.wallet)
 	if c.wallet == nil {
 		return errors.New(utils.ErrorNoSession)
 	}
@@ -319,13 +394,14 @@ func (c *Controller) PerformAction(wg *sync.WaitGroup, p payload.Parameters, act
 	// Store the action in the map
 	c.actionMap[neoFSPayload.Uid] = action
 
+	key := c.tokenManager.GateKey()
 	nodes := utils.RetrieveStoragePeers(utils.TestNet)
-	bt, err := object.ObjectBearerToken(p, nodes) // fixme - this won't suffice for containers.
+	//todo - this all needs sorted
+	bt, err := object.ObjectBearerToken(p, nodes)                                               // fixme - this won't suffice for containers.
+	bearerToken, err := c.tokenManager.NewBearerToken(bt.EACLTable(), 0, 0, 0, key.PublicKey()) //mock this out for different wallet types
 	if err != nil {
 		return err
 	}
-	bearerToken := tokens.BearerToken{BearerToken: &bt}
-	c.tokenManager.AddBearerToken(c.wallet.Address(), cnrId.String(), bearerToken) //mock this out for different wallet types
 
 	////update the payload to the data to sign
 	neoFSPayload.OutgoingData = bearerToken.SignedData()

@@ -101,8 +101,13 @@ func TestRawWalletSigning(t *testing.T) {
 	if err != nil {
 		t.Fatal("could not create account ", err)
 	}
+	controller, err := NewMockController()
+	if err != nil {
+		t.Fatal(err)
+	}
 	//create a controller to hande comms between elements of business logic
-	controller := New(db, nil, ctx, cancelFunc, n) //emitter set later to tie them together
+	//fixme - this was how we used to do it. No db then??
+	//controller := New(db, nil, ctx, cancelFunc, n) //emitter set later to tie them together
 
 	acc, err := NewRawAccount(ephemeralAccount)
 	if err != nil {
@@ -234,13 +239,122 @@ func TestRawWalletSigning(t *testing.T) {
 
 	return
 }
+
+func MockFileCopy() (*os.File, os.FileInfo) {
+	//the dualstream is designed to read from one location and write to the other
+	dir := os.TempDir()
+	file, err := os.Create(filepath.Join(dir, "stream.log")) // Use os.Create if you want to write to a new file
+	if err != nil {
+		log.Fatal("error could not open file")
+	}
+	// Simulate a JPEG header (this is just an example)
+	if write, err := file.Write(minimalJPEG); err != nil {
+		log.Fatal("could not write to file. Managed ", write, " bytes")
+	}
+	// Generate random data to simulate the rest of the JPEG content
+	randomData := make([]byte, 4096) // Adjust size as needed
+	rand.Read(randomData)            // Fill with random bytes
+	if write, err := file.Write(randomData); err != nil {
+		log.Fatal("could not write to file. Managed ", write, " bytes")
+	}
+	if write, err := file.Write([]byte("end-of-file")); err != nil {
+		log.Fatal("could not write to file. Managed ", write, " bytes")
+	}
+	_, err = file.Seek(0, 0) // Seek to the beginning of the file
+	if err != nil {
+		log.Fatal("error seeking file", err)
+	}
+
+	fileStats, _ := file.Stat()
+	fmt.Println("stats size = ", fileStats.Size())
+	return file, fileStats
+}
+
+func TestMockWalletConnect(t *testing.T) {
+	c, err := NewMockController()
+	if err != nil {
+		t.Fatal(err)
+	}
+	gateKey := c.tokenManager.GateKey()
+	pl, err := gspool.GetPool(c.ctx, gateKey.PrivateKey().PrivateKey, utils.RetrieveStoragePeers(utils.MainNet))
+	if err != nil {
+		fmt.Println("error getting pool ", err)
+		t.Fatal(err)
+	}
+
+	mockAction := obj.MockObject{Id: "object", ContainerId: "container"}
+	//mockAction := obj.Object{}
+	mockAction.Notifier = c.Notifier
+	mockAction.Store = c.DB
+
+	//lets assume the user now has attached their account
+	//this should be cleaner
+	acc := WCWallet{}
+	acc.WalletAddress = "NQtxsStXxvtRyz2B1yJXTXCeEoxsUJBkxW"
+	acc.PublicKey = "031ad3c83a6b1cbab8e19df996405cb6e18151a14f7ecd76eb4f51901db1426f0b"
+	c.wallet = &acc
+	mockSigner := emitter.MockWalletConnectEmitter{Name: "[mock signer]"}
+	mockSigner.SignResponse = c.UpdateFromWalletConnect
+	c.SetEmitter(mockSigner)
+	//c.RegisterAccount(acc, nil)
+	acc.emitter = c.Signer
+	//prep for some reading
+	pBarName := "file_monitor"       //todo - expose the name of a progress bar
+	destination := new(bytes.Buffer) //todo: this is where we want to put it
+	file, fileStats := MockFileCopy()
+	fileWriterProgressBar := c.progressBarManager.AddProgressWriter(destination, pBarName)
+	c.progressBarManager.StartProgressBar(c.wg, pBarName, fileStats.Size())
+
+	//now we are ready to set up all the listeners
+	c.Add(1)
+	go c.Notifier.ListenAndEmit() //this sends out notifications to the frontend.
+
+	var o obj.ObjectParameter
+	o.Pl = pl
+	o.GateAccount = &gateKey
+	o.Id = "A6iuMASnCLGPVGgESWCiDfAWZZ8RiWQR5934JrJBDBoK"
+	o.ContainerId = "87JeshQhXKBw36nULzpLpyn34Mhv1kGCccYyHU2BqGpT"
+	//fixme - the first public key for a user needs WalletConnect to provide it (stub signing)
+	//we may have the information in the database but first call is wallet.Connect
+	bPubKey, err := hex.DecodeString(c.wallet.PublicKeyHexString())
+	if err != nil {
+		log.Fatal("could not decode public key - ", err)
+	}
+	var pubKey neofsecdsa.PublicKeyWalletConnect
+
+	/*
+		fixme - the objectParameter needs a pool.
+		why don't we leave this function as it is (return it to a working version with a fake bearer token so it passes and write a new test.
+		// you could do this by setting the token manager up to generate the right type of token for the request. That way the token will be created for the operation
+	*/
+	err = pubKey.Decode(bPubKey)
+	o.PublicKey = ecdsa.PublicKey(pubKey)
+	o.Attrs = make([]object.Attribute, 0)
+	o.ActionOperation = eacl.OperationHead
+	o.ReadWriter = &readwriter.DualStream{
+		Reader: file,                  //here is where it knows the source of the data
+		Writer: fileWriterProgressBar, //this is where we write the data to
+	}
+	o.ExpiryEpoch = 100 //fix me = remove this.
+	c.Add(1)            //fixme: - total hack for the tests to end and database to be loaded.
+	go func() {
+		defer c.Done()
+		time.Sleep(3 * time.Second)
+		c.cancelCtx() //kill everything
+	}()
+	//waits for actions to complete entirely
+	if err := c.PerformAction(c.wg, &o, mockAction.Head); err != nil {
+		t.Fatal(err)
+	}
+	//c.Wait()
+}
 func TestWalletConnectSigning(t *testing.T) {
 	wg := &sync.WaitGroup{}
 	ctx, cancelFunc := context.WithCancel(context.Background())
 	walletId := "address"
 	//publicKey := "publicKey"
 	walletLocation := "walletLocation"
-	db := database.NewMockDB(database.TESTNET, walletId, walletLocation)
+	db := database.NewMockDB(string(utils.MainNet), walletId, walletLocation)
 	err := db.CreateWalletBucket()
 	if err != nil {
 		log.Fatal("error creating bucket wallet ", err)
@@ -254,8 +368,12 @@ func TestWalletConnectSigning(t *testing.T) {
 	if err != nil {
 		t.Fatal("could not create account ", err)
 	}
+	controller, err := NewMockController()
+	if err != nil {
+		t.Fatal(err)
+	}
 	//create a controller to hande comms between elements of business logic
-	controller := New(db, nil, ctx, cancelFunc, n) //emitter set later to tie them together
+	//controller := New(db, nil, ctx, cancelFunc, n) //emitter set later to tie them together
 
 	acc := WCWallet{}
 	acc.WalletAddress = "NQtxsStXxvtRyz2B1yJXTXCeEoxsUJBkxW"
@@ -270,8 +388,9 @@ func TestWalletConnectSigning(t *testing.T) {
 	controller.wallet.Address()
 
 	//todo - must make sure this is set
-	controller.tokenManager = &tokens.WalletConnectTokenManager{W: *ephemeralAccount, Persisted: true} //persist for mock emitter.
-	pl, err := gspool.GetPool(ctx, ephemeralAccount.PrivateKey().PrivateKey, utils.RetrieveStoragePeers(utils.TestNet))
+
+	controller.tokenManager = &tokens.WalletConnectTokenManager{W: ephemeralAccount, Persisted: true} //persist for mock emitter.
+	pl, err := gspool.GetPool(ctx, ephemeralAccount.PrivateKey().PrivateKey, utils.RetrieveStoragePeers(utils.MainNet))
 	if err != nil {
 		fmt.Println("error getting pool ", err)
 		t.Fatal(err)

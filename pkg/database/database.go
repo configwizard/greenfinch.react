@@ -16,6 +16,7 @@ const (
 )
 
 type Store interface {
+	Register(network, address, location string)
 	CreateWalletBucket() error
 	RecentWallets() (map[string]string, error)
 	DeleteRecentWallet() error

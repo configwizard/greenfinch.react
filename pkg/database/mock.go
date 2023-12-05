@@ -7,10 +7,23 @@ import (
 )
 
 type MockDB struct {
-	network, walletId, walletLocation string
-	recentWallets                     map[string][]byte
-	data                              map[string]map[string]map[string]map[string][]byte
-	mutex                             *sync.Mutex
+	network, walletId string
+	walletLocation    string
+	recentWallets     map[string][]byte
+	data              map[string]map[string]map[string]map[string][]byte
+	mutex             *sync.Mutex
+}
+
+func NewUnregisteredMockDB() *MockDB {
+	return &MockDB{
+		data:  make(map[string]map[string]map[string]map[string][]byte),
+		mutex: &sync.Mutex{},
+	}
+}
+func (m *MockDB) Register(network, address, location string) {
+	m.network = network
+	m.walletId = address
+	m.walletLocation = location
 }
 
 func NewMockDB(network, walletId, walletLocation string) *MockDB {

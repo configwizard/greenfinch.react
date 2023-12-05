@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/amlwwalker/greenfinch.react/pkg/controller"
 	"github.com/amlwwalker/greenfinch.react/pkg/tui/views"
 	"github.com/charmbracelet/bubbles/list"
 	"log"
@@ -41,6 +42,7 @@ var baseStyle = lipgloss.NewStyle().
 var docStyle = lipgloss.NewStyle().Margin(1, 2)
 
 type model struct {
+	controller                          controller.Controller
 	state                               sessionState //manage the state of the UI (which view etc)
 	containerListTable, objectListTable table.Model
 	progressBar                         ProgressBar
@@ -320,6 +322,7 @@ func main() {
 	l.SetShowStatusBar(false)
 	l.SetFilteringEnabled(false)
 	m := model{
+		//controller:         controller.New(),
 		state:              listView,
 		progressChan:       make(chan int),
 		progressBar:        NewSimpleProgressBar(100), // Assuming 100 is the total progress
