@@ -31,6 +31,7 @@ type cleanedWallet struct {
 	Path string
 	Name string
 }
+
 func (m *Manager) DeleteRecentWallet(walletId string) error {
 	return cache.DeleteRecentWallet(walletId)
 }
@@ -84,22 +85,22 @@ func (m *Manager) TransferToken(recipient string, amount float64) (string, error
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		tr := <- c2.Notifications
+		tr := <-c2.Notifications
 		switch tr.Type {
-			case neorpc.BlockEventID:
-				notification := tr.Value.(block.Block)
-				fmt.Printf("BlockEventID %+v - %s\r\n", notification, id)
-			case neorpc.TransactionEventID:
-				//is this where i can confirm a transaction has been attached to the blockchain?
-				notification := tr.Value.(rpcclient.Notification)
-				fmt.Printf("TransactionEventID %+v - %s\r\n", notification, id)
-				//c2.Unsubscribe(id)
-			case neorpc.NotificationEventID:
-				notification := tr.Value.(rpcclient.Notification)
-				fmt.Printf("NotificationEventID %+v - %s\r\n", notification, id)
-			case neorpc.ExecutionEventID:
-				notification := tr.Value.(*state.AppExecResult)
-				fmt.Printf("ExecutionEventID %+v - %s\r\n", notification, id)
+		case neorpc.BlockEventID:
+			notification := tr.Value.(block.Block)
+			fmt.Printf("BlockEventID %+v - %s\r\n", notification, id)
+		case neorpc.TransactionEventID:
+			//is this where i can confirm a transaction has been attached to the blockchain?
+			notification := tr.Value.(rpcclient.Notification)
+			fmt.Printf("TransactionEventID %+v - %s\r\n", notification, id)
+			//c2.Unsubscribe(id)
+		case neorpc.NotificationEventID:
+			notification := tr.Value.(rpcclient.Notification)
+			fmt.Printf("NotificationEventID %+v - %s\r\n", notification, id)
+		case neorpc.ExecutionEventID:
+			notification := tr.Value.(*state.AppExecResult)
+			fmt.Printf("ExecutionEventID %+v - %s\r\n", notification, id)
 		}
 	}()
 
@@ -149,7 +150,7 @@ func (m *Manager) TransferToken(recipient string, amount float64) (string, error
 		return "", err
 	}
 	var url string = testNetExplorerUrl
-	if m.selectedNetwork.ID == "mainnet" {
+	if m.selectedNetwork.ID == "MainNet" {
 		url = mainnetExplorerUrl
 	}
 	go func() {
@@ -175,14 +176,14 @@ func (m *Manager) TransferToken(recipient string, amount float64) (string, error
 		fmt.Printf("stack %s %+v\r\n", txid, stateResponse.Stack)
 		fmt.Printf("fault %s exception %+v\r\n", txid, stateResponse.FaultException)
 		fmt.Printf("vm state %s %+v\r\n", txid, stateResponse.VMState)
-		meta :=  make(map[string]string)
+		meta := make(map[string]string)
 		meta["url"] = url
 		meta["txid"] = stateResponse.Container.StringLE()
 		m.MakeNotification(NotificationMessage{
 			Title:       "Transaction successful",
-			Action: 	 "qr-code",
+			Action:      "qr-code",
 			Type:        "success",
-			Meta: meta,
+			Meta:        meta,
 			Description: fmt.Sprintf("The transaction %s was successful", stateResponse.Container.StringLE()),
 			MarkRead:    false,
 		})
@@ -194,14 +195,14 @@ func (m *Manager) TransferToken(recipient string, amount float64) (string, error
 		m.MakeToast(NewToastMessage(&tmp))
 	}()
 
-	meta :=  make(map[string]string)
+	meta := make(map[string]string)
 	meta["url"] = url
 	meta["txid"] = txid.StringLE()
 	m.MakeNotification(NotificationMessage{
 		Title:       "Transaction started...",
-		Action: 	"qr-code",
+		Action:      "qr-code",
 		Type:        "info",
-		Meta: meta,
+		Meta:        meta,
 		Description: fmt.Sprintf("The transaction %s has started", txid.StringLE()),
 		MarkRead:    false,
 	})
@@ -215,7 +216,7 @@ func (m *Manager) TransferToken(recipient string, amount float64) (string, error
 	return txid.StringLE(), err
 }
 
-//todo - terrible name if this is to topup NeoFS Gas
+// todo - terrible name if this is to topup NeoFS Gas
 func (m *Manager) TopUpNeoWallet(amount float64) (string, error) {
 	if amount == 0 {
 		amount = 1_00_000_000 // 1 GAS
@@ -387,10 +388,10 @@ func (m *Manager) LoadWallet(password string) error {
 	return m.LoadWalletWithPath(password, filepath)
 }
 
-//firstly call this to get a filepath
-//then once the filepath is returned to the frontend, call the modal to get a password
-//then finally from the frontend call return m.LoadWalletWithPath(password, filepath)
-//wallet loaded.
+// firstly call this to get a filepath
+// then once the filepath is returned to the frontend, call the modal to get a password
+// then finally from the frontend call return m.LoadWalletWithPath(password, filepath)
+// wallet loaded.
 func (m *Manager) LoadWalletWithoutPassword() (string, error) {
 	homeDir, err := os.UserHomeDir()
 	filepath, err := runtime.OpenFileDialog(m.ctx, runtime.OpenDialogOptions{
@@ -413,10 +414,11 @@ func (m *Manager) LoadWalletWithoutPassword() (string, error) {
 	}
 	return filepath, nil
 }
-//firstly call this to get a filepath
-//then once the filepath is returned to the frontend, call the modal to get a password
-//then finally from the frontend call return m.LoadWalletWithPath(password, filepath)
-//wallet loaded.
+
+// firstly call this to get a filepath
+// then once the filepath is returned to the frontend, call the modal to get a password
+// then finally from the frontend call return m.LoadWalletWithPath(password, filepath)
+// wallet loaded.
 func (m *Manager) SaveWalletWithoutPassword() (string, error) {
 	homeDir, err := os.UserHomeDir()
 	fmt.Println("saving to ")
@@ -438,4 +440,3 @@ func (m *Manager) SaveWalletWithoutPassword() (string, error) {
 	}
 	return filepath, nil
 }
-

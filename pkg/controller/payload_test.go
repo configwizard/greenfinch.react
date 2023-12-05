@@ -11,8 +11,10 @@ import (
 	"github.com/amlwwalker/greenfinch.react/pkg/notification"
 	obj "github.com/amlwwalker/greenfinch.react/pkg/object"
 	"github.com/amlwwalker/greenfinch.react/pkg/payload"
+	gspool "github.com/amlwwalker/greenfinch.react/pkg/pool"
 	"github.com/amlwwalker/greenfinch.react/pkg/readwriter"
 	"github.com/amlwwalker/greenfinch.react/pkg/tokens"
+	"github.com/amlwwalker/greenfinch.react/pkg/utils"
 	wal "github.com/nspcc-dev/neo-go/pkg/wallet"
 	neofsecdsa "github.com/nspcc-dev/neofs-sdk-go/crypto/ecdsa"
 	"github.com/nspcc-dev/neofs-sdk-go/eacl"
@@ -25,6 +27,32 @@ import (
 	"testing"
 	"time"
 )
+
+var minimalJPEG = []byte{
+	0xFF, 0xD8, // Start of Image (SOI) marker
+	0xFF, 0xE0, // APP0 marker
+	0x00, 0x10, // APP0 segment length
+	'J', 'F', 'I', 'F', 0x00, // JFIF header
+	0x01, 0x01, // Major and minor version
+	0x00,                   // Pixel density units
+	0x00, 0x01, 0x00, 0x01, // X and Y pixel density
+	0x00, 0x00, // Thumbnail width and height
+	0xFF, 0xDB, // Quantization Table marker
+	0x00, 0x43, // Segment length
+	0x00, // Table identifier
+	// A minimal quantization table follows here...
+	// This should be filled with valid values, but is omitted for brevity
+	0xFF, 0xC0, // Start of Frame (SOF) marker
+	// Frame segment with minimal values follows here...
+	// This should be filled with valid values, but is omitted for brevity
+	0xFF, 0xC4, // Huffman Table marker
+	// Huffman table data follows here...
+	// This should be filled with valid values, but is omitted for brevity
+	0xFF, 0xDA, // Start of Scan (SOS) marker
+	// Scan data follows here...
+	// This should be filled with valid values, but is omitted for brevity
+	0xFF, 0xD9, // End of Image (EOI) marker
+}
 
 type MockActionType struct {
 	ID string // Identifier for the object
@@ -83,10 +111,10 @@ func TestRawWalletSigning(t *testing.T) {
 
 	mockSigner := emitter.MockRawWalletEmitter{Name: "signing events:"}
 	//for private key
-	mockSigner.SignResponse = controller.SignWithSignatureResponse
+	mockSigner.SignResponse = controller.UpdateFromPrivateKey
 	acc.emitter = mockSigner
 	//for wallet connect
-	//mockSigner.SignResponse = controller.SignResponse //set the callback hereso that we can close the loop during tests
+	//mockSigner.UpdateFromWalletConnect = controller.UpdateFromWalletConnect //set the callback hereso that we can close the loop during tests
 	controller.Signer = mockSigner //tied closely during tests...
 	controller.LoadSession(acc)
 	controller.wallet.Address()
@@ -105,10 +133,8 @@ func TestRawWalletSigning(t *testing.T) {
 	if err != nil {
 		log.Fatal("error could not open file")
 	}
-	//faking a jpeg image
 	// Simulate a JPEG header (this is just an example)
-	jpegHeader := []byte{0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46, 0x49, 0x46, 0x00}
-	if write, err := file.Write(jpegHeader); err != nil {
+	if write, err := file.Write(minimalJPEG); err != nil {
 		log.Fatal("could not write to file. Managed ", write, " bytes")
 	}
 	// Generate random data to simulate the rest of the JPEG content
@@ -235,16 +261,21 @@ func TestWalletConnectSigning(t *testing.T) {
 	acc.WalletAddress = "NQtxsStXxvtRyz2B1yJXTXCeEoxsUJBkxW"
 	acc.PublicKey = "031ad3c83a6b1cbab8e19df996405cb6e18151a14f7ecd76eb4f51901db1426f0b"
 	mockSigner := emitter.MockWalletConnectEmitter{Name: "signing events:"}
-	mockSigner.SignResponse = controller.SignResponse
+	mockSigner.SignResponse = controller.UpdateFromWalletConnect
 	acc.emitter = mockSigner
 	//for wallet connect
-	//mockSigner.SignResponse = controller.SignResponse //set the callback hereso that we can close the loop during tests
+	//mockSigner.UpdateFromWalletConnect = controller.UpdateFromWalletConnect //set the callback hereso that we can close the loop during tests
 	controller.Signer = mockSigner //tied closely during tests...
 	controller.LoadSession(acc)
 	controller.wallet.Address()
 
 	//todo - must make sure this is set
 	controller.tokenManager = &tokens.WalletConnectTokenManager{W: *ephemeralAccount, Persisted: true} //persist for mock emitter.
+	pl, err := gspool.GetPool(ctx, ephemeralAccount.PrivateKey().PrivateKey, utils.RetrieveStoragePeers(utils.TestNet))
+	if err != nil {
+		fmt.Println("error getting pool ", err)
+		t.Fatal(err)
+	}
 
 	//todo - should the db/notifier be on the object or on the object parameters
 	mockAction := obj.MockObject{Id: "object", ContainerId: "container"}
@@ -257,10 +288,8 @@ func TestWalletConnectSigning(t *testing.T) {
 	if err != nil {
 		log.Fatal("error could not open file")
 	}
-	//faking a jpeg image
 	// Simulate a JPEG header (this is just an example)
-	jpegHeader := []byte{0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46, 0x49, 0x46, 0x00}
-	if write, err := file.Write(jpegHeader); err != nil {
+	if write, err := file.Write(minimalJPEG); err != nil {
 		log.Fatal("could not write to file. Managed ", write, " bytes")
 	}
 	// Generate random data to simulate the rest of the JPEG content
@@ -313,6 +342,8 @@ func TestWalletConnectSigning(t *testing.T) {
 		3. then we need to create the parameters for the action
 	*/
 	var o obj.ObjectParameter
+	o.Pl = pl
+	o.GateAccount = ephemeralAccount
 	o.Id = "A6iuMASnCLGPVGgESWCiDfAWZZ8RiWQR5934JrJBDBoK"
 	o.ContainerId = "87JeshQhXKBw36nULzpLpyn34Mhv1kGCccYyHU2BqGpT"
 	//fixme - the first public key for a user needs WalletConnect to provide it (stub signing)
@@ -323,6 +354,11 @@ func TestWalletConnectSigning(t *testing.T) {
 	}
 	var pubKey neofsecdsa.PublicKeyWalletConnect
 
+	/*
+		fixme - the objectParameter needs a pool.
+		why don't we leave this function as it is (return it to a working version with a fake bearer token so it passes and write a new test.
+		// you could do this by setting the token manager up to generate the right type of token for the request. That way the token will be created for the operation
+	*/
 	err = pubKey.Decode(bPubKey)
 	o.PublicKey = ecdsa.PublicKey(pubKey)
 	o.Attrs = make([]object.Attribute, 0)
@@ -361,7 +397,8 @@ func TestWalletConnectSigning(t *testing.T) {
 	return                                // - remove this if you want to try and read and write
 	o.ActionOperation = eacl.OperationGet //set this to create a new token (remember will need signing)
 	//this could be done with a real or fake noeFS - but the issue is creating/mocking the readers etc
-	token, err := obj.ObjectBearerToken(o)
+	nodes := utils.RetrieveStoragePeers(utils.TestNet)
+	token, err := obj.ObjectBearerToken(o, nodes) //fix me - no longer required as performOperation will create the token for us
 	if err != nil {
 		return
 	}
@@ -403,7 +440,7 @@ func TestWalletConnectSigning(t *testing.T) {
 	}
 	{ //hackery for the purpose of the test
 		o.ActionOperation = eacl.OperationPut //set this to create a new token (remember will need signing)
-		token, err := obj.ObjectBearerToken(o)
+		token, err := obj.ObjectBearerToken(o, nodes)
 		if err != nil {
 			return
 		}

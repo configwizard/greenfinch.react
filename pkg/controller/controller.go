@@ -8,6 +8,7 @@ import (
 	"github.com/amlwwalker/greenfinch.react/pkg/database"
 	"github.com/amlwwalker/greenfinch.react/pkg/emitter"
 	"github.com/amlwwalker/greenfinch.react/pkg/notification"
+	"github.com/amlwwalker/greenfinch.react/pkg/object"
 	"github.com/amlwwalker/greenfinch.react/pkg/payload"
 	"github.com/amlwwalker/greenfinch.react/pkg/tokens"
 	"github.com/amlwwalker/greenfinch.react/pkg/utils"
@@ -173,7 +174,6 @@ type Controller struct {
 }
 
 func New(db database.Store, emitter emitter.Emitter, ctx context.Context, cancel context.CancelFunc, notifier notification.Notifier) Controller {
-	//ctxWithCancel, cancel := context.WithCancel(ctx)
 	return Controller{
 		pendingEvents: make(map[uuid.UUID]payload.Payload),
 		actionMap:     make(map[uuid.UUID]ActionType),
@@ -214,9 +214,9 @@ func (c *Controller) SignRequest(payload payload.Payload) error {
 	return c.wallet.Sign(payload)
 }
 
-// SignWithSignatureResponse just passes the signed payload onwrds. Use when have private key
-func (c *Controller) SignWithSignatureResponse(signedPayload payload.Payload) error {
-	fmt.Println("SignWithSignatureResponse ", signedPayload.Signature.HexSignature)
+// UpdateFromPrivateKey just passes the signed payload onwrds. Use when have private key
+func (c *Controller) UpdateFromPrivateKey(signedPayload payload.Payload) error {
+	fmt.Println("UpdateFromPrivateKey ", signedPayload.Signature.HexSignature)
 	if c.wallet == nil {
 		return errors.New(utils.ErrorNoSession)
 	}
@@ -235,8 +235,8 @@ func (c *Controller) SignWithSignatureResponse(signedPayload payload.Payload) er
 	return errors.New(utils.ErrorNotFound)
 }
 
-// SignResponse will be called when a signed payload is returned (use with WC)
-func (c *Controller) SignResponse(signedPayload payload.Payload) error {
+// UpdateFromWalletConnect will be called when a signed payload is returned (use with WC)
+func (c *Controller) UpdateFromWalletConnect(signedPayload payload.Payload) error {
 	if c.wallet == nil {
 		return errors.New(utils.ErrorNoSession)
 	}
@@ -299,6 +299,7 @@ func (c *Controller) PerformAction(wg *sync.WaitGroup, p payload.Parameters, act
 		}
 	}()
 
+	//fixme = don't think can use bearer token for containers. need to change this call so that gets correct token from manager.
 	//at this point we need to find out if we have a bearer token that can handle this action for us
 	//1. check if we have a token that will fulfil the operation for the request
 	//to force this, just provide a token to the token manager that will be picked up here.
@@ -318,17 +319,15 @@ func (c *Controller) PerformAction(wg *sync.WaitGroup, p payload.Parameters, act
 	// Store the action in the map
 	c.actionMap[neoFSPayload.Uid] = action
 
-	//make up the unsigned token here, so can be used by both the signer and the verifier functions
-	target := eacl.Target{}
-	target.SetRole(eacl.RoleUser)
-	key := c.tokenManager.GateKey()
-	target.SetBinaryKeys([][]byte{key.PublicKey().Bytes()})
-	table := tokens.GeneratePermissionsTable(cnrId, target)                            //currently this allows all operations.
-	bearerToken, err := c.tokenManager.NewBearerToken(table, 0, 0, 0, key.PublicKey()) //mock this out for different wallet types
+	nodes := utils.RetrieveStoragePeers(utils.TestNet)
+	bt, err := object.ObjectBearerToken(p, nodes) // fixme - this won't suffice for containers.
 	if err != nil {
 		return err
 	}
-	//update the payload to the data to sign
+	bearerToken := tokens.BearerToken{BearerToken: &bt}
+	c.tokenManager.AddBearerToken(c.wallet.Address(), cnrId.String(), bearerToken) //mock this out for different wallet types
+
+	////update the payload to the data to sign
 	neoFSPayload.OutgoingData = bearerToken.SignedData()
 
 	fmt.Println("bearer token data to sign (bearerToken.SignedData()) ", neoFSPayload.OutgoingData)

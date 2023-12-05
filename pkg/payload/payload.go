@@ -14,7 +14,7 @@ import (
 type Parameters interface {
 	ParentID() string //container ID holder?
 	ID() string       //object or container ID holder...
-	GateAccount() (*wallet.Account, error)
+	ForUser() (*wallet.Account, error)
 	Attributes() []object.Attribute //need to be able to pass around anything that can be set on the object
 	Operation() eacl.Operation
 	Epoch() uint64

@@ -22,14 +22,13 @@ import (
 	"time"
 )
 
-
-
 type Network string
 
-const mainnet Network = "mainnet"
+const MainNet Network = "MainNet"
 const testnet Network = "testnet"
-type NetworkData struct{
-	Name string
+
+type NetworkData struct {
+	Name         string
 	ID           string
 	Address      string
 	SidechainRPC []string
@@ -40,8 +39,9 @@ type NodeSelection struct {
 	Nodes   []config.Peer
 	current int
 }
+
 func (s *NodeSelection) getNext() (config.Peer, error) {
-	if s.current == len(s.Nodes) - 1 {
+	if s.current == len(s.Nodes)-1 {
 		return config.Peer{}, errors.New("Could not connect to any nodes, please try later")
 	}
 	node := s.Nodes[s.current]
@@ -56,10 +56,14 @@ func NewNetworkSelector(nodes []config.Peer) NodeSelection {
 	}
 	return nodeSelection
 }
+func RetrieveStoragePeers(n Network) map[string]config.Peer {
+	return networks[n].StorageNodes
+}
+
 var networks = map[Network]NetworkData{
-	"mainnet": {
-		Name: "Main Net",
-		ID:      "mainnet",
+	"MainNet": {
+		Name:    "Main Net",
+		ID:      "MainNet",
 		Address: "NNxVrKjLsRkWsmGgmuNXLcMswtxTGaNQLk",
 		SidechainRPC: []string{
 			"https://rpc1.morph.fs.neo.org:40341",
@@ -72,24 +76,24 @@ var networks = map[Network]NetworkData{
 		},
 		StorageNodes: map[string]config.Peer{
 			"0": {
-				Address: "grpcs://st1.storage.fs.neo.org:8082",
+				Address:  "grpcs://st1.storage.fs.neo.org:8082",
 				Priority: 1,
-				Weight: 1,
+				Weight:   1,
 			},
 			"1": {
-				Address: "grpcs://st2.storage.fs.neo.org:8082",
+				Address:  "grpcs://st2.storage.fs.neo.org:8082",
 				Priority: 2,
-				Weight: 1,
+				Weight:   1,
 			},
 			"2": {
-				Address: "grpcs://st3.storage.fs.neo.org:8082",
+				Address:  "grpcs://st3.storage.fs.neo.org:8082",
 				Priority: 3,
-				Weight: 1,
+				Weight:   1,
 			},
 			"3": {
-				Address: "grpcs://st4.storage.fs.neo.org:8082",
+				Address:  "grpcs://st4.storage.fs.neo.org:8082",
 				Priority: 4,
-				Weight: 1,
+				Weight:   1,
 			},
 		},
 		RpcNodes: []string{
@@ -97,7 +101,7 @@ var networks = map[Network]NetworkData{
 		},
 	},
 	"testnet": {
-		Name: "Test Net",
+		Name:    "Test Net",
 		ID:      "testnet",
 		Address: "NZAUkYbJ1Cb2HrNmwZ1pg9xYHBhm2FgtKV",
 		SidechainRPC: []string{
@@ -136,6 +140,7 @@ var networks = map[Network]NetworkData{
 		},
 	},
 }
+
 func (m Manager) OpenInDefaultBrowser(txt string) error {
 	var err error
 	switch runtime.GOOS {
@@ -171,7 +176,8 @@ func AwaitTime(seconds int, f func() bool) error {
 }
 
 var invalidImageError = errors.New("not an image")
-//todo - we should use this library to cover more formats of thumbnail https://github.com/bakape/thumbnailer/
+
+// todo - we should use this library to cover more formats of thumbnail https://github.com/bakape/thumbnailer/
 func thumbnail(ioReader io.Reader) ([]byte, error) {
 	var img image.Image
 	//Read the content - need to check if this errors what happens to the reader
@@ -246,14 +252,14 @@ func thumbnail(ioReader io.Reader) ([]byte, error) {
 }
 
 type Element struct {
-	ID string `json:"id"`
-	Type string `josn:"type"`
-	Size uint64 `json:"size"`
-	BasicAcl acl.Basic
-	ExtendedAcl eacl.Table
-	Attributes map[string]string `json:"attributes""`
-	Errors []error `json:"errors",omitempty`
-	ParentID string
-	Children []Element `json:"children",omitempty`
+	ID             string `json:"id"`
+	Type           string `josn:"type"`
+	Size           uint64 `json:"size"`
+	BasicAcl       acl.Basic
+	ExtendedAcl    eacl.Table
+	Attributes     map[string]string `json:"attributes""`
+	Errors         []error           `json:"errors",omitempty`
+	ParentID       string
+	Children       []Element `json:"children",omitempty`
 	PendingDeleted bool
 }

@@ -5,14 +5,12 @@ import (
 	"crypto/ecdsa"
 	"errors"
 	"fmt"
-	"github.com/amlwwalker/greenfinch.react/pkg/config"
 	"github.com/amlwwalker/greenfinch.react/pkg/database"
 	"github.com/amlwwalker/greenfinch.react/pkg/emitter"
 	"github.com/amlwwalker/greenfinch.react/pkg/notification"
 	"github.com/amlwwalker/greenfinch.react/pkg/payload"
 	"github.com/amlwwalker/greenfinch.react/pkg/tokens"
 	"github.com/nspcc-dev/neo-go/pkg/wallet"
-	"github.com/nspcc-dev/neofs-sdk-go/bearer"
 	"github.com/nspcc-dev/neofs-sdk-go/client"
 	apistatus "github.com/nspcc-dev/neofs-sdk-go/client/status"
 	cid "github.com/nspcc-dev/neofs-sdk-go/container/id"
@@ -25,7 +23,6 @@ import (
 	"io"
 	"log"
 	"sync"
-	"time"
 )
 
 // isErrAccessDenied is a helpher function for errors from NeoFS
@@ -49,9 +46,9 @@ type ObjectParameter struct {
 	ContainerId string
 	Id          string
 	PublicKey   ecdsa.PublicKey
-	gateAccount *wallet.Account
+	GateAccount *wallet.Account
+	Pl          *pool.Pool
 	io.ReadWriter
-	pl  *pool.Pool
 	ctx context.Context
 
 	//objectEmitter is used for sending an update of the state of the object's action, e.g send a message that an object has been downloaded.
@@ -77,14 +74,17 @@ func (o ObjectParameter) ID() string {
 }
 
 func (o ObjectParameter) Pool() *pool.Pool {
-	return o.pl
+	return o.Pl
 }
 
 func (o ObjectParameter) Attributes() []object.Attribute {
 	return o.Attrs
 }
 
-func (o ObjectParameter) GateAccount() (*wallet.Account, error) {
+func (o ObjectParameter) ForUser() (*wallet.Account, error) {
+	if o.GateAccount != nil {
+		return o.GateAccount, nil
+	}
 	return nil, errors.New("no gate wallet for object")
 }
 
@@ -115,7 +115,7 @@ func (o *Object) Head(wg *sync.WaitGroup, p payload.Parameters, actionChan chan 
 		fmt.Println("wrong container Id", err)
 		return err
 	}
-	gA, err := p.GateAccount()
+	gA, err := p.ForUser()
 	if err != nil {
 		return err
 	}
@@ -155,7 +155,7 @@ func (o *Object) Delete(wg *sync.WaitGroup, p payload.Parameters, actionChan cha
 		fmt.Println("wrong container Id", err)
 		return err
 	}
-	gA, err := p.GateAccount()
+	gA, err := p.ForUser()
 	if err != nil {
 		return err
 	}
@@ -183,7 +183,7 @@ func (o *Object) List(wg *sync.WaitGroup, p payload.Parameters, actionChan chan 
 		fmt.Println("wrong container Id", err)
 		return err
 	}
-	gA, err := p.GateAccount()
+	gA, err := p.ForUser()
 	if err != nil {
 		return err
 	}
@@ -220,64 +220,6 @@ func (o *Object) List(wg *sync.WaitGroup, p payload.Parameters, actionChan chan 
 	return iterationError
 }
 
-// ObjectReadSignSession produces a token for reading objects. Slightly more complex than a standard token so part of this package.
-func ObjectReadSignSession(p ObjectParameter, nodes []config.Peer) (*bearer.Token, error) {
-	nodeSelection := config.NewNetworkSelector(nodes)
-	var prmDial client.PrmDial
-	prmDial.SetTimeout(30 * time.Second)
-	prmDial.SetStreamTimeout(30 * time.Second)
-	prmDial.SetContext(context.Background()) //do we need fine contorl over this with a timeout?
-	sdkCli, err := p.Pool().RawClient()
-	if err != nil {
-		return nil, err
-	}
-	for {
-		node, err := nodeSelection.GetNext()
-		if err != nil {
-			return nil, err
-		}
-		prmDial.SetServerURI(node.Address)
-		//fixme: this may well be very slow and we might want to do it earlier somewhere - ask Roman
-		if err := sdkCli.Dial(prmDial); err != nil {
-			fmt.Printf("Error connecting to node %s: %s\n", node.Address, err)
-			continue
-		} else {
-			break
-		}
-	}
-	//_, exp, err := gspool.TokenExpiryValue(p.ctx, p.Pool(), 100)
-	//if err != nil {
-	//	fmt.Println("error getting expiry ", err)
-	//	return nil, err
-	//}
-	//gateSigner := user.NewAutoIDSigner(p.gateAccount.PrivateKey().PrivateKey) //fix me is this correct signer?
-	//prmSession := client.PrmSessionCreate{}
-	//prmSession.SetExp(exp)
-	//resSession, err := sdkCli.SessionCreate(p.ctx, gateSigner, prmSession)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//fixme: change for bearer token
-	//fixme: need to find out how to attach the resSession to a bearer token (how were we doing it for gate tokens? I think its the same)
-	//bt, err := tokens.BuildUnsignedBearerToken(iAt, iAt, exp, session.VerbObjectGet, cnrID, resSession)
-	//token, err := ObjectBearerToken(p) //we need to use the session
-	//if err != nil {
-	//	return nil, err
-	//}
-	//return &token, err
-	return nil, nil
-}
-
-// ObjectRead
-func ObjectRead() {
-	//create bearer token
-	//get token signed
-	//call initReader
-	//attach reader to the object
-	//call the read operation
-	//close the reader
-}
-
 // tmpPreRequisite should be run before trying to retrieve an object. It provides the size of the object and the reader that will do the retrieval.
 func InitReader(params ObjectParameter, token tokens.Token) (object.Object, io.ReadCloser, error) {
 	var objID oid.ID
@@ -290,7 +232,7 @@ func InitReader(params ObjectParameter, token tokens.Token) (object.Object, io.R
 		fmt.Println("wrong container Id", err)
 		return object.Object{}, nil, err
 	}
-	gA, err := params.GateAccount()
+	gA, err := params.ForUser()
 	if err != nil {
 		return object.Object{}, nil, err
 	}
@@ -355,64 +297,14 @@ func CloseReader(objReader io.ReadCloser) error {
 	//fixme - this needs to occur for the object to finish.
 	return objReader.Close()
 }
-func ObjectWrite() {
-	//create a bearer token
-	//sign the bearer token
-	//call initWriter
-	//attach the payloadWriter to the object
-	//call Write
-	//close the writer
-	//retrieve the ID
-	//call Head() to get the object metadata
-}
 
-func ObjectBearerToken(p payload.Parameters) (bearer.Token, error) {
-	var cnrID cid.ID
-	if err := cnrID.DecodeString(p.ParentID()); err != nil {
-		return bearer.Token{}, err
-	}
-	gA, err := p.GateAccount()
-	if err != nil {
-		return bearer.Token{}, err
-	}
-	params, ok := p.(*ObjectParameter)
-	if !ok {
-		return bearer.Token{}, errors.New("no object parameters")
-	}
-	var gateSigner user.Signer = user.NewAutoIDSignerRFC6979(gA.PrivateKey().PrivateKey)
-	var prmInit client.PrmInit
-
-	c, err := client.New(prmInit)
-	netInfo, err := c.NetworkInfo(params.ctx, client.PrmNetworkInfo{})
-
-	var bearerToken bearer.Token
-	bearerToken.ForUser(gateSigner.UserID())
-	bearerToken.SetIat(netInfo.CurrentEpoch())
-	bearerToken.SetNbf(netInfo.CurrentEpoch())
-	bearerToken.SetExp(netInfo.CurrentEpoch() + 100) // or particular exp value
-	bearerToken.EACLTable()
-	r := eacl.Record{}
-	equal := eacl.MatchStringEqual
-	equal.DecodeString(cnrID.String())
-	r.AddObjectContainerIDFilter(equal, cnrID)
-	if p.Operation() == eacl.OperationUnknown {
-		return bearer.Token{}, errors.New("need bearer token operation")
-	}
-	r.SetOperation(p.Operation())
-	r.SetAction(eacl.ActionAllow)
-	tab := eacl.Table{}
-	tab.AddRecord(&r)
-	bearerToken.SetEACLTable(tab)
-
-	return bearerToken, nil
-}
 func InitWriter(p ObjectParameter, token tokens.Token) (io.WriteCloser, error) {
 	var cnrID cid.ID
 	if err := cnrID.DecodeString(p.ParentID()); err != nil {
 		fmt.Println("wrong container Id", err)
 		return nil, err
 	}
-	gA, err := p.GateAccount()
+	gA, err := p.ForUser()
 	if err != nil {
 		return nil, err
 	}

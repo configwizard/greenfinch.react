@@ -14,39 +14,6 @@ import (
 	"time"
 )
 
-//
-//type MockObjectParameter struct {
-//	ContainerId string
-//	Id          string
-//	io.ReadWriter
-//	WG              *sync.WaitGroup
-//	Attrs           []object.Attribute
-//	ActionOperation eacl.Operation
-//	ExpiryEpoch     uint64
-//}
-//
-//func (o *MockObjectParameter) Operation() eacl.Operation {
-//	return o.ActionOperation
-//}
-//func (o *MockObjectParameter) Epoch() uint64 {
-//	return o.ExpiryEpoch
-//}
-//func (o *MockObjectParameter) ParentID() string {
-//	return o.ContainerId
-//}
-//
-//func (o *MockObjectParameter) ID() string {
-//	return o.Id
-//}
-//
-//func (o *MockObjectParameter) WaitGroup() *sync.WaitGroup {
-//	return o.WG
-//}
-//
-//func (o *MockObjectParameter) Attributes() []object.Attribute {
-//	return o.Attrs
-//}
-
 type MockObject struct {
 	Id, ContainerId string // Identifier for the object
 	CreatedAt       time.Time
@@ -140,7 +107,6 @@ func (o *MockObject) Head(wg *sync.WaitGroup, p payload.Parameters, actionChan c
 		if !ok {
 			params.objectEmitter.Emit(params.ctx, emitter.ObjectFailed, "no parameters")
 		}
-		//params.objectEmitter.Emit(params.ctx, emitter.ObjectAddUpdate, "mock head completed")
 	}()
 
 	return nil

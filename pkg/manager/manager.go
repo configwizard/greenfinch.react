@@ -154,7 +154,7 @@ func (m *Manager) DomReady(ctx context.Context) {
 		runtime.EventsEmit(m.ctx, "select_wallet", true)
 	}
 
-	if _, err := m.SetSelectedNetwork("mainnet"); err != nil {
+	if _, err := m.SetSelectedNetwork("MainNet"); err != nil {
 		log.Fatal("could not select network ", err)
 	}
 }
@@ -441,7 +441,7 @@ func NewFileSystemManager(version string, dbLocation string, DEBUG bool) (*Manag
 	m := &Manager{
 		configLocation:  wd,
 		gateAccount:     *ephemeralAccount,            //used to make requests to RPC endpoints and works on behalf of the user so never to expose their key anywhere
-		selectedNetwork: networks[Network("mainnet")], //this should be set/stored in the database when the user selects it and once they have logged in update it.
+		selectedNetwork: networks[Network("MainNet")], //this should be set/stored in the database when the user selects it and once they have logged in update it.
 		version:         version,
 		enableCaching:   true,
 		pool:            nil,

@@ -24,18 +24,16 @@ questions:
 3. Can a pool be created without knowing the private key (wallet connect)?
   - if not, do I think use a client? I cant work out how to make the requests (put/get/delte) on a client
 */
-func GetPool(ctx context.Context, gateKey ecdsa.PrivateKey, peers map[string]config.Peer) (*pool.Pool, error) {
+func GetPool(ctx context.Context, gateKey ecdsa.PrivateKey, peers []config.Peer) (*pool.Pool, error) {
 	var prm pool.InitParameters
-
 	for _, peer := range peers {
 		prm.AddNode(pool.NewNodeParam(peer.Priority, peer.Address, float64(peer.Weight)))
 	}
-
-	prm.SetNodeDialTimeout(30 * time.Second)
-	prm.SetNodeStreamTimeout(30 * time.Second)
-	prm.SetHealthcheckTimeout(30 * time.Second)
-	prm.SetClientRebalanceInterval(30 * time.Second)
-	prm.SetErrorThreshold(2)
+	prm.SetNodeDialTimeout(60 * time.Second)
+	prm.SetNodeStreamTimeout(60 * time.Second)
+	prm.SetHealthcheckTimeout(60 * time.Second)
+	prm.SetClientRebalanceInterval(60 * time.Second)
+	prm.SetErrorThreshold(3)
 	//prm.SetKey(&key)
 	usrSigner := user.NewAutoIDSignerRFC6979(gateKey)
 	prm.SetSigner(usrSigner)
@@ -46,12 +44,10 @@ func GetPool(ctx context.Context, gateKey ecdsa.PrivateKey, peers map[string]con
 		fmt.Println("could not create pool", err)
 		return p, err
 	}
-
 	if err = p.Dial(ctx); err != nil {
 		fmt.Println("pool failed to dial ", err)
 		return p, err
 	}
-
 	return p, nil
 }
 

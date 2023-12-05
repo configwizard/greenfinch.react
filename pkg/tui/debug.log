@@ -1,0 +1,48 @@
+debug 2023/12/05 12:58:18 Enter pressed in containerView
+debug 2023/12/05 12:58:18 State changed to objectView
+debug 2023/12/05 12:58:18 view changed to objectView
+debug 2023/12/05 12:58:19 id  c1obj1
+debug 2023/12/05 13:05:03 Enter pressed in containerView
+debug 2023/12/05 13:05:03 State changed to objectView
+debug 2023/12/05 13:05:03 view changed to objectView
+debug 2023/12/05 13:05:04 id  c2obj1
+debug 2023/12/05 13:05:25 Enter pressed in containerView
+debug 2023/12/05 13:05:25 State changed to objectView
+debug 2023/12/05 13:05:25 view changed to objectView
+debug 2023/12/05 13:07:48 view changed to objectView
+debug 2023/12/05 13:07:48 view changed to objectView
+debug 2023/12/05 13:09:17 Enter pressed in containerView
+debug 2023/12/05 13:09:17 view changed to objectView
+debug 2023/12/05 13:09:24 view changed to objectView
+debug 2023/12/05 13:09:24 view changed to objectView
+debug 2023/12/05 13:10:55 Enter pressed in containerView
+debug 2023/12/05 13:10:55 view changed to objectView
+debug 2023/12/05 13:11:51 view changed to objectView
+debug 2023/12/05 13:11:51 view changed to objectView
+debug 2023/12/05 13:11:55 Enter pressed in containerView -  C1
+debug 2023/12/05 13:11:55 view changed to objectView
+debug 2023/12/05 13:12:53 Enter pressed in containerView -  [{C1 O1 Object 1 Hash1 2} {C1 O2 Object 2 Hash2 3}]
+debug 2023/12/05 13:12:53 view changed to objectView
+debug 2023/12/05 13:13:38 Enter pressed in containerView -  [{C1 O1 Object 1 Hash1 2} {C1 O2 Object 2 Hash2 3}]
+debug 2023/12/05 13:13:38 view changed to objectView
+debug 2023/12/05 13:13:39 id  O1
+debug 2023/12/05 13:13:50 Enter pressed in containerView -  [{C1 O1 Object 1 Hash1 2} {C1 O2 Object 2 Hash2 3}]
+debug 2023/12/05 13:13:50 view changed to objectView
+debug 2023/12/05 13:13:53 view changed to objectView
+debug 2023/12/05 13:13:54 view changed to objectView
+debug 2023/12/05 13:13:54 view changed to objectView
+debug 2023/12/05 13:13:54 view changed to objectView
+debug 2023/12/05 13:13:54 view changed to objectView
+debug 2023/12/05 13:13:55 view changed to objectView
+debug 2023/12/05 13:13:55 view changed to objectView
+debug 2023/12/05 13:13:56 view changed to objectView
+debug 2023/12/05 13:14:17 view changed to objectView
+debug 2023/12/05 13:14:18 view changed to objectView
+debug 2023/12/05 13:14:18 view changed to objectView
+debug 2023/12/05 13:14:18 view changed to objectView
+debug 2023/12/05 13:16:34 Enter pressed in containerView -  [{C1 O1 Object 1 Hash1 2} {C1 O2 Object 2 Hash2 3}]
+debug 2023/12/05 13:16:34 view changed to objectView
+debug 2023/12/05 13:16:35 id  O1
+debug 2023/12/05 13:17:29 Enter pressed in containerView -  [{C1 O1 Object 1 Hash1 2} {C1 O2 Object 2 Hash2 3}]
+debug 2023/12/05 13:17:29 view changed to objectView
+debug 2023/12/05 13:17:29 id  O1
