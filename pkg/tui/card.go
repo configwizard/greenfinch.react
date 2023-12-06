@@ -2,12 +2,16 @@ package main
 
 import (
 	"fmt"
+	"github.com/amlwwalker/greenfinch.react/pkg/controller"
 	"github.com/amlwwalker/greenfinch.react/pkg/tui/views"
 	tea "github.com/charmbracelet/bubbletea"
 	"strings"
 )
 
-func populateCard(el views.Element) card {
+func populateWalletCard(w controller.Account) card {
+	return card{tableData: []string{"Name: " + w.Address(), "ID: " + w.PublicKeyHexString()}, selected: 0}
+}
+func populateElementCard(el views.Element) card {
 	return card{tableData: []string{"Name: " + el.Name, "ID: " + el.ID}, selected: 0}
 }
 

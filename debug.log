@@ -1,0 +1,12 @@
+debug 2023/12/06 21:40:25 Enter pressed in containerView -  [{C1 O1 Object 1 Hash1 2} {C1 O2 Object 2 Hash2 3}]
+debug 2023/12/06 21:40:25 view changed to objectView
+debug 2023/12/06 21:40:26 id  O1
+debug 2023/12/06 21:40:59 Enter pressed in containerView -  [{C1 O1 Object 1 Hash1 2} {C1 O2 Object 2 Hash2 3}]
+debug 2023/12/06 21:40:59 view changed to objectView
+debug 2023/12/06 21:40:59 id  O1
+debug 2023/12/06 21:41:11 Enter pressed in containerView -  [{C1 O1 Object 1 Hash1 2} {C1 O2 Object 2 Hash2 3}]
+debug 2023/12/06 21:41:11 view changed to objectView
+debug 2023/12/06 21:41:12 id  O1
+debug 2023/12/06 21:42:06 Enter pressed in containerView -  [{C1 O1 Object 1 Hash1 2} {C1 O2 Object 2 Hash2 3}]
+debug 2023/12/06 21:42:06 view changed to objectView
+debug 2023/12/06 21:42:07 id  O1

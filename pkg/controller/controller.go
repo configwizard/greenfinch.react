@@ -169,10 +169,10 @@ type Controller struct {
 	cancelCtx          context.CancelFunc
 	DB                 database.Store
 	wallet             Account
-	tokenManager       TokenManager
+	TokenManager       TokenManager
 	Signer             emitter.Emitter
 	Notifier           notification.Notifier
-	progressBarManager *notification.ProgressBarManager
+	ProgressBarManager *notification.ProgressBarManager
 	pendingEvents      map[uuid.UUID]payload.Payload //holds any asynchronous information sent to frontend
 	actionMap          map[uuid.UUID]ActionType      // Maps payload UID to corresponding action
 }
@@ -193,16 +193,19 @@ func NewMockController() (Controller, error) {
 		ctx:                ctx,
 		cancelCtx:          cancelFunc,
 		DB:                 database.NewUnregisteredMockDB(),
-		tokenManager:       tokens.New(ephemeralAccount, true),
+		TokenManager:       tokens.New(ephemeralAccount, true),
 		Notifier:           n,
-		progressBarManager: notification.NewProgressBarManager(notification.WriterProgressBarFactory, notification.MockProgressEvent{}),
+		ProgressBarManager: notification.NewProgressBarManager(notification.WriterProgressBarFactory, notification.MockProgressEvent{}),
 		pendingEvents:      make(map[uuid.UUID]payload.Payload),
 		actionMap:          make(map[uuid.UUID]ActionType),
 	}
 
 	progressBarEmitter := notification.MockProgressEvent{}
-	c.progressBarManager = notification.NewProgressBarManager(notification.WriterProgressBarFactory, progressBarEmitter)
+	c.ProgressBarManager = notification.NewProgressBarManager(notification.WriterProgressBarFactory, progressBarEmitter)
 	return c, nil
+}
+func (c Controller) WG() *sync.WaitGroup {
+	return c.wg
 }
 func (c Controller) Add(i int) {
 	c.wg.Add(i)
@@ -213,16 +216,14 @@ func (c Controller) Done() {
 func (c Controller) Wait() {
 	c.wg.Wait()
 }
-func (c *Controller) RegisterAccount(a Account, walletLocation *string) {
+
+func (c *Controller) Account() Account {
+	return c.wallet
+}
+
+// these kind of have to be used in harmony
+func (c *Controller) SetAccount(a Account) {
 	c.wallet = a
-	mockSigner := emitter.MockWalletConnectEmitter{Name: "[mock signer]"}
-	mockSigner.SignResponse = c.UpdateFromWalletConnect
-	c.Signer = &mockSigner
-	if walletLocation == nil {
-		c.DB.Register(string(utils.TestNet), a.Address(), "WC")
-	} else {
-		c.DB.Register(string(utils.TestNet), a.Address(), *walletLocation)
-	}
 }
 func (c *Controller) SetEmitter(em emitter.Emitter) {
 	c.Signer = em
@@ -236,10 +237,10 @@ func NewDefaultController(a Account) (Controller, error) {
 		cancelCtx:          nil,
 		DB:                 nil,
 		wallet:             a,
-		tokenManager:       nil,
+		TokenManager:       nil,
 		Signer:             nil,
 		Notifier:           nil,
-		progressBarManager: nil,
+		ProgressBarManager: nil,
 		pendingEvents:      make(map[uuid.UUID]payload.Payload),
 		actionMap:          make(map[uuid.UUID]ActionType),
 	}, nil
@@ -378,7 +379,7 @@ func (c *Controller) PerformAction(wg *sync.WaitGroup, p payload.Parameters, act
 	//at this point we need to find out if we have a bearer token that can handle this action for us
 	//1. check if we have a token that will fulfil the operation for the request
 	//to force this, just provide a token to the token manager that will be picked up here.
-	if bearerToken, err := c.tokenManager.FindBearerToken(c.wallet.Address(), cnrId, p.Epoch(), p.Operation()); err == nil {
+	if bearerToken, err := c.TokenManager.FindBearerToken(c.wallet.Address(), cnrId, p.Epoch(), p.Operation()); err == nil {
 		//we believe we have a token that can perform
 		//the action should now be passed what it was going to be passed anyway, along with the token that it can use to make the request.
 		//these actions will be responsible for notifying UI themselves (i.e progress bars etc)
@@ -394,11 +395,11 @@ func (c *Controller) PerformAction(wg *sync.WaitGroup, p payload.Parameters, act
 	// Store the action in the map
 	c.actionMap[neoFSPayload.Uid] = action
 
-	key := c.tokenManager.GateKey()
+	key := c.TokenManager.GateKey()
 	nodes := utils.RetrieveStoragePeers(utils.TestNet)
 	//todo - this all needs sorted
 	bt, err := object.ObjectBearerToken(p, nodes)                                               // fixme - this won't suffice for containers.
-	bearerToken, err := c.tokenManager.NewBearerToken(bt.EACLTable(), 0, 0, 0, key.PublicKey()) //mock this out for different wallet types
+	bearerToken, err := c.TokenManager.NewBearerToken(bt.EACLTable(), 0, 0, 0, key.PublicKey()) //mock this out for different wallet types
 	if err != nil {
 		return err
 	}
