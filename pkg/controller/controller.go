@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/hex"
 	"errors"
-	"fmt"
 	"github.com/amlwwalker/greenfinch.react/pkg/database"
 	"github.com/amlwwalker/greenfinch.react/pkg/emitter"
 	"github.com/amlwwalker/greenfinch.react/pkg/notification"
@@ -102,19 +101,15 @@ func NewRawAccount(a *wal.Account) (RawAccount, error) {
 	}, nil
 }
 func (w RawAccount) Sign(p payload.Payload) error {
-	fmt.Println("m.Wallet.PublicKey().Bytes()", w.PublicKey().Bytes())
 	var e = (neofsecdsa.SignerRFC6979)(w.Account.PrivateKey().PrivateKey)
 	signed, err := e.Sign(p.OutgoingData)
 	if err != nil {
-		fmt.Println("error signing ", err)
 		return err
 	}
 	if p.Signature == nil {
 		p.Signature = &payload.Signature{}
 	}
-	fmt.Println("(neofsecdsa.SignerRFC6979)(w.Account.PrivateKey().PrivateKey).Sign(p.OutgoingData) is ", signed)
 	p.Signature.HexSignature = hex.EncodeToString(signed)
-	fmt.Println("p.Signature.HexSignature = hex.EncodeToString(signed) is ", p.Signature.HexSignature)
 	//p.OutgoingData = signed //fixme: total hack. This is not how this field should be used
 	return w.emitter.Emit(context.Background(), (string)(emitter.RequestSign), p)
 }
@@ -141,7 +136,6 @@ func (w WCWallet) Address() string {
 	return w.WalletAddress
 }
 func (w WCWallet) Sign(p payload.Payload) error {
-	fmt.Println("signing payload ", p)
 	return w.emitter.Emit(context.Background(), (string)(emitter.RequestSign), p)
 }
 
@@ -168,6 +162,7 @@ type Controller struct {
 	ctx                context.Context
 	cancelCtx          context.CancelFunc
 	DB                 database.Store
+	logger             *log.Logger
 	wallet             Account
 	TokenManager       TokenManager
 	Signer             emitter.Emitter
@@ -177,7 +172,7 @@ type Controller struct {
 	actionMap          map[uuid.UUID]ActionType      // Maps payload UID to corresponding action
 }
 
-func NewMockController() (Controller, error) {
+func NewMockController(progressBarEmitter emitter.Emitter, logger *log.Logger) (Controller, error) {
 	wg := &sync.WaitGroup{}
 	ephemeralAccount, err := wal.NewAccount()
 	if err != nil {
@@ -189,18 +184,18 @@ func NewMockController() (Controller, error) {
 	n := notification.NewMockNotifier(wg, notifyEmitter, ctx, cancelFunc)
 
 	c := Controller{
-		wg:                 wg,
-		ctx:                ctx,
-		cancelCtx:          cancelFunc,
-		DB:                 database.NewUnregisteredMockDB(),
-		TokenManager:       tokens.New(ephemeralAccount, true),
-		Notifier:           n,
-		ProgressBarManager: notification.NewProgressBarManager(notification.WriterProgressBarFactory, notification.MockProgressEvent{}),
-		pendingEvents:      make(map[uuid.UUID]payload.Payload),
-		actionMap:          make(map[uuid.UUID]ActionType),
+		wg:            wg,
+		ctx:           ctx,
+		cancelCtx:     cancelFunc,
+		logger:        logger,
+		DB:            database.NewUnregisteredMockDB(),
+		TokenManager:  tokens.New(ephemeralAccount, true),
+		Notifier:      n,
+		pendingEvents: make(map[uuid.UUID]payload.Payload),
+		actionMap:     make(map[uuid.UUID]ActionType),
 	}
 
-	progressBarEmitter := notification.MockProgressEvent{}
+	//progressBarEmitter := notification.MockProgressEvent{}
 	c.ProgressBarManager = notification.NewProgressBarManager(notification.WriterProgressBarFactory, progressBarEmitter)
 	return c, nil
 }
@@ -225,7 +220,7 @@ func (c *Controller) Account() Account {
 func (c *Controller) SetAccount(a Account) {
 	c.wallet = a
 }
-func (c *Controller) SetEmitter(em emitter.Emitter) {
+func (c *Controller) SetSigningEmitter(em emitter.Emitter) {
 	c.Signer = em
 	if wcWallet, ok := c.wallet.(*WCWallet); ok {
 		wcWallet.SetEmitter(em)
@@ -274,7 +269,7 @@ func (c *Controller) LoadSession(wallet Account) { //todo - these fields may not
 
 // RequestSign asks the wallet to begin the signing process. This assumes signing is asynchronous
 func (c *Controller) SignRequest(payload payload.Payload) error {
-	fmt.Println("c.wallet SignRequest", c.wallet)
+	c.logger.Println("c.wallet SignRequest", c.wallet)
 	if c.wallet == nil {
 		return errors.New(utils.ErrorNoSession)
 	}
@@ -284,13 +279,13 @@ func (c *Controller) SignRequest(payload payload.Payload) error {
 	}
 	//if we have a signed request
 	c.pendingEvents[payload.Uid] = payload
-	fmt.Println("have been requested to sign ", payload.OutgoingData)
+	c.logger.Println("have been requested to sign ", payload.OutgoingData)
 	return c.wallet.Sign(payload)
 }
 
 // UpdateFromPrivateKey just passes the signed payload onwrds. Use when have private key
 func (c *Controller) UpdateFromPrivateKey(signedPayload payload.Payload) error {
-	fmt.Println("c.wallet UpdateFromPrivateKey", c.wallet)
+	c.logger.Println("c.wallet UpdateFromPrivateKey", c.wallet)
 	if c.wallet == nil {
 		return errors.New(utils.ErrorNoSession)
 	}
@@ -302,7 +297,7 @@ func (c *Controller) UpdateFromPrivateKey(signedPayload payload.Payload) error {
 		// Update the map with the new struct
 		c.pendingEvents[signedPayload.Uid] = updatedPayload
 		// Notify through the channel
-		fmt.Println("updatedPayloadSignature ", updatedPayload.Signature.HexSignature)
+		c.logger.Println("updatedPayloadSignature ", updatedPayload.Signature.HexSignature)
 		updatedPayload.ResponseCh <- true
 		return nil
 	}
@@ -311,7 +306,7 @@ func (c *Controller) UpdateFromPrivateKey(signedPayload payload.Payload) error {
 
 // UpdateFromWalletConnect will be called when a signed payload is returned (use with WC)
 func (c *Controller) UpdateFromWalletConnect(signedPayload payload.Payload) error {
-	fmt.Println("c.wallet UpdateFromWalletConnect", c.wallet)
+	c.logger.Println("c.wallet UpdateFromWalletConnect", c.wallet)
 	if c.wallet == nil {
 		return errors.New(utils.ErrorNoSession)
 	}
@@ -337,7 +332,7 @@ func (c *Controller) UpdateFromWalletConnect(signedPayload payload.Payload) erro
 // PerformAction is partnered with any 'event' that requires and action from the user and could take a while.
 // It runs the action that is stored, related to the payload that has been sent to the frontend.
 func (c *Controller) PerformAction(wg *sync.WaitGroup, p payload.Parameters, action ActionType) error {
-	fmt.Println("c.wallet PerformAction", c.wallet)
+	c.logger.Println("c.wallet PerformAction", c.wallet)
 	if c.wallet == nil {
 		return errors.New(utils.ErrorNoSession)
 	}
@@ -349,7 +344,7 @@ func (c *Controller) PerformAction(wg *sync.WaitGroup, p payload.Parameters, act
 	}
 
 	wg.Add(1)
-	fmt.Println("perform action started")
+	c.logger.Println("perform action started")
 	var actionChan = make(chan notification.NewNotification)
 
 	wg.Add(1)
@@ -362,7 +357,7 @@ func (c *Controller) PerformAction(wg *sync.WaitGroup, p payload.Parameters, act
 			return
 		case not := <-actionChan:
 			if not.Type == notification.Success { //do this before sending the notification success
-				fmt.Println("success type, creatnig notification for database")
+				c.logger.Println("success type, creatnig notification for database")
 				if err := c.DB.Create(database.NotificationBucket, p.ID(), []byte{}); err != nil {
 					c.Notifier.QueueNotification(c.Notifier.Notification(
 						"failed to store in database",
@@ -407,12 +402,12 @@ func (c *Controller) PerformAction(wg *sync.WaitGroup, p payload.Parameters, act
 	////update the payload to the data to sign
 	neoFSPayload.OutgoingData = bearerToken.SignedData()
 
-	fmt.Println("bearer token data to sign (bearerToken.SignedData()) ", neoFSPayload.OutgoingData)
+	c.logger.Println("bearer token data to sign (bearerToken.SignedData()) ", neoFSPayload.OutgoingData)
 	// Wait for the payload to be signed in a separate goroutine
 	go func() {
 		defer func() {
 			wg.Done()
-			fmt.Println("perform action stopped")
+			c.logger.Println("perform action stopped")
 		}()
 		for {
 			select {
@@ -430,12 +425,12 @@ func (c *Controller) PerformAction(wg *sync.WaitGroup, p payload.Parameters, act
 				}
 				if act, exists := c.actionMap[latestPayload.Uid]; exists {
 					if err := bearerToken.Sign(c.wallet.Address(), latestPayload); err != nil {
-						fmt.Println("error signing token ", err)
+						c.logger.Println("error signing token ", err)
 						return
 					}
 					if err := act(wg, p, actionChan, bearerToken); err != nil {
 						//handle the error with the UI (n)
-						fmt.Println("error executing action ", err)
+						c.logger.Println("error executing action ", err)
 						return
 					}
 					delete(c.actionMap, neoFSPayload.Uid) // Clean up

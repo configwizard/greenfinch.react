@@ -73,28 +73,19 @@ func (p *ProgressBarManager) AddProgressWriter(w io.Writer, name string) *Writer
 	// Start listening to updates from this progress bar
 	fmt.Println("Add Progress Writer routine started")
 	go func() {
-		select {
-		case <-progressBar.ctx.Done(): //todo - no worker group here?
-			p.decrementActiveBars()
-			fmt.Println("Add Progress Writer routine stopped")
-			return
-		case update := <-progressBar.statusCh:
-			err := p.Emit(context.Background(), emitter.ProgressMessage, update)
-			if err != nil {
-				fmt.Println("emitting ", err)
+		for {
+			select {
+			case <-progressBar.ctx.Done(): //todo - no worker group here?
+				p.decrementActiveBars()
+				fmt.Println("Add Progress Writer routine stopped")
+				return
+			case update := <-progressBar.statusCh:
+				err := p.Emit(context.Background(), emitter.ProgressMessage, update)
+				if err != nil {
+					fmt.Println("emitting ", err)
+				}
 			}
 		}
-		for update := range progressBar.statusCh {
-			//update.
-			//you can either listen and emit directly from here
-			err := p.Emit(context.Background(), emitter.ProgressMessage, update)
-			if err != nil {
-				fmt.Println("emitting ", err)
-			}
-			//or you can push it to a channel reachable elsewhere.
-			//p.UpdatesCh <- update // Forward updates to the manager's channel
-		}
-
 	}()
 
 	return progressBar
@@ -189,11 +180,13 @@ func (w WriterProgressBar) Start(payloadSize int64, wg *sync.WaitGroup) {
 				if p.N() == 0 {
 					continue
 				}
+
 				status := status
 				status.Progress = int(p.Percent())
 				status.BytesWritten = p.N()
 				status.ExpectedSize = p.Size()
 				status.Remaining = p.Remaining().Round(250 * time.Millisecond)
+				//fmt.Printf("status - %+v\n", status)
 				w.statusCh <- status
 			}
 		}

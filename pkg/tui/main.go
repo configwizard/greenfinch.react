@@ -76,13 +76,18 @@ type model struct {
 	walletCard                          card                // display/login the mock wallet
 }
 
-func (m model) Init() tea.Cmd { return nil }
+func (m model) Init() tea.Cmd {
+	return tea.Batch(
+		// ... other commands ...
+		waitForDownloadProgress(m.progressChan),
+	)
+}
 
-// This function will be assigned to m.actionToConfirm and called when the user confirms
-func (m *model) startDownloadProcess(url string) {
-	// Start the background download process
-	m.state = downloadingState
-	downloadFile(url, m.progressChan)
+// this waits to update the visible progress bar
+func waitForDownloadProgress(progressChan chan int) tea.Cmd {
+	return func() tea.Msg {
+		return progressUpdateMsg{progress: <-progressChan}
+	}
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -93,7 +98,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case progressUpdateMsg:
 		m.progressBar.SetProgress(msg.progress)
-		return m, nil
+		return m, waitForDownloadProgress(m.progressChan)
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "esc":
@@ -134,6 +139,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		select {
 		case progress, ok := <-m.progressChan:
 			if ok {
+				logger.Println("downloading state", progress)
 				// Update progress bar with the received progress
 				m.progressBar.SetProgress(progress)
 			} else {
@@ -147,7 +153,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		//m.list, cmd = m.progressBar.Update(msg)
 		//cmds = append(cmds, cmd)
 	case walletView:
-		//m.walletCard = populateWalletCard(m.controller.Account()) // prepare data for card
+		m.walletCard = populateWalletCard(m.controller.Account()) // prepare data for card
 		////m.state = walletView
 		//_, cmd = m.walletCard.Update(msg)
 		//cmds = append(cmds, cmd)
@@ -194,52 +200,17 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				r := m.objectListTable.SelectedRow()
 				objectID := r[0]
 
-				gateKey := m.controller.TokenManager.GateKey()
-				//fixme: this takes time. we should have a manager to handle the fact we can't connect
-				/*
-						go func() {
-							time.Sleep(1 * time.Second)
-							spinnerEmitter <- true //something that listens and waits for the connection to establish
-						}()
-					//either this or a mock pool.
-				*/
+				//gateKey := m.controller.TokenManager.GateKey()
+				////fixme: this takes time. we should have a manager to handle the fact we can't connect
+				///*
+				//		go func() {
+				//			time.Sleep(1 * time.Second)
+				//			spinnerEmitter <- true //something that listens and waits for the connection to establish
+				//		}()
+				//	//either this or a mock pool.
+				//*/
+				//
 
-				mockAction := obj.MockObject{Id: "object", ContainerId: "container"}
-				//mockAction := obj.Object{}
-				mockAction.Notifier = m.controller.Notifier
-				mockAction.Store = m.controller.DB
-				//prep for some reading
-				pBarName := "file_monitor"       //todo - expose the name of a progress bar
-				destination := new(bytes.Buffer) //todo: this is where we want to put it
-				file, fileStats := utils.MockFileCopy()
-				fileWriterProgressBar := m.controller.ProgressBarManager.AddProgressWriter(destination, pBarName)
-				//overwrite the progress managers emitter so that we can pick it up here
-				m.controller.ProgressBarManager.StartProgressBar(m.controller.WG(), pBarName, fileStats.Size())
-				m.controller.Add(1)
-				go m.controller.Notifier.ListenAndEmit() //this sends out notifications to the frontend.
-
-				var o obj.ObjectParameter
-				o.Pl = m.pl
-				o.GateAccount = &gateKey
-				o.Id = objectID
-				o.ContainerId = "87JeshQhXKBw36nULzpLpyn34Mhv1kGCccYyHU2BqGpT" //fixme
-				bPubKey, err := hex.DecodeString(m.controller.Account().PublicKeyHexString())
-				if err != nil {
-					log.Fatal("could not decode public key - ", err)
-				}
-				var pubKey neofsecdsa.PublicKeyWalletConnect
-				err = pubKey.Decode(bPubKey)
-				o.PublicKey = ecdsa.PublicKey(pubKey)
-				o.Attrs = make([]object.Attribute, 0)
-				o.ActionOperation = eacl.OperationHead
-				o.ReadWriter = &readwriter.DualStream{
-					Reader: file,                  //here is where it knows the source of the data
-					Writer: fileWriterProgressBar, //this is where we write the data to
-				}
-				o.ExpiryEpoch = 100
-				if err := m.controller.PerformAction(m.controller.WG(), &o, mockAction.Head); err != nil {
-					log.Fatal(err)
-				}
 				//fix me = remove this.
 				//objects := views.SimulateNeoFS(views.Read, objectID) //should just be one element
 				//if len(objects) == 0 {
@@ -259,25 +230,58 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					3. we will need a new type of emitter so that it updates here
 				*/
 				//m.state = objectCardView
-				//m.actionToConfirm = func() sessionState {
-				//	m.startDownloadProcess("http://example.com/file")
-				//	return downloadingState
-				//}
-				m.state = downloadingState
+				m.actionToConfirm = func() sessionState {
+
+					//todo: we need these 'helpers' abstracted away from what the UI knows (i.e the object ID)
+					//this will require a closure to pass the object ID through
+					fmt.Println("calling")
+					mockAction := obj.MockObject{Id: "object", ContainerId: "container"}
+					//mockAction := obj.Object{}
+					mockAction.Notifier = m.controller.Notifier
+					mockAction.Store = m.controller.DB
+					//prep for some reading
+					pBarName := "file_monitor"       //todo - expose the name of a progress bar
+					destination := new(bytes.Buffer) //todo: this is where we want to put it
+					file, fileStats := utils.MockFileCopy()
+					//give us a destination to put data and we will inform the provided emitter of the progress
+					fileWriterProgressBar := m.controller.ProgressBarManager.AddProgressWriter(destination, pBarName)
+					//overwrite the progress managers emitter so that we can pick it up here
+					m.controller.ProgressBarManager.StartProgressBar(m.controller.WG(), pBarName, fileStats.Size())
+					m.controller.Add(1)
+					go m.controller.Notifier.ListenAndEmit() //this sends out notifications to the frontend.
+
+					var o obj.ObjectParameter
+					o.Pl = m.pl
+					gateKey := m.controller.TokenManager.GateKey()
+					o.GateAccount = &gateKey
+					o.Id = objectID
+					o.ContainerId = "87JeshQhXKBw36nULzpLpyn34Mhv1kGCccYyHU2BqGpT" //fixme
+					bPubKey, err := hex.DecodeString(m.controller.Account().PublicKeyHexString())
+					if err != nil {
+						log.Fatal("could not decode public key - ", err)
+					}
+					var pubKey neofsecdsa.PublicKeyWalletConnect
+					err = pubKey.Decode(bPubKey)
+					o.PublicKey = ecdsa.PublicKey(pubKey)
+					o.Attrs = make([]object.Attribute, 0)
+					o.ActionOperation = eacl.OperationHead
+					o.ReadWriter = &readwriter.DualStream{
+						Reader: file,                  //here is where it knows the source of the data
+						Writer: fileWriterProgressBar, //this is where we write the data to
+					}
+					o.ExpiryEpoch = 100
+					go func() {
+						//go downloadFile("http://example.com/file", m.progressChan)
+						if err := m.controller.PerformAction(m.controller.WG(), &o, mockAction.Head); err != nil {
+							log.Fatal(err)
+						}
+					}()
+					//go downloadFile("http://example.com/file", m.progressChan)
+					return downloadingState
+				}
+				m.state = confirmationView
 				//m.state = detailedTableView // Transition to detailed containerListTable view
 			} else if msg.Type == tea.KeyCtrlD {
-				//ok so this is an option to have a wallet connect esq emitter.
-				//r := m.objectListTable.SelectedRow()
-				//objectID := r[0]
-				//newContent := views.SimulateNeoFS(views.Read, objectID) //search by container ID (
-				////Set the containerListTable with new content
-				//m.objectListTable.SetColumns(newContent.columns)
-				//m.objectListTable.SetRows(newContent.rows)
-				//m.actionToConfirm = func() sessionState {
-				//	m.startDownloadProcess("http://example.com/file")
-				//	return downloadingState
-				//}
-				//m.state = confirmationView
 			}
 		}
 		m.objectListTable, cmd = m.objectListTable.Update(msg)
@@ -286,6 +290,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// Handle the confirmation prompt logic here
 		switch msg := msg.(type) {
 		case tea.KeyMsg:
+			fmt.Println("mesg ", msg.String())
 			switch msg.String() {
 			case "y", "Y":
 				m.confirmState = true
@@ -350,7 +355,9 @@ func (m model) View() string {
 	case walletView:
 		return baseStyle.Render(m.walletCard.View())
 	case downloadingState:
+		logger.Printf("downloading state: %d\n", m.progressBar.Value())
 		return m.progressBar.View()
+
 		//return fmt.Sprintf("downloading state: %d\n", m.progressBar.Value())
 	case listView:
 
@@ -412,7 +419,11 @@ func main() {
 	l := list.New(options, list.NewDefaultDelegate(), 0, 0)
 	l.SetShowStatusBar(false)
 	l.SetFilteringEnabled(false)
-	c, err := controller.NewMockController()
+
+	//progress channel first
+	progressChan := make(chan int)
+	pEmitter := NewUIProgressEvent("progress channel", progressChan)
+	c, err := controller.NewMockController(pEmitter, logger)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -422,28 +433,27 @@ func main() {
 	c.SetAccount(&acc)
 	mockSigner := emitter.MockWalletConnectEmitter{Name: "[mock signer]"}
 	mockSigner.SignResponse = c.UpdateFromWalletConnect
-	c.SetEmitter(mockSigner)
+	c.SetSigningEmitter(mockSigner)
 
+	//the model connects the controller to viewable items
 	m := model{
-		controller:   c,
-		state:        listView,
-		progressChan: make(chan int),
-		progressBar: NewSimpleProgressBar(100, func(progress int) {
-			logger.Println("sending to update ", progress)
-			p.Send(progressUpdateMsg{progress: progress})
-		}), // Assuming 100 is the total progress
+		controller:         c,
+		state:              listView,
+		progressChan:       progressChan,
+		progressBar:        NewSimpleProgressBar(100),
 		inputChan:          make(chan string),
 		containerListTable: t,
 		objectListTable:    ot,
 		list:               l,
 	}
+	//m.progressBar = NewSimpleProgressBar(100)
 	gateKey := m.controller.TokenManager.GateKey()
 	pl, err := gspool.GetPool(context.Background(), gateKey.PrivateKey().PrivateKey, utils.RetrieveStoragePeers(utils.MainNet))
 	if err != nil {
 		fmt.Println("error getting pool ", err)
 		log.Fatal(err)
 	}
-	m.pl = pl
+	m.pl = pl //fixme - should this be the controller's pool?
 	//override the progress bar from the default controller
 	//c.ProgressBarManager.Emitter = m.progressBar
 	m.list.Title = "Options"

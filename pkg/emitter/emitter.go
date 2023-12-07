@@ -41,7 +41,7 @@ type MockWalletConnectEmitter struct {
 }
 
 func (m MockWalletConnectEmitter) Emit(c context.Context, message string, p any) error {
-	fmt.Printf("%s emitting %s - %+v\r\n", m.Name, message, p)
+	//fmt.Printf("%s emitting %s - %+v\r\n", m.Name, message, p)
 	actualPayload, ok := p.(payload.Payload)
 	if !ok {
 		return errors.New(utils.ErrorNotPayload)

@@ -238,8 +238,6 @@ func (b BearerToken) InvalidAt(epoch uint64) bool {
 }
 
 func (b BearerToken) SignedData() []byte {
-	j := b.BearerToken.Marshal()
-	fmt.Println("unmarshal ", j)
 	return b.BearerToken.SignedData()
 }
 

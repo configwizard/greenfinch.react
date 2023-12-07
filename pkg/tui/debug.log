@@ -49,3 +49,8 @@ debug 2023/12/05 13:17:29 id  O1
 debug 2023/12/06 21:41:49 Enter pressed in containerView -  [{C1 O1 Object 1 Hash1 2} {C1 O2 Object 2 Hash2 3}]
 debug 2023/12/06 21:41:49 view changed to objectView
 debug 2023/12/06 21:41:51 id  O1
+debug 2023/12/06 21:48:16 Enter pressed in containerView -  [{C1 O1 Object 1 Hash1 2} {C1 O2 Object 2 Hash2 3}]
+debug 2023/12/06 21:48:16 view changed to objectView
+debug 2023/12/06 21:48:16 starting action chan handler
+debug 2023/12/06 21:48:18 emitting  {mock-notifier-94d9a4c7-9999-4055-a549-f51383edfe57  download complete! success 1 object object completed map[]  false}
+debug 2023/12/06 21:48:18 notification events: firing notification {Id:mock-notifier-94d9a4c7-9999-4055-a549-f51383edfe57 User: Title:download complete! Type:success Action:1 Description:object object completed Meta:map[] CreatedAt: MarkRead:false}
